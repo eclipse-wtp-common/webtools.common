@@ -35,6 +35,7 @@ import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValPrefManagerProject;
+import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorExtensionReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
@@ -196,6 +197,22 @@ public abstract class Validator implements Comparable {
 	}
 	
 	/**
+	 * Answer true if this validator, based on it's filters, should validate this resource. This method
+	 * does not check to see if global validation or project validation has been suspended or not.
+	 * 
+	 * @param resource the resource to be checked
+	 * @param valType The content to use when perform the check.
+	 * 
+	 * @return true if the resource should be validated.
+	 */
+	public boolean shouldValidate(IResource resource, ValType valType){
+		if (valType == ValType.Manual && !_manualValidation)return false;
+		if (valType == ValType.Build && !_buildValidation)return false;
+		
+		return shouldValidate(resource);
+	}
+	
+	/**
 	 * Answer true if this validator, based on it's filters, should validate this project. This method
 	 * does not check to see if global validation or project validation has been suspended or not.
 	 * 
@@ -268,7 +285,6 @@ public abstract class Validator implements Comparable {
 	public IValidator asIValidator(){
 		return null;
 	}
-
 	
 	protected abstract boolean shouldValidate(IResource resource);
 	protected abstract boolean shouldValidateProject(IProject project);

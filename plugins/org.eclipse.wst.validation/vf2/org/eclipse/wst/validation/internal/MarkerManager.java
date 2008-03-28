@@ -44,6 +44,7 @@ public class MarkerManager {
 	 */
 	public void clearMarker(IResource resource, String validatorId) throws CoreException {
 		if (resource == null)return;
+		hook(resource);
 		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
 		for (IMarker marker : markers){
 			String id = marker.getAttribute(ValidatorMessage.ValidationId, null);
@@ -54,7 +55,9 @@ public class MarkerManager {
 	@SuppressWarnings("unchecked")
 	public void createMarker(ValidatorMessage m, String id){
 		try {
-			IMarker marker = m.getResource().createMarker(m.getType());
+			IResource resource = m.getResource();
+			hook(resource);
+			IMarker marker = resource.createMarker(m.getType());
 			Map map = m.getAttributes();
 			if (map.get(ValidatorMessage.ValidationId) == null)
 				map.put(ValidatorMessage.ValidationId, id);
@@ -74,6 +77,7 @@ public class MarkerManager {
 	 */
 	public void deleteMarkers(IResource resource, long operationStartTime){
 		try {
+			hook(resource);
 			IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
 			for (IMarker marker : markers){
 				long createTime = marker.getCreationTime();
@@ -101,6 +105,7 @@ public class MarkerManager {
 			}
 			if (res != null){
 				try {
+					hook(res);
 					IMarker marker = res.createMarker(ConfigurationConstants.VALIDATION_MARKER);
 					marker.setAttribute(IMarker.MESSAGE, message.getText());
 					int markerSeverity = IMarker.SEVERITY_INFO;
@@ -115,6 +120,15 @@ public class MarkerManager {
 				}				
 			}
 		}
+	}
+	
+	/**
+	 * A debugging method. A place to put break points, so that you can figure out what sort of marker
+	 * changes are happening.
+	 * 
+	 * @param resource
+	 */
+	private void hook(IResource resource){
 	}
 
 }

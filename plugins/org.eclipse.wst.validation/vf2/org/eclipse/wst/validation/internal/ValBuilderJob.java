@@ -131,26 +131,29 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		
 		IResource resource = delta.getResource();
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
-			ValManager.getDefault().validate(_project, resource, delta.getKind(), false, true, _buildKind, 
+			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
 				_operation, _monitor);
-		} else if ((kind & IResourceDelta.REMOVED) != 0){
-			IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
-			if (index.isDependedOn(resource)){
-				for (DependentResource dr : index.get(resource)){
-					if (dr.getValidator().shouldValidate(dr.getResource(), false, true)){
-						ValManager.getDefault().validate(dr.getValidator(), _operation, dr.getResource(), 
-								IResourceDelta.CHANGED, _monitor);
-					}
+		}
+				
+		IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
+		if (index.isDependedOn(resource)){
+			MarkerManager mm = MarkerManager.getDefault();
+			for (DependentResource dr : index.get(resource)){
+				if (dr.getValidator().shouldValidate(dr.getResource(), ValType.Build)){
+					mm.clearMarker(dr.getResource(), dr.getValidator().getId()); 
+					ValManager.getDefault().validate(dr.getValidator(), _operation, dr.getResource(), 
+						IResourceDelta.NO_CHANGE, _monitor);
 				}
 			}
 		}
+				
 		return true;
 	}
 
 	public boolean visit(IResource resource) throws CoreException {
 		try {
-			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, false, 
-					true, _buildKind, _operation, _monitor);
+			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, ValType.Build, 
+				_buildKind, _operation, _monitor);
 		}
 		catch (ResourceUnavailableError e){
 			if (Tracing.isLogging())Tracing.log(e.toString());

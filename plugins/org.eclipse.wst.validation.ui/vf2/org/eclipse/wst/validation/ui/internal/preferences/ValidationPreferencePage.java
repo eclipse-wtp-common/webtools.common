@@ -15,6 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -612,6 +616,15 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
 			vpm.savePreferences(_globalPreferences, _validators);
 			saveV1Preferences();
+			
+			if (MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RebuildMsg)){
+				try {
+					ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, null);
+				}
+				catch (CoreException e){
+					
+				}
+			}
 			return true;
 		}
 		

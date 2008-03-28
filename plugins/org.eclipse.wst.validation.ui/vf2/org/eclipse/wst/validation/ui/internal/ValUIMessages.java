@@ -106,6 +106,9 @@ public class ValUIMessages extends NLS {
 	public static String FrContentTypeLabel;
 	public static String FrMsgSev;
 	
+	public static String RebuildTitle;
+	public static String RebuildMsg;
+	
 		
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ValUIMessages.class);

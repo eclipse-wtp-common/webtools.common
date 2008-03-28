@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ValOperation;
+import org.eclipse.wst.validation.internal.ValType;
 
 /**
  * This interface is implemented by objects that visit enabled validators.
@@ -39,7 +40,7 @@ public interface IValidatorVisitor {
 	 * Visits the given validator.
 	 * @param validator
 	 */
-	void visit(Validator validator, IProject project, boolean isManual, 
-			boolean isBuild, ValOperation operation, IProgressMonitor monitor);
+	void visit(Validator validator, IProject project, ValType valType, 
+		ValOperation operation, IProgressMonitor monitor);
 
 }

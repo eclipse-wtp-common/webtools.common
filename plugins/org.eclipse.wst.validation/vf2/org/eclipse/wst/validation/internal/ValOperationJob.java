@@ -50,14 +50,14 @@ public class ValOperationJob extends Job {
 	private void finished(IProgressMonitor monitor){
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 
-			public void visit(Validator validator, IProject project, boolean isManual, 
-					boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType valType, 
+				ValOperation operation, IProgressMonitor monitor) {
 				
 				validator.validationFinishing(project, operation.getState(), monitor);					
 			}
 			
 		};
-		ValManager.getDefault().accept(visitor, null, false, true, _operation, monitor);
+		ValManager.getDefault().accept(visitor, null, ValType.Build, _operation, monitor);
 	}
 
 }

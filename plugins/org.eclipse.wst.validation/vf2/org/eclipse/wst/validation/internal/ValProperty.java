@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,6 @@
 package org.eclipse.wst.validation.internal;
 
 import java.util.BitSet;
-
-import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * A resource session property, that is used to improve the performance of the validation framework. This is placed
@@ -28,13 +25,11 @@ public class ValProperty {
  * a property on all the resources in under 100ms. 
  */
 	
-	public static final QualifiedName Key = new QualifiedName(ValidationPlugin.PLUGIN_ID, "status"); //$NON-NLS-1$
-	
 	private int 	_configNumber;
-	private BitSet	_configSet;
+	private BitSet	_configSet = new BitSet(100);
 	
 	private int		_validationNumber;
-	private BitSet	_validationSet;
+	private BitSet	_validationSet = new BitSet(100);
 	
 	public int getConfigNumber() {
 		return _configNumber;
@@ -45,9 +40,6 @@ public class ValProperty {
 	public BitSet getConfigSet() {
 		return _configSet;
 	}
-	public void setConfigSet(BitSet configSet) {
-		_configSet = configSet;
-	}
 	public int getValidationNumber() {
 		return _validationNumber;
 	}
@@ -56,9 +48,6 @@ public class ValProperty {
 	}
 	public BitSet getValidationSet() {
 		return _validationSet;
-	}
-	public void setValidationSet(BitSet validationSet) {
-		_validationSet = validationSet;
 	}
 	
 }

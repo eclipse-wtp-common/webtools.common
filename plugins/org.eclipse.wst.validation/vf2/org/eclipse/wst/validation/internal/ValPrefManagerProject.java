@@ -55,7 +55,7 @@ public class ValPrefManagerProject {
 	}
 	
 	private static void updateListeners(IProject project){
-		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(project); 
+		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(project, true); 
 	}
 
 	

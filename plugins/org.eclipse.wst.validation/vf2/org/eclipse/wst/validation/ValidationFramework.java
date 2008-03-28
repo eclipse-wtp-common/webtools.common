@@ -36,6 +36,7 @@ import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
+import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
@@ -348,7 +349,7 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Validate the projects.
+	 * Validate the projects. Exactly one of isManual or isBuild needs to be true.
 	 * 
 	 * @param projects
 	 *            The projects to be validated.
@@ -367,7 +368,9 @@ public final class ValidationFramework {
 	 */
 	public ValidationResults validate(IProject[] projects, final boolean isManual, final boolean isBuild,
 		IProgressMonitor monitor) throws CoreException{
-		ValOperation vo = ValidationRunner.validate(createMap(projects), isManual, isBuild, monitor);
+		ValType type = ValType.Build;
+		if (isManual)type = ValType.Manual;
+		ValOperation vo = ValidationRunner.validate(createMap(projects), type, monitor);
 		return vo.getResults();
 	}
 	

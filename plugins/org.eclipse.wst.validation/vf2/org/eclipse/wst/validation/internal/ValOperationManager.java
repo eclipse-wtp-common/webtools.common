@@ -136,13 +136,13 @@ public class ValOperationManager implements IResourceChangeListener {
 			_operation.setMultiProject(true);
 			IValidatorVisitor visitor = new IValidatorVisitor(){
 
-				public void visit(Validator validator, IProject project, boolean isManual, 
-						boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+				public void visit(Validator validator, IProject project, ValType valType, 
+					ValOperation operation, IProgressMonitor monitor) {
 					
 					validator.validationStarting(project, operation.getState(), monitor);					
 				}				
 			};
-			ValManager.getDefault().accept(visitor, null, false, true, _operation, new NullProgressMonitor());
+			ValManager.getDefault().accept(visitor, null, ValType.Build, _operation, new NullProgressMonitor());
 			
 		}
 		

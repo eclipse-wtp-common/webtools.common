@@ -11,8 +11,10 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -20,14 +22,12 @@ import java.util.TreeSet;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.IPerformanceMonitor;
 import org.eclipse.wst.validation.PerformanceCounters;
@@ -65,7 +65,11 @@ public class ValManager implements IValChangedListener {
 	 * the workbench is started.
 	 */
 	private int _configNumber;
-		
+	private ValidatorIdManager _idManager = new ValidatorIdManager();
+	
+	private static final QualifiedName StatusBuild = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sb"); //$NON-NLS-1$
+	private static final QualifiedName StatusManual = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sm"); //$NON-NLS-1$
+			
 	public static synchronized ValManager getDefault(){
 		if (_me == null)_me = new ValManager();
 		return _me;
@@ -77,12 +81,30 @@ public class ValManager implements IValChangedListener {
 	}
 	
 	/**
-	 * Answer all the registered validators.
+	 * Answer all the registered validators. If you are planning on making changes to the validators,
+	 * and then saving them in a preference store then you probably want the getValidatorsCopy method.
+	 * Because if you make changes to the original validators, and since we only save differences,
+	 * there won't be any differences. 
 	 * 
 	 * @return Answer an empty array if there are no validators.
+	 * 
+	 * @see #getValidatorsCopy()
 	 */
 	public Validator[] getValidators(){
 		return getValidators(null);
+	}
+	
+	/**
+	 * Answer copies of all the registered validators. If you are going to be making changes to the validators
+	 * and then saving them backing into the preference store, then this is the method to use.
+	 * 
+	 * @return Answer an empty array if there are no validators.
+	 */
+	public Validator[] getValidatorsCopy(){
+		Validator[] orig = getValidators();
+		Validator[] copy = new Validator[orig.length];
+		for (int i=0; i<orig.length; i++)copy[i] = orig[i].copy();
+		return copy;
 	}
 	
 	/**
@@ -351,34 +373,14 @@ public class ValManager implements IValChangedListener {
 //		if (project == null)_validators = val;
 //		return val;
 //	}
-		
-	private void saveStateTimestamp() {
-		try {
-			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
-			long ts = Platform.getStateStamp();
-			getGlobalPreferences().setStateTimeStamp(ts);
-			prefs.putLong(PrefConstants.stateTS, ts);
-			prefs.flush();
-		}
-		catch (BackingStoreException e){
-			ValidationPlugin.getPlugin().handleException(e);
-		}
-	}
-
+	
 	/**
-	 * The plug-in definitions may have changed, so check to see if any of the settings need to be updated.
+	 * This method needs to be called whenever the validation configuration has changed.
 	 */
-	private Validator[] migrateSettings(Validator[] validators, IProject project) {
-		Validator[] newVals = ValidatorExtensionReader.getDefault().migrate(validators, project);
-		ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-		if (newVals != null){
-			validators = newVals;
-			vpm.saveAsPrefs(validators);
-		}
-		saveStateTimestamp();
-		return validators;
+	private void configHasChanged(){
+		_configNumber++;
 	}
-
+		
 	/**
 	 * Answer the global validation preferences.
 	 */
@@ -466,47 +468,47 @@ public class ValManager implements IValChangedListener {
 	 * @param kind the kind of resource delta. It will be one of the IResourceDelta constants, like
 	 * IResourceDelta.CHANGED for example.
 	 * 
-	 * @param isManual is this a manual validation request?
-	 * @param isBuild is this a build based validation request?
+	 * @param valType The type of validation request.
 	 * @param buildKind the kind of build that triggered this validation. See IncrementalProjectBuilder for values.
 	 * @param operation the operation that this validation is running under
 	 * @param monitor the monitor to use to report progress 
 	 */
-	public void validate(IProject project, final IResource resource, final int kind, boolean isManual, 
-		boolean isBuild, int buildKind, ValOperation operation, final IProgressMonitor monitor) {
+	public void validate(IProject project, final IResource resource, final int kind, ValType valType, 
+		int buildKind, ValOperation operation, final IProgressMonitor monitor) {
 		
 		MarkerManager.getDefault().deleteMarkers(resource, operation.getStarted());
 		
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 
-			public void visit(Validator validator, IProject project, boolean isManual,
-				boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType vt,
+				ValOperation operation, IProgressMonitor monitor) {
 								
 				Validator.V1 v1 = validator.asV1Validator();
-				if (isBuild && v1 != null)return;
+				if (vt == ValType.Build && v1 != null)return;
 				
 				validate(validator, operation, resource, kind, monitor);
-				if ((kind & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0){
-					IResource[] dependencies = ValidationFramework.getDefault()
-						.getDependencyIndex().get(validator.getDependencyId(), resource);
-					if (dependencies != null){
-						MarkerManager mm = MarkerManager.getDefault();
-						String id = validator.getId();
-						for (IResource resource : dependencies){
-							try {
-								mm.clearMarker(resource, id);
-							}
-							catch (CoreException e){
-								//eat this one
-							}
-							validate(validator, operation, resource, IResourceDelta.NO_CHANGE, monitor);
-							operation.addValidated(validator.getId(), resource);
-						}
-					}
-				}		
+//				if ((kind & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0){
+//					IResource[] dependencies = ValidationFramework.getDefault()
+//						.getDependencyIndex().get(validator.getDependencyId(), resource);
+//					if (dependencies != null){
+//						MarkerManager mm = MarkerManager.getDefault();
+//						String id = validator.getId();
+//						for (IResource res : dependencies){
+//							if (operation.isValidated(id, res))continue;
+//							try {
+//								mm.clearMarker(res, id);
+//							}
+//							catch (CoreException e){
+//								//eat this one
+//							}
+//							validate(validator, operation, res, IResourceDelta.NO_CHANGE, monitor);
+//							operation.addValidated(validator.getId(), res);
+//						}
+//					}
+//				}		
 			}			
 		};
-		accept(visitor, project, resource, isManual, isBuild, operation, monitor);
+		accept(visitor, project, resource, valType, operation, monitor);
 		
 	}
 	
@@ -564,12 +566,11 @@ public class ValManager implements IValChangedListener {
 	 * 
 	 * @param visitor
 	 * @param project
-	 * @param isManual is this a manual validation?
-	 * @param isBuild is this a builder based validation?
+	 * @param valType the type of validation
 	 * @param operation
 	 * @param monitor
 	 */
-	public void accept(IValidatorVisitor visitor, IProject project, boolean isManual, boolean isBuild, 
+	public void accept(IValidatorVisitor visitor, IProject project, ValType valType, 
 		ValOperation operation, IProgressMonitor monitor){
 		
 		if (isDisabled(project))return;
@@ -577,9 +578,9 @@ public class ValManager implements IValChangedListener {
 		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
-			if (!operation.shouldExclude(val, project, hasProcessedProject, isManual, isBuild)){
+			if (!operation.shouldExclude(val, project, hasProcessedProject, valType)){
 				try {
-					visitor.visit(val, project, isManual, isBuild, operation, monitor);
+					visitor.visit(val, project, valType, operation, monitor);
 				}
 				catch (Exception e){
 					ValidationPlugin.getPlugin().handleException(e);
@@ -590,38 +591,73 @@ public class ValManager implements IValChangedListener {
 	
 	/**
 	 * Accept a visitor for all the validators that are enabled for the given project, resource, and validation mode.
+	 * 
+	 * @param valType the type of validation request
 	 */
-	public void accept(IValidatorVisitor visitor, IProject project, IResource resource, boolean isManual, 
-			boolean isBuild, ValOperation operation, IProgressMonitor monitor){
+	public void accept(IValidatorVisitor visitor, IProject project, IResource resource, ValType valType, 
+			ValOperation operation, IProgressMonitor monitor){
 		
 		if (isDisabled(project))return;
 		
-		ValProperty vp = null;
-		try {
-			vp = (ValProperty)resource.getSessionProperty(ValProperty.Key);
-		}
-		catch (CoreException e){
-			// don't care about this one
-		}
-		if (vp != null && vp.getConfigNumber() == _configNumber && vp.getConfigSet().cardinality() > 0){
-			//FIXME GRK implement this
-		}
-		
-		boolean hasProcessedProject = operation.hasProcessedProject(project);
-		for (Validator val : getValidators(project)){
-			if (monitor.isCanceled())return;
-			if (operation.shouldExclude(val, project, hasProcessedProject, isManual, isBuild))continue;
-			if (val.shouldValidate(resource, isManual, isBuild)){
+		ValProperty vp = getValProperty(resource, valType, _configNumber);
+		if (vp != null){
+			BitSet bs = vp.getConfigSet();
+			for (Validator val : getValidators(project)){
+				if (monitor.isCanceled())return;
+				if (!bs.get(_idManager.getIndex(val.getId())))continue;
 				try {
-					visitor.visit(val, project, isManual, isBuild, operation, monitor);
+					visitor.visit(val, project, valType, operation, monitor);
 				}
 				catch (Exception e){
 					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
-		}		
+			return;
+		}
+		
+		vp = new ValProperty();
+		vp.setConfigNumber(_configNumber);
+		boolean hasProcessedProject = operation.hasProcessedProject(project);
+		for (Validator val : getValidators(project)){
+			if (monitor.isCanceled())return;
+			if (operation.shouldExclude(val, project, hasProcessedProject, valType))continue;
+			if (val.shouldValidate(resource, valType)){
+				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
+				try {
+					visitor.visit(val, project, valType, operation, monitor);
+				}
+				catch (Exception e){
+					ValidationPlugin.getPlugin().handleException(e);
+				}
+			}
+		}
+		putValProperty(vp, resource, valType);
+	}
+
+	private ValProperty getValProperty(IResource resource, ValType valType, int configNumber) {
+		ValProperty vp = null;
+		try {
+			if (valType == ValType.Build)vp = (ValProperty)resource.getSessionProperty(StatusBuild);
+			else if (valType == ValType.Manual)vp = (ValProperty)resource.getSessionProperty(StatusManual);
+		}
+		catch (CoreException e){
+			// don't care about this one
+		}
+		if (vp == null)return null;
+		if (vp.getConfigNumber() != _configNumber)return null;
+		return vp;
 	}
 	
+	private void putValProperty(ValProperty vp, IResource resource, ValType valType) {
+		try {
+			if (valType == ValType.Build)resource.setSessionProperty(StatusBuild, vp);
+			else if (valType == ValType.Manual)resource.setSessionProperty(StatusManual, vp);
+		}
+		catch (CoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+	}
+
 	/**
 	 * Let each of the enabled validators know that a clean has been requested.
 	 * 
@@ -631,13 +667,13 @@ public class ValManager implements IValChangedListener {
 	void clean(final IProject project, final ValOperation operation, final IProgressMonitor monitor) {
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 
-			public void visit(Validator validator, IProject project, boolean isManual,
-				boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType valType,
+				ValOperation operation, IProgressMonitor monitor) {
 				validator.clean(project, monitor);					
 			}
 			
 		};
-		accept(visitor, project, false, false, operation, monitor);
+		accept(visitor, project, ValType.Build, operation, monitor);
 	}
 	
 	/**
@@ -649,15 +685,22 @@ public class ValManager implements IValChangedListener {
 	public void clean(IProject project, IProgressMonitor monitor){
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 
-			public void visit(Validator validator, IProject project, boolean isManual,
-				boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType valType,
+				ValOperation operation, IProgressMonitor monitor) {
 				validator.clean(project, monitor);					
 			}
 			
 		};
 		ValidationFramework.getDefault().getDependencyIndex().clear(project);
 		ValOperation operation = new ValOperation();
-		accept(visitor, project, false, true, operation, monitor);
+		accept(visitor, project, ValType.Build, operation, monitor);
+	}
+
+	public void validatorsForProjectChanged(IProject project, boolean validationSettingChanged) {
+		if (validationSettingChanged){
+			if (project != null)_projectPreferences.remove(project);
+			configHasChanged();
+		}
 	}
 	
 	private class HasValidatorVisitor implements IResourceVisitor {
@@ -690,9 +733,62 @@ public class ValManager implements IValChangedListener {
 			return true;
 		}
 	}
-
-	public void validatorsForProjectChanged(IProject project) {
-		if (project != null)_projectPreferences.remove(project);
+	
+	private static class ValidatorIdManager {
+		
+		/**
+		 * Map validator id's to Integers. The integers correspond to bits in the ValProperty instances.
+		 */
+		private HashMap<String, Integer> _map = new HashMap<String, Integer>(100);
+		private HashMap<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
+		
+		/** Next available bit. */
+		private int _next;
+		
+		/**
+		 * Answer the index number for this validator. If we haven't seen it yet allocate a new index number.
+		 * @param id validator id.
+		 * @return index into the validator bit mask.
+		 */
+		public int getIndex(String id){
+			Integer i = _map.get(id);
+			if (i != null)return i;
+			
+			i = _next++;
+			_map.put(id, i);
+			_reverseMap.put(i, id);
+			
+			return i;
+		}
+		
+		/**
+		 * Answer the validator id for the index.
+		 * @param index
+		 * @return null if the index number has not been set.
+		 */
+		public String getId(Integer index){
+			return _reverseMap.get(index);
+		}
+		
+		public void reset(){
+			_map.clear();
+			_reverseMap.clear();
+			_next = 0;
+		}
+		
+		/**
+		 * Answer the ids for the bit in the bitset. This is used for debugging. 
+		 * @param bs
+		 */
+		public String[] getIds(BitSet bs){
+			List<String> list = new LinkedList<String>();
+			for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) {
+				String id = getId(i);
+				if (id != null)list.add(id);
+			}
+			String[] s = new String[list.size()];
+			return list.toArray(s);
+		}
+		
 	}
-
 }

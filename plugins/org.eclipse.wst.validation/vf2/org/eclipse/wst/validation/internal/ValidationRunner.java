@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,8 +32,7 @@ import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
 public class ValidationRunner implements IWorkspaceRunnable {
 	
 	private Map<IProject, Set<IResource>>		_projects;
-	private	boolean			_isManual; 
-	private boolean			_isBuild;
+	private	ValType			_valType;
 	private ValOperation	_valOperation;
 	
 	/**
@@ -44,26 +43,22 @@ public class ValidationRunner implements IWorkspaceRunnable {
 	 *            the Set of IResources that were selected. Often this will be
 	 *            every resource in the project.
 	 * 
-	 * @param isManual
-	 *            Is this a manual validation?
-	 * 
-	 * @param isBuild
-	 *            Is this a build based validation?
+	 * @param valType
+	 *            The type of validation that has been requested.
 	 * 
 	 * @param monitor
 	 *            progress monitor
 	 */
-	public static ValOperation validate(Map<IProject, Set<IResource>> projects, boolean isManual, 
-		boolean isBuild, IProgressMonitor monitor) throws CoreException{
-		ValidationRunner me = new ValidationRunner(projects, isManual, isBuild);
+	public static ValOperation validate(Map<IProject, Set<IResource>> projects, ValType valType, 
+		IProgressMonitor monitor) throws CoreException{
+		ValidationRunner me = new ValidationRunner(projects, valType);
 		ResourcesPlugin.getWorkspace().run(me, monitor);
 		return me._valOperation;
 	}
 	
-	private ValidationRunner(Map<IProject, Set<IResource>> projects, boolean isManual, boolean isBuild){
+	private ValidationRunner(Map<IProject, Set<IResource>> projects, ValType valType){
 		_projects = projects;
-		_isManual = isManual;
-		_isBuild = isBuild;
+		_valType = valType;
 		
 	}
 	
@@ -72,22 +67,22 @@ public class ValidationRunner implements IWorkspaceRunnable {
 		ValManager manager = ValManager.getDefault();
 		
 		IValidatorVisitor startingVisitor = new IValidatorVisitor(){
-			public void visit(Validator validator, IProject project, boolean isManual,
-					boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType valType,
+				ValOperation operation, IProgressMonitor monitor) {
 				validator.validationStarting(project, operation.getState(), monitor);
 			}			
 		};
 		
 		IValidatorVisitor finishedVisitor = new IValidatorVisitor(){
 
-			public void visit(Validator validator, IProject project, boolean isManual,
-					boolean isBuild, ValOperation operation, IProgressMonitor monitor) {
+			public void visit(Validator validator, IProject project, ValType valType,
+				ValOperation operation, IProgressMonitor monitor) {
 
 				validator.validationFinishing(project, operation.getState(), monitor);				
 			}			
 		};
 		
-		manager.accept(startingVisitor, null, _isManual, _isBuild, _valOperation, monitor);
+		manager.accept(startingVisitor, null, _valType, _valOperation, monitor);
 				
 		for (Map.Entry<IProject, Set<IResource>> me : _projects.entrySet()){
 			if (monitor.isCanceled()){
@@ -95,14 +90,14 @@ public class ValidationRunner implements IWorkspaceRunnable {
 				return _valOperation;
 			}
 			IProject project = me.getKey();
-			ValManager.getDefault().accept(startingVisitor, project, _isManual, _isBuild, _valOperation, monitor);
+			ValManager.getDefault().accept(startingVisitor, project, _valType, _valOperation, monitor);
 			for (IResource resource : me.getValue()){
-				manager.validate(project, resource, IResourceDelta.NO_CHANGE, _isManual,_isBuild, 
+				manager.validate(project, resource, IResourceDelta.NO_CHANGE, _valType, 
 					IncrementalProjectBuilder.AUTO_BUILD, _valOperation, monitor);
 			}
-			manager.accept(finishedVisitor, project, _isManual, _isBuild, _valOperation, monitor);
+			manager.accept(finishedVisitor, project, _valType, _valOperation, monitor);
 		}
-		manager.accept(finishedVisitor, null, _isManual, _isBuild, _valOperation, monitor);
+		manager.accept(finishedVisitor, null, _valType, _valOperation, monitor);
 		return _valOperation;
 	}
 

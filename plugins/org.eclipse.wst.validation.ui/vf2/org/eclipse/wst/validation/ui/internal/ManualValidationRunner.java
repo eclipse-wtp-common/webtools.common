@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.ValOperation;
+import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
 
@@ -34,8 +35,7 @@ import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
 public class ManualValidationRunner extends WorkspaceJob {
 	
 	private Map<IProject, Set<IResource>> 	_projects;
-	private boolean	_isManual;
-	private boolean	_isBuild;
+	private ValType _valType;
 	private boolean	_showResults;
 	
 	/**
@@ -56,25 +56,22 @@ public class ManualValidationRunner extends WorkspaceJob {
 	 *            When the validation is finished, show the results in a dialog
 	 *            box.
 	 */
-	public static void validate(Map<IProject, Set<IResource>> projects, boolean isManual, 
-			boolean isBuild, boolean showResults){
-		ManualValidationRunner me = new ManualValidationRunner(projects, isManual, isBuild, showResults);
+	public static void validate(Map<IProject, Set<IResource>> projects, ValType valType, boolean showResults){
+		ManualValidationRunner me = new ManualValidationRunner(projects, valType, showResults);
 		me.schedule();
 	}
 	
-	private ManualValidationRunner(Map<IProject, Set<IResource>> projects, boolean isManual, 
-			boolean isBuild, boolean showResults){
+	private ManualValidationRunner(Map<IProject, Set<IResource>> projects, ValType valType, boolean showResults){
 		super(ValUIMessages.Validation);
 		_projects = projects;
-		_isManual = isManual;
-		_isBuild = isBuild;
+		_valType = valType;
 		_showResults = showResults;
 	}
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		
 		long start = System.currentTimeMillis();
-		final ValOperation vo = ValidationRunner.validate(_projects, _isManual, _isBuild, monitor);
+		final ValOperation vo = ValidationRunner.validate(_projects, _valType, monitor);
 		final long time = System.currentTimeMillis() - start;
 		int resourceCount = 0;
 		for (Set s : _projects.values())resourceCount += s.size();

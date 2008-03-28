@@ -66,8 +66,8 @@ public class ValPrefManagerGlobal {
 		_listeners.remove(listener);
 	}
 	
-	private void updateListeners(){
-		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(null); 
+	private void updateListeners(boolean validationSettingChanged){
+		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(null, validationSettingChanged); 
 	}
 			
 	/**
@@ -313,7 +313,8 @@ public class ValPrefManagerGlobal {
 			Preferences vals = pref.node(PrefConstants.vals);
 			for (Validator v : val)save(v, vals);
 			pref.flush();
-			updateListeners();
+			_validators = null;
+			updateListeners(true);
 		}
 		catch (BackingStoreException e){
 			throw new RuntimeException(e);
@@ -327,22 +328,45 @@ public class ValPrefManagerGlobal {
 	public synchronized void savePreferences(GlobalPreferences gp, Validator[] validators){
 		try {
 			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
-			prefs.putBoolean(PrefConstants.saveAuto, gp.getSaveAutomatically());
-			prefs.putBoolean(PrefConstants.suspend, gp.getDisableAllValidation());
-			prefs.putLong(PrefConstants.stateTS, gp.getStateTimeStamp());
-			prefs.putBoolean(PrefConstants.confirmDialog, gp.getConfirmDialog());
-			prefs.putBoolean(PrefConstants.override, gp.getOverride());
-			prefs.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
+			savePreferences(prefs, gp);
 			Preferences vals = prefs.node(PrefConstants.vals);
 
 			for (Validator v : validators)save(v, vals);
 			prefs.flush();
 			_validators = null;
-			updateListeners();
+			updateListeners(true);
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
+	}
+	
+	/**
+	 * Save the global preferences and the validators.
+	 */
+	public synchronized void savePreferences(GlobalPreferences gp){
+		try {
+			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
+			boolean isConfigChange = gp.isConfigChange();
+			savePreferences(prefs, gp);
+			prefs.flush();
+			updateListeners(isConfigChange);
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+	}
+	
+	/**
+	 * Save the global preferences and the validators.
+	 */
+	private void savePreferences(IEclipsePreferences prefs, GlobalPreferences gp){
+		prefs.putBoolean(PrefConstants.saveAuto, gp.getSaveAutomatically());
+		prefs.putBoolean(PrefConstants.suspend, gp.getDisableAllValidation());
+		prefs.putLong(PrefConstants.stateTS, gp.getStateTimeStamp());
+		prefs.putBoolean(PrefConstants.confirmDialog, gp.getConfirmDialog());
+		prefs.putBoolean(PrefConstants.override, gp.getOverride());
+		prefs.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
 	}
 
 	/**

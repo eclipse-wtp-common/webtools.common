@@ -41,6 +41,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -238,7 +239,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 
 		boolean confirm = org.eclipse.wst.validation.internal.ValManager.getDefault().getGlobalPreferences()
 			.getConfirmDialog();
-		ManualValidationRunner.validate(projects, true, false, confirm);
+		ManualValidationRunner.validate(projects, ValType.Manual, confirm);
 	}
 	
 	/**

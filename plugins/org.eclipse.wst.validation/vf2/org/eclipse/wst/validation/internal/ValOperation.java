@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -120,11 +120,13 @@ public class ValOperation {
 	 * 
 	 * @return true if we already know that this validator should not run on this project.
 	 */
-	public boolean shouldExclude(Validator val, IProject project, boolean haveProcessedProject, boolean isManual, boolean isBuild) {
+	public boolean shouldExclude(Validator val, IProject project, boolean haveProcessedProject, ValType valType) {
 		if (project == null)return false;
 		Set<Validator> set = getExcludeSet(project);
 		
 		if (!haveProcessedProject){
+			boolean isManual = valType == ValType.Manual;
+			boolean isBuild = valType == ValType.Build;
 			if (val.shouldValidateProject(project, isManual, isBuild))return false;
 			set.add(val);
 			return true;

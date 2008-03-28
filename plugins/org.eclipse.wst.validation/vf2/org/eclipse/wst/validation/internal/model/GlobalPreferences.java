@@ -42,6 +42,9 @@ public class GlobalPreferences {
 	/** The incoming version of the framework. This is used to determine if a migration is needed.*/
 	private int		_version;
 	
+	/** Has a setting changed that could effect which validators get called? */
+	private boolean	_configChange;
+	
 	/**
 	 * The only valid way to get the global preferences is through the ValManager.
 	 * 
@@ -65,7 +68,10 @@ public class GlobalPreferences {
 	}
 
 	public void setDisableAllValidation(boolean disableAllValidation) {
-		_disableAllValidation = disableAllValidation;
+		if (_disableAllValidation != disableAllValidation){
+			_configChange = true;
+			_disableAllValidation = disableAllValidation;
+		}
 	}
 
 	/**
@@ -73,10 +79,10 @@ public class GlobalPreferences {
 	 * the individual validators.
 	 */
 	public void resetToDefault() {
-		_disableAllValidation = DefaultSuspend;
+		setDisableAllValidation(DefaultSuspend);
 		_saveAutomatically = DefaultAutoSave;
 		_confirmDialog = DefaultConfirm;
-		_override = DefaultOverride;
+		setOverride(DefaultOverride);
 	}
 
 	public boolean getConfirmDialog() {
@@ -101,7 +107,10 @@ public class GlobalPreferences {
 	}
 
 	public void setOverride(boolean override) {
-		_override = override;
+		if (_override != override){
+			_configChange = true;
+			_override = override;
+		}
 	}
 
 	public int getVersion() {
@@ -110,6 +119,14 @@ public class GlobalPreferences {
 
 	public void setVersion(int version) {
 		_version = version;
+	}
+
+	public boolean isConfigChange() {
+		return _configChange;
+	}
+
+	public void setConfigChange(boolean configChange) {
+		_configChange = configChange;
 	}
 
 }
