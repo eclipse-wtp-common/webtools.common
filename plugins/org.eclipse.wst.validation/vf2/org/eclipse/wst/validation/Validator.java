@@ -81,6 +81,9 @@ public abstract class Validator implements Comparable {
 	
 	protected boolean 	_manualValidation = true;
 	
+	/** An optional customized marker id for this validator. */
+	protected String 		_markerId;
+	
 	/** 
 	 * Version of the filter definition. By increasing this number the framework can know that a plug-in has 
 	 * changed it's filters.
@@ -918,6 +921,7 @@ public final static class V2 extends Validator implements IAdaptable {
 				if (target instanceof IResource){
 					IResource res = (IResource)target;
 					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
+					if (_markerId != null)vm.setType(_markerId);
 					vr.add(vm);
 					int markerSeverity = IMarker.SEVERITY_INFO;
 					int sev = message.getSeverity();
@@ -1050,6 +1054,15 @@ public void bumpChangeCountGlobal(){
 public boolean sameConfig(Validator validator) {
 	if (validator == null)return false;
 	return hashCodeForConfig() == validator.hashCodeForConfig();
+}
+
+public String getMarkerId() {
+	return _markerId;
+}
+
+public void setMarkerId(String markerId) {
+	_markerId = markerId;
+	if (markerId != null)MarkerManager.getDefault().getMarkers().add(markerId);
 }
 
 }

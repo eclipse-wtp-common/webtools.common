@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -94,6 +94,7 @@ public class ValidatorExtensionReader {
 			v.setName(label);
 			v.setBuildValidation(getAttribute(validator, ExtensionConstants.build, true));
 			v.setManualValidation(getAttribute(validator, ExtensionConstants.manual, true));
+			v.setMarkerId(validator.getAttribute(ExtensionConstants.markerId));
 			v.setVersion(getAttribute(validator, ExtensionConstants.version, 1));
 			v.setSourceId(validator.getAttribute(ExtensionConstants.sourceId));
 			if (deep){

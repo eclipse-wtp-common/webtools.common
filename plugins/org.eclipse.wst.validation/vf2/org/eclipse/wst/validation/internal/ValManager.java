@@ -487,25 +487,6 @@ public class ValManager implements IValChangedListener {
 				if (vt == ValType.Build && v1 != null)return;
 				
 				validate(validator, operation, resource, kind, monitor);
-//				if ((kind & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0){
-//					IResource[] dependencies = ValidationFramework.getDefault()
-//						.getDependencyIndex().get(validator.getDependencyId(), resource);
-//					if (dependencies != null){
-//						MarkerManager mm = MarkerManager.getDefault();
-//						String id = validator.getId();
-//						for (IResource res : dependencies){
-//							if (operation.isValidated(id, res))continue;
-//							try {
-//								mm.clearMarker(res, id);
-//							}
-//							catch (CoreException e){
-//								//eat this one
-//							}
-//							validate(validator, operation, res, IResourceDelta.NO_CHANGE, monitor);
-//							operation.addValidated(validator.getId(), res);
-//						}
-//					}
-//				}		
 			}			
 		};
 		accept(visitor, project, resource, valType, operation, monitor);

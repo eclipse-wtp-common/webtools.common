@@ -30,6 +30,12 @@ public interface ExtensionConstants {
 	String manual = "manual"; //$NON-NLS-1$
 	
 	/** 
+	 * markerId - the marker id that the framework should use when creating customized markers for this validator.
+	 * This is an optional attribute. If it is not supplied than the standard validation marker type will be used.
+	 */
+	String markerId = "markerId"; //$NON-NLS-1$
+	
+	/** 
 	 * sourceid - If this validator also serves as an as-you-type validator (also know as an ISourceValidator) 
 	 * then it's source id is specified here, so that the two validators can be associated with one 
 	 * another. By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceValidation 

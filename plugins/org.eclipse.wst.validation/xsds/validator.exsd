@@ -93,6 +93,13 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="markerId" type="string">
+            <annotation>
+               <documentation>
+                  If your validator wishes to use it&apos;s own marker, it can do so by supplying that marker id here.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

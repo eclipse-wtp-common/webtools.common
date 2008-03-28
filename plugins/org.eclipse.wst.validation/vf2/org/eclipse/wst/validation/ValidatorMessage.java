@@ -167,6 +167,16 @@ public class ValidatorMessage {
 	public String getType() {
 		return _type;
 	}
+	
+	/**
+	 * Sets the marker type.
+	 * 
+	 * @param type The marker id to use when creating new markers.
+	 */
+	public void setType(String type){
+		assert type != null;
+		_type = type;
+	}
 		
 	/**
 	 * Sets the integer-valued attribute with the given name.  

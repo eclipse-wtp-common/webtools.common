@@ -62,7 +62,9 @@ public interface ConfigurationConstants {
 
 	// Validation message marker constants
 	
-	/** The extension which is used to add validation markers to the task list */
+	/** 
+	 * org.eclipse.wst.validation.problemmarker - The marker id which is used to add v1 validation markers 
+	 * to the task list */
 	String VALIDATION_MARKER = PLUGIN_ID + ".problemmarker"; //$NON-NLS-1$ 
 	
 	/** For incremental validation, this field associates a message with a group, so that a subset of messages may be removed from a file. */

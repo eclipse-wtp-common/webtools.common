@@ -78,7 +78,8 @@ public final class ValidationFramework {
 	 * @param validatorId the id of validator that created the marker
 	 */
 	public void clearMessages(IResource resource, String validatorId) throws CoreException {
-		MarkerManager.getDefault().clearMarker(resource, validatorId);
+		Validator v = getValidator(validatorId, null);
+		if (v != null)MarkerManager.getDefault().clearMarker(resource, v);
 	}
 	
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,16 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.ValidatorMessage;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
@@ -30,9 +33,16 @@ public class MarkerManager {
 	
 	private static MarkerManager _me;
 	
+	private Set<String> _markers = new HashSet<String>(50);
+	
 	public static MarkerManager getDefault(){
 		if (_me == null)_me = new MarkerManager();
 		return _me;
+	}
+	
+	private MarkerManager(){
+		_markers.add(ValConstants.ProblemMarker);
+		_markers.add(ConfigurationConstants.VALIDATION_MARKER);
 	}
 	
 	/**
@@ -40,15 +50,23 @@ public class MarkerManager {
 	 *  
 	 * @param resource the resource that may have it's markers cleared. It can be null, in which case
 	 * the operation is a no-op.
-	 * @param validatorId the id of validator that created the marker
+	 * @param validator the validator that created the marker
 	 */
-	public void clearMarker(IResource resource, String validatorId) throws CoreException {
+	public void clearMarker(IResource resource, Validator validator) throws CoreException {
 		if (resource == null)return;
 		hook(resource);
+		
+		String id = validator.getMarkerId();
+		if (id != null){
+			resource.deleteMarkers(id, true, IResource.DEPTH_ZERO);
+			return;
+		}
+				
 		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+		String valId = validator.getId();
 		for (IMarker marker : markers){
-			String id = marker.getAttribute(ValidatorMessage.ValidationId, null);
-			if (validatorId.equals(id))marker.delete();
+			id = marker.getAttribute(ValidatorMessage.ValidationId, null);
+			if (valId.equals(id))marker.delete();
 		}
 	}
 	
@@ -78,14 +96,14 @@ public class MarkerManager {
 	public void deleteMarkers(IResource resource, long operationStartTime){
 		try {
 			hook(resource);
-			IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+			IMarker[] markers = resource.findMarkers(null, false, IResource.DEPTH_ZERO);
 			for (IMarker marker : markers){
-				long createTime = marker.getCreationTime();
-//				long diff = createTime - operationStartTime;
-				if (createTime < operationStartTime)marker.delete();
+				if (_markers.contains(marker.getType())){
+					long createTime = marker.getCreationTime();
+//					long diff = createTime - operationStartTime;
+					if (createTime < operationStartTime)marker.delete();
+				}
 			}
-			
-			resource.deleteMarkers(ConfigurationConstants.VALIDATION_MARKER, false, IResource.DEPTH_ZERO);
 		}
 		catch (CoreException e){
 			IProject project = resource.getProject();
@@ -106,7 +124,9 @@ public class MarkerManager {
 			if (res != null){
 				try {
 					hook(res);
-					IMarker marker = res.createMarker(ConfigurationConstants.VALIDATION_MARKER);
+					String id = message.getMarkerId();
+					if (id == null)id = ConfigurationConstants.VALIDATION_MARKER;
+					IMarker marker = res.createMarker(id);
 					marker.setAttribute(IMarker.MESSAGE, message.getText());
 					int markerSeverity = IMarker.SEVERITY_INFO;
 					int sev = message.getSeverity();
@@ -129,6 +149,14 @@ public class MarkerManager {
 	 * @param resource
 	 */
 	private void hook(IResource resource){
+//		if (resource.getName().equals("first.t1b")){
+//			String markers = Misc.listMarkers(resource);
+//			int i = 0;
+//		}
+	}
+
+	public Set<String> getMarkers() {
+		return _markers;
 	}
 
 }

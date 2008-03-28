@@ -140,7 +140,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			MarkerManager mm = MarkerManager.getDefault();
 			for (DependentResource dr : index.get(resource)){
 				if (dr.getValidator().shouldValidate(dr.getResource(), ValType.Build)){
-					mm.clearMarker(dr.getResource(), dr.getValidator().getId()); 
+					mm.clearMarker(dr.getResource(), dr.getValidator()); 
 					ValManager.getDefault().validate(dr.getValidator(), _operation, dr.getResource(), 
 						IResourceDelta.NO_CHANGE, _monitor);
 				}
