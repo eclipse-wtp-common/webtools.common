@@ -27,6 +27,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ValManager;
+import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.ui.ValidationUIMessages;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
@@ -57,13 +59,12 @@ public class ResultsDialog extends IconAndMessageDialog {
 		_resourceCount = resourceCount;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-	 */
 	@Override
 	protected void okPressed() {
 		if(_hideButton!=null) {
-			ValManager.getDefault().getGlobalPreferences().setConfirmDialog(!_hideButton.getSelection());
+			GlobalPreferences gp = ValManager.getDefault().getGlobalPreferences();
+			gp.setConfirmDialog(!_hideButton.getSelection());
+			ValPrefManagerGlobal.getDefault().savePreferences(gp);
 		}
 		super.okPressed();
 	}
