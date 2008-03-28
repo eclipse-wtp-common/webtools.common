@@ -91,7 +91,7 @@ public class TestSuite1 extends TestCase {
 	 * these tests.
 	 */
 	private static void enableOnlyTestValidators() {
-		Validator[] vals = ValManager.getDefault().getValidators();
+		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
 		for (Validator v : vals){
 			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test");
 			v.setBuildValidation(enable);

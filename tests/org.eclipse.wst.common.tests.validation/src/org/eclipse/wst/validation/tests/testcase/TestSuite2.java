@@ -66,7 +66,7 @@ public class TestSuite2 extends TestCase {
 	 * these tests.
 	 */
 	private static void turnoffOtherValidators() {
-		Validator[] vals = ValManager.getDefault().getValidators();
+		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
 		for (Validator v : vals){
 			boolean validateIt = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.T1");
 			v.setBuildValidation(validateIt);

@@ -42,6 +42,9 @@ public class Misc {
 	
 	public static String listMarkers(IResource resource){
 		StringBuffer b = new StringBuffer(2000);
+		b.append("Markers on ");
+		b.append(resource.getName());
+		b.append(' ');
 		try {
 			IMarker[] markers = resource.findMarkers(null, true, IResource.DEPTH_ZERO);
 			for (IMarker m : markers){
