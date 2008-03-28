@@ -234,8 +234,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				} else if (columnIndex == 2) {
 					return getImage(v.isBuildValidation() ? ImageNames.okTable : ImageNames.failTable);
 				} else if (columnIndex == 3) {
-					if (v.asV2Validator() != null)return getImage(ImageNames.settings);
-					if (v.getDelegatingId() != null)return getImage(ImageNames.settings);
+					if (hasSettings(v))return getImage(ImageNames.settings);
 					return  null;
 
 				}
@@ -276,7 +275,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			buildColumn.setText(ValUIMessages.BUILD);
 			buildColumn.setResizable(false);
 			buildColumn.setWidth(40);
-			TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
+			TableColumn settingsColumn = new TableColumn(table, SWT.CENTER);
 			settingsColumn.setText(ValUIMessages.SETTINGS);
 			settingsColumn.setResizable(false);
 			settingsColumn.setWidth(50);
@@ -534,6 +533,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 					Validator vw = (Validator) selection.getFirstElement();
 					manualItem.setSelection(vw.isManualValidation());
 					buildItem.setSelection(vw.isBuildValidation());
+					settingsItem.setEnabled(hasSettings(vw));
 				}
 			});
 
@@ -587,6 +587,17 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		
 		    int result = dialog.open();
 	        if (result == Window.OK)_globalConfig.setDelegateUniqueName(vmd, dialog.getDelegateID());
+		}
+		
+		/**
+		 * Does this validator have extra settings that can be configured?
+		 * @param v
+		 * @return true if it does
+		 */
+		boolean hasSettings(Validator v){
+			if (v.asV2Validator() != null)return true;
+			if (v.getDelegatingId() != null)return true;
+			return false;
 		}
 
 		protected void updateWidgets() throws InvocationTargetException {

@@ -234,8 +234,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 					return getImage(v.isBuildValidation() ? ImageNames.okTable
 							: ImageNames.failTable);
 				} else if (columnIndex == 3) {
-					if (v.asV2Validator() != null)return getImage(ImageNames.settings);
-					if (v.getDelegatingId() != null)return getImage(ImageNames.settings);
+					if (hasSettings(v))return getImage(ImageNames.settings);
 					return  null;
 				}
 				return null;
@@ -507,6 +506,17 @@ public class ValidationPropertyPage extends PropertyPage  {
 			for (int i=0; i<vals.length; i++)validators[i] = vals[i].copy();
 			return validators;
 		}
+		
+		/**
+		 * Does this validator have extra settings that can be configured?
+		 * @param v
+		 * @return true if it does
+		 */
+		boolean hasSettings(Validator v){
+			if (v.asV2Validator() != null)return true;
+			if (v.getDelegatingId() != null)return true;
+			return false;
+		}
 
 		/**
 		 * Answer if this project has a validator builder assigned to it.
@@ -578,7 +588,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 					Validator val = (Validator) selection.getFirstElement();
 					manualItem.setSelection(val.isManualValidation());
 					buildItem.setSelection(val.isBuildValidation());
-					// settingsItem.setEnabled(vmd.isDelegating());
+					settingsItem.setEnabled(hasSettings(val));
 				}
 			});
 
