@@ -190,6 +190,24 @@
          </include>
       </validator>
      </extension>
+     
+	<extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="T1B" name="T1B Validator">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.T1B"
+            markerId="org.eclipse.wst.common.tests.validation.t1bmarker">
+         <include>
+            <rules>
+               <fileext
+                     ext="t1b">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+     </extension>
+     
  <extension
        id="t2a"
        name="T2A"
@@ -217,6 +235,17 @@
              enabled="true">
        </run>
     </validator>
+ </extension>
+ <extension
+       id="t1bmarker"
+       name="T1B Message"
+       point="org.eclipse.core.resources.markers">
+       <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
  </extension>
  
 </plugin>

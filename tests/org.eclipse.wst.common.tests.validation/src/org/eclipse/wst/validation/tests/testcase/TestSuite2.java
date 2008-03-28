@@ -20,6 +20,7 @@ import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.tests.T1B;
 
 public class TestSuite2 extends TestCase {
 	
@@ -28,6 +29,7 @@ public class TestSuite2 extends TestCase {
 	
 	private IFile			_firstTest1;
 	private IFile			_secondTest1;
+	private IFile			_firstT1B;
 	
 	private IFile			_firstTest2x;
 	
@@ -53,6 +55,9 @@ public class TestSuite2 extends TestCase {
 		"t1error - extra error\nt1warning - extra warning");
 		_secondTest1 = _env.addFile(folder, "second.test1", "info - information\nwarning - warning\nerror - error\n\n" +
 			"t1error - extra error\nt1warning - extra warning");
+		_firstT1B = _env.addFile(folder, "first.t1b", "include map.test1\ninfo - information\nwarning - warning\nerror - error\n\n" +
+		"t1error - extra error\nt1warning - extra warning");
+
 		_env.addFile(folder, "map.test1", "# will hold future mappings");
 		_env.addFile(folder, "first.test2", "# sample file");
 		_firstTest2x = _env.addFile(folder, "first.test2x", "# a file that will be validated as a side effect");
@@ -99,12 +104,20 @@ public class TestSuite2 extends TestCase {
 			vf.join(monitor);
 			
 			checkClear();
+			checkT1B();
 		}
 		finally {
 //			workspace.removeResourceChangeListener(listener);
 		}
 	}
 	
+	private void checkT1B() throws CoreException {
+		IMarker[] markers = _firstT1B.findMarkers(T1B.MarkerId, false, IResource.DEPTH_ZERO);
+		assertEquals("Number of T1B markers", 3, markers.length);
+
+		
+	}
+
 	/**
 	 * Check if the clear function worked.
 	 */
