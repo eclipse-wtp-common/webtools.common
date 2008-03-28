@@ -477,7 +477,7 @@ public static class V1 extends Validator {
 			setBuildValidation(config.isBuildEnabled(vmd));
 			setManualValidation(config.isManualEnabled(vmd));
 		}
-		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
+		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(_vmd.getValidatorUniqueName()));
 		if (_vmd.getMarkerIds() != null && _vmd.getMarkerIds().length > 0)setMarkerId(_vmd.getMarkerIds()[0]);
 		resetChangeCounters();
 	}
