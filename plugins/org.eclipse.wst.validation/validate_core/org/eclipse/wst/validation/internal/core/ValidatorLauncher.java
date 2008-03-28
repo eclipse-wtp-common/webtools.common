@@ -91,7 +91,8 @@ public class ValidatorLauncher {
 				try {
 				TaskListUtility.addTask( info.getMessageOwnerId(), info.getResource(),
 							info.getLocation(), info.getMsg().getId(), info.getText(),
-							info.getMsg().getSeverity(), info.getTargetObjectName(),
+							info.getMsg().getSeverity(), info.getMarkerId(), 
+							info.getTargetObjectName(),
 							info.getMsg().getGroupName(), info.getMsg().getOffset(), info.getMsg().getLength());
 				
 				} catch (CoreException e) {

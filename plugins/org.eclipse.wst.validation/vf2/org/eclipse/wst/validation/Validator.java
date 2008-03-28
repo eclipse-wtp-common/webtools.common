@@ -82,7 +82,7 @@ public abstract class Validator implements Comparable {
 	protected boolean 	_manualValidation = true;
 	
 	/** An optional customized marker id for this validator. */
-	protected String 		_markerId;
+	private String 		_markerId;
 	
 	/** 
 	 * Version of the filter definition. By increasing this number the framework can know that a plug-in has 
@@ -176,6 +176,7 @@ public abstract class Validator implements Comparable {
 		_buildValidation = v._buildValidation;
 		_delegatingId = v._delegatingId;
 		_manualValidation = v._manualValidation;
+		_markerId = v._markerId;
 		_messageSettings = v._messageSettings;
 		_project = v._project;
 		_sourceId = v._sourceId;
@@ -476,6 +477,7 @@ public static class V1 extends Validator {
 			setManualValidation(config.isManualEnabled(vmd));
 		}
 		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
+		if (_vmd.getMarkerIds() != null && _vmd.getMarkerIds().length > 0)setMarkerId(_vmd.getMarkerIds()[0]);
 		resetChangeCounters();
 	}
 	
@@ -921,7 +923,7 @@ public final static class V2 extends Validator implements IAdaptable {
 				if (target instanceof IResource){
 					IResource res = (IResource)target;
 					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
-					if (_markerId != null)vm.setType(_markerId);
+					if (getMarkerId() != null)vm.setType(getMarkerId());
 					vr.add(vm);
 					int markerSeverity = IMarker.SEVERITY_INFO;
 					int sev = message.getSeverity();
@@ -1012,6 +1014,7 @@ public void become(Validator validator) {
 	_buildValidation = validator._buildValidation;
 	_delegatingId = validator._delegatingId;
 	_manualValidation = validator._manualValidation;
+	_markerId = validator._markerId;
 	_messageSettings = validator._messageSettings;
 	_project = validator._project;
 	_sourceId = validator._sourceId;

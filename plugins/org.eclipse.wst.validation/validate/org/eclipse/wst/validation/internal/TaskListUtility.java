@@ -56,7 +56,10 @@ public class TaskListUtility implements ConfigurationConstants {
 	/**
 	 * This method adds a message to a resource in the task list.
 	 */
-	public static IMarker addTask(String pluginId, IResource resource, String location, String messageId, String message, int markerType, String markerName, String targetObjectName, String groupName, int offset, int length) throws CoreException {
+	public static IMarker addTask(String pluginId, IResource resource, String location, 
+		String messageId, String message, int markerType, String markerName, String targetObjectName, 
+		String groupName, int offset, int length) throws CoreException {
+		
 		if ((message == null) || (resource == null) || (!resource.exists())) {
 			return null;
 		}
@@ -73,6 +76,7 @@ public class TaskListUtility implements ConfigurationConstants {
 		// in more than one place, and also to clear out any old messages which are not cleared
 		// by the validation framework.
 		IMarker item = null;
+		MarkerManager.getDefault().hook(resource);
 		if(markerName != null && markerName.length() >0 )
 			 item = resource.createMarker(markerName); // add a validation marker
 		else
@@ -139,80 +143,12 @@ public class TaskListUtility implements ConfigurationConstants {
 	/**
 	 * This method adds a message to a resource in the task list.
 	 */
-	public static IMarker addTask(String pluginId, IResource resource, String location, String messageId, String message, int markerType, String targetObjectName, String groupName, int offset, int length) throws CoreException {
-		if ((message == null) || (resource == null) || (!resource.exists())) {
-			return null;
-		}
-
-		int severity = getSeverity(markerType);
-
-		// Allow duplicate entries in the task list.
-		// Prior to a full validation, the validation framework will remove all messages owned
-		// by a validator before it is executed.
-		// Prior to an incremental validation, the validation framework will remove all messages,
-		// on each of the changed resources, owned by a validator before it is invoked.
-		// 
-		// It is up to the validator to make sure that it is not adding the same message
-		// in more than one place, and also to clear out any old messages which are not cleared
-		// by the validation framework.
-		IMarker item = resource.createMarker(VALIDATION_MARKER); // add a validation marker
-
-		// For performance reasons, replace the multiple setAttribute
-		// calls above with a single setAttributes call.
-		boolean offsetSet = ((offset != IMessage.OFFSET_UNSET) && (length != IMessage.OFFSET_UNSET));
-		int size = (offsetSet) ? 10 : 8; // add CHAR_START, CHAR_END only if the offset is set. If
-		// the offset is set, it takes precendence over the line
-		// number. (eclipse's rule, not mine.)
-		String[] attribNames = new String[size];
-		Object[] attribValues = new Object[size];
-
-		// Very first thing, add the owner. That way, if the code dies
-		// before things are persisted, hopefully this marker will be persisted.
-		// Hopefully, eclipse WILL persist this field, as requested.
-		attribNames[0] = VALIDATION_MARKER_OWNER;
-		attribValues[0] = pluginId;
-		attribNames[1] = VALIDATION_MARKER_SEVERITY; // this validation severity is stored, in
-		// addition to the marker severity, to enable
-		// more than one severity of message to be
-		// displayed. e.g. ERROR | WARNING (using
-		// binary OR). The IMarker constants are
-		// regular decimal constants.
-		attribValues[1] = new Integer(markerType);
-		attribNames[2] = VALIDATION_MARKER_TARGETOBJECT; // to distinguish between messages which
-		// are registered on an IResource, but
-		// against different target objects
-		attribValues[2] = ((targetObjectName == null) ? "" : targetObjectName); //$NON-NLS-1$
-		attribNames[3] = VALIDATION_MARKER_GROUP;
-		attribValues[3] = ((groupName == null) ? "" : groupName); //$NON-NLS-1$
-		attribNames[4] = IMarker.MESSAGE;
-		attribValues[4] = message;
-		attribNames[5] = VALIDATION_MARKER_MESSAGEID;
-		attribValues[5] = messageId;
-
-		attribNames[6] = IMarker.SEVERITY; // IMarker.SEVERITY_ERROR, IMarker.SEVERITY_WARNING,
-		// IMarker.SEVERITY_INFO
-		attribValues[6] = new Integer(severity);
-		try {
-			// If the location is a line number, store it as a line number
-			Integer lineNumber = Integer.valueOf(location);
-			attribNames[7] = IMarker.LINE_NUMBER;
-			attribValues[7] = lineNumber;
-		} catch (NumberFormatException exc) {
-			// Otherwise, store it as a text location
-			attribNames[7] = IMarker.LOCATION;
-			attribValues[7] = location;
-		}
-
-		if (offsetSet) {
-			attribNames[8] = IMarker.CHAR_START;
-			attribValues[8] = new Integer(offset);
-			attribNames[9] = IMarker.CHAR_END;
-			attribValues[9] = new Integer(offset + length);
-		}
-
-		item.setAttributes(attribNames, attribValues);
-
-		return item;
+	public static IMarker addTask(String pluginId, IResource resource, String location, 
+		String messageId, String message, int markerType, String targetObjectName, 
+		String groupName, int offset, int length) throws CoreException {
+		
+		return addTask(pluginId, resource, location, messageId, 
+				message, markerType, null, targetObjectName, groupName, offset, length);
 	}
 
 	/**

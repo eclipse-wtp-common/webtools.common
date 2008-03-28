@@ -148,8 +148,8 @@ public class MarkerManager {
 	 * 
 	 * @param resource
 	 */
-	private void hook(IResource resource){
-//		if (resource.getName().equals("first.t1b")){
+	public void hook(IResource resource){
+//		if (resource.getName().equals("sample.html")){
 //			String markers = Misc.listMarkers(resource);
 //			int i = 0;
 //		}
