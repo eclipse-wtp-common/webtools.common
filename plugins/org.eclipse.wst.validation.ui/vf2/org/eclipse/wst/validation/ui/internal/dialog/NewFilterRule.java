@@ -254,7 +254,7 @@ public class NewFilterRule extends Wizard {
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFolderOrFileLabel);
 			_pattern = new Text(control, SWT.NONE);
 			_pattern.setFocus();
-			_pattern.setLayoutData(new GridData(300, 14));
+			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
 			_pattern.addModifyListener(new ModifyListener(){
 
 				public void modifyText(ModifyEvent e) {
@@ -424,7 +424,7 @@ public class NewFilterRule extends Wizard {
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFacitLabel);
 			_pattern = new Text(control, SWT.NONE);
 			_pattern.setFocus();
-			_pattern.setLayoutData(new GridData(300, 14));
+			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
 			_pattern.addModifyListener(new ModifyListener(){
 
 				public void modifyText(ModifyEvent e) {
@@ -475,7 +475,7 @@ public class NewFilterRule extends Wizard {
 			}
 			_pattern = new Combo(control, SWT.DROP_DOWN | SWT.READ_ONLY);
 			_pattern.setFocus();
-			_pattern.setLayoutData(new GridData(300, 14));
+			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
 			_pattern.setVisibleItemCount(20);
 			_pattern.setItems(items);
 			_pattern.addModifyListener(new ModifyListener(){
