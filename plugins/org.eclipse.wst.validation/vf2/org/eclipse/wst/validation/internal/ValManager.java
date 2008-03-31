@@ -50,7 +50,7 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author karasiuk
  *
  */
-public class ValManager implements IValChangedListener, IFacetedProjectListener {
+public class ValManager implements IValChangedListener, IFacetedProjectListener, IProjectChangeListener {
 	
 	private static ValManager _me;
 		
@@ -86,6 +86,19 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener 
 		ValPrefManagerGlobal.getDefault().addListener(this);
 		ValPrefManagerProject.addListener(this);
 		FacetedProjectFramework.addListener(this, IFacetedProjectEvent.Type.PROJECT_MODIFIED);
+		EventManager.getManager().addProjectChangeListener(this);
+	}
+	
+	/**
+	 * This needs to be called if the ValManager is ever deleted.
+	 */
+	public void dispose(){
+		// currently nobody calls this method, because this instance is never removed, but the method is
+		// here for completeness none the less.
+		ValPrefManagerGlobal.getDefault().removeListener(this);
+		ValPrefManagerProject.removeListener(this);
+		FacetedProjectFramework.removeListener(this);
+		EventManager.getManager().removeProjectChangeListener(this);	
 	}
 	
 	/**
@@ -644,8 +657,6 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener 
 	 * @param project The project that has been opened, created, or had it's description change.
 	 */
 	public void projectChanged(IProject project){
-		//FIXME I'm still not sure that the EventManager is calling me for all the right cases since it is 
-		// tied to the POST_BUILD event.
 		_projectManager.change(project);		
 	}
 	
@@ -808,6 +819,12 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener 
 		}		
 	}
 	
+	/**
+	 * This is used to keep track of which validators are enabled with which projects. We want to ensure
+	 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace. 
+	 * @author karasiuk
+	 *
+	 */
 	private static class ValidatorProjectManager {
 		
 		private Map<String, Set<IProject>> _manual = new HashMap<String, Set<IProject>>(50);
@@ -899,5 +916,19 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener 
 
 	public void handleEvent(IFacetedProjectEvent event) {
 		projectChanged(event.getProject().getProject());
+	}
+
+	public void projectChanged(IProject project, int type) {
+		switch (type){
+		case IProjectChangeListener.ProjectClosed:
+		case IProjectChangeListener.ProjectDeleted:
+			projectRemoved(project);
+			break;
+		case IProjectChangeListener.ProjectOpened:
+		case IProjectChangeListener.ProjectChanged:
+			projectChanged(project);
+			break;
+		}
+		
 	}
 }

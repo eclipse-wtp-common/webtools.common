@@ -11,6 +11,8 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -36,6 +38,8 @@ public class EventManager implements IResourceChangeListener {
 
 	private IResourceDeltaVisitor _postAutoBuildVisitor;
 	private boolean _isActive; // has the registry been read?
+	
+	private Set<IProjectChangeListener> _listeners = new HashSet<IProjectChangeListener>(4);
 
 	private EventManager() {
 	}
@@ -44,21 +48,39 @@ public class EventManager implements IResourceChangeListener {
 		if (_inst == null)_inst = new EventManager();
 		return _inst;
 	}
+	
+	public void addProjectChangeListener(IProjectChangeListener listener){
+		_listeners.add(listener);
+	}
+	
+	public void removeProjectChangeListener(IProjectChangeListener listener){
+		_listeners.remove(listener);
+	}
+	
+	private void signal(IProject project, int type){
+		for (IProjectChangeListener pcl : _listeners){
+			try {
+				pcl.projectChanged(project, type);
+			}
+			catch (Exception e){
+				ValidationPlugin.getPlugin().handleException(e);
+			}
+		}
+	}
 
 	public void opening(IProject project) {
 		if (project == null || !ValidationPlugin.isActivated())return;
 		
-		ValManager.getDefault().projectChanged(project);
+		signal(project, IProjectChangeListener.ProjectOpened);
 
-		// When the project is opened, check for any orphaned tasks
-		// or tasks whose owners need to be updated.
+		// When the project is opened, check for any orphaned tasks or tasks whose owners need to be updated.
 		ConfigurationManager.getManager().opening(project);
 	}
 
 	public void closing(IProject project) {
 		if (project == null || !ValidationPlugin.isActivated())return;
 		
-		ValManager.getDefault().projectRemoved(project);
+		signal(project, IProjectChangeListener.ProjectClosed);
 		
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
@@ -102,7 +124,7 @@ public class EventManager implements IResourceChangeListener {
 	public void deleting(IProject project) {
 		if (project == null)return;
 		
-		ValManager.getDefault().projectRemoved(project);
+		signal(project, IProjectChangeListener.ProjectDeleted);
 
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
@@ -159,7 +181,7 @@ public class EventManager implements IResourceChangeListener {
 					if (resource instanceof IProject) {
 						IProject project = (IProject) resource;
 						if ((subdelta.getFlags() & IResourceDelta.DESCRIPTION) == IResourceDelta.DESCRIPTION) {
-							ValManager.getDefault().projectChanged(project);
+							signal(project, IProjectChangeListener.ProjectChanged);
 							return false;
 						}
 
@@ -197,14 +219,13 @@ public class EventManager implements IResourceChangeListener {
 			return;
 		}
 
-//		if (Tracing.isLogging()){
-//			Tracing.log("IResourceChangeEvent type = " + //$NON-NLS-1$
-//				Misc.resourceChangeEventType(event.getType()) + 
-//				", resource = " +  //$NON-NLS-1$
-//				event.getResource() + ", source = " + event.getSource() + ", delta = " +   //$NON-NLS-1$//$NON-NLS-2$
-//				event.getDelta());
-//				
-//		}
+		if (Tracing.isLogging()){
+			Tracing.log("Eventmanager-01: IResourceChangeEvent type = " + //$NON-NLS-1$
+				Misc.resourceChangeEventType(event.getType()) + 
+				", resource = " +  //$NON-NLS-1$
+				event.getResource() + ", source = " + event.getSource() + ", delta = " +   //$NON-NLS-1$//$NON-NLS-2$
+				event.getDelta());				
+		}
 		
 		if (event.getSource() instanceof IWorkspace) {
 			boolean isProject = event.getResource() instanceof IProject;

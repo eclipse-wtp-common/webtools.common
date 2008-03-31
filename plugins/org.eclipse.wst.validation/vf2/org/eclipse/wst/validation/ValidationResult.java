@@ -86,7 +86,7 @@ public final class ValidationResult {
 	 * Answer an IReporter for handing error messages.
 	 * <p>
 	 * This is a transition method, to help old validators port to the new validation framework. If this method
-	 * is called it is assumed by the framework, that this IReport will be used as the only way of passing messages
+	 * is called it is assumed by the framework, that this IReporter will be used as the only way of passing messages
 	 * back to the framework.
 	 * 
 	 * @see #add(ValidatorMessage)
