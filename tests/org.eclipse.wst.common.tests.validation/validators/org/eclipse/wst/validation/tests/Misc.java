@@ -65,24 +65,11 @@ public class Misc {
 		}
 		return b.toString();
 	}
-	
-	/**
-	 * Write a line to the console for debugging.
-	 * @param line
-	 */
-	public static void log(String line){
-		System.err.println(timestampIt(line));  
-	}
-	
+		
 	public static String timestampIt(String line){
 		Date date = new Date();
 		long thread = Thread.currentThread().getId();
 		return _df.format(date) + " " + thread + " " + line;//$NON-NLS-1$//$NON-NLS-2$
-	}
-	
-	public static void log(StringBuffer b){
-		log(b.toString());
-		b.setLength(0);
 	}
 	
 	public static void niy(String msg){

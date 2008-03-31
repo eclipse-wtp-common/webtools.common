@@ -15,12 +15,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.tests.T1B;
+import org.osgi.framework.Bundle;
 
 public class TestSuite2 extends TestCase {
 	
@@ -48,7 +50,7 @@ public class TestSuite2 extends TestCase {
 		_testProject = _env.findProject("TestProject");
 		if (_testProject != null)return;
 		_env.turnoffAutoBuild();
-		turnoffOtherValidators();
+		adjustEnabledValidators();
 		_testProject = _env.createProject("TestProject");
 		IPath folder = _env.addFolder(_testProject.getFullPath(), "source");
 		_firstTest1 = _env.addFile(folder, "first.test1", "include map.test1\ninfo - information\nwarning - warning\nerror - error\n\n" +
@@ -60,7 +62,7 @@ public class TestSuite2 extends TestCase {
 
 		_env.addFile(folder, "map.test1", "# will hold future mappings");
 		_env.addFile(folder, "first.test2", "# sample file");
-		_firstTest2x = _env.addFile(folder, "first.test2x", "# a file that will be validated as a side effect");
+		_firstTest2x = _env.addFile(folder, FileNames.firstTest2x, "# a file that will be validated as a side effect of running the T1A validator");
 		_env.addFile(folder, "third.test4", "# Doesn't really matter\nWe just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
@@ -70,7 +72,7 @@ public class TestSuite2 extends TestCase {
 	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
 	 * these tests.
 	 */
-	private static void turnoffOtherValidators() {
+	private static void adjustEnabledValidators() {
 		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
 		for (Validator v : vals){
 			boolean validateIt = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.T1");
@@ -96,15 +98,19 @@ public class TestSuite2 extends TestCase {
 			IProgressMonitor monitor = new NullProgressMonitor();
 			
 			vf.join(monitor);
+			Thread.sleep(1000);
 			
 			_env.turnOnAutoBuild();
 			
 			_firstTest1.touch(monitor);
+			Thread.sleep(50);
 			_secondTest1.touch(monitor);
 			vf.join(monitor);
+			Thread.sleep(1000);
 			
 			checkClear();
 			checkT1B();
+			checkGuardValidators();
 		}
 		finally {
 //			workspace.removeResourceChangeListener(listener);
@@ -113,9 +119,7 @@ public class TestSuite2 extends TestCase {
 	
 	private void checkT1B() throws CoreException {
 		IMarker[] markers = _firstT1B.findMarkers(T1B.MarkerId, false, IResource.DEPTH_ZERO);
-		assertEquals("Number of T1B markers", 3, markers.length);
-
-		
+		assertEquals("Number of T1B markers", 3, markers.length);		
 	}
 
 	/**
@@ -124,6 +128,16 @@ public class TestSuite2 extends TestCase {
 	private void checkClear() throws CoreException {
 		IMarker[] markers = _firstTest2x.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
 		assertEquals(1, markers.length);
+	}
+	
+	private void checkGuardValidators(){
+		Bundle b = Platform.getBundle("org.eclipse.wst.common.tests.validation.guard");
+		if (b != null){
+			int state = b.getState();
+			if (state == Bundle.ACTIVE){
+				fail("The guard plug-in should never be activated.");
+			}
+		}
 	}
 	
 	public static class Listener implements IResourceChangeListener {

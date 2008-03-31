@@ -19,7 +19,7 @@ public class T2B implements IValidator {
 	public void validate(IValidationContext helper, IReporter reporter)
 			throws ValidationException {
 		String[] uris = helper.getURIs();
-		if (uris != null)Tracing.log("T2B: number of urs = " + uris.length);		
+		if (uris != null)Tracing.log("T2B-01: number of urs = " + uris.length);		
 	}
 
 }

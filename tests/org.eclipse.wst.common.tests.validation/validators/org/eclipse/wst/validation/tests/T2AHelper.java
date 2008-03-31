@@ -1,9 +1,9 @@
 package org.eclipse.wst.validation.tests;
 
 import org.eclipse.wst.validation.internal.Tracing;
-import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
+import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 
-public class T2AHelper implements IValidationContext {
+public class T2AHelper extends WorkbenchContext {
 
 	public String[] getURIs() {
 		return null;

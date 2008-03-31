@@ -141,7 +141,7 @@ public class TestSuite1 extends TestCase {
 	}
 	
 	public void testTest1() throws CoreException, UnsupportedEncodingException, InterruptedException {
-		Tracing.log("testTest1 starting");
+		Tracing.log("TestSuite-02: testTest1 starting");
 		IProgressMonitor monitor = new NullProgressMonitor();
 		ValidationFramework vf = ValidationFramework.getDefault();
 		IProject[] projects = {_testProject};
@@ -170,7 +170,7 @@ public class TestSuite1 extends TestCase {
 		vf.join(monitor);
 		
 		ValCounters vc = TestValidator4.getCounters();
-		Tracing.log("testTest1: " + vc.toString());
+		Tracing.log("TestSuite-03: testTest1: " + vc.toString());
 		assertEquals(vc.startingCount, vc.finishedCount);
 		assertEquals(vc.startingProjectCount, vc.finishedProjectCount);
 		assertEquals(vc.startingCount, 1);
@@ -186,7 +186,7 @@ public class TestSuite1 extends TestCase {
 			TestValidator5D.getCalledCount()>0);
 		
 		checkSecondPass(resource);	
-		Tracing.log("testTest1 finished");
+		Tracing.log("TestSuite-04:testTest1 finished");
 	}
 	
 	public void testTest2() {
@@ -327,7 +327,7 @@ public class TestSuite1 extends TestCase {
 			}
 		}
 		if (Tracing.isLogging()){
-			Tracing.log("checkSecondPass: " + Misc.listMarkers(resource));
+			Tracing.log("TestSuite-01: checkSecondPass: " + Misc.listMarkers(resource));
 		}
 		assertTrue("We expect there to be exactly two error messages, but errors=" + errors, errors == 2);
 		assertTrue("We expect there to be exactly two warning messages, but warnings="+warnings, warnings == 2);

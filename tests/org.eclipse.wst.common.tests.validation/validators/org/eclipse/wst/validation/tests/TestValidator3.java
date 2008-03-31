@@ -8,6 +8,7 @@ import org.eclipse.wst.validation.AbstractValidator;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.ValidatorMessage;
+import org.eclipse.wst.validation.internal.Tracing;
 
 
 public class TestValidator3 extends AbstractValidator {
@@ -20,7 +21,7 @@ public class TestValidator3 extends AbstractValidator {
 	
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
-		Misc.log(getName() + " validating: " + resource);
+		Tracing.log("TestValidator3-04: validating: " + resource);
 		checkState(state);
 		
 		if (resource.getName().equals("test.html")){
@@ -55,7 +56,7 @@ public class TestValidator3 extends AbstractValidator {
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Misc.log(getName() + " thinks validation is starting for project: " + name);
+		Tracing.log("TestValidator3-05: thinks validation is starting for project: ", name);
 		if (!checkState(state)){
 			state.put(ID, "my state");
 		}
@@ -66,20 +67,20 @@ public class TestValidator3 extends AbstractValidator {
 	@Override
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Misc.log(getName() + " thinks validation is finishing for project: " + name);
+		Tracing.log("TestValidator3-01: thinks validation is finishing for project: ", name);
 		checkState(state);
 	}
 	
 	@Override
 	public void clean(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Misc.log(getName() + " thinks a clean has been requested for project: " + name);
+		Tracing.log("TestValidator3-02: thinks a clean has been requested for project: ", name);
 		checkState(state);
 	}
 	
 	private boolean checkState(ValidationState state){
 		if (state.get(ID) != null){
-			Misc.log(getName() + " has state information");
+			Tracing.log("TestValidator3-03: has state information");
 			return true;
 		}
 		return false;
