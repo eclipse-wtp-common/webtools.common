@@ -20,7 +20,7 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getPreferredWidth;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.*;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -1063,7 +1063,8 @@ public final class FacetsSelectionPanel
                 }
             };
             
-            getDisplay().syncExec( uiRunnable );
+            getDisplay().asyncExec( uiRunnable );
+            
             return;
         }
         
@@ -1106,14 +1107,18 @@ public final class FacetsSelectionPanel
         switch( event.getType() )
         {
             case FIXED_FACETS_CHANGED:
-            {
-                refresh();
-                
-                break;
-            }
             case TARGETED_RUNTIMES_CHANGED:
             {
-                refresh();
+                final Runnable runnable = new Runnable()
+                {
+                    public void run()
+                    {
+                        refresh();
+                    }
+                };
+                
+                runOnDisplayThread( getDisplay(), runnable );
+                
                 break;
             }
         }

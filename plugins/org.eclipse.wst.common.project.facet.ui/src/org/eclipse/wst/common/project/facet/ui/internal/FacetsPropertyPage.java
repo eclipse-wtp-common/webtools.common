@@ -17,6 +17,7 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.runOnDisplayThread;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
@@ -236,9 +237,17 @@ public final class FacetsPropertyPage
 	
 	private void handleProjectModifiedEvent()
 	{
-		updateApplyButton();
-		getContainer().updateButtons();
-		updateFurtherConfigHyperlink();
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                updateApplyButton();
+                getContainer().updateButtons();
+                updateFurtherConfigHyperlink();
+            }
+        };
+        
+        runOnDisplayThread( this.topComposite.getDisplay(), runnable );
 	}
 	
 	private void updateFurtherConfigHyperlink()

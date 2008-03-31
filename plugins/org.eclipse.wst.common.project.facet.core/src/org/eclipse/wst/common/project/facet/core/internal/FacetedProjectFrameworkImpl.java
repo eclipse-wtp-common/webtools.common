@@ -661,22 +661,22 @@ public final class FacetedProjectFrameworkImpl
         if( project.isAccessible() &&
             project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
         {
+            FacetedProject fproj = null;
+            
             synchronized( this.projects )
             {
-                FacetedProject fproj = this.projects.get( project.getName() );
+                fproj = this.projects.get( project.getName() );
                 
                 if( fproj == null )
                 {
                     fproj = new FacetedProject( project );
                     this.projects.put( project.getName(), fproj );
                 }
-                else
-                {
-                    fproj.refresh();
-                }
-                
-                return fproj;
             }
+
+            fproj.refresh();
+            
+            return fproj;
         }
 
         return null;
