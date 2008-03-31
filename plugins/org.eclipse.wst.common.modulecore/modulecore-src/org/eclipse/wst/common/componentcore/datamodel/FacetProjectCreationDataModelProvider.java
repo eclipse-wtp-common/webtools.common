@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
@@ -126,13 +127,20 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		projectDataModel.addListener(new IDataModelListener() {
 			public void propertyChanged(DataModelEvent event) 
 			{
+			    final String prop = event.getPropertyName();
+			    
                 if( event.getFlag() == IDataModel.VALUE_CHG &&
-                    event.getPropertyName().equals( IProjectCreationPropertiesNew.PROJECT_NAME ) )
+                    prop.equals( IProjectCreationPropertiesNew.PROJECT_NAME ) )
                 {
                     final String projectName = (String) event.getProperty();
 					getDataModel().setProperty(FACET_PROJECT_NAME, projectName);
 					fpjwc.setProjectName( projectName );
 				}
+                else if( prop.equals( IProjectCreationPropertiesNew.PROJECT_LOCATION ) )
+                {
+                    final String location = (String) event.getProperty();
+                    fpjwc.setProjectLocation( location == null ? null : new Path( location ) );
+                }
 			}
 		});
 		model.addNestedModel(NESTED_PROJECT_DM, projectDataModel);
