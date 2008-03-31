@@ -17,13 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V2;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
-import org.eclipse.wst.validation.internal.model.FilterRule;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
@@ -81,28 +79,28 @@ public class ValPrefManagerGlobal {
 	 * 
 	 * @deprecated
 	 */
-	public boolean loadPreferences(Validator[] val) {
-	
-		try {
-			IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
-			if (!pref.nodeExists(PrefConstants.filters))return false;
-		
-			Preferences filters = pref.node(PrefConstants.filters);
-			for (Validator v : val){
-				String id = v.getId();
-				if (filters.nodeExists(id)){
-					Preferences vp = filters.node(id);
-					loadPreferences(v, vp);
-				}
-			}			
-		}
-		catch (Exception e){
-			ValidationPlugin.getPlugin().handleException(e);
-			return false;
-		}
-		
-		return true;
-	}
+//	public boolean loadPreferences(Validator[] val) {
+//	
+//		try {
+//			IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
+//			if (!pref.nodeExists(PrefConstants.filters))return false;
+//		
+//			Preferences filters = pref.node(PrefConstants.filters);
+//			for (Validator v : val){
+//				String id = v.getId();
+//				if (filters.nodeExists(id)){
+//					Preferences vp = filters.node(id);
+//					loadPreferences(v, vp);
+//				}
+//			}			
+//		}
+//		catch (Exception e){
+//			ValidationPlugin.getPlugin().handleException(e);
+//			return false;
+//		}
+//		
+//		return true;
+//	}
 	
 	/**
 	 * Answer the v2 validators that have been overridden by the global preferences.
@@ -233,38 +231,38 @@ public class ValPrefManagerGlobal {
 	 * 
 	 * @deprecated
 	 */
-	static void loadPreferences(Validator v, Preferences p) throws BackingStoreException {
-		v.setBuildValidation(p.getBoolean(PrefConstants.build, true));
-		v.setManualValidation(p.getBoolean(PrefConstants.manual, true));
-		v.setVersion(p.getInt(PrefConstants.version, 1));
-		v.setDelegatingId(p.get(PrefConstants.delegate, null));
-		
-		Validator.V2 v2 = v.asV2Validator();
-		if (v2 == null)return;
-		if (!p.nodeExists(PrefConstants.groups))return;
-		
-		Preferences groupNode = p.node(PrefConstants.groups);
-		for (String groupName : groupNode.childrenNames()){
-			Preferences group = groupNode.node(groupName);
-			String type = group.get(PrefConstants.type, null);
-			if (type == null)throw new IllegalStateException(ValMessages.ErrGroupNoType);
-			FilterGroup fg = FilterGroup.create(type);
-			if (fg == null)throw new IllegalStateException(NLS.bind(ValMessages.ErrGroupInvalidType, type));
-			v2.add(fg);
-			
-			if (group.nodeExists(PrefConstants.rules)){
-				Preferences ruleNode = group.node(PrefConstants.rules);
-				for (String ruleName : ruleNode.childrenNames()){
-					Preferences rule = ruleNode.node(ruleName);
-					FilterRule fr = FilterRule.create(rule.get(PrefConstants.ruleType, null));
-					if (fr != null){
-						fr.load(rule);
-						fg.add(fr);
-					}
-				}
-			}
-		}		
-	}
+//	static void loadPreferences(Validator v, Preferences p) throws BackingStoreException {
+//		v.setBuildValidation(p.getBoolean(PrefConstants.build, true));
+//		v.setManualValidation(p.getBoolean(PrefConstants.manual, true));
+//		v.setVersion(p.getInt(PrefConstants.version, 1));
+//		v.setDelegatingId(p.get(PrefConstants.delegate, null));
+//		
+//		Validator.V2 v2 = v.asV2Validator();
+//		if (v2 == null)return;
+//		if (!p.nodeExists(PrefConstants.groups))return;
+//		
+//		Preferences groupNode = p.node(PrefConstants.groups);
+//		for (String groupName : groupNode.childrenNames()){
+//			Preferences group = groupNode.node(groupName);
+//			String type = group.get(PrefConstants.type, null);
+//			if (type == null)throw new IllegalStateException(ValMessages.ErrGroupNoType);
+//			FilterGroup fg = FilterGroup.create(type);
+//			if (fg == null)throw new IllegalStateException(NLS.bind(ValMessages.ErrGroupInvalidType, type));
+//			v2.add(fg);
+//			
+//			if (group.nodeExists(PrefConstants.rules)){
+//				Preferences ruleNode = group.node(PrefConstants.rules);
+//				for (String ruleName : ruleNode.childrenNames()){
+//					Preferences rule = ruleNode.node(ruleName);
+//					FilterRule fr = FilterRule.create(rule.get(PrefConstants.ruleType, null));
+//					if (fr != null){
+//						fr.load(rule);
+//						fg.add(fr);
+//					}
+//				}
+//			}
+//		}		
+//	}
 	
 	/**
 	 * Save the validator into the preference store. 

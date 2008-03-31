@@ -150,9 +150,11 @@ public class MarkerManager {
 	 * @param resource
 	 */
 	public void hook(IResource resource){
-//		if (resource.getName().equals("sample.html")){
+//		if (resource.getName().equals("first.test2x")){
 //			String markers = Misc.listMarkers(resource);
-//			int i = 0;
+//			Tracing.log("MarkerManager has hooked: first.test2x"); //$NON-NLS-1$
+//			RuntimeException rt = new RuntimeException("hooking first.test2x");
+//			rt.printStackTrace();
 //		}
 	}
 

@@ -609,7 +609,7 @@ public final class FilterUtil {
 					IResource resource = subdelta.getResource();
 
 					if (Tracing.isLogging()) {
-						StringBuffer buffer = new StringBuffer("VMDDeltaVisitor: subdelta of "); //$NON-NLS-1$
+						StringBuffer buffer = new StringBuffer("FilterUtil-01: subdelta of "); //$NON-NLS-1$
 						buffer.append(resource.getName());
 						buffer.append(" has resource delta kind: "); //$NON-NLS-1$
 						buffer.append(subdelta.getKind());

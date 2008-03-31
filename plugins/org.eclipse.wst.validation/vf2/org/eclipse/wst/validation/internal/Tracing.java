@@ -56,6 +56,14 @@ public class Tracing {
 	public static void log(String line){
 		if (isLogging())write(line);
 	}
+	
+	public static void log(String... parts){
+		if (isLogging()){
+			StringBuffer b = new StringBuffer(200);
+			for (String p : parts)b.append(p);
+			write(b.toString());
+		}
+	}
 
 	/**
 	 * Write a line to the log. Include a time stamp with the line.

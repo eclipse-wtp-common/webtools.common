@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.validation.AbstractValidator;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
@@ -58,7 +57,7 @@ public class ValidatorExtensionReader {
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true, null);
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), null);
 				if (v != null)list.add(v);
 			}
 		}
@@ -83,12 +82,10 @@ public class ValidatorExtensionReader {
 	 * 
 	 * @return a configured validator or null if there was an error.
 	 */
-	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep, 
-			IProject project) {
+	private Validator processValidator(IConfigurationElement validator, String id, String label, IProject project) {
 		Validator.V2 v = null;
 		try {
-			AbstractValidator vb = (AbstractValidator)validator.createExecutableExtension(ExtensionConstants.AttribClass);
-			v = Validator.create(vb, project).asV2Validator();
+			v = Validator.create(validator, project).asV2Validator();
 			v.setLevel(Validator.Level.Extension);
 			v.setId(id);
 			v.setName(label);
@@ -97,10 +94,8 @@ public class ValidatorExtensionReader {
 			v.setMarkerId(validator.getAttribute(ExtensionConstants.markerId));
 			v.setVersion(getAttribute(validator, ExtensionConstants.version, 1));
 			v.setSourceId(validator.getAttribute(ExtensionConstants.sourceId));
-			if (deep){
-				IConfigurationElement[] children = validator.getChildren();
-				for (int i=0; i<children.length; i++)processValidatorChildren(v, children[i]);
-			}
+			IConfigurationElement[] children = validator.getChildren();
+			for (int i=0; i<children.length; i++)processValidatorChildren(v, children[i]);
 		}
 		catch (Exception e){
 			ValidationPlugin.getPlugin().handleException(e);
@@ -211,7 +206,7 @@ public class ValidatorExtensionReader {
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true, project);
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), project);
 				if (v == null)continue;
 				Validator old = map.get(v.getId());
 				if (old == null || old.getVersion() < v.getVersion()){

@@ -40,7 +40,7 @@ public class ValOperation {
 	
 	private ValidationState 	_state = new ValidationState();
 	private ValidationResult	_result = new ValidationResult();
-	private Map<IProject, Set<Validator>> _excludeCache = 
+	private Map<IProject, Set<Validator>> _suspended = 
 		Collections.synchronizedMap(new HashMap<IProject, Set<Validator>>(40));
 	
 	/** The time that the operation started. */
@@ -109,59 +109,31 @@ public class ValOperation {
 	}
 
 	/**
-	 * Have we already determined that this validator doesn't need to run on this project? To improve 
-	 * performance we remember (for the life of this validation operation) whether or not a project has
-	 * already determined that a particular validator doesn't apply to the project. 
+	 * Has this validator been suspended for the duration of this operation?
 	 *   
 	 * @param val
 	 * @param project can be null, in which case we return false
-	 * @param isManual
-	 * @param isBuild
 	 * 
 	 * @return true if we already know that this validator should not run on this project.
 	 */
-	public boolean shouldExclude(Validator val, IProject project, boolean haveProcessedProject, ValType valType) {
+	public boolean isSuspended(Validator val, IProject project) {
 		if (project == null)return false;
-		Set<Validator> set = getExcludeSet(project);
-		
-		if (!haveProcessedProject){
-			boolean isManual = valType == ValType.Manual;
-			boolean isBuild = valType == ValType.Build;
-			if (val.shouldValidateProject(project, isManual, isBuild))return false;
-			set.add(val);
-			return true;
-		}
-		
+		Set<Validator> set = getSuspended(project);		
 		return set.contains(val);
 	}
 	
-	private Set<Validator> getExcludeSet(IProject project){
-		Set<Validator> set = _excludeCache.get(project);
+	private Set<Validator> getSuspended(IProject project){
+		Set<Validator> set = _suspended.get(project);
 		if (set == null){
 			set = new HashSet<Validator>(5);
-			_excludeCache.put(project, set);
+			_suspended.put(project, set);
 		}
 		return set;
 	}
 
-	/**
-	 * Have we primed the exclude project cache for this project yet?
-	 * @param project
-	 */
-	public boolean hasProcessedProject(IProject project) {
-		if (project == null)return true;
-		Set<Validator> set = _excludeCache.get(project);
-		if (set == null){
-			set = new HashSet<Validator>(5);
-			_excludeCache.put(project, set);
-			return false;
-		}
-		return true;
-	}
-
 	void suspendValidation(IProject project, Validator validator) {
 		if (project == null)return;
-		getExcludeSet(project).add(validator);
+		getSuspended(project).add(validator);
 	}
 
 	public long getStarted() {

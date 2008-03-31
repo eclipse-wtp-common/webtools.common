@@ -32,11 +32,10 @@ public class EventManager implements IResourceChangeListener {
 	private static EventManager _inst;
 	
 	// false means that eclipse is not shutting down, and true means that it is shutting down. 
-	// Used in two methods: shutdown(),and resourceChanged(IResourceChangeEvent)
 	private boolean _shutdown; 
 
-	private IResourceDeltaVisitor _postAutoBuildVisitor = null;
-	private boolean _isActive = false; // has the registry been read?
+	private IResourceDeltaVisitor _postAutoBuildVisitor;
+	private boolean _isActive; // has the registry been read?
 
 	private EventManager() {
 	}
@@ -48,6 +47,8 @@ public class EventManager implements IResourceChangeListener {
 
 	public void opening(IProject project) {
 		if (project == null || !ValidationPlugin.isActivated())return;
+		
+		ValManager.getDefault().projectChanged(project);
 
 		// When the project is opened, check for any orphaned tasks
 		// or tasks whose owners need to be updated.
@@ -56,15 +57,16 @@ public class EventManager implements IResourceChangeListener {
 
 	public void closing(IProject project) {
 		if (project == null || !ValidationPlugin.isActivated())return;
-
+		
+		ValManager.getDefault().projectRemoved(project);
+		
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
 			// If it's not migrated, then it hasn't been loaded, and we don't want to load the
 			// validator and its prerequisite plug-ins until they're needed.
 			if (isMigrated) {
 				ValidatorMetaData[] vmds = ConfigurationManager.getManager().getProjectConfiguration(project).getValidators();
-				for (int i = 0; i < vmds.length; i++) {
-					ValidatorMetaData vmd = vmds[i];
+				for (ValidatorMetaData vmd : vmds) {
 
 					if (!vmd.isActive()) {
 						// If this validator has not been activated, or if it has been shut down,
@@ -81,12 +83,10 @@ public class EventManager implements IResourceChangeListener {
 						ValidationRegistryReader.getReader().disableValidator(vmd);
 
 						ValidationPlugin.getPlugin().handleException(e);
-						continue;
 					} catch (Exception e) {
 						// If there is a problem with this particular helper, log the error and
 						// continue with the next validator.
 						ValidationPlugin.getPlugin().handleException(e);
-						continue;
 					}
 				}
 
@@ -101,15 +101,16 @@ public class EventManager implements IResourceChangeListener {
 
 	public void deleting(IProject project) {
 		if (project == null)return;
+		
+		ValManager.getDefault().projectRemoved(project);
 
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
 			// If it's not migrated, then it hasn't been loaded, and we don't want to load the
-			// validator and its prerequisite plugins until they're needed.
+			// validator and its prerequisite plug-ins until they're needed.
 			if (isMigrated) {
 				ValidatorMetaData[] vmds = ConfigurationManager.getManager().getProjectConfiguration(project).getValidators();
-				for (int i = 0; i < vmds.length; i++) {
-					ValidatorMetaData vmd = vmds[i];
+				for (ValidatorMetaData vmd : vmds) {
 
 					if (!vmd.isActive()) {
 						// If this validator has not been activated, or if it has been shut down,
@@ -152,13 +153,13 @@ public class EventManager implements IResourceChangeListener {
 		if (_postAutoBuildVisitor == null) {
 			_postAutoBuildVisitor = new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta subdelta) throws CoreException {
-					if (subdelta == null)
-						return true;
+					if (subdelta == null)return false;
 
 					IResource resource = subdelta.getResource();
 					if (resource instanceof IProject) {
 						IProject project = (IProject) resource;
 						if ((subdelta.getFlags() & IResourceDelta.DESCRIPTION) == IResourceDelta.DESCRIPTION) {
+							ValManager.getDefault().projectChanged(project);
 							return false;
 						}
 
@@ -171,7 +172,7 @@ public class EventManager implements IResourceChangeListener {
 						}
 					}
 
-					return true;
+					return false;
 				}
 			};
 		}
@@ -179,7 +180,7 @@ public class EventManager implements IResourceChangeListener {
 		try {
 			delta.accept(_postAutoBuildVisitor, true);
 		} catch (CoreException exc) {
-			exc.printStackTrace();
+			ValidationPlugin.getPlugin().handleException(exc);
 		}
 	}
 
@@ -192,8 +193,7 @@ public class EventManager implements IResourceChangeListener {
 	 */
 	public void resourceChanged(IResourceChangeEvent event) {
 		if (_shutdown && !isActive()) {
-			// If we're shutting down, and nothing has been activated, don't need to
-			// do anything.
+			// If we're shutting down, and nothing has been activated, don't need to do anything.
 			return;
 		}
 

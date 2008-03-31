@@ -120,14 +120,14 @@ public class ValidatorTypeFilter {
 					if (Tracing.isLogging()) {
 						String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER), 
 							new Object[]{filter, getMustImplementClass()});
-						Tracing.log(result);						
+						Tracing.log("ValidatorTypeFilter-01: ", result); //$NON-NLS-1$
 					}
 				}
 			}
 		} catch (ClassNotFoundException exc) {
 			_typeFilterClass = null;
 			if (Tracing.isLogging()) {
-				Tracing.log("The class named " + filter +  //$NON-NLS-1$
+				Tracing.log("ValidatorTypeFilter-02: The class named " + filter +  //$NON-NLS-1$
 					" cannot be instantiated because it does not exist. Check the spelling of the name, " + //$NON-NLS-1$
 					"in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$
 			}

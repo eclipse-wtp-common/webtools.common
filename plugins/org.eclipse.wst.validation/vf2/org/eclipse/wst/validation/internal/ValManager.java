@@ -14,9 +14,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFolder;
@@ -29,6 +31,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.validation.IPerformanceMonitor;
 import org.eclipse.wst.validation.PerformanceCounters;
 import org.eclipse.wst.validation.ValidationFramework;
@@ -45,7 +50,7 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author karasiuk
  *
  */
-public class ValManager implements IValChangedListener {
+public class ValManager implements IValChangedListener, IFacetedProjectListener {
 	
 	private static ValManager _me;
 		
@@ -67,6 +72,8 @@ public class ValManager implements IValChangedListener {
 	private int _configNumber;
 	private ValidatorIdManager _idManager = new ValidatorIdManager();
 	
+	private ValidatorProjectManager _projectManager = new ValidatorProjectManager();
+	
 	private static final QualifiedName StatusBuild = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sb"); //$NON-NLS-1$
 	private static final QualifiedName StatusManual = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sm"); //$NON-NLS-1$
 			
@@ -78,6 +85,7 @@ public class ValManager implements IValChangedListener {
 	private ValManager(){
 		ValPrefManagerGlobal.getDefault().addListener(this);
 		ValPrefManagerProject.addListener(this);
+		FacetedProjectFramework.addListener(this, IFacetedProjectEvent.Type.PROJECT_MODIFIED);
 	}
 	
 	/**
@@ -224,14 +232,14 @@ public class ValManager implements IValChangedListener {
 	/**
 	 * Answer the validator with the given id that is in effect for the given project.
 	 * 
-	 * @param dependencyId validator dependency id.
+	 * @param id The validator id.
 	 * @param project
 	 * @return null if the validator is not found
 	 */
-	public Validator getValidator(String dependencyId, IProject project){
+	public Validator getValidator(String id, IProject project){
 		Validator[] vals = getValidators(project);
 		for (Validator v : vals){
-			if (v.getDependencyId().equals(dependencyId))return v;
+			if (v.getId().equals(id))return v;
 		}
 		return null;
 	}
@@ -379,6 +387,7 @@ public class ValManager implements IValChangedListener {
 	 */
 	private void configHasChanged(){
 		_configNumber++;
+		_projectManager.reset();
 	}
 		
 	/**
@@ -517,6 +526,7 @@ public class ValManager implements IValChangedListener {
 			time = System.currentTimeMillis();
 			cpuTime = Misc.getCPUTime();
 		}
+		
 		ValidationResult vr = validator.validate(resource, kind, operation, monitor);
 		if (pm.isCollecting()){
 			if (cpuTime != -1){
@@ -534,7 +544,7 @@ public class ValManager implements IValChangedListener {
 				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
 					validator.getId(), resource, Misc.getTimeMS(System.currentTimeMillis()-time)}) :
 				NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
-			Tracing.log(msg);
+			Tracing.log("ValManager-01: " + msg); //$NON-NLS-1$
 		}
 		if (vr != null){
 			operation.getResult().mergeResults(vr);
@@ -556,16 +566,15 @@ public class ValManager implements IValChangedListener {
 		
 		if (isDisabled(project))return;
 		
-		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
-			if (!operation.shouldExclude(val, project, hasProcessedProject, valType)){
-				try {
-					visitor.visit(val, project, valType, operation, monitor);
-				}
-				catch (Exception e){
-					ValidationPlugin.getPlugin().handleException(e);
-				}
+			if (!_projectManager.shouldValidate(val, project, valType))continue;
+			if (operation.isSuspended(val, project))continue;
+			try {
+				visitor.visit(val, project, valType, operation, monitor);
+			}
+			catch (Exception e){
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}		
 	}
@@ -598,10 +607,10 @@ public class ValManager implements IValChangedListener {
 		
 		vp = new ValProperty();
 		vp.setConfigNumber(_configNumber);
-		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
-			if (operation.shouldExclude(val, project, hasProcessedProject, valType))continue;
+			if (!_projectManager.shouldValidate(val, project, valType))continue;
+			if (operation.isSuspended(val, project))continue;
 			if (val.shouldValidate(resource, valType)){
 				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
 				try {
@@ -627,6 +636,27 @@ public class ValManager implements IValChangedListener {
 		if (vp == null)return null;
 		if (vp.getConfigNumber() != _configNumber)return null;
 		return vp;
+	}
+	
+	/**
+	 * Let the validation manager know that a project has been changed.
+	 * 
+	 * @param project The project that has been opened, created, or had it's description change.
+	 */
+	public void projectChanged(IProject project){
+		//FIXME I'm still not sure that the EventManager is calling me for all the right cases since it is 
+		// tied to the POST_BUILD event.
+		_projectManager.change(project);		
+	}
+	
+	/**
+	 * Let the validation manager know that a project has been removed.
+	 * 
+	 * @param project The project that has been closed or deleted.
+	 * 
+	 */
+	public void projectRemoved(IProject project){
+		_projectManager.remove(project);
 	}
 	
 	private void putValProperty(ValProperty vp, IResource resource, ValType valType) {
@@ -715,6 +745,12 @@ public class ValManager implements IValChangedListener {
 		}
 	}
 	
+	/**
+	 * Map validator id's to an index number on a bit set, so that we can quickly determine if a
+	 * particular validator needs to validate a particular resource.
+	 * @author karasiuk
+	 *
+	 */
 	private static class ValidatorIdManager {
 		
 		/**
@@ -769,7 +805,99 @@ public class ValManager implements IValChangedListener {
 			}
 			String[] s = new String[list.size()];
 			return list.toArray(s);
+		}		
+	}
+	
+	private static class ValidatorProjectManager {
+		
+		private Map<String, Set<IProject>> _manual = new HashMap<String, Set<IProject>>(50);
+		private Map<String, Set<IProject>> _build = new HashMap<String, Set<IProject>>(50);
+		
+		/**
+		 * Should this validator attempt to validate any resources in this
+		 * project?
+		 * 
+		 * @param validator
+		 *            The validator that is being tested.
+		 * @param project
+		 *            The project that is being tested. This can be null, which
+		 *            means that all projects will be tested.
+		 * @param type
+		 *            The type of validation operation.
+		 * @return true if the validator should attempt to validate.
+		 */
+		public synchronized boolean shouldValidate(Validator validator, IProject project, ValType type){
+			if (type == ValType.Build)return shouldValidate(validator, project, type, _build);
+			if (type == ValType.Manual)return shouldValidate(validator, project, type, _manual);
+				
+			return false;
 		}
 		
+		/**
+		 * A project has been created, opened, or had it's description changed.
+		 * @param project
+		 */
+		public synchronized void change(IProject project) {
+			change(project, _build, ValType.Build);
+			change(project, _manual, ValType.Manual);			
+		}
+		
+		private void change(IProject project, Map<String, Set<IProject>> map, ValType type){
+			for (Validator validator : ValManager.getDefault().getValidators(project)){
+				boolean newSetting = validator.shouldValidateProject(project, type);
+				boolean oldSetting = shouldValidate(validator, project, type, map);
+				if (newSetting != oldSetting){
+					if (newSetting)map.get(validator.getId()).add(project);
+					else map.get(validator.getId()).remove(project);
+				}
+			}
+		}
+
+		public synchronized void remove(IProject project) {
+			remove(project, _build);
+			remove(project, _manual);			
+		}
+		
+		private void remove(IProject project, Map<String, Set<IProject>> map){
+			for (Set<IProject> projects : map.values())projects.remove(project);
+		}
+
+		private boolean shouldValidate(Validator validator, IProject project, ValType type, 
+			Map<String, Set<IProject>> map){
+			
+			String id = validator.getId();
+			if (!map.containsKey(id))loadMap(validator, type, map);
+			Set<IProject> projects = map.get(id);
+			if (project == null)return projects.size() > 0;
+			return projects.contains(project);
+		}
+
+		/**
+		 * Load the map with all the projects in the workspace, that this validator is prepared to validate.
+		 * 
+		 * @param validator
+		 * @param type
+		 * @param map
+		 */
+		private void loadMap(Validator validator, ValType type, Map<String, Set<IProject>> map) {
+			Set<IProject> set = new HashSet<IProject>(40);
+			map.put(validator.getId(), set);
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (IProject p : projects){
+				if (validator.shouldValidateProject(p, type)){
+					set.add(p);
+				}
+			}
+		}
+		
+		public synchronized void reset(){
+			_build.clear();
+			_manual.clear();
+		}
+		
+	}
+
+	public void handleEvent(IFacetedProjectEvent event) {
+		projectChanged(event.getProject().getProject());
 	}
 }

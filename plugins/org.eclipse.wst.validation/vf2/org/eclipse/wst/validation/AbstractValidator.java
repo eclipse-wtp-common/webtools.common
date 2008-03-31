@@ -92,24 +92,7 @@ public abstract class AbstractValidator {
 	 */
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor){		
 	}
-	
-	/**
-	 * The validator is allowed to assert dependencies between various resources. The default would be to 
-	 * scope these assertions with the validator's extension point id. If a validator would like to share
-	 * these assertions with other validators, they can use this method to override the id that is used
-	 * to scope the assertions.
-	 * <p>
-	 * So for example if you had two validators that wanted to share the assertions. The second validator would
-	 * override this method and answer the first validator's extension point id.
-	 * <p>
-	 * The default behavior is to return null, which means that the default scope will be used.
-	 * 
-	 * @return null if you wish to use the default scoping mechanism.
-	 */
-	public String getDependencyId(){
-		return null;
-	}
-	
+		
 	/**
 	 * Answer the validator that you belong to. The validator controls controls the filters and various other settings. 
 	 */

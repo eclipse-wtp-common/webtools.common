@@ -21,14 +21,18 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
+import org.eclipse.wst.validation.internal.NullValidator;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
@@ -113,9 +117,8 @@ public abstract class Validator implements Comparable {
 	 *            The project that you are defined in. This can be null which
 	 *            means that you are a global validator.
 	 */
-	public static Validator create(AbstractValidator validator, IProject project) {
+	public static Validator create(IConfigurationElement validator, IProject project) {
 		V2 v2 = new V2(validator, project);
-		validator.setParent(v2);
 		return v2;
 	}
 	
@@ -215,6 +218,19 @@ public abstract class Validator implements Comparable {
 		if (valType == ValType.Build && !_buildValidation)return false;
 		
 		return shouldValidate(resource);
+	}
+	
+	/**
+	 * Answer true if this validator, based on it's filters, should validate this project. This method
+	 * does not check to see if global validation or project validation has been suspended or not.
+	 * 
+	 * @param project the project to be checked
+	 * @param type The type of validation request
+	 * 
+	 * @return true if the project should be validated.
+	 */
+	public boolean shouldValidateProject(IProject project, ValType type){
+		return shouldValidateProject(project, type == ValType.Manual, type == ValType.Build);
 	}
 	
 	/**
@@ -400,6 +416,13 @@ public abstract class Validator implements Comparable {
 		if (_changeCountGlobal > 0 || _changeCountMessages > 0)return true;
 		return false;
 	}
+	
+	/**
+	 * Has the validator's implementation been loaded yet? This is used by some test cases to ensure that 
+	 * plug-ins are not loaded too early.
+	 */
+	abstract boolean isLoaded();
+	
 
 	/**
 	 * Set whether this validator should be triggered by the build process.
@@ -423,10 +446,6 @@ public abstract class Validator implements Comparable {
 	 */
 	public String getDelegatingId() {
 		return _delegatingId;
-	}
-	
-	public String getDependencyId(){
-		return getId();
 	}
 	
 	/**
@@ -537,6 +556,11 @@ public static class V1 extends Validator {
 	}
 	
 	@Override
+	boolean isLoaded() {
+		return _vmd.isActive();
+	}
+	
+	@Override
 	public void setBuildValidation(boolean buildValidation) {
 		super.setBuildValidation(buildValidation);
 		_vmd.setBuildValidation(buildValidation);
@@ -641,6 +665,14 @@ public final static class V2 extends Validator implements IAdaptable {
 	
 	/** Name of the validator. */
 	private String			_name;
+	
+	/** 
+	 * We don't want to create the validator too early, as it may trigger new plug-ins to be loaded.
+	 * We delay that as long as possible, by starting with just the config element.
+	 */
+	private IConfigurationElement _validatorConfigElement;
+	
+	private String	_validatorClassName;
 		
 	/** 
 	 * If this validator is a delegating validator, then this is the "real" validator (i.e. the one that
@@ -653,20 +685,33 @@ public final static class V2 extends Validator implements IAdaptable {
 		
 	private Level _level;
 	
-	V2(AbstractValidator base, IProject project){
-		_validator = base;
+	V2(IConfigurationElement configElement, IProject project){
+		assert configElement != null;
+		_validatorConfigElement = configElement;
+		_validatorClassName = configElement.getAttribute(ExtensionConstants.AttribClass);
 		_project = project;
-		base.setParent(this);
+		init();
+	}
+	
+	private V2(IProject project, String validatorClassName, AbstractValidator validator){
+		assert validator != null;
+		
+		_project = project;
+		_validatorClassName = validatorClassName;
+		_validator = validator;
+		init();
+	}
+	
+	private void init(){
 		try {
-			String target = getValidatorClassname();
-			String id = ConfigurationManager.getManager().getConfiguration(project).getDelegateForTarget(target);
-			if (id == null) id = ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(target);
+			String id = ConfigurationManager.getManager().getConfiguration(_project).getDelegateForTarget(_validatorClassName);
+			if (id == null) id = ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(_validatorClassName);
 			setDelegatingId(id);
 		}
 		catch (InvocationTargetException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
-		resetChangeCounters();
+		resetChangeCounters();		
 	}
 
 	public synchronized void add(FilterGroup fg) {
@@ -697,7 +742,9 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	public Validator copy() {
-		V2 v = new V2(_validator, _project);
+		V2 v = null;
+		if (_validatorConfigElement != null)v = new V2(_validatorConfigElement, _project);
+		else v = new V2(_project, _validatorClassName, _validator);
 		v.copyLocal(this);
 		
 		FilterGroup[] groups = getGroups();
@@ -721,12 +768,6 @@ public final static class V2 extends Validator implements IAdaptable {
 		_changeCountGroups++;
 	}
 	
-	public String getDependencyId(){
-		String id = getDelegatedValidator().getDependencyId();
-		if (id != null)return id;
-		return getId();
-	}
-
 	public Level getLevel() {
 		return _level;
 	}
@@ -746,17 +787,17 @@ public final static class V2 extends Validator implements IAdaptable {
 	public AbstractValidator getDelegatedValidator(){
 		AbstractValidator delegated = _delegated;
 		if (delegated != null)return delegated;
-		else if (getDelegatingId() == null)return _validator;
+		else if (getDelegatingId() == null)return getValidator();
 		try {
 			ValidatorDelegateDescriptor vdd = ValidatorDelegatesRegistry.getInstance()
 				.getDescriptor(getValidatorClassname(), getDelegatingId());
-			if (vdd == null)return _validator;
+			if (vdd == null)return getValidator();
 			delegated = vdd.getValidator2();
 		}
 		catch (Exception e){
 			ValidationPlugin.getPlugin().handleException(e);
+			delegated = new NullValidator();
 		}
-		if (delegated == null)return _validator;
 		delegated.setParent(this);
 		_delegated = delegated;
 		return delegated;
@@ -786,11 +827,26 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	public AbstractValidator getValidator() {
+		if (_validator == null){
+			try {
+				_validator = (AbstractValidator)_validatorConfigElement.createExecutableExtension(ExtensionConstants.AttribClass);
+			}
+			catch (Exception e){
+				ValidationPlugin.getPlugin().handleException(e);
+				IContributor contrib = _validatorConfigElement.getContributor();
+				String message = NLS.bind(ValMessages.ErrConfig, contrib.getName());
+				ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
+				_validator = new NullValidator();
+			}
+			_validator.setParent(this);
+			_validatorConfigElement = null;
+
+		}
 		return _validator;
 	}
 	
 	public String getValidatorClassname(){
-		return getValidator().getClass().getName();
+		return _validatorClassName;
 	}
 	
 	@Override
@@ -807,6 +863,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	public boolean isChanged() {
 		if (_changeCountGroups > 0)return true;
 		return super.isChanged();
+	}
+	
+	@Override
+	boolean isLoaded() {
+		return _validator != null;
 	}
 		
 	/**
@@ -868,7 +929,7 @@ public final static class V2 extends Validator implements IAdaptable {
 			}
 			updateResults(vr);
 			if (vr.getDependsOn() != null){
-				ValidationFramework.getDefault().getDependencyIndex().set(getDependencyId(), resource, vr.getDependsOn());
+				ValidationFramework.getDefault().getDependencyIndex().set(getId(), resource, vr.getDependsOn());
 			}
 			IResource[] validated = vr.getValidated();
 			if (validated != null){
@@ -1002,6 +1063,8 @@ public final static class V2 extends Validator implements IAdaptable {
 		_id = v2._id;
 		_name = v2._name;
 		_validator = v2._validator;
+		_validatorConfigElement = v2._validatorConfigElement;
+		_validatorClassName = v2._validatorClassName;
 	}
 }
 

@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.validation" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.wst.validation" id="validator-v2" name="Validator"/>
+         <meta.schema plugin="org.eclipse.wst.validation" id="validator-v2" name="Validator V2"/>
       </appinfo>
       <documentation>
          All validators that wish to use version 2 of the validation framework need to extend this extension point.

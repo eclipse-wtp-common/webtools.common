@@ -138,7 +138,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		_validators.remove(EXCLUDED_PROJECT);
 
 		if (Tracing.isTraceV1()) {
-			Tracing.log(debug());
+			Tracing.log("ValidationRegistryReader-01: ", debug()); //$NON-NLS-1$
 		}
 	}
 
@@ -474,7 +474,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		try {
 			wh = (IWorkbenchContext) element.createExecutableExtension(TAG_HELPER_CLASS);
 		} catch (Exception exc) {
-			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
+			ValidationPlugin.getPlugin().handleException(exc);
+			String result = MessageFormat.format(
+				ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
 				new Object[]{helperClassName});
 			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);	
 			return null;
@@ -495,7 +497,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 		if (validator == null) {
 			if (Tracing.isTraceV1()) {
-				Tracing.log(NLS.bind(ValMessages.VbfExcSyntaxNoValNull, validatorClassName));
+				Tracing.log("ValidationRegistryReader-02: ",  //$NON-NLS-1$
+					NLS.bind(ValMessages.VbfExcSyntaxNoValNull, validatorClassName));
 			}
 			return null;
 		}
@@ -742,7 +745,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			if (Tracing.isTraceV1()) {
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
 						new Object[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
-				Tracing.log(result);		
+				Tracing.log("ValidationRegistryReader-03: ", result);		 //$NON-NLS-1$
 			}
 		}
 		return extensionPoint;
@@ -803,7 +806,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		int executionMap = 0x0;
 		try {
 			if (Tracing.isTraceV1()) {
-				Tracing.log("IProject is " + String.valueOf(project)); //$NON-NLS-1$
+				Tracing.log("ValidationRegistryReader-04: IProject is " + String.valueOf(project)); //$NON-NLS-1$
 			}
 			if (project == null) {
 				executionMap |= 0x1;
@@ -853,7 +856,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			} else {
 				executionMap |= 0x8;
 				if (Tracing.isTraceV1()) {
-					Tracing.log(projectNatures.toString());
+					Tracing.log("ValidationRegistryReader-05: ", projectNatures.toString()); //$NON-NLS-1$
 				}
 				calculateVmdsForNatureAndFacets(vmds, projectNatures,project);
 				// Now filter out the validators which must not run on this project
@@ -870,7 +873,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 					buffer.append(vmd.getValidatorUniqueName());
 					buffer.append("\n"); //$NON-NLS-1$
 				}
-				Tracing.log(buffer.toString());
+				Tracing.log("ValidationRegistryReader-06: ", buffer.toString()); //$NON-NLS-1$
 			}
 		}
 	}
@@ -954,7 +957,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 */
 	private void removeExcludedProjects(IProject project, Set<ValidatorMetaData> vmds) {
 		if (Tracing.isTraceV1()) {
-			StringBuffer buffer = new StringBuffer("\nBefore:\n"); //$NON-NLS-1$
+			StringBuffer buffer = new StringBuffer("\nValidationRegistryReader-12: before:\n"); //$NON-NLS-1$
 			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
@@ -995,7 +998,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 
 		if (Tracing.isTraceV1()) {
-			StringBuffer buffer = new StringBuffer("\nAfter:\n"); //$NON-NLS-1$
+			StringBuffer buffer = new StringBuffer("\nValidationRegistryReader-13: after:\n"); //$NON-NLS-1$
 			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
@@ -1177,7 +1180,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		if ((runChildren == null) || (runChildren.length < 1)) {
 			// How can an IValidatorImpl be created when there no class name to instantiate?
 			if (Tracing.isLogging()) {
-				Tracing.log(NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorName));				
+				Tracing.log("ValidationRegistryReader-07: ", NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorName));				 //$NON-NLS-1$
 			}
 			return null;
 		}
@@ -1190,7 +1193,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		if (validatorImplName == null) {
 			// Same as before; how can we instantiate when...
 			if (Tracing.isLogging()) {
-				Tracing.log(NLS.bind(ValMessages.VbfExcSyntaxNoValClass, validatorName));
+				Tracing.log("ValidationRegistryReader-08: ", NLS.bind(ValMessages.VbfExcSyntaxNoValClass, validatorName)); //$NON-NLS-1$
 			}
 			return null;
 		}
@@ -1199,7 +1202,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		if (helperImplName == null) {
 			// Same as before; how can we instantiate when...
 			if (Tracing.isLogging()) {
-				Tracing.log(NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorImplName));
+				Tracing.log("ValidationRegistryReader-09: ", NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorImplName)); //$NON-NLS-1$
 			}
 			return null;
 		}
@@ -1238,7 +1241,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		initializeValidatorCustomMarkers(element, pluginId, vmd);
 		
 		if (Tracing.isTraceV1()) {
-			Tracing.log("validator loaded: " + validatorImplName); //$NON-NLS-1$
+			Tracing.log("ValidationRegistryReader-10: validator loaded: " + validatorImplName); //$NON-NLS-1$
 		}
 
 		return vmd;
@@ -1310,7 +1313,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 					String[] msgParm = {extension.getUniqueIdentifier()};
 					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
 							(Object[])msgParm);
-					Tracing.log(result);					
+					Tracing.log("ValidationRegistryReader-11: ", result); //$NON-NLS-1$
 				}
 			} else {
 				// If getLabel() returns an empty string, this is an illegal validator.

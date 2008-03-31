@@ -490,7 +490,8 @@ public abstract class FilterRule implements IAdaptable {
 					if (_exactMatch)match = ct.getId().equals(_type.getId());
 					else match = ct.isKindOf(_type);
 					
-					if (match && Tracing.isTraceMatches())Tracing.log(toString() + " has matched " + resource); //$NON-NLS-1$
+					if (match && Tracing.isTraceMatches())
+						Tracing.log("FilterRule-01: ", toString() + " has matched " + resource); //$NON-NLS-1$ //$NON-NLS-2$
 					return match;
 				}
 			}

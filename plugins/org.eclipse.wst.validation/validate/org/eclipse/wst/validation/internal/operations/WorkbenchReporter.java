@@ -443,7 +443,7 @@ public class WorkbenchReporter implements IReporter {
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(
 					ResourceConstants.VBF_EXC_INVALID_RESOURCE), 
 					new Object[]{message.getText(), getTargetObjectName(helper, message)});
-				Tracing.log(result);		
+				Tracing.log("WorkbenchReporter-01: ", result); //$NON-NLS-1$
 			}
 			return;
 		}

@@ -94,7 +94,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	}
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) {
-		Tracing.log("ValBuilderJob Starting"); //$NON-NLS-1$
+		Tracing.log("ValBuilderJob-01: Starting"); //$NON-NLS-1$
 		_monitor = monitor;
 		
 		try {		
@@ -112,7 +112,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		
-		Tracing.log("ValBuilderJob Finished"); //$NON-NLS-1$
+		Tracing.log("ValBuilderJob-02: Finished"); //$NON-NLS-1$
 		return Status.OK_STATUS;
 	}
 
@@ -156,7 +156,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 				_buildKind, _operation, _monitor);
 		}
 		catch (ResourceUnavailableError e){
-			if (Tracing.isLogging())Tracing.log(e.toString());
+			if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
 			return false;
 		}
 		return true;

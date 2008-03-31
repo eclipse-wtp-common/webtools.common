@@ -13,7 +13,8 @@ package org.eclipse.wst.validation;
 import java.util.Map;
 
 /**
- * This class is only to be called by the validation framework.
+ * This class is only to be called by the validation framework and it's test cases.
+ * This class is NOT part of the API.
  * @author karasiuk
  *
  */
@@ -21,6 +22,14 @@ public class Friend {
 	
 	public static void setMessages(Validator validator, Map<String, MessageSeveritySetting> map) {
 		validator.setMessages(map);
+	}
+	
+	/**
+	 * Has the validator's implementation been loaded yet? This is used by some test cases to ensure that 
+	 * plug-ins are not loaded too early.
+	 */
+	public static boolean isLoaded(Validator validator){
+		return validator.isLoaded();
 	}
 
 }

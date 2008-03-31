@@ -634,7 +634,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 		Method method = getMethod(loadMethodName, parms);
 		if (method == null) {
 			if (Tracing.isLogging()) {
-				StringBuffer buffer = new StringBuffer("Load method "); //$NON-NLS-1$
+				StringBuffer buffer = new StringBuffer("WorkbenchContext-01: load method "); //$NON-NLS-1$
 				buffer.append(loadMethodName);
 				buffer.append("("); //$NON-NLS-1$
 				for (int i = 0; (parms != null) && (i < parms.length); i++) {

@@ -844,7 +844,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
 					if (Tracing.isTraceV1()) {
 						StringBuffer buffer = new StringBuffer();
-						buffer.append("ValidationOperation: will run? "); //$NON-NLS-1$
+						buffer.append("ValidationOperation-01: will run? "); //$NON-NLS-1$
 						buffer.append(willRun);
 						buffer.append("  "); //$NON-NLS-1$
 						buffer.append("is force? "); //$NON-NLS-1$
