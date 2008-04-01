@@ -862,12 +862,12 @@ point.</p>
 <p>Here is the extension point schema for declaring presets:</p>
 
 <div class="code">
-<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.facets</span>"&gt;
-  &lt;preset id="<span class="schema-type">{string}</span>"&gt;
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.presets</span>"&gt;
+  &lt;static-preset id="<span class="schema-type">{string}</span>" extends="<span class="schema-type">{string}</span>"&gt;
     &lt;label&gt;<span class="schema-type">{string}</span>&lt;/label&gt;
     &lt;description&gt;<span class="schema-type">{string}</span>&lt;/description&gt; <span class="schema-control">(optional)</span>
     &lt;facet id="<span class="schema-type">{string}</span>" version="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(1 or more)</span>
-  &lt;/preset&gt;
+  &lt;/static-preset&gt;
 &lt;/extension&gt;
 </pre>
 </div>
@@ -880,15 +880,15 @@ cannot be removed. You can identify fixed facets by the lock icon.</p>
 <p>Let's now create a preset that includes formgen facets.</p>
 
 <div class="code">
-<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.facets</span>"&gt;
-  &lt;preset id="<span class="xml-text">formgen.preset</span>"&gt;
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.presets</span>"&gt;
+  &lt;static-preset id="<span class="xml-text">formgen.preset</span>"&gt;
     &lt;label&gt;<span class="xml-text">FormGen Web Project</span>&lt;/label&gt;
     &lt;description&gt;<span class="xml-text">Creates a web project with FormGen functionality.</span>&lt;/description&gt;
     &lt;facet id="<span class="xml-text">jst.java</span>" version="<span class="xml-text">5.0</span>"/&gt;
     &lt;facet id="<span class="xml-text">jst.web</span>" version="<span class="xml-text">2.2</span>"/&gt;
     &lt;facet id="<span class="xml-text">formgen.core</span>" version="<span class="xml-text">1.0</span>"/&gt;
     &lt;facet id="<span class="xml-text">formgen.ext</span>" version="<span class="xml-text">1.0</span>"/&gt;
-  &lt;/preset&gt;
+  &lt;/static-preset&gt;
 &lt;/extension&gt;
 </pre>
 </div>

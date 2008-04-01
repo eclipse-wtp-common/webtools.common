@@ -687,10 +687,16 @@ public final class FacetsSelectionPanel
             return;
         }
         
+        int available = 0;
         int selected = 0;
 
         for( IProjectFacet f : category.getProjectFacets() )
         {
+            if( this.fpjwc.isFacetAvailable( f ) )
+            {
+                available++;
+            }
+            
             if( this.fpjwc.hasProjectFacet( f ) )
             {
                 selected++;
@@ -702,7 +708,7 @@ public final class FacetsSelectionPanel
             this.treeViewer.setChecked( category, false );
             this.treeViewer.setGrayed( category, false );
         }
-        else if( selected == category.getProjectFacets().size() )
+        else if( selected == available )
         {
             this.treeViewer.setChecked( category, true );
             this.treeViewer.setGrayed( category, false );

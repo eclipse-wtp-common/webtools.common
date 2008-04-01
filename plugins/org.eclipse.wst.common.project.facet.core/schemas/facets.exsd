@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.project.facet.core">
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="facets" name="Project Facets Extension Point"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          This is the main extension point in the faceted project framework. It is used for defining project facets. A project facet can be thought of as a unit of functionality that the user can add to the project when the functionality is needed.
       </documentation>
@@ -46,9 +46,9 @@
                <documentation>
                   An optional name of the extension instance.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -272,9 +272,9 @@
                <documentation>
                   The version comparator class name. Has to implement java.util.Comparator&amp;lt;String&amp;gt; interface.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn="java.util.Comparator"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -303,9 +303,9 @@
 
    <element name="preset">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element deprecated="true"/>
-         </appInfo>
+         </appinfo>
          <documentation>
             Declares a preset. A preset represents a common configuration of facets and their versions that a user might want to utilize on several projects. Presets can be supplied via this extension point or created by the user.
          </documentation>
@@ -334,11 +334,25 @@
       <complexType>
          <sequence>
             <element ref="label"/>
+            <element ref="fixed" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="preset"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   The template id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="fixed">
+      <complexType>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>
@@ -417,9 +431,9 @@
                <documentation>
                   The config factory class name. Has to implement org.eclipse.wst.common.project.facet.core.IActionConfigFactory interface.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IActionConfigFactory"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -437,9 +451,9 @@
                <documentation>
                   The delegate class name. Has to implement org.eclipse.wst.common.project.facet.core.IDelegate interface.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDelegate"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -447,9 +461,9 @@
 
    <element name="event-handler">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element deprecated="true"/>
-         </appInfo>
+         </appinfo>
          <documentation>
             Adds an event handler for one of the events in the faceted project life cycle. The event-handler element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.&lt;br/&gt;&lt;br/&gt;
 
@@ -545,9 +559,9 @@
                <documentation>
                   Specifies the version provider that will be consulted in order to determine the default version. If this attribute is used, the &lt;code&gt;version&lt;/code&gt; attribute will be ignored if present.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -593,9 +607,9 @@
 
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;p&gt;The following example illustrates the various facilities exposed by this extension point. This example is taken from the &lt;i&gt;Building Project Facets&lt;/i&gt; tutorial.&lt;/p&gt;
 
@@ -659,9 +673,9 @@
 
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2005-2007 BEA Systems, Inc.
 All rights reserved. This program and the accompanying materials
