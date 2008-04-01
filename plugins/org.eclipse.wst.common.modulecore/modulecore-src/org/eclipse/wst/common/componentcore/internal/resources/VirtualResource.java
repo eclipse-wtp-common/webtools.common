@@ -45,7 +45,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private IVirtualComponent component;
 	private String resourceType;
-	
+
 	private final ResourceTimestampMappings mapping = new ResourceTimestampMappings();
 
 
@@ -70,7 +70,8 @@ public abstract class VirtualResource implements IVirtualResource {
 			WorkbenchComponent aComponent = moduleCore.getComponent();
 			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			aComponent.getResources().removeAll(Arrays.asList(resources));
-		} finally {
+		}
+		finally {
 			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(monitor);
 				moduleCore.dispose();
@@ -82,12 +83,13 @@ public abstract class VirtualResource implements IVirtualResource {
 	protected abstract void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException;
 
 	public boolean exists() {
-		// verify all underlying resources exist for the virtual resource to exist
+		// verify all underlying resources exist for the virtual resource to
+		// exist
 		IResource[] resources = getUnderlyingResources();
-		if (resources==null || resources.length==0)
+		if (resources == null || resources.length == 0)
 			return false;
-		for (int i=0; i<resources.length; i++) {
-			if (resources[i]==null || !resources[i].exists())
+		for (int i = 0; i < resources.length; i++) {
+			if (resources[i] == null || !resources[i].exists())
 				return false;
 		}
 		return true;
@@ -112,11 +114,12 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public IPath[] getProjectRelativePaths() {
- 
+
 		WorkbenchComponent aComponent = getReadOnlyComponent();
 		if (aComponent != null) {
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
-			// still need some sort of loop here to search subpieces of the runtime path.
+			// still need some sort of loop here to search subpieces of the
+			// runtime path.
 			ComponentResource[] componentResources = null;
 
 			if (root != null) {
@@ -128,27 +131,28 @@ public abstract class VirtualResource implements IVirtualResource {
 						searchPath = searchPath.makeRelative();
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
 					estimatedPaths = findBestMatches(componentResources);
-				} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
-				if (estimatedPaths==null || estimatedPaths.length==0)
-					return new IPath[] {getRuntimePath()};
+				}
+				while (estimatedPaths.length == 0 && canSearchContinue(componentResources, searchPath));
+				if (estimatedPaths == null || estimatedPaths.length == 0)
+					return new IPath[]{getRuntimePath()};
 				return estimatedPaths;
 			}
-		} 
- 
-		return new IPath[] {getRuntimePath()};
+		}
+
+		return new IPath[]{getRuntimePath()};
 	}
 
-	public IPath getProjectRelativePath() { 
-		if (getRuntimePath().equals(new Path("/"))) { 
+	public IPath getProjectRelativePath() {
+		if (getRuntimePath().equals(new Path("/"))) {
 			WorkbenchComponent aComponent = getReadOnlyComponent();
 			if (aComponent != null) {
 				if (((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot() != null)
 					return ((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot();
-			} 
+			}
 		}
 		return getProjectRelativePaths()[0];
 	}
-	
+
 	private boolean canSearchContinue(ComponentResource[] componentResources, IPath searchPath) {
 		return (searchPath.segmentCount() > 0);
 	}
@@ -166,7 +170,7 @@ public abstract class VirtualResource implements IVirtualResource {
 				if (currentPath.segmentCount() == aRuntimePath.segmentCount()) {
 					result.add(theComponentResources[i].getSourcePath());
 					continue;
-				}	
+				}
 				currentMatchLength = currentPath.matchingFirstSegments(aRuntimePath);
 				if (currentMatchLength == currentPath.segmentCount() && currentMatchLength > bestMatchLength) {
 					bestMatchLength = currentMatchLength;
@@ -176,15 +180,15 @@ public abstract class VirtualResource implements IVirtualResource {
 				}
 			}
 		}
-		if (result.size()>0)
+		if (result.size() > 0)
 			return (IPath[]) result.toArray(new IPath[result.size()]);
 		if (estimatedPath == null)
-			return new IPath[] {};
-		return new IPath[] {estimatedPath};
+			return new IPath[]{};
+		return new IPath[]{estimatedPath};
 	}
 
 	public String getName() {
-		if (getRuntimePath().segmentCount()>0)
+		if (getRuntimePath().segmentCount() > 0)
 			return getRuntimePath().lastSegment();
 		return getRuntimePath().toString();
 	}
@@ -194,8 +198,8 @@ public abstract class VirtualResource implements IVirtualResource {
 			component = ComponentCore.createComponent(getProject());
 		return component;
 	}
-    
-	//returns null if the folder is already the root folder
+
+	// returns null if the folder is already the root folder
 	public IVirtualContainer getParent() {
 		if (getRuntimePath().segmentCount() >= 1)
 			return ComponentCore.createFolder(getProject(), getRuntimePath().removeLastSegments(1));
@@ -243,25 +247,25 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public void setResourceType(String aResourceType) {
-		resourceType = aResourceType; 
+		resourceType = aResourceType;
 		WorkbenchComponent aComponent = getReadOnlyComponent();
 		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 		for (int i = 0; i < resources.length; i++) {
 			resources[i].setResourceType(aResourceType);
 		}
-		 
+
 	}
 
 	// TODO Fetch the resource type from the model.
 	public String getResourceType() {
-		if (null == resourceType) { 
+		if (null == resourceType) {
 			WorkbenchComponent aComponent = getReadOnlyComponent();
 			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			for (int i = 0; i < resources.length; i++) {
 				resourceType = resources[i].getResourceType();
 				return resourceType;
 			}
-			 
+
 		}
 		resourceType = ""; //$NON-NLS-1$
 		return resourceType;
@@ -283,8 +287,11 @@ public abstract class VirtualResource implements IVirtualResource {
 		return aRuntimePath.isPrefixOf(getRuntimePath());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.componentcore.resources.IVirtualResource#removeLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.componentcore.resources.IVirtualResource#removeLink(org.eclipse.core.runtime.IPath,
+	 *      int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void removeLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
 		StructureEdit moduleCore = null;
@@ -300,31 +307,35 @@ public abstract class VirtualResource implements IVirtualResource {
 					}
 				}
 			}
-		} finally {
+		}
+		finally {
 			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(monitor);
 				moduleCore.dispose();
 			}
 		}
 	}
-	
+
 	protected final WorkbenchComponent getReadOnlyComponent() {
-		if(!mapping.hasChanged(getProject()) && mapping.hasCacheData(getProject()))
+		if (!mapping.hasChanged(getProject()) && mapping.hasCacheData(getProject()))
 			return (WorkbenchComponent) mapping.getData(getProject());
-		
+
 		StructureEdit moduleCore = null;
 		WorkbenchComponent component = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			component = moduleCore.getComponent();
-			mapping.mark(getProject(), component);
-		} finally {
-			if (moduleCore != null) { 
+			if (moduleCore != null) {
+				component = moduleCore.getComponent();
+				mapping.mark(getProject(), component);
+			}
+		}
+		finally {
+			if (moduleCore != null) {
 				moduleCore.dispose();
 			}
 		}
 		return component;
-		
-			
+
+
 	}
 }
