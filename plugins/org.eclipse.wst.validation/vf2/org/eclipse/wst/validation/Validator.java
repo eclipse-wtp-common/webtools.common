@@ -982,8 +982,13 @@ public final static class V2 extends Validator implements IAdaptable {
 		for (IMessage message : rh.getMessages()){
 			Object target = message.getTargetObject();
 			if (target != null){
-				if (target instanceof IResource){
-					IResource res = (IResource)target;
+				IResource res = null;
+				if (target instanceof IResource)res = (IResource)target;
+				if (res == null){
+					target = message.getAttribute(IMessage.TargetResource);
+					if (target != null && target instanceof IResource)res = (IResource)target;
+				}
+				if (res != null){
 					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
 					if (getMarkerId() != null)vm.setType(getMarkerId());
 					vr.add(vm);
