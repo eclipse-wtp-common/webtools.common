@@ -1802,30 +1802,41 @@ public final class FacetedProjectWorkingCopy
         throws CoreException
         
     {
-        synchronized( this.lock )
+        final SubMonitor pm = SubMonitor.convert( monitor, 100 );
+        
+        try
         {
-            final SubMonitor pm = SubMonitor.convert( monitor, 100 );
+            // In order to avoid deadlocks, we clone the working copy. This allows us to release
+            // the lock on this working copy while running mergeChanges(). This is important since
+            // mergeChanges() can call out to third-party code.
             
-            try
+            final IFacetedProjectWorkingCopy clone;
+            
+            synchronized( this.lock )
             {
-                final IFacetedProject fpj;
+                clone = clone();
+            }
                 
-                if( this.project == null )
-                {
-                    fpj = ProjectFacetsManager.create( this.projectName,
-                                                       this.projectLocation, 
-                                                       pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
-                }
-                else
-                {
-                    fpj = this.project;
-                    pm.worked( 10 );
-                }
+            final IFacetedProject fpj;
+            
+            if( this.project == null )
+            {
+                fpj = ProjectFacetsManager.create( this.projectName,
+                                                   this.projectLocation, 
+                                                   pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
+            }
+            else
+            {
+                fpj = this.project;
+                pm.worked( 10 );
+            }
+            
+            ( (FacetedProject) fpj ).mergeChanges( clone, pm.newChild( 90 ) );
                 
-                ( (FacetedProject) fpj ).mergeChanges( this, pm.newChild( 90 ) );
-                
-                // Make sure that the working copy is still valid after changes are committed.
-                
+            // Reset the working copy so that it can be used again.
+            
+            synchronized( this.lock )
+            {
                 this.project = fpj;
                 this.projectName = null;
                 this.projectNameValidation = Status.OK_STATUS;
@@ -1833,10 +1844,10 @@ public final class FacetedProjectWorkingCopy
                 
                 revertChanges();
             }
-            finally
-            {
-                pm.done();
-            }
+        }
+        finally
+        {
+            pm.done();
         }
     }
     
@@ -1848,8 +1859,6 @@ public final class FacetedProjectWorkingCopy
         {
             synchronized( this.lock )
             {
-                // TODO: Both this method and the clone method ignore the action config objects.
-            
                 setProjectName( fpjwc.getProjectName() );
                 setProjectLocation( fpjwc.getProjectLocation() );
                 setFixedProjectFacets( fpjwc.getFixedProjectFacets() );
@@ -1863,6 +1872,9 @@ public final class FacetedProjectWorkingCopy
                 {
                     setSelectedPreset( selectedPreset.getId() );
                 }
+                
+                this.actions.clear();
+                this.actions.addAll( ( (FacetedProjectWorkingCopy) fpjwc  ).actions );
             }
         }
         finally
@@ -1924,6 +1936,9 @@ public final class FacetedProjectWorkingCopy
                 clone.setSelectedPreset( selectedPreset.getId() );
             }
             
+            clone.actions.clear();
+            clone.actions.addAll( this.actions );
+
             return clone;
         }
     }
