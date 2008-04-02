@@ -62,7 +62,7 @@ public class MarkerManager {
 			return;
 		}
 				
-		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, true, IResource.DEPTH_ZERO);
 		String valId = validator.getId();
 		for (IMarker marker : markers){
 			id = marker.getAttribute(ValidatorMessage.ValidationId, null);
@@ -96,7 +96,7 @@ public class MarkerManager {
 	public void deleteMarkers(IResource resource, long operationStartTime){
 		try {
 			hook(resource);
-			IMarker[] markers = resource.findMarkers(null, false, IResource.DEPTH_ZERO);
+			IMarker[] markers = resource.findMarkers(null, true, IResource.DEPTH_ZERO);
 			for (IMarker marker : markers){
 				if (_markers.contains(marker.getType())){
 					long createTime = marker.getCreationTime();
