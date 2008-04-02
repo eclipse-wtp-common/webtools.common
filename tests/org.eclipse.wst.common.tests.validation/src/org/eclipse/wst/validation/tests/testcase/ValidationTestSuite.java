@@ -17,6 +17,7 @@ public class ValidationTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("Test for org.eclipse.wst.validation.tests.testcase");
 		suite.addTest(TestSuite1.suite());
 		suite.addTest(TestSuite2.suite());
+		suite.addTest(TestSuite3.suite());
         return suite;
     }
 

@@ -16,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 
 public class TestEnvironment {
@@ -43,10 +44,21 @@ public class TestEnvironment {
 	}
 	
 	/**
-	 * Do a full build.
+	 * Start a full build.
 	 */
 	public void fullBuild() throws CoreException{
 		getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, null);
+	}
+	
+	/**
+	 * Do a full build, and wait until all the validation has finished.
+	 * @param monitor
+	 */
+	public void fullBuild(IProgressMonitor monitor) throws CoreException, InterruptedException {
+		fullBuild();
+		Thread.sleep(1000);
+		ValidationFramework.getDefault().join(monitor);
+		Thread.sleep(2000);  // we need to sleep here to give the "finished" job a chance to run.		
 	}
 	
 	private IFolder createFolder(IPath path) throws CoreException {
@@ -75,7 +87,7 @@ public class TestEnvironment {
 		
 		return project;
 	}
-
+	
 	public void dispose() throws CoreException {
 		if (DEBUG)return;
 		for (Iterator<IProject> it=_projects.values().iterator(); it.hasNext();){
