@@ -13,6 +13,8 @@ package org.eclipse.wst.validation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+
 /**
  * Keep track of arbitrary validation data, during the course of a validation.
  * <p>
@@ -28,6 +30,13 @@ import java.util.Map;
  *
  */
 public class ValidationState {
+	
+	/** 
+	 * This is the key, and the value is an IResource. If a resource that is depended on by others is changed,
+	 * then the dependent resources are validated. The depended on resource, which is the resource that
+	 * actually changed, is placed into the ValidationState, as it might be useful information to the validator.
+	 */
+	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
 	private Map<String, Object> _map = new HashMap<String, Object>(50);
 	
