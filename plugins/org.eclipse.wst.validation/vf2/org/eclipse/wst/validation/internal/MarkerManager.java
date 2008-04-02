@@ -47,10 +47,12 @@ public class MarkerManager {
 	
 	/**
 	 * Clear any validation markers that may have been set by this validator.
-	 *  
-	 * @param resource the resource that may have it's markers cleared. It can be null, in which case
-	 * the operation is a no-op.
-	 * @param validator the validator that created the marker
+	 * 
+	 * @param resource
+	 *            The resource that may have it's markers cleared. It can be
+	 *            null, in which case the operation is a no-op.
+	 * @param validator
+	 *            The validator that created the marker.
 	 */
 	public void clearMarker(IResource resource, Validator validator) throws CoreException {
 		if (resource == null)return;
@@ -89,14 +91,21 @@ public class MarkerManager {
 	}
 	
 	/**
-	 * Delete all the markers on this resource that were created before the operation start time.
+	 * Delete all the markers on this resource that were created before the
+	 * operation start time.
+	 * 
 	 * @param resource
+	 *            The resource that is having it's markers deleted.
 	 * @param operationStartTime
+	 *            The time as returned by System.currentTimeMillis().
+	 * @param depth
+	 *            The depth of the markers to clear. It is one of the
+	 *            IResource.DEPTH_XXX constants.
 	 */
-	public void deleteMarkers(IResource resource, long operationStartTime){
+	public void deleteMarkers(IResource resource, long operationStartTime, int depth){
 		try {
-			hook(resource);
-			IMarker[] markers = resource.findMarkers(null, true, IResource.DEPTH_ZERO);
+			hook(resource); 
+			IMarker[] markers = resource.findMarkers(null, true, depth);
 			for (IMarker marker : markers){
 				if (_markers.contains(marker.getType())){
 					long createTime = marker.getCreationTime();
@@ -112,6 +121,7 @@ public class MarkerManager {
 			ValidationPlugin.getPlugin().handleException(e);
 		}		
 	}
+	
 	public void makeMarkers(List<IMessage> list){
 		for (IMessage message : list){
 			IResource res = null;

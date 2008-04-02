@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
+import org.eclipse.wst.validation.internal.DisabledResourceManager;
 import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
@@ -83,28 +84,34 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Disable all validation for the given resource. This method instructions the framework
-	 * to not run any validators on the given resource or any of it's children. This setting is
-	 * persistent. 
+	 * Disable all validation for the given resource. This method instructions
+	 * the framework to not run any validators on the given resource or any of
+	 * it's children. This setting is persistent. Currently this only works with version 2
+	 * validators.
 	 * 
 	 * Use the enableValidation method to restore validation.
 	 * 
-	 * @param resource the resource that is having validation disabled.
+	 * @param resource
+	 *            The resource that is having validation disabled. It must be an IFolder or an IFile.
 	 * 
 	 * @see #enableValidation(IResource)
 	 */
 	public void disableValidation(IResource resource){
+		assert resource != null;
+		DisabledResourceManager.getDefault().disableValidation(resource);
 	}
 	
 	/**
 	 * Enable validation for the given resource. If the resource was not previously
-	 * disabled this method call has no effect.
+	 * disabled this method call has no effect. Currently this only works with version 2 
+	 * validators.
 	 * 
-	 * @param resource the resource that is having validation re-enabled.
+	 * @param resource The resource that is having validation re-enabled.
 	 * 
 	 * @see #disableValidation(IResource)
 	 */
 	public void enableValidation(IResource resource){
+		DisabledResourceManager.getDefault().enableValidation(resource);
 	}
 	
 	/**

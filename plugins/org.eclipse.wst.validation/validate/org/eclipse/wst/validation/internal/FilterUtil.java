@@ -340,33 +340,38 @@ public final class FilterUtil {
 	}
 
 	/**
-	 * Whether a full verification or a delta verification is in progress, both will call this
-	 * method to process the resource. This method calls the current Validator to filter the
-	 * resource (i.e., this method returns if the resource fails the filter test).
-	 * <code>process</code> also sends output to the <code>IProgressMonitor</code>, and calls
-	 * the current Validator to validate the resource.
-	 * 
-	 * To process a resource, there are several steps: 1. check if the resource is registered for
-	 * this validator (i.e., the validator has either specified it in a filter, or has not filtered
-	 * it out explicitly) 2. call <code>isValidationSource</code> on the current validator with
-	 * the current resource. This method performs further filtering by the Validator itself, in
-	 * addition to the static filtering done by the framework, based on the information in
-	 * plugin.xml. 3. If the resource passes both filters, call <code>validate</code> on the
-	 * validator, with the resource. 4. When complete (either by failing to pass a filter, or by the
-	 * completion of the <code>validate</code>), increment the IProgressMonitor's status by one
-	 * (i.e., one resource has been processed.)
+	 * Whether a full verification or a delta verification is in progress, both
+	 * will call this method to process the resource. This method calls the
+	 * current Validator to filter the resource (i.e., this method returns if
+	 * the resource fails the filter test). It also sends output to the
+	 * <code>IProgressMonitor</code>, and calls the current Validator to
+	 * validate the resource.
+	 * <p>
+	 * To process a resource, there are several steps:
+	 * <ol>
+	 * <li>Check if the resource is registered for this validator (i.e., the
+	 * validator has either specified it in a filter, or has not filtered it out
+	 * explicitly)
+	 * <li>Call <code>isValidationSource</code> on the current validator with
+	 * the current resource. This method performs further filtering by the
+	 * Validator itself, in addition to the static filtering done by the
+	 * framework, based on the information in the extension point.
+	 * <li>If the resource passes both filters, call <code>validate</code> on
+	 * the validator, with the resource.
+	 * <li>When complete (either by failing to pass a filter, or by the
+	 * completion of the <code>validate</code>), increment the
+	 * IProgressMonitor's status by one (i.e., one resource has been processed.)
+	 * </ol>
 	 */
-	static void filterOut(IProgressMonitor monitor, Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, IResource resource, int resourceDelta, boolean isFullBuild) {
+	static void filterOut(IProgressMonitor monitor, Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, 
+		IResource resource, int resourceDelta, boolean isFullBuild) {
 		if (monitor == null)return;
 
 		checkCanceled(monitor);
 
-		Iterator iterator = enabledValidators.keySet().iterator();
 		boolean cannotLoad = false;
-		while (iterator.hasNext()) {
+		for (ValidatorMetaData vmd : enabledValidators.keySet()) {
 			checkCanceled(monitor);
-
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
 
 			if (!filterOut(monitor, vmd, resource, resourceDelta)) {
 				try {

@@ -41,6 +41,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.DisabledResourceManager;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
@@ -133,8 +134,8 @@ public class ValidationMenuAction implements IViewActionDelegate {
 				}
 			}
 			if (!valid) {
-				// Stop processing. (This allows the "Run Validation" menu item
-				// to gray out once at least one non-validatable element is selected.)
+				// Stop processing. This allows the "Run Validation" menu item
+				// to gray out once an element that can not be validated is selected.
 				_selectedResources.clear();
 			}
 		}
@@ -208,10 +209,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		if (_projectVisitor == null) {
 			_projectVisitor = new IResourceVisitor() {
 				public boolean visit(IResource res) {
+					if (DisabledResourceManager.getDefault().isDisabled(res))return false;
 					if (res instanceof IFile)addSelected(res);
 					else if (res instanceof IFolder)addSelected(res);
 					
-					return true; // visit the resource's children
+					return true;
 				}
 			};
 		}

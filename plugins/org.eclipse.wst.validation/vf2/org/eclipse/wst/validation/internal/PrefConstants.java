@@ -49,6 +49,9 @@ public interface PrefConstants {
 	/** delegate - the delegating implementation to use */
 	String delegate = "delegate"; //$NON-NLS-1$
 	
+	/** disabled - the list of disabled resources in the project. */
+	String disabled = "disabled"; //$NON-NLS-1$
+	
 	/** exactMatch - must the content type match exactly? */
 	String exactMatch = "exactMatch"; //$NON-NLS-1$
 	

@@ -47,7 +47,7 @@ public class ValidationRunner implements IWorkspaceRunnable {
 	 *            The type of validation that has been requested.
 	 * 
 	 * @param monitor
-	 *            progress monitor
+	 *            Progress monitor.
 	 */
 	public static ValOperation validate(Map<IProject, Set<IResource>> projects, ValType valType, 
 		IProgressMonitor monitor) throws CoreException{

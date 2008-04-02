@@ -498,7 +498,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	public void validate(IProject project, final IResource resource, final int kind, ValType valType, 
 		int buildKind, ValOperation operation, final IProgressMonitor monitor) {
 		
-		MarkerManager.getDefault().deleteMarkers(resource, operation.getStarted());
+		MarkerManager.getDefault().deleteMarkers(resource, operation.getStarted(), IResource.DEPTH_ZERO);
 		
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 

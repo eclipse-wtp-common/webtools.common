@@ -127,10 +127,14 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	}
 
 	public boolean visit(IResourceDelta delta) throws CoreException {
+		IResource resource = delta.getResource();
+		if (DisabledResourceManager.getDefault().isDisabled(resource)){
+			MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+			return false;
+		}
 		int kind = delta.getKind();
 		if ((delta.getFlags() & InterestedFlags) == 0)return true;
 		
-		IResource resource = delta.getResource();
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
 			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
 				_operation, _monitor);
@@ -154,6 +158,11 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 
 	public boolean visit(IResource resource) throws CoreException {
 		try {
+			if (DisabledResourceManager.getDefault().isDisabled(resource)){
+				MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+				return false;
+			}
+			
 			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, ValType.Build, 
 				_buildKind, _operation, _monitor);
 		}
