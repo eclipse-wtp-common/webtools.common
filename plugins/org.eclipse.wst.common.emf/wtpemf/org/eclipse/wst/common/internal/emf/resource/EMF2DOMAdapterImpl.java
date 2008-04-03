@@ -480,8 +480,6 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getExistingAdapter(value, EMF2DOMAdapter.ADAPTER_CLASS);
 		if (adapter != null) {
-			if (primGetExistingAdapter(adapter.getNode()) == null) 
-				return;
 			// Remove the adapter from BOTH the MOF Object and the DOM Nodes
 			value.eAdapters().remove(adapter);
 			removeAdapters(adapter.getNode());
