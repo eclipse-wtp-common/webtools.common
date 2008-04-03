@@ -487,7 +487,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			SavedFileKey key = (SavedFileKey) iterator.next();
 			if (key.savedFile != null && key.savedFile.equals(file)) {
 				List resources = getResources(file);
-				if (resources.contains(key.res)) {
+				if (key.res == null || resources.contains(key.res) ) {
 					iterator.remove();
 					removedFromList = true;
 					break;
