@@ -815,10 +815,6 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	public String getId() {
-		//FIXME remove
-		if (-1 != _id.indexOf("xml")){
-			int i = 1;
-		}
 		return _id;
 	}
 	

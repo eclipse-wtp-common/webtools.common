@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +17,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,23 +31,42 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.DependentResource;
 import org.eclipse.wst.validation.IDependencyIndex;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
+/**
+ * A simple implementation of the IDependencyIndex. This will probably be
+ * replaced with a higher performance, more robust index, at some point in the
+ * future.
+ * <p>
+ * The format of the index is:
+ * 
+ * <pre>
+ * Version number
+ * Number of depends on entries
+ *   depends on file name
+ *   number of dependent entries
+ *     dependent file name
+ *     number of validators
+ *       validator id
+ * </pre>
+ * 
+ * @author karasiuk
+ */
 public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	
 	/**
-	 * Keep track of which resources are depended on by other resources.
-	 * <p>
-	 * The reason we don't store IResources in this map is because the IResource may not
-	 * actually exist. (It may have been renamed or deleted before this index was restored)
+	 * An index so that we can determine which things depend on this resource.
 	 */
-	private Map<IPath, Map<IResource,Depends>>		_dependsMap;
-	private Map<IProject, List<Depends>>			_projectMap;
+	private Map<IResource,Set<Depends>>		_dependsOn;
+	
+	/**
+	 * An index so that we can determine who the resource depends on.
+	 */
+	private Map<IResource,Set<Depends>>		_dependents;
 	private boolean _dirty;
 	
 	private static IResource[] EmptyResources = new IResource[0];
@@ -55,60 +76,50 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 
 	public synchronized void add(String id, IResource dependent, IResource dependsOn) {
 		init();
-		IPath dependsOnPath = dependsOn.getFullPath();
-		add(id,dependent, dependsOnPath);
+		Depends d = getOrCreateDepends(dependent, dependsOn);
+		if (d.getValidators().add(id))_dirty = true;
 	}
 	
-	private void add(String id, IResource dependent, IPath dependsOn){
-		Map<IResource, Depends> depends = _dependsMap.get(dependsOn);
-		if (depends == null){
-			depends = new HashMap<IResource, Depends>(5);
-			_dependsMap.put(dependsOn, depends);
+	private Depends getOrCreateDepends(IResource dependent, IResource dependsOn) {
+		Set<Depends> set = getSet(_dependents, dependent);
+		for (Depends d : set){
+			if (d.getDependsOn() == dependsOn)return d;
 		}
+		Depends d = new Depends(dependent, dependsOn);
+		_dirty = true;
+		set.add(d);
 		
-		Depends d = depends.get(dependent);
-		if (d == null){
-			d = new Depends();
-			depends.put(dependent, d);
-		}
-		if (d.hasValidator(id))return;
-		else {
-			d.add(id);
-			_dirty = true;
-			List<Depends> list = _projectMap.get(dependent.getProject());
-			if (list == null){
-				list = new LinkedList<Depends>();
-				_projectMap.put(dependent.getProject(), list);
-			}
-			list.add(d);
-		}
-		
+		getSet(_dependsOn, dependsOn).add(d);
+		return d;
 	}
 
 	/**
-	 * Restore the dependency index.
-	 * <p>
-	 * The format of the index is:
-	 * <pre>
-	 * Version number
-	 * Number of depends on entries
-	 *   depends on file name
-	 *   number of dependent entries
-	 *     dependent file name
-	 *     number of validators
-	 *       validator id
-	 * </pre>
+	 * Answer the set for the resource, creating it if you need to.
+	 */
+	private Set<Depends> getSet(Map<IResource, Set<Depends>> map, IResource resource) {
+		Set<Depends> set = map.get(resource);
+		if (set == null){
+			set = new HashSet<Depends>(5);
+			map.put(resource, set);
+		}
+		return set;
+	}
+
+	/**
+	 * Restore the dependency index. See the class comment for the structure.
 	 */	
 	private void init() {
-		if (_dependsMap != null)return;
+		if (_dependsOn != null)return;
 		
 		boolean error = false;
 		File f = getIndexLocation();
 		if (!f.exists()){
-			_dependsMap = new HashMap<IPath, Map<IResource, Depends>>(100);
-			_projectMap = new HashMap<IProject, List<Depends>>(50);
+			_dependsOn = new HashMap<IResource,Set<Depends>>(100);
+			_dependents = new HashMap<IResource,Set<Depends>>(100);
 		}
 		else {
+			String errorMessage = "The following dependency could not be restored " + //$NON-NLS-1$
+				"because the following resource {0} could no longer be found."; //$NON-NLS-1$
 			DataInputStream in = null;
 			try {
 				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -120,19 +131,22 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 					throw new IllegalStateException(msg);
 				}
 				int numDependsOn = in.readInt();
-				_dependsMap = new HashMap<IPath, Map<IResource, Depends>>(numDependsOn+100);
-				_projectMap = new HashMap<IProject, List<Depends>>(50);
+				_dependsOn = new HashMap<IResource,Set<Depends>>(numDependsOn+100);
+				_dependents = new HashMap<IResource,Set<Depends>>(numDependsOn+100);
 				for (int i=0; i<numDependsOn; i++){
 					String v = in.readUTF();
-					IPath dependsOn = Path.fromPortableString(v);
+					IResource dependsOn = root.findMember(v);
+					if (v == null){
+						Tracing.log(NLS.bind(errorMessage, v));
+						continue;
+					}
 					int numDependents = in.readInt();
 					for (int j=0; j<numDependents; j++){
 						v = in.readUTF();
 						IResource dependent = root.findMember(v);
 						if (dependent == null){
-							//TODO get this message approved
-							String msg = "IWAE0021E Internal error, the dependency index could not restored. Please perform a clean build. The error occurred while looking for {1}. ";
-							throw new RuntimeException(NLS.bind(msg, v));
+							Tracing.log(NLS.bind(errorMessage, v));
+							continue;
 						}
 						int numVal = in.readInt();
 						for (int k=0; k<numVal; k++){
@@ -156,22 +170,25 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 
 	public synchronized void clear(IProject project) {
 		init();
-		List<Depends> list = _projectMap.get(project);
-		if (list == null)return;
-		
-		_dirty = true;
-		for (Depends d : list)d.delete();
+		for (Map.Entry<IResource,Set<Depends>> me : _dependents.entrySet()){
+			if (me.getKey().getProject() == project){
+				for (Depends d : me.getValue()){
+					if (d.delete())_dirty = true;
+				}
+			}
+		}
 	}
 
-	public synchronized IResource[] get(String id, IResource dependsOn) {
+	public synchronized IResource[] get(String validatorId, IResource dependsOn) {
 		init();
-		Map<IResource, Depends> map = _dependsMap.get(dependsOn.getFullPath());
-		if (map == null)return EmptyResources;
-		
 		List<IResource> list = new LinkedList<IResource>();
-		for (Map.Entry<IResource, Depends> me : map.entrySet()){
-			if (me.getValue().hasValidator(id))list.add(me.getKey());
+		Set<Depends> set = getSet(_dependsOn, dependsOn);
+		for (Depends d : set){
+			for (String id : d.getValidators()){
+				if (validatorId.equals(id))list.add(d.getDependent());
+			}
 		}
+		
 		if (list.size() == 0)return EmptyResources;
 		IResource[] resources = new IResource[list.size()];
 		list.toArray(resources);
@@ -182,15 +199,12 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	public synchronized List<DependentResource> get(IResource dependsOn) {
 		init();
 		List<DependentResource> list = new LinkedList<DependentResource>();
-		Map<IResource, Depends> map = _dependsMap.get(dependsOn.getFullPath());
+		Set<Depends> set = getSet(_dependsOn, dependsOn);
 		ValManager vm = ValManager.getDefault();
-		if (map != null){
-			for (Map.Entry<IResource, Depends> me : map.entrySet()){
-				for (String id : me.getValue().getValidatorsEnabled()){
-					IResource res = me.getKey();
-					Validator v = vm.getValidator(id, res.getProject());
-					if (v != null)list.add(new DependentResource(res, v));
-				}
+		for (Depends d : set){
+			for (String id : d.getValidators()){
+				Validator v = vm.getValidator(id, d.getDependent().getProject());
+				if (v != null)list.add(new DependentResource(d.getDependent(), v));
 			}
 		}
 		return list;
@@ -198,13 +212,21 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 
 
 	public synchronized void set(String id, IResource dependent, IResource[] dependsOn) {
-		for (IResource d : dependsOn)add(id, dependent, d);
+		Set<Depends> set = getSet(_dependents, dependent);
+		for (Depends d : set){
+			if (d.delete(id))_dirty = true;
+		}
+		if (dependsOn != null){
+			for (IResource d : dependsOn)add(id, dependent, d);
+		}
 	}
 		
 	public boolean isDependedOn(IResource resource) {
 		init();
-		return _dependsMap.containsKey(resource.getFullPath());
-	}	
+		Set<Depends> set = _dependsOn.get(resource);
+		if (set == null || set.size() == 0)return false;
+		return true;
+	}
 
 	public void doneSaving(ISaveContext context) {	
 	}
@@ -216,20 +238,9 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	}
 	
 	/**
-	 * Persist the dependency index.
-	 * <p>
-	 * The format of the index is:
-	 * <pre>
-	 * Version number
-	 * Number of depends on entries
-	 *   depends on file name
-	 *   number of dependent entries
-	 *     dependent file name
-	 *     number of validators
-	 *       validator id
-	 * </pre>
+	 * Persist the dependency index. See the class comment for the structure.
 	 */
-	public void saving(ISaveContext context) throws CoreException {
+	public synchronized void saving(ISaveContext context) throws CoreException {
 		if (!_dirty)return;
 		_dirty = false;
 		
@@ -238,22 +249,17 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			File f = getIndexLocation();
 			out = new DataOutputStream(new FileOutputStream(f));
 			out.writeInt(CurrentVersion);
-			out.writeInt(_dependsMap.size());
-			for (Map.Entry<IPath, Map<IResource, Depends>> me : _dependsMap.entrySet()){
-				IPath key = me.getKey();
-				out.writeUTF(key.toString());
-				Map<IResource, Depends> map = me.getValue();
-				out.writeInt(map.size());
-				for (Map.Entry<IResource, Depends> me2: map.entrySet()){
-					int vc = me2.getValue().validatorCount();
-					if (vc == 0)continue;
-
-					IResource key2 = me2.getKey();
-					out.writeUTF(key2.getFullPath().toString());
-					Map<String, Boolean> map3 = me2.getValue().getValidators();
-					out.writeInt(vc);
-					for (Map.Entry<String, Boolean> me3 : map3.entrySet()){
-						if (me3.getValue())out.writeUTF(me3.getKey());
+			Map<String, Set<DependsResolved>> map = compress(_dependsOn);
+			out.writeInt(map.size());
+			for (Map.Entry<String, Set<DependsResolved>> me : map.entrySet()){
+				out.writeUTF(me.getKey());
+				Set<DependsResolved> set = me.getValue();
+				out.writeInt(set.size());
+				for (DependsResolved d : set){
+					out.writeUTF(d.resource);
+					out.writeInt(d.validators.size());
+					for (String id : d.validators){
+						out.writeUTF(id);
 					}
 				}
 			}
@@ -266,64 +272,92 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 		}
 	}
 
+	private Map<String, Set<DependsResolved>> compress(Map<IResource, Set<Depends>> dependsOn) {
+		Map<String, Set<DependsResolved>> map = new HashMap<String, Set<DependsResolved>>(dependsOn.size());
+		for (Map.Entry<IResource, Set<Depends>> me : dependsOn.entrySet()){
+			Set<DependsResolved> set = new HashSet<DependsResolved>(me.getValue().size());
+			for (Depends d : me.getValue()){
+				IPath path = d.getDependent().getFullPath();
+				if (path != null){
+					DependsResolved dr = new DependsResolved();
+					dr.resource = path.toPortableString();
+					if (d.getValidators().size() > 0){
+						dr.validators = d.getValidators();
+						set.add(dr);
+					}
+				}				
+			}
+			if (set.size() > 0){
+				IPath path = me.getKey().getFullPath();
+				if (path != null)map.put(path.toPortableString(), set);
+			}
+		}
+		return map;
+	}
+
 	private File getIndexLocation() {
 		IPath path = ValidationPlugin.getPlugin().getStateLocation().append("dep.index"); //$NON-NLS-1$
 		return path.toFile();
 	}
 
-private static class Depends {
-	
-	/** The key is the validator dependencyId.*/
-	private Map<String, Boolean> 	_validators;
-	
-	private Depends(){
-		_validators = new HashMap<String, Boolean>(5);
-	}
-
-	private Map<String, Boolean> getValidators() {
-		return _validators;
-	}
-	
 	/**
-	 * Answer the validator id's that are still enabled.
-	 * @return
+	 * Keep track of a relationship between a dependent and the thing that it
+	 * depends on.
+	 * 
+	 * @author karasiuk
+	 * 
 	 */
-	private List<String> getValidatorsEnabled() {
-		List<String> list = new LinkedList<String>();
-		for (Map.Entry<String, Boolean> me : _validators.entrySet()){
-			if (me.getValue())list.add(me.getKey());
+	private static class Depends {
+
+		/** The resource that is being depended on, for example a.xsd */
+		private IResource _dependsOn;
+
+		/** The resource that is dependent, for example a.xml */
+		private IResource _dependent;
+
+		/** The id's of the validators that have asserted the dependency. */
+		private Set<String> _validators;
+
+		public Depends(IResource dependent, IResource dependsOn) {
+			_dependent = dependent;
+			_dependsOn = dependsOn;
+			_validators = new HashSet<String>(5);
 		}
-		return list;
-	}
 
-	private void delete() {
-		_validators.clear();
-	}
-
-	private void add(String id) {
-		_validators.put(id, Boolean.TRUE);
-		
-	}
-
-	private boolean hasValidator(String id) {
-		Boolean v = _validators.get(id);
-		if (v == null)return false;
-		return v.booleanValue();
-	}
-	
-	/** 
-	 * Answer the number of active dependencies.
-	 * @return
-	 */
-	private int validatorCount(){
-		int count = 0;
-		for (Boolean b : _validators.values()){
-			if (b)count++;
+		/**
+		 * Answer true if the id was deleted.
+		 */
+		public boolean delete(String id) {
+			return _validators.remove(id);
 		}
-		return count;
-	}
-	
+
+		/**
+		 * Delete all the dependency assertions for all of your validators.
+		 * @return false if there was nothing to delete
+		 */
+		public boolean delete() {
+			boolean deleted = _validators.size() > 0;
+			if (deleted)_validators.clear();
+			return deleted;
+		}
+
+		public IResource getDependsOn() {
+			return _dependsOn;
+		}
+
+		public IResource getDependent() {
+			return _dependent;
+		}
+
+		public Set<String> getValidators() {
+			return _validators;
+		}
 }
+
+	private static class DependsResolved {
+		String 		resource;
+		Set<String> validators;
+	}
 
 
 }
