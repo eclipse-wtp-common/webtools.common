@@ -102,6 +102,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	private void init() {
 		if (_dependsMap != null)return;
 		
+		boolean error = false;
 		File f = getIndexLocation();
 		if (!f.exists()){
 			_dependsMap = new HashMap<IPath, Map<IResource, Depends>>(100);
@@ -128,6 +129,11 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 					for (int j=0; j<numDependents; j++){
 						v = in.readUTF();
 						IResource dependent = root.findMember(v);
+						if (dependent == null){
+							//TODO get this message approved
+							String msg = "IWAE0021E Internal error, the dependency index could not restored. Please perform a clean build. The error occurred while looking for {1}. ";
+							throw new RuntimeException(NLS.bind(msg, v));
+						}
 						int numVal = in.readInt();
 						for (int k=0; k<numVal; k++){
 							String id = in.readUTF();
@@ -137,12 +143,14 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				}				
 			}
 			catch (IOException e){
+				error = true;
 				ValidationPlugin.getPlugin().handleException(e);
 			}
 			finally {
 				Misc.close(in);
 			}
 			
+			if (error)f.delete();
 		}
 	}
 

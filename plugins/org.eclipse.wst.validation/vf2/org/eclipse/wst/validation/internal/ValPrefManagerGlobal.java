@@ -265,19 +265,29 @@ public class ValPrefManagerGlobal {
 //	}
 	
 	/**
-	 * Save the validator into the preference store. 
+	 * Save the validator into the preference store.
 	 * 
-	 * @param validator the validator being saved.
+	 * @param validator
+	 *            The validator being saved.
 	 * 
-	 * @param root the top of the preference tree for validators, i.e. 
-	 * /instance/validator-framework-id/vals for workspace validators and /vals for project validators.
+	 * @param root
+	 *            The top of the preference tree for validators, i.e.
+	 *            /instance/validator-framework-id/vals for workspace validators
+	 *            and /vals for project validators.
+	 *            
+	 * @param baseValidators
+	 *            A map of the validators that are one level higher in the
+	 *            storage hierarchy. So if we are updating the preference page
+	 *            validators, then this map would be the extension point
+	 *            validators. If we are updating a project's validators, then
+	 *            this map would be the preference page validators.
 	 */
-	static void save(Validator validator, Preferences root) throws BackingStoreException {
+	static void save(Validator validator, Preferences root, Map<String, Validator> baseValidators) throws BackingStoreException {
 		Validator.V2 v2 = validator.asV2Validator();
 		if (v2 == null)return;
 		
 		Preferences vp = root.node(validator.getId());
-		if (validator.sameConfig(ExtensionValidators.instance().getMapV2().get(validator.getId()))){
+		if (validator.sameConfig(baseValidators.get(validator.getId()))){
 			vp.removeNode();
 			return;
 		}
@@ -309,7 +319,8 @@ public class ValPrefManagerGlobal {
 		try {
 			IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
 			Preferences vals = pref.node(PrefConstants.vals);
-			for (Validator v : val)save(v, vals);
+			Map<String, Validator> base = ExtensionValidators.instance().getMapV2();
+			for (Validator v : val)save(v, vals, base);
 			pref.flush();
 			_validators = null;
 			updateListeners(true);
@@ -329,7 +340,8 @@ public class ValPrefManagerGlobal {
 			savePreferences(prefs, gp);
 			Preferences vals = prefs.node(PrefConstants.vals);
 
-			for (Validator v : validators)save(v, vals);
+			Map<String, Validator> base = ExtensionValidators.instance().getMapV2();
+			for (Validator v : validators)save(v, vals, base);
 			prefs.flush();
 			_validators = null;
 			updateListeners(true);

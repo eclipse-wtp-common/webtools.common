@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -173,7 +174,9 @@ public class ValPrefManagerProject {
 		pref.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
 		Preferences vals = pref.node(PrefConstants.vals);
 		try {
-			for (Validator v : validators)ValPrefManagerGlobal.save(v, vals);
+			Validator[] workspaceVals = ValManager.getDefault().getValidators();
+			Map<String, Validator> base = new HashMap<String, Validator>(workspaceVals.length);
+			for (Validator v : validators)ValPrefManagerGlobal.save(v, vals, base);
 			pref.flush();
 			ProjectConfiguration pc = ConfigurationManager.getManager()
 				.getProjectConfiguration(projectPreferences.getProject());

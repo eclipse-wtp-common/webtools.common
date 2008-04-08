@@ -324,7 +324,7 @@ public abstract class FilterRule implements IAdaptable {
 			String name = null;
 			switch (_type){
 			case FileTypeFile:
-				name = resource.getName();
+				name = resource.getProjectRelativePath().toPortableString();
 				break;
 				
 			case FileTypeFolder:

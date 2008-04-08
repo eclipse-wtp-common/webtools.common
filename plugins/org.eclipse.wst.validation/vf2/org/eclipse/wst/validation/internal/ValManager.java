@@ -338,7 +338,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		sorted.toArray(val);
 		return val;
 	}
-
+	
 	public static Validator[] getDefaultValidators(IProject project) throws InvocationTargetException {
 		Map<String,Validator> extVals = ExtensionValidators.instance().getMap(project);
 		Validator[] val = new Validator[extVals.size()];
@@ -593,7 +593,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	}
 	
 	/**
-	 * Accept a visitor for all the validators that are enabled for the given project, resource, and validation mode.
+	 * Accept a visitor for all the validators that are enabled for the given project, resource, 
+	 * and validation mode.
 	 * 
 	 * @param valType the type of validation request
 	 */
@@ -827,12 +828,16 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 */
 	private static class ValidatorProjectManager {
 		
-		private Map<String, Set<IProject>> _manual = new HashMap<String, Set<IProject>>(50);
-		private Map<String, Set<IProject>> _build = new HashMap<String, Set<IProject>>(50);
+		/**
+		 * Map a validator to the projects that it validates. I use the validator here, rather than it's
+		 * id, because we can have different versions of the validator. (i.e. a different one for each
+		 * project and then a global one).
+		 */
+		private Map<Validator, Set<IProject>> _manual = new HashMap<Validator, Set<IProject>>(50);
+		private Map<Validator, Set<IProject>> _build = new HashMap<Validator, Set<IProject>>(50);
 		
 		/**
-		 * Should this validator attempt to validate any resources in this
-		 * project?
+		 * Should this validator attempt to validate any resources in this project?
 		 * 
 		 * @param validator
 		 *            The validator that is being tested.
@@ -859,7 +864,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			change(project, _manual, ValType.Manual);			
 		}
 		
-		private void change(IProject project, Map<String, Set<IProject>> map, ValType type){
+		private void change(IProject project, Map<Validator, Set<IProject>> map, ValType type){
 			for (Validator validator : ValManager.getDefault().getValidators(project)){
 				boolean newSetting = validator.shouldValidateProject(project, type);
 				boolean oldSetting = shouldValidate(validator, project, type, map);
@@ -875,16 +880,15 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			remove(project, _manual);			
 		}
 		
-		private void remove(IProject project, Map<String, Set<IProject>> map){
+		private void remove(IProject project, Map<Validator, Set<IProject>> map){
 			for (Set<IProject> projects : map.values())projects.remove(project);
 		}
 
 		private boolean shouldValidate(Validator validator, IProject project, ValType type, 
-			Map<String, Set<IProject>> map){
+			Map<Validator, Set<IProject>> map){
 			
-			String id = validator.getId();
-			if (!map.containsKey(id))loadMap(validator, type, map);
-			Set<IProject> projects = map.get(id);
+			if (!map.containsKey(validator))loadMap(validator, type, map);
+			Set<IProject> projects = map.get(validator);
 			if (project == null)return projects.size() > 0;
 			return projects.contains(project);
 		}
@@ -896,9 +900,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * @param type
 		 * @param map
 		 */
-		private void loadMap(Validator validator, ValType type, Map<String, Set<IProject>> map) {
+		private void loadMap(Validator validator, ValType type, Map<Validator, Set<IProject>> map) {
 			Set<IProject> set = new HashSet<IProject>(40);
-			map.put(validator.getId(), set);
+			map.put(validator, set);
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 			for (IProject p : projects){
 				if (validator.shouldValidateProject(p, type)){

@@ -110,7 +110,7 @@ public class FilterDialog extends Dialog {
 		super(shell);
 		_shell = shell;
 		setShellStyle(getShellStyle() | SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
-		_validator = validator.copy();
+		_validator = validator.copy(true);
 		_v2 = _validator.asV2Validator();
 		_project = project;
 	}
@@ -409,6 +409,7 @@ public class FilterDialog extends Dialog {
 			FilterGroup[] groups = _v2.getGroups();
 			for (int i=0; i<groups.length; i++){
 				if (groups[i].remove(_selectedRule)){
+					_v2.bumpChangeCountGroups();
 					refresh();
 					return;
 				}

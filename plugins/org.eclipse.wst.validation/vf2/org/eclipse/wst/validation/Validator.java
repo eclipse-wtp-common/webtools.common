@@ -171,12 +171,16 @@ public abstract class Validator implements Comparable {
 	}
 	
 	/** Answer a deep copy of yourself. */
-	public abstract Validator copy();
+	public Validator copy(){
+		return copy(false);
+	}
+	
+	public abstract Validator copy(boolean includeChangeCounts);
 	
 	/**
 	 * Update your direct, non transient fields from the fields in v.
 	 */
-	protected void copyLocal(Validator v){
+	protected void copyLocal(Validator v, boolean includeChangeCounts){
 		_buildValidation = v._buildValidation;
 		_delegatingId = v._delegatingId;
 		_manualValidation = v._manualValidation;
@@ -185,6 +189,11 @@ public abstract class Validator implements Comparable {
 		_project = v._project;
 		_sourceId = v._sourceId;
 		_version = v._version;
+		
+		if (includeChangeCounts){
+			_changeCountGlobal = v._changeCountGlobal;
+			_changeCountMessages = v._changeCountMessages;
+		}
 	}
 	
 	/**
@@ -526,9 +535,9 @@ public static class V1 extends Validator {
 		_vmd = v1._vmd;
 	}
 		
-	public Validator copy() {
+	public Validator copy(boolean includeChangeCounts) {
 		V1 v = new V1Copy(_vmd, null);
-		v.copyLocal(this);
+		v.copyLocal(this, includeChangeCounts);
 				
 		return v;
 	}
@@ -741,11 +750,13 @@ public final static class V2 extends Validator implements IAdaptable {
 		getDelegatedValidator().clean(project, ValOperationManager.getDefault().getOperation().getState(), monitor);
 	}
 	
-	public Validator copy() {
+	public Validator copy(boolean includeChangeCounts) {
 		V2 v = null;
 		if (_validatorConfigElement != null)v = new V2(_validatorConfigElement, _project);
 		else v = new V2(_project, _validatorClassName, _validator);
-		v.copyLocal(this);
+		v.copyLocal(this, includeChangeCounts);
+		
+		if (includeChangeCounts)v._changeCountGroups = _changeCountGroups;
 		
 		FilterGroup[] groups = getGroups();
 		v._groupsArray = new FilterGroup[groups.length];
@@ -804,6 +815,10 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	public String getId() {
+		//FIXME remove
+		if (-1 != _id.indexOf("xml")){
+			int i = 1;
+		}
 		return _id;
 	}
 	

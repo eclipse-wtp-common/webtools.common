@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.DisabledResourceManager;
+import org.eclipse.wst.validation.internal.DisabledValidatorManager;
 import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
@@ -186,16 +187,7 @@ public final class ValidationFramework {
 	 * @param resource
 	 */
 	public Set<Validator> getDisabledValidatorsFor(IResource resource){
-		IProject project = resource.getProject();
-		Set<Validator> set = new HashSet<Validator>(10);
-		for (Validator val : ValManager.getDefault().getValidators(project)){
-			boolean validateIt = false;
-			if (val.shouldValidate(resource, false, false)){
-				validateIt = val.isBuildValidation() || val.isManualValidation();
-			}
-			if (!validateIt)set.add(val);
-		}
-		return set;
+		return DisabledValidatorManager.getDefault().getDisabledValidatorsFor(resource);
 	}
 	
 	/**
