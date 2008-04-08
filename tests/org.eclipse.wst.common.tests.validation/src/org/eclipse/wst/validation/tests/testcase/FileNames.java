@@ -6,6 +6,8 @@ package org.eclipse.wst.validation.tests.testcase;
  *
  */
 public interface FileNames {
+	String disabled = "disabled";
+	
 	String firstTest2x = "first.test2x";
 
 }

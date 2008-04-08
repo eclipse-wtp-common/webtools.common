@@ -47,8 +47,8 @@ public class TestSuite3 extends TestCase {
 		enableOnlyTestValidators();
 		_testProject = _env.createProject("TestProject");
 		IPath folder = _env.addFolder(_testProject.getFullPath(), "source");
-		_folder = ResourcesPlugin.getWorkspace().getRoot().findMember(folder);
-		_firstTest1 = _env.addFile(folder, "first.test1", "include map.test1\n" +
+		ResourcesPlugin.getWorkspace().getRoot().findMember(folder);
+		_env.addFile(folder, "first.test1", "include map.test1\n" +
 			"info - information\n" +
 			"warning - warning\n" +
 			"error - error\n\n" +
@@ -69,6 +69,16 @@ public class TestSuite3 extends TestCase {
 			"# We just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
+		
+		folder = _env.addFolder(_testProject.getFullPath(), FileNames.disabled);
+		_folder = ResourcesPlugin.getWorkspace().getRoot().findMember(folder);
+		_firstTest1 = _env.addFile(folder, "first.test1", "include map.test1\n" +
+				"info - information\n" +
+				"warning - warning\n" +
+				"error - error\n\n" +
+				"t1error - extra error\n" +
+				"t1warning - extra warning");
+
 	}
 	
 	/**
