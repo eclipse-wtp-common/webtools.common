@@ -15,9 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -62,11 +61,13 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.FullBuildJob;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.ContextIds;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
@@ -629,11 +630,12 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			saveV1Preferences();
 			
 			if (MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RebuildMsg)){
+				FullBuildJob fbj = new FullBuildJob();
 				try {
-					ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, null);
+					fbj.runInWorkspace(new NullProgressMonitor());
 				}
 				catch (CoreException e){
-					
+					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
 			return true;
