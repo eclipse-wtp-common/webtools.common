@@ -212,6 +212,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 
 
 	public synchronized void set(String id, IResource dependent, IResource[] dependsOn) {
+		init();
 		Set<Depends> set = getSet(_dependents, dependent);
 		for (Depends d : set){
 			if (d.delete(id))_dirty = true;
