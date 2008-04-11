@@ -102,7 +102,7 @@ public class ValOperation {
 	 * @param resource
 	 */
 	public boolean isValidated(String id, IResource resource){
-		Set set = (Set)_validated.get(id);
+		Set<IResource> set = _validated.get(id);
 		if (set == null)return false;
 		
 		return set.contains(resource);

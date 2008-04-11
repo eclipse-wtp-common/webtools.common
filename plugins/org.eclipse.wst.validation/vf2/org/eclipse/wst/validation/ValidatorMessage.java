@@ -145,6 +145,7 @@ public class ValidatorMessage {
 	 *		value type : <code>String</code>, <code>Integer</code>, or 
 	 *		<code>Boolean</code>) or <code>null</code>.
 	 */
+	@SuppressWarnings("unchecked")
 	public Map getAttributes() {
 		return _map;
 	}

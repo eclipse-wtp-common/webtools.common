@@ -147,6 +147,7 @@ public abstract class FilterRule implements IAdaptable {
 		return aDefault;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

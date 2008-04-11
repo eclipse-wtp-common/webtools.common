@@ -107,6 +107,7 @@ public abstract class FilterGroup implements IAdaptable {
 	/** Answer the type as a type that can be displayed to a user, that is it has been localized. */
 	public abstract String getDisplayableType();
 	
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

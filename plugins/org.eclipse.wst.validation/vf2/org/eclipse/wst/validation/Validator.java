@@ -60,7 +60,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * @author karasiuk
  *
  */
-public abstract class Validator implements Comparable {
+public abstract class Validator implements Comparable<Validator> {
 	// Remember if you add a new instance variable, make sure that you update the copy and become methods
 	
 	/**
@@ -162,12 +162,8 @@ public abstract class Validator implements Comparable {
 	/**
 	 * Compare yourself based on Validator name.
 	 */
-	public int compareTo(Object validator) {
-		if (validator instanceof Validator){
-			Validator other = (Validator)validator;
-			return getName().compareTo(other.getName());			
-		}
-		return -1;
+	public int compareTo(Validator validator) {
+			return getName().compareTo(validator.getName());			
 	}
 	
 	/** Answer a deep copy of yourself. */
@@ -1019,17 +1015,23 @@ public final static class V2 extends Validator implements IAdaptable {
 						}
 					}
 					
-					Map attributes = message.getAttributes();
-					if (attributes != null){						
-						for (Iterator it = attributes.entrySet().iterator(); it.hasNext();){
-							Map.Entry me = (Map.Entry)it.next();
-							String key = (String)me.getKey();
-							vm.setAttribute(key, me.getValue());
-						}
-					}
+					copyAttributes(message, vm);
 				}
 			}
 		}		
+	}
+
+	@SuppressWarnings("unchecked")
+	private void copyAttributes(IMessage message, ValidatorMessage vm) {
+		// I made this a separate method, so that I could localize the suppression of unchecked warnings.
+		Map attributes = message.getAttributes();
+		if (attributes != null){						
+			for (Iterator it = attributes.entrySet().iterator(); it.hasNext();){
+				Map.Entry me = (Map.Entry)it.next();
+				String key = (String)me.getKey();
+				vm.setAttribute(key, me.getValue());
+			}
+		}
 	}
 	
 	@Override
@@ -1042,6 +1044,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		getDelegatedValidator().validationFinishing(project, state, monitor);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

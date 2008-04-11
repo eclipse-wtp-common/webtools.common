@@ -869,8 +869,18 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				boolean newSetting = validator.shouldValidateProject(project, type);
 				boolean oldSetting = shouldValidate(validator, project, type, map);
 				if (newSetting != oldSetting){
-					if (newSetting)map.get(validator.getId()).add(project);
-					else map.get(validator.getId()).remove(project);
+					if (newSetting){
+						Set<IProject> set = map.get(validator);
+						if (set == null){
+							set = new HashSet<IProject>();
+							map.put(validator, set);
+						}
+						set.add(project);
+					}
+					else {
+						Set<IProject> set = map.get(validator);
+						if (set != null)set.remove(project);
+					}
 				}
 			}
 		}
