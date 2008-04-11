@@ -127,6 +127,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				
 				int version = in.readInt();
 				if (version != CurrentVersion){
+					error = true;
 					String msg = NLS.bind(ValMessages.ErrDependencyVersion, CurrentVersion);
 					throw new IllegalStateException(msg);
 				}
@@ -162,9 +163,12 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			}
 			finally {
 				Misc.close(in);
-			}
-			
-			if (error)f.delete();
+				if (error){
+					_dependsOn = new HashMap<IResource,Set<Depends>>(100);
+					_dependents = new HashMap<IResource,Set<Depends>>(100);
+					f.delete();
+				}
+			}			
 		}
 	}
 
