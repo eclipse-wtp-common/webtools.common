@@ -624,9 +624,11 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
 			if (!_projectManager.shouldValidate(val, project, valType))continue;
-			if (operation.isSuspended(val, project))continue;
 			if (val.shouldValidate(resource, valType)){
 				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
+				// we do the suspend check after figuring out if it needs to be validated, because we save
+				// this information for the session.
+				if (operation.isSuspended(val, project))continue;
 				try {
 					visitor.visit(val, project, valType, operation, monitor);
 				}
@@ -822,19 +824,15 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	
 	/**
 	 * This is used to keep track of which validators are enabled with which projects. We want to ensure
-	 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace. 
+	 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace.
+	 * The ValManager keeps a single instance of this class. 
 	 * @author karasiuk
 	 *
 	 */
 	private static class ValidatorProjectManager {
 		
-		/**
-		 * Map a validator to the projects that it validates. I use the validator here, rather than it's
-		 * id, because we can have different versions of the validator. (i.e. a different one for each
-		 * project and then a global one).
-		 */
-		private Map<Validator, Set<IProject>> _manual = new HashMap<Validator, Set<IProject>>(50);
-		private Map<Validator, Set<IProject>> _build = new HashMap<Validator, Set<IProject>>(50);
+		private ValProjectMap _manual = new ValProjectMap(ValType.Manual);
+		private ValProjectMap _build = new ValProjectMap(ValType.Build);
 		
 		/**
 		 * Should this validator attempt to validate any resources in this project?
@@ -849,8 +847,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * @return true if the validator should attempt to validate.
 		 */
 		public synchronized boolean shouldValidate(Validator validator, IProject project, ValType type){
-			if (type == ValType.Build)return shouldValidate(validator, project, type, _build);
-			if (type == ValType.Manual)return shouldValidate(validator, project, type, _manual);
+			if (type == ValType.Build)return _build.shouldValidate(validator, project);
+			if (type == ValType.Manual)return _manual.shouldValidate(validator, project);
 				
 			return false;
 		}
@@ -859,71 +857,92 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * A project has been created, opened, or had it's description changed.
 		 * @param project
 		 */
-		public synchronized void change(IProject project) {
-			change(project, _build, ValType.Build);
-			change(project, _manual, ValType.Manual);			
+		public void change(IProject project) {
+			reset();
 		}
 		
-		private void change(IProject project, Map<Validator, Set<IProject>> map, ValType type){
-			for (Validator validator : ValManager.getDefault().getValidators(project)){
-				boolean newSetting = validator.shouldValidateProject(project, type);
-				boolean oldSetting = shouldValidate(validator, project, type, map);
-				if (newSetting != oldSetting){
-					if (newSetting){
-						Set<IProject> set = map.get(validator);
-						if (set == null){
-							set = new HashSet<IProject>();
-							map.put(validator, set);
-						}
-						set.add(project);
-					}
-					else {
-						Set<IProject> set = map.get(validator);
-						if (set != null)set.remove(project);
-					}
-				}
-			}
-		}
-
-		public synchronized void remove(IProject project) {
-			remove(project, _build);
-			remove(project, _manual);			
+		public void remove(IProject project) {
+			reset();
 		}
 		
-		private void remove(IProject project, Map<Validator, Set<IProject>> map){
-			for (Set<IProject> projects : map.values())projects.remove(project);
-		}
-
-		private boolean shouldValidate(Validator validator, IProject project, ValType type, 
-			Map<Validator, Set<IProject>> map){
-			
-			if (!map.containsKey(validator))loadMap(validator, type, map);
-			Set<IProject> projects = map.get(validator);
-			if (project == null)return projects.size() > 0;
-			return projects.contains(project);
-		}
-
-		/**
-		 * Load the map with all the projects in the workspace, that this validator is prepared to validate.
-		 * 
-		 * @param validator
-		 * @param type
-		 * @param map
-		 */
-		private void loadMap(Validator validator, ValType type, Map<Validator, Set<IProject>> map) {
-			Set<IProject> set = new HashSet<IProject>(40);
-			map.put(validator, set);
-			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-			for (IProject p : projects){
-				if (validator.shouldValidateProject(p, type)){
-					set.add(p);
-				}
-			}
-		}
 		
 		public synchronized void reset(){
-			_build.clear();
-			_manual.clear();
+			_build.reset();
+			_manual.reset();
+		}
+		
+		/**
+		 * This is used to keep track of which validators are enabled for which projects. We want to ensure
+		 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace.
+		 * @author karasiuk
+		 *
+		 */
+		private static class ValProjectMap {
+			/**
+			 * Map a validator to the projects that it validates. 
+			 * <p>
+			 * I've gone back and forth on whether the key should
+			 * be a Validator or the validator id. I'm back to it being the id because I was
+			 * running into cases where because of copying I wasn't getting the matches that I expected. If I run into
+			 * false matches, it is probably because reset isn't being called when it should be.
+			 */
+			private Map<String, Set<IProject>> _map = new HashMap<String, Set<IProject>>(50);
+			
+			private ValType _type;
+			
+			/** Have we been initialized yet? */
+			private boolean	_initialized;
+			
+			public ValProjectMap(ValType type){
+				_type = type;
+			}
+			
+			/**
+			 * Should this validator attempt to validate any resources in this project?
+			 * 
+			 * @param validator
+			 *            The validator that is being tested.
+			 * @param project
+			 *            The project that is being tested. This can be null, which
+			 *            means that all projects will be tested, and if any of them return true, 
+			 *            then true is answered for this method.
+			 *            
+			 * @return true if the validator should attempt to validate.
+			 */
+			public synchronized boolean shouldValidate(Validator validator, IProject project){
+				if (!_initialized)load();
+				String vid = validator.getId();
+				Set<IProject> projects = _map.get(vid);
+				if (projects == null)return false;
+				if (project == null)return projects.size() > 0;
+				return projects.contains(project);
+			}
+			
+			private void load() {
+				ValManager vm = ValManager.getDefault();
+				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+				Tracing.log("ValManager-02: loading " + projects.length + " projects");  //$NON-NLS-1$//$NON-NLS-2$
+				for (IProject project : projects){
+					if (!project.isOpen())continue;
+					Validator[] vals = vm.getValidators(project);
+					for (Validator v : vals){
+						String vid = v.getId();
+						Set<IProject> set = _map.get(vid);
+						if (set == null){
+							set = new HashSet<IProject>(50);
+							_map.put(vid, set);
+						}
+						
+						if (v.shouldValidateProject(project, _type))set.add(project);
+					}					
+				}
+				_initialized = true;
+			}
+			
+			public synchronized void reset(){
+				_initialized = false;
+				_map.clear();
+			}
 		}
 		
 	}
@@ -940,6 +959,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			break;
 		case IProjectChangeListener.ProjectOpened:
 		case IProjectChangeListener.ProjectChanged:
+		case IProjectChangeListener.ProjectAdded:
 			projectChanged(project);
 			break;
 		}

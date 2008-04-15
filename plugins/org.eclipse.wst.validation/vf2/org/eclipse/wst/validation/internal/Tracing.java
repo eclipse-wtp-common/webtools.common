@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
@@ -27,6 +28,7 @@ public class Tracing {
 	private static boolean		_forceLogging;
 	private static Boolean		_traceMatches;
 	private static Boolean		_traceV1;
+	private static String		_extraValDetail;
 	
 	/**
 	 * Are we in logging/debugging mode?
@@ -48,6 +50,15 @@ public class Tracing {
 		}
 		return _traceV1;
 	}
+	
+	public static boolean matchesExtraDetail(String validatorId){
+		if (_extraValDetail == null){
+			_extraValDetail = Platform.getDebugOption(DebugConstants.ExtraValDetail);
+			if (_extraValDetail == null)_extraValDetail = ""; //$NON-NLS-1$
+		}
+		if (_extraValDetail.length() == 0)return false;
+		return _extraValDetail.equals(validatorId);
+	}
 
 	/**
 	 * Write a line to the console for debugging, if in debugging mode.
@@ -57,10 +68,10 @@ public class Tracing {
 		if (isLogging())write(line);
 	}
 	
-	public static void log(String... parts){
+	public static void log(Object... parts){
 		if (isLogging()){
 			StringBuffer b = new StringBuffer(200);
-			for (String p : parts)b.append(p);
+			for (Object p : parts)b.append(p);
 			write(b.toString());
 		}
 	}

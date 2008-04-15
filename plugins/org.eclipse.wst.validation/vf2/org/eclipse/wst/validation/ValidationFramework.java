@@ -133,8 +133,9 @@ public final class ValidationFramework {
 		if (_performanceMonitor == null){
 			boolean traceTimes = Misc.debugOptionAsBoolean(DebugConstants.TraceTimes);
 			String traceFile = Platform.getDebugOption(DebugConstants.TraceTimesFile);
+			boolean useDoubles = Misc.debugOptionAsBoolean(DebugConstants.TraceTimesUseDoubles);
 
-			_performanceMonitor = PerformanceMonitor.create(traceTimes, traceFile);
+			_performanceMonitor = PerformanceMonitor.create(traceTimes, traceFile, useDoubles);
 		}
 		return _performanceMonitor;
 	}

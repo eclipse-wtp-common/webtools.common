@@ -30,8 +30,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
- * The plug-in's activator class.
- *
+ * How does this plug-in get activated? There are many other plug-ins that depend on this plug-in, so there are
+ * many paths that will activate it. One common path is the J2EE perspective. If the J2EE plug-in start method, they
+ * reference a class in this plug-in, which activates the plug-in. For that case this plug-in will be active even before
+ * the workbench is up.
  */
 public class ValidationPlugin extends Plugin {
 	public static final String 	VALIDATION_PROP_FILE_NAME = "validate_base"; //$NON-NLS-1$

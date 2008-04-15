@@ -50,6 +50,7 @@ public class EventManager implements IResourceChangeListener {
 	}
 	
 	public void addProjectChangeListener(IProjectChangeListener listener){
+		Tracing.log("EventManager-03: add listener: ", listener); //$NON-NLS-1$
 		_listeners.add(listener);
 	}
 	
@@ -58,6 +59,11 @@ public class EventManager implements IResourceChangeListener {
 	}
 	
 	private void signal(IProject project, int type){
+		if (Tracing.isLogging()){
+			String name = "Null"; //$NON-NLS-1$
+			if (project != null)name = project.getName();
+			Tracing.log("EventManager-02: signal project: " + name + ", IProjectChangeListener type: " + type); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 		for (IProjectChangeListener pcl : _listeners){
 			try {
 				pcl.projectChanged(project, type);
@@ -178,6 +184,7 @@ public class EventManager implements IResourceChangeListener {
 					if (subdelta == null)return false;
 
 					IResource resource = subdelta.getResource();
+					if (resource instanceof IWorkspaceRoot)return true;
 					if (resource instanceof IProject) {
 						IProject project = (IProject) resource;
 						if ((subdelta.getFlags() & IResourceDelta.DESCRIPTION) == IResourceDelta.DESCRIPTION) {
@@ -191,6 +198,12 @@ public class EventManager implements IResourceChangeListener {
 								// project would just have been closed.
 								opening(project);
 							}
+							return false;
+						}
+						
+						if ((subdelta.getFlags() & IResourceDelta.ADDED) == IResourceDelta.ADDED) {
+							signal(project, IProjectChangeListener.ProjectAdded);
+							return false;
 						}
 					}
 
@@ -220,10 +233,10 @@ public class EventManager implements IResourceChangeListener {
 		}
 
 		if (Tracing.isLogging()){
-			Tracing.log("Eventmanager-01: IResourceChangeEvent type = " + //$NON-NLS-1$
+			Tracing.log("Eventmanager-01: IResourceChangeEvent type=" + //$NON-NLS-1$
 				Misc.resourceChangeEventType(event.getType()) + 
-				", resource = " +  //$NON-NLS-1$
-				event.getResource() + ", source = " + event.getSource() + ", delta = " +   //$NON-NLS-1$//$NON-NLS-2$
+				", resource=" +  //$NON-NLS-1$
+				event.getResource() + ", source=" + event.getSource() + ", delta=" +   //$NON-NLS-1$//$NON-NLS-2$
 				event.getDelta());				
 		}
 		
@@ -259,9 +272,7 @@ public class EventManager implements IResourceChangeListener {
 			IWorkspaceRoot workspaceRoot = workspace.getRoot();
 			IProject[] projects = workspaceRoot.getProjects();
 			ProjectConfiguration prjp = null;
-			IProject project = null;
-			for (int i = 0; i < projects.length; i++) {
-				project = projects[i];
+			for (IProject project : projects) {
 				if (!project.isOpen()) {
 					// If the project isn't opened, there's nothing to clean up.
 					// If the project was opened, it would have been migrated, and there's something

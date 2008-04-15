@@ -22,6 +22,7 @@ import org.eclipse.wst.validation.internal.ValMessages;
  */
 public class PerformanceCounters {
 	
+	private long	_when;
 	private String 	_validatorId;
 	private String	_validatorName;
 	private String	_resourceName;
@@ -39,6 +40,8 @@ public class PerformanceCounters {
 	 */
 	public PerformanceCounters(String validatorId, String validatorName, String resourceName, 
 		int numberInvocations, long elapsedTime, long cpuTime){
+		
+		_when = System.currentTimeMillis();
 		_validatorId = validatorId;
 		_validatorName = validatorName;
 		_resourceName = resourceName;
@@ -89,6 +92,15 @@ public class PerformanceCounters {
 
 	public String getValidatorName() {
 		return _validatorName;
+	}
+
+	/** Answer when was the event logged. */
+	public long getWhen() {
+		return _when;
+	}
+
+	public String getResourceName() {
+		return _resourceName;
 	}
 
 }

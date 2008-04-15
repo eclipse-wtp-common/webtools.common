@@ -26,6 +26,9 @@ public interface IProjectChangeListener {
 	/** 8 - Something in the project description has changed. For example, a Nature was added. */
 	int ProjectChanged = 8;
 	
+	/** 16 - The project has been added. */
+	int ProjectAdded = 16;
+	
 	/**
 	 * The project has changed in some way.
 	 * 

@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,16 +35,21 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 	 * Create a performance monitor.
 	 * 
 	 * @param traceTimes
-	 *            should the monitor be turned on?
+	 *            Should the monitor be turned on?
 	 * @param file
-	 *            should the events be logged to a file. If this is null or the
+	 *            Should the events be logged to a file. If this is null or the
 	 *            empty string the events will be written to stderr. Otherwise
 	 *            the events are appended to a file with this name.
+	 * 
+	 * @param logInSeconds
+	 *            Set this to true if you want the times that are logged in the
+	 *            trace file normalized to seconds. Otherwise the default units are used,
+	 *            milliseconds for elapsed time and nanoseconds for cpu time.
 	 */
-	public static PerformanceMonitor create(boolean traceTimes, String file){
+	public static PerformanceMonitor create(boolean traceTimes, String file, boolean logInSeconds){
 		PerformanceMonitor pm = null;
 		if (file == null || file.length() == 0)pm = new PerformanceMonitor();
-		else pm = new ToFile(file);
+		else pm = new ToFile(file, logInSeconds);
 		
 		if (traceTimes)pm.setCollectionLevel(CollectionLevel.Default);
 		
@@ -94,19 +100,34 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 	public static class ToFile extends PerformanceMonitor {
 		
 		private String 		_fileName;
+		private boolean		_logInSeconds;
+		
 		private PrintWriter _pw;
 		private static final String Comma=","; //$NON-NLS-1$
+		private static DateFormat 	_df = new SimpleDateFormat("HH:mm:ss.SSSS"); //$NON-NLS-1$
 		
-		private ToFile(String fileName){
+		private ToFile(String fileName, boolean logInSeconds){
 			_fileName = fileName;
+			_logInSeconds = logInSeconds;
 		}
 		
 		@Override
 		public synchronized void add(PerformanceCounters pc) {
 			try {
 				PrintWriter pw = getWriter();
-				pw.println(pc.getValidatorId() + Comma + pc.getNumberInvocations() +
-					Comma+pc.getElapsedTime()+Comma+pc.getCpuTime());
+				pw.print(_df.format(pc.getWhen()) + Comma + 
+					pc.getValidatorId() + Comma + pc.getNumberInvocations() + Comma);
+				if (_logInSeconds){
+					double sec = ((double)pc.getElapsedTime()) / 1000.0;
+					pw.print(sec);
+					pw.print(Comma);
+					sec = ((double)pc.getCpuTime()) / 1000000000.0;
+					pw.print(sec);
+				}
+				else {
+					pw.print(pc.getElapsedTime()+Comma+pc.getCpuTime());
+				}
+				pw.println(Comma + pc.getResourceName());
 				pw.flush();
 			}
 			catch (IOException e){
@@ -120,6 +141,10 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 				DateFormat df = DateFormat.getDateTimeInstance();
 				_pw.println("# " + NLS.bind(ValMessages.LogSession,  //$NON-NLS-1$
 					df.format(new Date(System.currentTimeMillis()))));
+				if (_logInSeconds)
+					_pw.println("# when, id, invocation count, elapsed time (seconds), cpu time (seconds), resource"); //$NON-NLS-1$
+				else 
+					_pw.println("# when, id, invocation count, elapsed time (ms), cpu time (ns), resource"); //$NON-NLS-1$
 			}
 			return _pw;
 			

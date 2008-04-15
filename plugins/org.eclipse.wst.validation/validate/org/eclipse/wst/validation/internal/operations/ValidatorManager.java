@@ -145,6 +145,10 @@ public final class ValidatorManager {
 	 * builder to the project description so that the project can support build validation.
 	 */
 	public static void addProjectBuildValidationSupport(IProject project) {
+		/*
+		 * I'm working my way through the code to see where this gets called. One place was in ModuleCoreNature
+		 * which had hard coded the builder id.
+		 */
 		if (project == null)return;
 
 		boolean isBuilderAdded = false;

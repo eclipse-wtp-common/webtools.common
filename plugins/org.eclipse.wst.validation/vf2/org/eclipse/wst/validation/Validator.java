@@ -34,6 +34,7 @@ import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.NullValidator;
 import org.eclipse.wst.validation.internal.SummaryReporter;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.ValOperation;
@@ -219,10 +220,18 @@ public abstract class Validator implements Comparable<Validator> {
 	 * @return true if the resource should be validated.
 	 */
 	public boolean shouldValidate(IResource resource, ValType valType){
+		if (Tracing.matchesExtraDetail(getId())){
+			Tracing.log("Validator-01: checking if " + getId() + " should validate " + resource); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 		if (valType == ValType.Manual && !_manualValidation)return false;
 		if (valType == ValType.Build && !_buildValidation)return false;
 		
-		return shouldValidate(resource);
+		boolean result = shouldValidate(resource);
+		if (Tracing.matchesExtraDetail(getId())){
+			Tracing.log("Validator-02: result = " + result); //$NON-NLS-1$
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -249,10 +258,17 @@ public abstract class Validator implements Comparable<Validator> {
 	 * @return true if the project should be validated.
 	 */
 	public boolean shouldValidateProject(IProject project, boolean isManual, boolean isBuild){
+		if (Tracing.matchesExtraDetail(getId())){
+			Tracing.log("Validator-03: checking if " + getId() + " should validate " + project); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 		if (isManual && !_manualValidation)return false;
 		if (isBuild && !_buildValidation)return false;
 		if (project == null || !project.isOpen())return false;
-		return shouldValidateProject(project);
+		boolean result = shouldValidateProject(project);
+		if (Tracing.matchesExtraDetail(getId())){
+			Tracing.log("Validator-04: result " + result); //$NON-NLS-1$
+		}
+		return result;
 	}
 	/**
 	 * Validate the resource.
