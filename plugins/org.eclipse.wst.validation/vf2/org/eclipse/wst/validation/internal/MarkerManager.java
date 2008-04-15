@@ -160,9 +160,10 @@ public class MarkerManager {
 	 * @param resource
 	 */
 	public void hook(IResource resource){
-//		if (resource.getName().equals("first.test2x")){
+//		//FIXME remove this
+//		if (resource.getName().equals("GolfCountryClub.xml")){
 //			String markers = Misc.listMarkers(resource);
-//			Tracing.log("MarkerManager has hooked: first.test2x"); //$NON-NLS-1$
+//			Tracing.log("MarkerManager has hooked: GolfCountryClub.xml"); //$NON-NLS-1$
 //			RuntimeException rt = new RuntimeException("hooking first.test2x");
 //			rt.printStackTrace();
 //		}

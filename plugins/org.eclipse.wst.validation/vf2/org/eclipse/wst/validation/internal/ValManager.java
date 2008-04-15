@@ -540,6 +540,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			cpuTime = Misc.getCPUTime();
 		}
 		
+		if (Tracing.matchesExtraDetail(validator.getId())){
+			Tracing.log("ValManager-03: validating ", resource); //$NON-NLS-1$
+		}
 		ValidationResult vr = validator.validate(resource, kind, operation, monitor);
 		if (pm.isCollecting()){
 			if (cpuTime != -1){

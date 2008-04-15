@@ -247,10 +247,10 @@ public class TaskListUtility implements ConfigurationConstants {
 						// odd...marker wasn't created correctly. How could this happen?
 						// Default to the current severity and add it to the list.
 						try {
-							marker.setAttribute(IMarker.SEVERITY, getSeverity(severity));
-						} catch (CoreException e) {
-							ValidationPlugin.getPlugin().handleException(e);
-							continue;
+							// 226541 - I was seeing markers with valid severities being reset, so I added this
+							// additional test.
+							if (marker.getAttribute(IMarker.SEVERITY, -1) == -1)
+								marker.setAttribute(IMarker.SEVERITY, getSeverity(severity));
 						} catch (Exception e) {
 							ValidationPlugin.getPlugin().handleException(e);
 							continue;
