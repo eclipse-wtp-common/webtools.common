@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.ui.internal;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +25,6 @@ import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
-import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
 
 /**
@@ -35,9 +33,6 @@ import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
  *
  */
 public class ManualValidationRunner extends WorkspaceJob {
-	
-	/** If we checked the project already it gets placed in this set. */
-	private static Set<IProject> _checked = new HashSet<IProject>(20);
 	
 	private Map<IProject, Set<IResource>> 	_projects;
 	private ValType _valType;
@@ -75,7 +70,6 @@ public class ManualValidationRunner extends WorkspaceJob {
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		
-		if (_valType == ValType.Manual)projectChecks();
 		long start = System.currentTimeMillis();
 		final ValOperation vo = ValidationRunner.validate(_projects, _valType, monitor);
 		final long time = System.currentTimeMillis() - start;
@@ -98,19 +92,5 @@ public class ManualValidationRunner extends WorkspaceJob {
 			display.asyncExec(run);			
 		}
 		return Status.OK_STATUS;
-	}
-
-	/**
-	 * Check to see if we have a validation builder on the projects, and if not add one.
-	 */
-	private void projectChecks() {
-		for (IProject project : _projects.keySet()){
-			if (_checked.contains(project))continue;
-			_checked.add(project);
-			if (!ValidatorManager.doesProjectSupportBuildValidation(project)){
-				ValidatorManager.addProjectBuildValidationSupport(project);
-			}
-		}
-		
 	}
 }
