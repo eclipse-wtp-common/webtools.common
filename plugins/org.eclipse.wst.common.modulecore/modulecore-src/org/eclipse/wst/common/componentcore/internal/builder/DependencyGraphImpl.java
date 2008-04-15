@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -356,28 +355,39 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 	};
 
+	/**
+	 * @deprecated use {@link #update(IProject, int)}
+	 */
 	public void queueProjectAdded(IProject project) {
-		graphUpdateJob.queueProjectAdded(project);
-		synchronized (jobLock) {
-			if (pauseCount > 0) {
-				return;
-			}
-		}
-		graphUpdateJob.schedule(JOB_DELAY);
+		update(project, IDependencyGraph.ADDED);
 	}
 
+	/**
+	 * @deprecated use {@link #update(IProject, int)}
+	 */
 	public void queueProjectDeleted(IProject project) {
-		graphUpdateJob.queueProjectDeleted(project);
-		synchronized (jobLock) {
-			if (pauseCount > 0) {
-				return;
-			}
-		}
-		graphUpdateJob.schedule(JOB_DELAY);
+		update(project, IDependencyGraph.REMOVED);
 	}
 
+	/**
+	 * @deprecated use {@link #update(IProject, int)}
+	 */
 	public void update(IProject project) {
-		graphUpdateJob.queueProjectUpdated(project);
+		update(project, IDependencyGraph.MODIFIED);
+	}
+
+	public void update(IProject project, final int updateType){
+		switch(updateType){
+		case IDependencyGraph.MODIFIED:
+			graphUpdateJob.queueProjectUpdated(project);
+			break;
+		case IDependencyGraph.ADDED:
+			graphUpdateJob.queueProjectAdded(project);
+			break;
+		case IDependencyGraph.REMOVED:
+			graphUpdateJob.queueProjectDeleted(project);
+			break;
+		}
 		synchronized (jobLock) {
 			if (pauseCount > 0) {
 				return;
@@ -385,7 +395,9 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 		graphUpdateJob.schedule(JOB_DELAY);
 	}
-
+	
+	
+	
 	private int pauseCount = 0;
 
 	/**
@@ -414,13 +426,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 * Blocks until the graph is finished updating
 	 */
 	public void waitForAllUpdates(IProgressMonitor monitor) {
-		try {
-			graphUpdateJob.schedule(0);
-			Job.getJobManager().join(GRAPH_UPDATE_JOB_FAMILY, monitor);
-		} catch (OperationCanceledException e) {
-			ModulecorePlugin.logError(e);
-		} catch (InterruptedException e) {
-			ModulecorePlugin.logError(e);
+		if(graphUpdateJob.shouldSchedule()){
+			graphUpdateJob.run(monitor);
 		}
 	}
 

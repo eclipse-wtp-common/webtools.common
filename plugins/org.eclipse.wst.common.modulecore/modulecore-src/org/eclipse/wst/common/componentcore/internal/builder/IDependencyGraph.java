@@ -35,6 +35,25 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 public interface IDependencyGraph {
 
 	/**
+	 * Flag used by {@link #update(IProject, int)} to specify that something has
+	 * modified in a project which has changed the component dependencies.
+	 */
+	public static final int MODIFIED = 0;
+
+	/**
+	 * Flag used by {@link #update(IProject, int)} to specify a project has been
+	 * added or opened. This flag should be used as sparingly as possible
+	 * because there are performance implications.
+	 */
+	public static final int ADDED = 1;
+
+	/**
+	 * Flag used by {@link #update(IProject, int)} to specify a project has been
+	 * removed or closed.
+	 */
+	public static final int REMOVED = 2;
+
+	/**
 	 * The static instance of this graph
 	 */
 	public static IDependencyGraph INSTANCE = DependencyGraphImpl.getInstance();
@@ -47,13 +66,13 @@ public interface IDependencyGraph {
 	 * @return
 	 */
 	public Set<IProject> getReferencingComponents(IProject targetProject);
-	
+
 	/**
-	 * Returns a modification stamp.  This modification stamp will be different
+	 * Returns a modification stamp. This modification stamp will be different
 	 * if the project dependencies ever change.
 	 */
 	public long getModStamp();
-	
+
 	/**
 	 * WARNING: this should only be called by implementors of the
 	 * org.eclipse.wst.common.modulecore.componentimpl extension point.
@@ -73,6 +92,11 @@ public interface IDependencyGraph {
 	 * @see {@link #update(IProject)}
 	 */
 	public void postUpdate();
+
+	/**
+	 * @deprecated use {@link #update(IProject, int) using the #MODIFIED flag.
+	 */
+	public void update(IProject sourceProject);
 
 	/**
 	 * WARNING: this should only be called by implementors of the
@@ -99,8 +123,10 @@ public interface IDependencyGraph {
 	 * }    
 	 * </code>
 	 * 
+	 * Valid updateType flags are {@link #MODIFIED}, {@link #ADDED}, and
+	 * {@link #REMOVED}
 	 * 
 	 */
-	public void update(IProject sourceProject);
+	public void update(IProject sourceProject, int updateType);
 
 }
