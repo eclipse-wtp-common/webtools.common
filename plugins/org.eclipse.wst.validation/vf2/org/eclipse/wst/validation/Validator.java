@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
@@ -203,11 +204,13 @@ public abstract class Validator implements Comparable<Validator> {
 	 * 
 	 * @return true if the resource should be validated.
 	 */
-	public boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild){
+	public boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild, 
+		ContentTypeWrapper contentTypeWrapper){
+		
 		if (isManual && !_manualValidation)return false;
 		if (isBuild && !_buildValidation)return false;
 		
-		return shouldValidate(resource);
+		return shouldValidate(resource, contentTypeWrapper);
 	}
 	
 	/**
@@ -219,14 +222,14 @@ public abstract class Validator implements Comparable<Validator> {
 	 * 
 	 * @return true if the resource should be validated.
 	 */
-	public boolean shouldValidate(IResource resource, ValType valType){
+	public boolean shouldValidate(IResource resource, ValType valType, ContentTypeWrapper contentTypeWrapper){
 		if (Tracing.matchesExtraDetail(getId())){
 			Tracing.log("Validator-01: checking if " + getId() + " should validate " + resource); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (valType == ValType.Manual && !_manualValidation)return false;
 		if (valType == ValType.Build && !_buildValidation)return false;
 		
-		boolean result = shouldValidate(resource);
+		boolean result = shouldValidate(resource, contentTypeWrapper);
 		if (Tracing.matchesExtraDetail(getId())){
 			Tracing.log("Validator-02: result = " + result); //$NON-NLS-1$
 		}
@@ -328,7 +331,7 @@ public abstract class Validator implements Comparable<Validator> {
 		return null;
 	}
 	
-	protected abstract boolean shouldValidate(IResource resource);
+	protected abstract boolean shouldValidate(IResource resource, ContentTypeWrapper contentTypeWrapper);
 	protected abstract boolean shouldValidateProject(IProject project);
 			
 	public abstract String getId();
@@ -594,7 +597,7 @@ public static class V1 extends Validator {
 	}
 
 	@Override
-	protected boolean shouldValidate(IResource resource) {
+	protected boolean shouldValidate(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 		return _vmd.isApplicableTo(resource);
 	}
 
@@ -898,11 +901,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * 
 	 * @return true if the resource should be validated.
 	 */
-	protected boolean shouldValidate(IResource resource) {
+	protected boolean shouldValidate(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 		FilterGroup[] groups = getGroups();
 		IProject project = resource.getProject();
 		for (FilterGroup group : groups){
-			if (!group.shouldValidate(project, resource))return false;
+			if (!group.shouldValidate(project, resource, contentTypeWrapper))return false;
 		}
 		return true;
 	}
@@ -1080,8 +1083,9 @@ public final static class V2 extends Validator implements IAdaptable {
 	@Override
 	protected boolean shouldValidateProject(IProject project) {
 		FilterGroup[] groups = getGroups();
+		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (FilterGroup group : groups){
-			if (!group.shouldValidate(project, null))return false;
+			if (!group.shouldValidate(project, null, ctw))return false;
 		}
 		return true;
 	}

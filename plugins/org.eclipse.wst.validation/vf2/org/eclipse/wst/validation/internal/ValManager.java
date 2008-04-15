@@ -290,8 +290,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			return v.hasValidator(folder);
 		}
 		else {
+			ContentTypeWrapper ctw = new ContentTypeWrapper();
 			for (Validator val : ValManager.getDefault().getValidators(resource.getProject())){
-				if (val.shouldValidate(resource, isManual, isBuild))return true;
+				if (val.shouldValidate(resource, isManual, isBuild, ctw))return true;
 			}			
 		}
 		return false;
@@ -624,10 +625,11 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		
 		vp = new ValProperty();
 		vp.setConfigNumber(_configNumber);
+		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
 			if (!_projectManager.shouldValidate(val, project, valType))continue;
-			if (val.shouldValidate(resource, valType)){
+			if (val.shouldValidate(resource, valType, ctw)){
 				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
 				// we do the suspend check after figuring out if it needs to be validated, because we save
 				// this information for the session.

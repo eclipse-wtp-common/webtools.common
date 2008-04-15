@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.DisabledResourceManager;
@@ -172,8 +173,9 @@ public final class ValidationFramework {
 	public Validator[] getValidatorsFor(IResource resource, boolean isManual, boolean isBuild){
 		IProject project = resource.getProject();
 		List<Validator> list = new LinkedList<Validator>();
+		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (Validator val : ValManager.getDefault().getValidators(project)){
-			if (val.shouldValidate(resource, isManual, isBuild))list.add(val);
+			if (val.shouldValidate(resource, isManual, isBuild, ctw))list.add(val);
 		}
 		
 		Validator[] result = new Validator[list.size()];

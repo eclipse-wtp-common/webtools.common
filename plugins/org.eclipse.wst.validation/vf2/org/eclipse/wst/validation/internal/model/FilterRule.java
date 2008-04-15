@@ -17,10 +17,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.PrefConstants;
@@ -103,7 +103,7 @@ public abstract class FilterRule implements IAdaptable {
 	 * 
 	 * 	@param resource the resource that is being validated.
 	 */
-	public Boolean matchesResource(IResource resource){
+	public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper){
 		return null;
 	}
 
@@ -225,7 +225,7 @@ public abstract class FilterRule implements IAdaptable {
 			return NLS.bind(ValMessages.FileExtWithoutCase, getDisplayableType(), _pattern);
 		}
 
-		public Boolean matchesResource(IResource resource) {
+		public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 			String ext = resource.getFileExtension();
 			if (_caseSensitive)return _pattern.equals(ext);
 			return _pattern.equalsIgnoreCase(ext);
@@ -321,7 +321,7 @@ public abstract class FilterRule implements IAdaptable {
 			return NLS.bind(ValMessages.FileExtWithoutCase, getDisplayableType(), _pattern);
 		}
 		
-		public Boolean matchesResource(IResource resource) {
+		public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 			String name = null;
 			switch (_type){
 			case FileTypeFile:
@@ -478,26 +478,19 @@ public abstract class FilterRule implements IAdaptable {
 			_type = Platform.getContentTypeManager().getContentType(pattern);
 		}
 		
-		public Boolean matchesResource(IResource resource) {
+		public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 			if (_type == null)return Boolean.FALSE;
-			try {
-				if (resource instanceof IFile) {
-					IFile file = (IFile) resource;
-					IContentDescription cd = file.getContentDescription();
-					if (cd == null)return Boolean.FALSE;
-					IContentType ct = cd.getContentType();
-					if (ct == null)return Boolean.FALSE;
-					boolean match = false;
-					if (_exactMatch)match = ct.getId().equals(_type.getId());
-					else match = ct.isKindOf(_type);
-					
-					if (match && Tracing.isTraceMatches())
-						Tracing.log("FilterRule-01: ", toString() + " has matched " + resource); //$NON-NLS-1$ //$NON-NLS-2$
-					return match;
-				}
-			}
-			catch (CoreException e){
-				if(Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
+			if (resource instanceof IFile) {
+				IFile file = (IFile) resource;
+				IContentType ct = contentTypeWrapper.getContentType(file);
+				if (ct == null)return Boolean.FALSE;
+				boolean match = false;
+				if (_exactMatch)match = ct.getId().equals(_type.getId());
+				else match = ct.isKindOf(_type);
+				
+				if (match && Tracing.isTraceMatches())
+					Tracing.log("FilterRule-01: ", toString() + " has matched " + resource); //$NON-NLS-1$ //$NON-NLS-2$
+				return match;
 			}
 			return Boolean.FALSE;
 		}

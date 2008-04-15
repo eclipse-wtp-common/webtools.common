@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.Serializer;
@@ -174,14 +175,14 @@ public abstract class FilterGroup implements IAdaptable {
 	 * @param resource the resource that is being validated. This can be null, in which case
 	 * only the project level checks are performed.
 	 */
-	public boolean shouldValidate(IProject project, IResource resource) {
+	public boolean shouldValidate(IProject project, IResource resource, ContentTypeWrapper contentTypeWrapper) {
 		FilterRule[] rules = getRules();
 		boolean exclude = isExclude();
 		boolean include = isInclude();
 		int count = 0;
 		for (FilterRule rule : rules){
 			if (resource != null){
-				Boolean match = rule.matchesResource(resource);
+				Boolean match = rule.matchesResource(resource, contentTypeWrapper);
 				if (match != null)count++;
 				if (exclude && match != null && match)return false;
 				if (include && match != null && match)return true;
