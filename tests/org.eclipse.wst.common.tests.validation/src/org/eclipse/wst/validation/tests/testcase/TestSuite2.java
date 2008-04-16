@@ -27,13 +27,15 @@ import org.osgi.framework.Bundle;
 public class TestSuite2 extends TestCase {
 	
 	private TestEnvironment _env;
-	private IProject		_testProject;
+	private IProject	_testProject;
 	
-	private IFile			_firstTest1;
-	private IFile			_secondTest1;
-	private IFile			_firstT1B;
+	private IFile		_firstTest1;
+	private IFile		_secondTest1;
+	private IFile		_firstT1B;
 	
-	private IFile			_firstTest2x;
+	private IFile		_firstTest2x;
+	
+	private IFile		_firstT1C;
 	
 	public static Test suite() {
 		return new TestSuite(TestSuite2.class);
@@ -66,6 +68,11 @@ public class TestSuite2 extends TestCase {
 		_env.addFile(folder, "third.test4", "# Doesn't really matter\nWe just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
+		
+		IPath ignore = _env.addFolder(_testProject.getFullPath(), "ignore");
+		IPath nested = _env.addFolder(ignore, "nested");
+		_firstT1C = _env.addFile(nested, "first.t1c", "error - error");
+		
 	}
 
 	/**
@@ -111,6 +118,8 @@ public class TestSuite2 extends TestCase {
 			checkClear();
 			checkT1B();
 			checkGuardValidators();
+			
+			checkT1C();
 		}
 		finally {
 //			workspace.removeResourceChangeListener(listener);
@@ -120,6 +129,11 @@ public class TestSuite2 extends TestCase {
 	private void checkT1B() throws CoreException {
 		IMarker[] markers = _firstT1B.findMarkers(T1B.MarkerId, false, IResource.DEPTH_ZERO);
 		assertEquals("Number of T1B markers", 3, markers.length);		
+	}
+	
+	private void checkT1C() throws CoreException {
+		IMarker[] markers = _firstT1C.findMarkers(null, false, IResource.DEPTH_ZERO);
+		assertEquals("Number of T1C markers", 0, markers.length);		
 	}
 
 	/**
