@@ -194,6 +194,10 @@ public abstract class Validator implements Comparable<Validator> {
 		}
 	}
 	
+	public boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild){
+		return shouldValidate(resource, isManual, isBuild, new ContentTypeWrapper());
+	}
+	
 	/**
 	 * Answer true if this validator, based on it's filters, should validate this resource. This method
 	 * does not check to see if global validation or project validation has been suspended or not.
@@ -211,6 +215,10 @@ public abstract class Validator implements Comparable<Validator> {
 		if (isBuild && !_buildValidation)return false;
 		
 		return shouldValidate(resource, contentTypeWrapper);
+	}
+	
+	public boolean shouldValidate(IResource resource, ValType valType){
+		return shouldValidate(resource, valType, new ContentTypeWrapper());
 	}
 	
 	/**
