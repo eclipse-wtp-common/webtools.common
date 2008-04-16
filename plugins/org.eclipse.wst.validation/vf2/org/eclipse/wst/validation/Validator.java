@@ -194,21 +194,46 @@ public abstract class Validator implements Comparable<Validator> {
 		}
 	}
 	
+	/**
+	 * Answer true if this validator, based on it's filters, should validate
+	 * this resource. This method does not check to see if global validation or
+	 * project validation has been suspended or not.
+	 * 
+	 * @param resource
+	 *            The resource to be checked.
+	 * @param isManual
+	 *            If true then this validator must also be enabled for manual
+	 *            validation.
+	 * @param isBuild
+	 *            If true then this validator must also be enabled for builder
+	 *            based validation.
+	 * 
+	 * @return true if the resource should be validated.
+	 */
 	public boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild){
 		return shouldValidate(resource, isManual, isBuild, new ContentTypeWrapper());
 	}
 	
 	/**
-	 * Answer true if this validator, based on it's filters, should validate this resource. This method
-	 * does not check to see if global validation or project validation has been suspended or not.
+	 * Answer true if this validator, based on it's filters, should validate
+	 * this resource. This method does not check to see if global validation or
+	 * project validation has been suspended or not.
 	 * 
-	 * @param resource the resource to be checked
-	 * @param isManual if true then this validator must also be enabled for manual validation.
-	 * @param isBuild if true then this validator must also be enabled for builder based validation.
-	 * 
+	 * @param resource
+	 *            The resource to be checked.
+	 * @param isManual
+	 *            If true then this validator must also be enabled for manual
+	 *            validation.
+	 * @param isBuild
+	 *            If true then this validator must also be enabled for builder
+	 *            based validation.
+	 * @param contentTypeWrapper 
+	 *            For repeated calls on the same resource, it is more efficient
+	 *            to remember the content type.
 	 * @return true if the resource should be validated.
+	 * @see Friend#shouldValidate(Validator, IResource, boolean, boolean, ContentTypeWrapper)
 	 */
-	public boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild, 
+	boolean shouldValidate(IResource resource, boolean isManual, boolean isBuild, 
 		ContentTypeWrapper contentTypeWrapper){
 		
 		if (isManual && !_manualValidation)return false;
@@ -217,20 +242,40 @@ public abstract class Validator implements Comparable<Validator> {
 		return shouldValidate(resource, contentTypeWrapper);
 	}
 	
+	/**
+	 * Answer true if this validator, based on it's filters, should validate
+	 * this resource. This method does not check to see if global validation or
+	 * project validation has been suspended or not.
+	 * 
+	 * @param resource
+	 *            The resource to be checked.
+	 * @param valType
+	 *            The context to use when performing the check.
+	 * 
+	 * @return true if the resource should be validated.
+	 */
 	public boolean shouldValidate(IResource resource, ValType valType){
 		return shouldValidate(resource, valType, new ContentTypeWrapper());
 	}
 	
 	/**
-	 * Answer true if this validator, based on it's filters, should validate this resource. This method
-	 * does not check to see if global validation or project validation has been suspended or not.
+	 * Answer true if this validator, based on it's filters, should validate
+	 * this resource. This method does not check to see if global validation or
+	 * project validation has been suspended or not.
 	 * 
-	 * @param resource the resource to be checked
-	 * @param valType The content to use when perform the check.
+	 * @param resource
+	 *            The resource to be checked.
+	 * @param valType
+	 *            The context to use when performing the check.
+	 * @param contentTypeWrapper
+	 *            For repeated calls on the same resource, it is more efficient
+	 *            to remember the content type.
 	 * 
 	 * @return true if the resource should be validated.
+	 * 
+	 * @see Friend#shouldValidate(Validator, IResource, ValType, ContentTypeWrapper)
 	 */
-	public boolean shouldValidate(IResource resource, ValType valType, ContentTypeWrapper contentTypeWrapper){
+	boolean shouldValidate(IResource resource, ValType valType, ContentTypeWrapper contentTypeWrapper){
 		if (Tracing.matchesExtraDetail(getId())){
 			Tracing.log("Validator-01: checking if " + getId() + " should validate " + resource); //$NON-NLS-1$ //$NON-NLS-2$
 		}

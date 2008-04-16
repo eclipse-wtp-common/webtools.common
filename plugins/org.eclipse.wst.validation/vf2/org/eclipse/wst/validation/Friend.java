@@ -12,6 +12,10 @@ package org.eclipse.wst.validation;
 
 import java.util.Map;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.wst.validation.internal.ContentTypeWrapper;
+import org.eclipse.wst.validation.internal.ValType;
+
 /**
  * This class is only to be called by the validation framework and it's test cases.
  * This class is NOT part of the API.
@@ -30,6 +34,18 @@ public class Friend {
 	 */
 	public static boolean isLoaded(Validator validator){
 		return validator.isLoaded();
+	}
+	
+	public static boolean shouldValidate(Validator validator, IResource resource, boolean isManual, boolean isBuild, 
+			ContentTypeWrapper contentTypeWrapper){
+		return validator.shouldValidate(resource, isManual, isBuild, contentTypeWrapper);
+	}
+	
+	public static boolean shouldValidate(Validator validator, IResource resource, ValType valType, 
+		ContentTypeWrapper contentTypeWrapper){
+		
+		return validator.shouldValidate(resource, valType, contentTypeWrapper);
+		
 	}
 
 }

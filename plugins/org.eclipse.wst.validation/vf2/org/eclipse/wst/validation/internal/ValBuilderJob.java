@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.validation.DependentResource;
+import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IDependencyIndex;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationState;
@@ -144,7 +145,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		if (index.isDependedOn(resource)){
 			MarkerManager mm = MarkerManager.getDefault();
 			for (DependentResource dr : index.get(resource)){
-				if (dr.getValidator().shouldValidate(dr.getResource(), ValType.Build, new ContentTypeWrapper())){
+				if (Friend.shouldValidate(dr.getValidator(), dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 					mm.clearMarker(dr.getResource(), dr.getValidator()); 
 					_operation.getState().put(ValidationState.TriggerResource, resource);
 					ValManager.getDefault().validate(dr.getValidator(), _operation, dr.getResource(), 

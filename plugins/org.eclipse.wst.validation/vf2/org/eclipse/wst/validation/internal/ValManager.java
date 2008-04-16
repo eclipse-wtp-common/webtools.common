@@ -34,6 +34,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IPerformanceMonitor;
 import org.eclipse.wst.validation.PerformanceCounters;
 import org.eclipse.wst.validation.ValidationFramework;
@@ -292,7 +293,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		else {
 			ContentTypeWrapper ctw = new ContentTypeWrapper();
 			for (Validator val : ValManager.getDefault().getValidators(resource.getProject())){
-				if (val.shouldValidate(resource, isManual, isBuild, ctw))return true;
+				if (Friend.shouldValidate(val, resource, isManual, isBuild, ctw))return true;
 			}			
 		}
 		return false;
@@ -629,7 +630,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
 			if (!_projectManager.shouldValidate(val, project, valType))continue;
-			if (val.shouldValidate(resource, valType, ctw)){
+			if (Friend.shouldValidate(val, resource, valType, ctw)){
 				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
 				// we do the suspend check after figuring out if it needs to be validated, because we save
 				// this information for the session.
