@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.wst.validation.DependentResource;
 import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IDependencyIndex;
@@ -56,7 +57,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	private int					_buildKind;
 	
 	/** The monitor to use while running the build. */
-	private IProgressMonitor	_monitor;
+	private SubMonitor	_monitor;
 	
 	/** The types of changes we are interested in. */
 	private final static int	InterestedFlags = IResourceDelta.CONTENT | IResourceDelta.ENCODING |
@@ -97,7 +98,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) {
 		Tracing.log("ValBuilderJob-01: Starting"); //$NON-NLS-1$
-		_monitor = monitor;
+		_monitor = SubMonitor.convert(monitor);
 		
 		try {		
 			if (_delta == null)fullBuild();
@@ -137,8 +138,9 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		if ((delta.getFlags() & InterestedFlags) == 0)return true;
 		
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
+			_monitor.setWorkRemaining(10000);
 			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
-				_operation, _monitor);
+				_operation, _monitor.newChild(1));
 		}
 				
 		IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
@@ -163,9 +165,9 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 				MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
 				return false;
 			}
-			
+			_monitor.setWorkRemaining(10000);
 			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, ValType.Build, 
-				_buildKind, _operation, _monitor);
+				_buildKind, _operation, _monitor.newChild(1));
 		}
 		catch (ResourceUnavailableError e){
 			if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
