@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -263,22 +263,32 @@ public abstract class FilterRule implements IAdaptable {
 		}		
 	}
 	
+	/**
+	 * A rule that is used to filter based on file of folder names.
+	 * @author karasiuk
+	 *
+	 */
 	public static class File extends FilterRule {
 		
 		private boolean _caseSensitive;
+		private String	_patternAsLowercase;
+		
+		/** One of the FileTypeXX constants. */
 		private int		_type;
 		
 		public static final int FileTypeFile = 1;
 		public static final int FileTypeFolder = 2;
 		public static final int FileTypeFull = 3;
 		
-		public File(){
-			
+		private static final String PortableFileDelim = "/"; //$NON-NLS-1$
+		
+		public File(){			
 		}
 		
 		public FilterRule copy() {
 			File rule = new File();
 			rule._pattern = _pattern;
+			rule._patternAsLowercase = _patternAsLowercase;
 			rule._caseSensitive = _caseSensitive;
 			rule._type = _type;
 			return rule;
@@ -299,15 +309,26 @@ public abstract class FilterRule implements IAdaptable {
 			if (_type == FileTypeFolder)return ValMessages.RuleFolder;
 			return ValMessages.RuleFile;
 		}
+		
+		@Override
+		public void setData(String pattern) {
+			if (pattern != null)_patternAsLowercase = pattern.toLowerCase();
+			else _patternAsLowercase = null;
+			
+			_pattern = pattern;
+		}
 
 		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.name);
+			setData(rule.getAttribute(ExtensionConstants.RuleAttrib.name));
 			if (_pattern == null)throw new IllegalStateException(ValMessages.ErrPatternAttrib);
 			_caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);	
 			String type = rule.getAttribute(ExtensionConstants.RuleAttrib.fileType);
 			if (type == null)throw new IllegalStateException(ValMessages.ErrTypeReq);
 			if (ExtensionConstants.FileType.file.equals(type))_type = FileTypeFile;
-			else if (ExtensionConstants.FileType.folder.equals(type))_type = FileTypeFolder;
+			else if (ExtensionConstants.FileType.folder.equals(type)){
+				_type = FileTypeFolder;
+				if (!_pattern.endsWith(PortableFileDelim))setData(_pattern + PortableFileDelim);
+			}
 			else if (ExtensionConstants.FileType.full.equals(type))_type = FileTypeFull;
 			else {
 				Object[] parms = {type, ExtensionConstants.FileType.file, ExtensionConstants.FileType.folder, 
@@ -329,7 +350,7 @@ public abstract class FilterRule implements IAdaptable {
 				break;
 				
 			case FileTypeFolder:
-				name = resource.getProjectRelativePath().removeLastSegments(1).toString();
+				name = resource.getProjectRelativePath().removeLastSegments(1).toString() + PortableFileDelim;
 				break;
 				
 			case FileTypeFull:
@@ -337,8 +358,9 @@ public abstract class FilterRule implements IAdaptable {
 				break;
 			}
 			
-			if (_caseSensitive)return _pattern.equals(name);
-			return _pattern.equalsIgnoreCase(name);
+			if (name == null)return Boolean.FALSE;
+			if (_caseSensitive)return name.startsWith(_pattern);
+			return name.toLowerCase().startsWith(_patternAsLowercase);
 		}
 		
 		@Override
