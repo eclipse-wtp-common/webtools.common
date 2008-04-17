@@ -47,6 +47,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * <p>
@@ -141,7 +142,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, ISynchronizerExtender {
 	
-    public static final String VALIDATION_BUILDER_ID = "org.eclipse.wst.validation.validationbuilder"; // plugin id of the validation builder//$NON-NLS-1$
+    public static final String VALIDATION_BUILDER_ID = ValidationPlugin.VALIDATION_BUILDER_ID;
     private ModuleStructuralModel cachedModel;
 	/**
 	 * <p>
