@@ -102,7 +102,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			}
 			if (runtimeAdded) {
 				IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
-				addDefaultFacets(facetProj, runtime.getDefaultFacets(fixedFacets));
+				addDefaultFactets(facetProj, runtime);
 			}
 
 		} catch (CoreException e) {
