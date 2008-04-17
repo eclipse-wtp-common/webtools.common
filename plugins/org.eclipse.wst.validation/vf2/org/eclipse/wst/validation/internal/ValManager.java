@@ -512,13 +512,13 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				if (vt == ValType.Build && v1 != null)return;
 				
 				SubMonitor subMonitor = SubMonitor.convert(monitor);
-				subMonitor.setWorkRemaining(10000);
 				String task = NLS.bind(ValMessages.LogValStart, validator.getName(), resource.getName());
 				subMonitor.beginTask(task, 1);
 				validate(validator, operation, resource, kind, subMonitor.newChild(1));
 			}			
 		};
-		accept(visitor, project, resource, valType, operation, monitor);
+		SubMonitor sm = SubMonitor.convert(monitor, getValidators(project).length);
+		accept(visitor, project, resource, valType, operation, sm);
 		
 	}
 	

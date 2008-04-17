@@ -14,6 +14,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceProxy;
+import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -57,7 +59,9 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	private int					_buildKind;
 	
 	/** The monitor to use while running the build. */
-	private SubMonitor	_monitor;
+	private IProgressMonitor	_monitor;
+	
+	private SubMonitor			_subMonitor;
 	
 	/** The types of changes we are interested in. */
 	private final static int	InterestedFlags = IResourceDelta.CONTENT | IResourceDelta.ENCODING |
@@ -98,7 +102,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) {
 		Tracing.log("ValBuilderJob-01: Starting"); //$NON-NLS-1$
-		_monitor = SubMonitor.convert(monitor);
+		_monitor = monitor;
 		
 		try {		
 			if (_delta == null)fullBuild();
@@ -120,10 +124,16 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	}
 
 	private void deltaBuild() throws CoreException {
+		ResourceCounter counter = new ResourceCounter();
+		_delta.accept(counter);
+		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
 		_delta.accept(this);		
 	}
 
 	private void fullBuild() throws CoreException {
+		ResourceCounter counter = new ResourceCounter();
+		_project.accept(counter, 0);
+		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
 		_project.accept(this);
 		
 	}
@@ -138,9 +148,8 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		if ((delta.getFlags() & InterestedFlags) == 0)return true;
 		
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
-			_monitor.setWorkRemaining(10000);
 			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
-				_operation, _monitor.newChild(1));
+				_operation, _subMonitor.newChild(1));
 		}
 				
 		IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
@@ -165,15 +174,34 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 				MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
 				return false;
 			}
-			_monitor.setWorkRemaining(10000);
 			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, ValType.Build, 
-				_buildKind, _operation, _monitor.newChild(1));
+				_buildKind, _operation, _subMonitor.newChild(1));
 		}
 		catch (ResourceUnavailableError e){
 			if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
 			return false;
 		}
 		return true;
+	}
+	
+	static class ResourceCounter implements IResourceProxyVisitor, IResourceDeltaVisitor {
+		
+		private int _count;
+
+		public int getCount() {
+			return _count;
+		}
+
+		public boolean visit(IResourceProxy proxy) throws CoreException {
+			_count++;
+			return true;
+		}
+
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			_count++;
+			return true;
+		}
+		
 	}
 
 }
