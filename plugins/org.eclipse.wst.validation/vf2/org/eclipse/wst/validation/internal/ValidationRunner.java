@@ -90,7 +90,7 @@ public class ValidationRunner implements IWorkspaceRunnable {
 				return _valOperation;
 			}
 			IProject project = me.getKey();
-			ValManager.getDefault().accept(startingVisitor, project, _valType, _valOperation, monitor);
+			manager.accept(startingVisitor, project, _valType, _valOperation, monitor);
 			for (IResource resource : me.getValue()){
 				manager.validate(project, resource, IResourceDelta.NO_CHANGE, _valType, 
 					IncrementalProjectBuilder.AUTO_BUILD, _valOperation, monitor);

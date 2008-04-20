@@ -61,6 +61,23 @@ public interface ExtensionConstants {
 	/** rules - a group of inclusion or exclusion rules. */
 	String rules = "rules"; //$NON-NLS-1$
 	
+	/** rules - extension point to declare a validator group */
+	String group = "validatorGroup"; //$NON-NLS-1$
+	
+	interface Group {
+		/*
+		 * The group sub-element for either the validatorGroup or validator
+		 * extension points.
+		 */
+		String elementGroup = "group"; //$NON-NLS-1$
+		// a validator group identifier
+		String attId = "id"; //$NON-NLS-1$
+		// the listener sub-element
+		String elementListener = "listener"; //$NON-NLS-1$
+		// the group listener class name
+		String attClass = "class"; //$NON-NLS-1$
+	}
+	
 	/** Different types of rules for filtering validation. */
 	interface Rule {
 		

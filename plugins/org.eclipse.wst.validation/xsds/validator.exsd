@@ -53,6 +53,7 @@
             <element ref="include" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="exclude" minOccurs="0" maxOccurs="1"/>
             <element ref="messageCategory" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="group" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -235,6 +236,26 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
       </complexType>
    </element>
 
+   <element name="group">
+      <annotation>
+         <documentation>
+            Declares that this validator belongs to this validation group.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The fully qualified ID of the validation group to which this validator belongs.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <element name="contentType">
       <annotation>
          <documentation>
@@ -308,7 +329,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         WebTools 2.0
+         WebTools 3.0
       </documentation>
    </annotation>
 
@@ -329,6 +350,10 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                &lt;fileext ext=&quot;htm&quot;/&gt;
             &lt;/rules&gt;
          &lt;/include&gt;
+         &lt;group
+               id=&quot;org.eclipse.wst.common.tests.validation.t1group&quot;&gt;
+         &lt;/group&gt;
+         
       &lt;/validator&gt;
    &lt;/extension&gt;
       </documentation>

@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -750,6 +751,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	private IConfigurationElement _validatorConfigElement;
 	
 	private String	_validatorClassName;
+	
+	/**
+	 * An array containing the validator group IDs for which this validator is a member.
+	 */
+	private String[] _validatorGroupIds;
 		
 	/** 
 	 * If this validator is a delegating validator, then this is the "real" validator (i.e. the one that
@@ -767,6 +773,15 @@ public final static class V2 extends Validator implements IAdaptable {
 		_validatorConfigElement = configElement;
 		_validatorClassName = configElement.getAttribute(ExtensionConstants.AttribClass);
 		_project = project;
+
+		IConfigurationElement[] groupReferenceElements = configElement.getChildren(ExtensionConstants.Group.elementGroup);
+		List<String> validatorGroupIDs = new ArrayList<String>();
+		for (IConfigurationElement groupElement : groupReferenceElements) {
+			String id = groupElement.getAttribute(ExtensionConstants.Group.attId);
+			if (id != null)validatorGroupIDs.add(id);
+		}
+		_validatorGroupIds = validatorGroupIDs.toArray(new String[validatorGroupIDs.size()]);
+			
 		init();
 	}
 	
@@ -835,6 +850,7 @@ public final static class V2 extends Validator implements IAdaptable {
 
 		v._id = _id;
 		v._name = _name;
+		v._validatorGroupIds = _validatorGroupIds;
 				
 		return v;
 	}
@@ -881,14 +897,13 @@ public final static class V2 extends Validator implements IAdaptable {
 		_delegated = delegated;
 		return delegated;
 	}
-	
+		
 	public String getId() {
 		return _id;
 	}
 	
 	/**
 	 * Answer the validator's filter groups.
-	 *  
 	 * @return an empty array if the validator does not have any filter groups.
 	 */
 	public synchronized FilterGroup[] getGroups(){
@@ -926,6 +941,10 @@ public final static class V2 extends Validator implements IAdaptable {
 	
 	public String getValidatorClassname(){
 		return _validatorClassName;
+	}
+	
+	public String[] getValidatorGroups(){
+		return _validatorGroupIds;
 	}
 	
 	@Override
@@ -1157,6 +1176,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		_validator = v2._validator;
 		_validatorConfigElement = v2._validatorConfigElement;
 		_validatorClassName = v2._validatorClassName;
+		_validatorGroupIds = v2._validatorGroupIds;
 	}
 }
 

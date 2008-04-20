@@ -29,7 +29,11 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
@@ -37,6 +41,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IPerformanceMonitor;
+import org.eclipse.wst.validation.IValidatorGroupListener;
 import org.eclipse.wst.validation.PerformanceCounters;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResult;
@@ -608,10 +613,12 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * 
 	 * @param valType the type of validation request
 	 */
-	public void accept(IValidatorVisitor visitor, IProject project, IResource resource, ValType valType, 
-			ValOperation operation, IProgressMonitor monitor){
+	public void accept(IValidatorVisitor visitor, IProject project, IResource resource, 
+			ValType valType, ValOperation operation, IProgressMonitor monitor){
 		
 		if (isDisabled(project))return;
+		
+		Map<String,IValidatorGroupListener[]> groupListeners = new HashMap<String,IValidatorGroupListener[]>();
 		
 		ValProperty vp = getValProperty(resource, valType, _configNumber);
 		if (vp != null){
@@ -619,6 +626,10 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			for (Validator val : getValidators(project)){
 				if (monitor.isCanceled())return;
 				if (!bs.get(_idManager.getIndex(val.getId())))continue;
+				Validator.V2 v2 = val.asV2Validator();
+				if (v2 != null) {
+					notifyGroupListenersStarting(resource, valType, operation, monitor, groupListeners, v2);
+				}
 				try {
 					visitor.visit(val, project, valType, operation, monitor);
 				}
@@ -626,6 +637,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
+			notifyGroupFinishing(resource, valType, operation, monitor, groupListeners);
 			return;
 		}
 		
@@ -640,6 +652,10 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				// we do the suspend check after figuring out if it needs to be validated, because we save
 				// this information for the session.
 				if (operation.isSuspended(val, project))continue;
+				Validator.V2 v2 = val.asV2Validator();
+				if (v2 != null) {
+					notifyGroupListenersStarting(resource, valType, operation, monitor, groupListeners, v2);
+				}
 				try {
 					visitor.visit(val, project, valType, operation, monitor);
 				}
@@ -648,7 +664,73 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				}
 			}
 		}
+		notifyGroupFinishing(resource, valType, operation, monitor, groupListeners);
 		putValProperty(vp, resource, valType);
+	}
+
+	/**
+	 * Let the group listeners know that validation might be starting for the group of validators. 
+	 */
+	private void notifyGroupListenersStarting(final IResource resource,	final ValType valType, 
+			final ValOperation operation, final IProgressMonitor monitor, 
+			Map<String, IValidatorGroupListener[]> groupListeners, Validator.V2 v2) {
+		
+		String[] groups = v2.getValidatorGroups();
+		for (String group : groups) {
+			if (!groupListeners.containsKey(group)) {
+				IValidatorGroupListener[] createdListeners = null;
+				try {
+					createdListeners = ValidatorGroupExtensionReader.getDefault().createListeners(group);
+				}
+				catch (CoreException e){
+					String msg = NLS.bind(ValMessages.ErrConfig, v2.getId());
+					Status status = new Status(IStatus.ERROR, ValidationPlugin.PLUGIN_ID, msg);
+					CoreException core = new CoreException(status);
+					ValidationPlugin.getPlugin().handleException(core);
+					ValidationPlugin.getPlugin().handleException(e);
+					
+					// we create this to ensure that we don't signal the same exception over and over. 
+					createdListeners = new IValidatorGroupListener[0];
+				}
+				
+				// create and notify just this once
+				final IValidatorGroupListener[] listeners = createdListeners;
+					
+				groupListeners.put(group, listeners);
+				for (final IValidatorGroupListener listener : listeners) {
+					SafeRunner.run(new ISafeRunnable() {
+						public void run() throws Exception {
+							listener.validationStarting(resource, monitor, valType, operation);
+						}
+
+						public void handleException(Throwable exception) {
+							ValidationPlugin.getPlugin().handleException(exception);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * Let the group listeners know that validation is finished for the group of validators. 
+	 */
+	private void notifyGroupFinishing(final IResource resource, final ValType valType,
+			final ValOperation operation, final IProgressMonitor monitor,
+			Map<String, IValidatorGroupListener[]> groupListeners) {
+		for (final IValidatorGroupListener[] listeners : groupListeners.values()) {
+			for (final IValidatorGroupListener listener : listeners) {
+				SafeRunner.run(new ISafeRunnable() {
+					public void run() throws Exception {
+						listener.validationFinishing(resource, monitor, valType, operation);
+					}
+
+					public void handleException(Throwable exception) {
+						ValidationPlugin.getPlugin().handleException(exception);
+					}
+				});
+			}
+		}
 	}
 
 	private ValProperty getValProperty(IResource resource, ValType valType, int configNumber) {

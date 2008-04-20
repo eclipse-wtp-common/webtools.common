@@ -9,6 +9,7 @@
    <extension-point id="validationSelectionHandler" name="%validationSelectionHandler" schema="xsds/validationSelectionHandler.exsd"/>
    <extension-point id="validationHelper" name="validationHelper" schema="xsds/validationHelper.exsd"/>
    <extension-point id="validatorDelegates" name="%ValidatorDelegates" schema="xsds/validatorDelegates.exsd"/>   
+   <extension-point id="validatorGroup" name="Validator Group" schema="xsds/validatorgroup.exsd"/>   
    
 <!--============================-->
 <!-- Validation Contributions   -->
