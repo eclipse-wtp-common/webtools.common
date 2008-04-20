@@ -22,6 +22,7 @@ import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.tests.T1B;
+import org.eclipse.wst.validation.tests.T1Group;
 import org.osgi.framework.Bundle;
 
 public class TestSuite2 extends TestCase {
@@ -107,7 +108,9 @@ public class TestSuite2 extends TestCase {
 			vf.join(monitor);
 			Thread.sleep(1000);
 			
+			T1Group.getGroup().reset();
 			_env.turnOnAutoBuild();
+			
 			
 			_firstTest1.touch(monitor);
 			Thread.sleep(50);
@@ -120,12 +123,20 @@ public class TestSuite2 extends TestCase {
 			checkGuardValidators();
 			
 			checkT1C();
+			checkGroup();
 		}
 		finally {
 //			workspace.removeResourceChangeListener(listener);
 		}
 	}
 	
+	private void checkGroup() {
+		T1Group group = T1Group.getGroup();
+		assertNotNull("The validation group listener T1Group was never created", group);
+		assertEquals("The starting count must equal the finishing count", group.getStarting(), group.getFinishing());
+		assertEquals("Number of times the group should be signalled", 2, group.getStarting());
+	}
+
 	private void checkT1B() throws CoreException {
 		IMarker[] markers = _firstT1B.findMarkers(T1B.MarkerId, false, IResource.DEPTH_ZERO);
 		assertEquals("Number of T1B markers", 3, markers.length);		
