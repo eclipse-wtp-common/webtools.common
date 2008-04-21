@@ -700,7 +700,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				for (final IValidatorGroupListener listener : listeners) {
 					SafeRunner.run(new ISafeRunnable() {
 						public void run() throws Exception {
-							listener.validationStarting(resource, monitor, valType, operation);
+							listener.validationStarting(resource, monitor, operation.getState());
 						}
 
 						public void handleException(Throwable exception) {
@@ -722,7 +722,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			for (final IValidatorGroupListener listener : listeners) {
 				SafeRunner.run(new ISafeRunnable() {
 					public void run() throws Exception {
-						listener.validationFinishing(resource, monitor, valType, operation);
+						listener.validationFinishing(resource, monitor, operation.getState());
 					}
 
 					public void handleException(Throwable exception) {

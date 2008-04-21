@@ -12,8 +12,6 @@ package org.eclipse.wst.validation;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.validation.internal.ValOperation;
-import org.eclipse.wst.validation.internal.ValType;
 
 /**
  * Validators may wish to join validator groups for performance or other
@@ -39,12 +37,10 @@ public interface IValidatorGroupListener {
 	 *            The resource that is being validated.
 	 * @param monitor
 	 *            A progress monitor that the method can use.
-	 * @param valType
-	 *            The type of validation request.
-	 * @param operation
-	 *            The current validation operation.
+	 * @param state
+	 *            The validation state for the current operation.
 	 */
-	void validationStarting(IResource resource, IProgressMonitor monitor, ValType valType, ValOperation operation);
+	void validationStarting(IResource resource, IProgressMonitor monitor, ValidationState state);
 	
 	/**
 	 * If the validationStarting method was called on the resource, then this method will be called after the last
@@ -54,10 +50,8 @@ public interface IValidatorGroupListener {
 	 *            The resource that is being validated.
 	 * @param monitor
 	 *            A progress monitor that the method can use.
-	 * @param valType
-	 *            The type of validation request.
-	 * @param operation
-	 *            The current validation operation.
+	 * @param state
+	 *            The validation state for the current operation.
 	 */
-	void validationFinishing(IResource resource, IProgressMonitor monitor, ValType valType, ValOperation operation);
+	void validationFinishing(IResource resource, IProgressMonitor monitor, ValidationState state);
 }
