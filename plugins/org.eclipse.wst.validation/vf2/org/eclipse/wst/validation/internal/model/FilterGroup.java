@@ -123,7 +123,7 @@ public abstract class FilterGroup implements IAdaptable {
 			return ValMessages.GroupInclude;
 		}
 		
-		protected boolean isInclude() {
+		public boolean isInclude() {
 			return true;
 		}
 		
@@ -147,7 +147,7 @@ public abstract class FilterGroup implements IAdaptable {
 			return ValMessages.GroupExclude;
 		}
 		
-		protected boolean isExclude() {
+		public boolean isExclude() {
 			return true;
 		}		
 	}
@@ -202,7 +202,7 @@ public abstract class FilterGroup implements IAdaptable {
 	 * Answer true if this is an inclusion filter, that is at least one of the rules must
 	 * match in order to validate the resource.
 	 */
-	protected boolean isInclude() {
+	public boolean isInclude() {
 		return false;
 	}
 
@@ -210,7 +210,7 @@ public abstract class FilterGroup implements IAdaptable {
 	 * Answer true if this is an exclusion filter, that is if any of the rules match the 
 	 * resource is not validated.
 	 */
-	protected boolean isExclude() {
+	public boolean isExclude() {
 		return false;
 	}
 	

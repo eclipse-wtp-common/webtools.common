@@ -807,6 +807,7 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 
 	public synchronized void add(FilterGroup fg) {
+		assert fg != null;
 		_groupsArray = null;
 		_groups.add(fg);
 		bumpChangeCountGroups();
@@ -1178,6 +1179,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		_validatorClassName = v2._validatorClassName;
 		_validatorGroupIds = v2._validatorGroupIds;
 	}
+
 }
 
 public String getSourceId() {

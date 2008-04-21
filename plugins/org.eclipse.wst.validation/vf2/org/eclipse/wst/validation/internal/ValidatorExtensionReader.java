@@ -10,12 +10,14 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
@@ -23,9 +25,11 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.Validator.V2;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.model.FilterRule;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -50,19 +54,70 @@ public class ValidatorExtensionReader {
 	/**
 	 * Read the extensions.
 	 */
-	List<Validator> process() {
-		List<Validator> list = new LinkedList<Validator>();
+	Collection<Validator> process() {
+		Map<String,Validator> map = new HashMap<String, Validator>(100);
 		IExtensionPoint extensionPoint = getExtensionPoint();
-		if (extensionPoint == null)return list;
+		if (extensionPoint == null)return map.values();
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
 				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), null);
-				if (v != null)list.add(v);
+				if (v != null)map.put(v.getId(),v);
 			}
 		}
-		return list;
 		
+		extensionPoint = getExtensionPointExclude();
+		if (extensionPoint != null){
+			for (IExtension ext : extensionPoint.getExtensions()){
+				for (IConfigurationElement validator : ext.getConfigurationElements()){
+					String id = validator.getAttribute(ExtensionConstants.Exclude.id);
+					Validator v = map.get(id);
+					V2 v2 = null;
+					if (v != null)v2 = v.asV2Validator();
+
+					if (v2 == null){
+						String msg = NLS.bind("Plug-in configuration error, extension {0} references validator id {1} but this id does not exist.",  //$NON-NLS-1$
+							extensionPoint.getUniqueIdentifier(), id);
+						CoreException ex = new CoreException(new Status(IStatus.ERROR, ValidationPlugin.PLUGIN_ID, msg));
+						ValidationPlugin.getPlugin().handleException(ex);
+					}
+					else {
+						for (IConfigurationElement exclude : validator.getChildren()){
+							FilterGroup fg = createFilterGroup(exclude);
+							if (fg != null && fg.isExclude()){
+								mergeExcludeGroup(v2, fg);
+							}
+						}
+					}					
+				}
+			}
+			
+		}
+		return map.values();
+		
+	}
+	
+	/**
+	 * Merge the rules from the filter group into the current exclude group, creating a current exclude
+	 * group if need be.
+	 * @param v2
+	 * @param fg
+	 */
+	private void mergeExcludeGroup(V2 v2, FilterGroup fg){
+		FilterGroup existing = null;
+		for (FilterGroup group : v2.getGroups()){
+			if (group.isExclude()){
+				existing = group;
+				break;
+			}
+		}
+		if (existing == null)v2.add(fg);
+		else {
+			for (FilterRule rule : fg.getRules()){
+				existing.add(rule);
+			}
+			v2.bumpChangeCountGroups();
+		}
 	}
 	
 	/**
@@ -95,7 +150,7 @@ public class ValidatorExtensionReader {
 			v.setVersion(getAttribute(validator, ExtensionConstants.version, 1));
 			v.setSourceId(validator.getAttribute(ExtensionConstants.sourceId));
 			IConfigurationElement[] children = validator.getChildren();
-			for (int i=0; i<children.length; i++)processValidatorChildren(v, children[i]);
+			for (IConfigurationElement child : children)processIncludeAndExcludeElement(v, child);
 		}
 		catch (Exception e){
 			ValidationPlugin.getPlugin().handleException(e);
@@ -136,6 +191,18 @@ public class ValidatorExtensionReader {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		return registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.validator);
 	}
+
+	/**
+	 * Answer the extension point for adding exclusion filters.
+	 * 
+	 * @return null if there is a problem or no extensions.
+	 */
+	private IExtensionPoint getExtensionPointExclude() {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		return registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.excludeExtension);
+	}
+	
+	
 	
 
 	/**
@@ -155,14 +222,31 @@ public class ValidatorExtensionReader {
 	}
 
 	/** 
-	 * Process the children of the validator tag, i.e. include and exclude groups.
+	 * Process the include and exclude elements.
 	 * 
-	 *  @param v the validator that we are building up
-	 *  @param group the include and exclude elements
+	 *  @param v The validator that we are building up.
+	 *  @param group The children of the validator tag. This may included include and exclude elements.
+	 *  Other elements are ignored. 
 	 */
-	private void processValidatorChildren(Validator.V2 v, IConfigurationElement group) {
+	private void processIncludeAndExcludeElement(Validator.V2 v, IConfigurationElement group) {
+		FilterGroup fg = createFilterGroup(group);
+		if (fg != null)v.add(fg);
+	}
+	
+	/**
+	 * Process an include or exclude element, returning a filter group for it.
+	 * 
+	 * @param group
+	 *            An include, exclude or some other element. Only include and
+	 *            exclude elements are processed, other types are ignored.
+	 *            
+	 * @return a filter group that corresponds to the include or exclude
+	 *         element, or null if the element was not an include or exclude
+	 *         element.
+	 */
+	private FilterGroup createFilterGroup(IConfigurationElement group){
 		FilterGroup fg = FilterGroup.create(group.getName());
-		if (fg == null)return;			
+		if (fg == null)return null;			
 		
 		IConfigurationElement[] rules = group.getChildren(ExtensionConstants.rules);
 		// there should only be one
@@ -172,7 +256,7 @@ public class ValidatorExtensionReader {
 				processRule(fg, r[j]);
 			}
 		}
-		v.add(fg);
+		return fg;
 	}
 
 	/**

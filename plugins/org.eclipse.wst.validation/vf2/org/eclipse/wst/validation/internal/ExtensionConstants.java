@@ -20,6 +20,9 @@ public interface ExtensionConstants {
 	/** validatorV2 - extension point for registering validators that use version 2 of the validation framework. */
 	String validator = "validatorV2"; //$NON-NLS-1$
 	
+	/** exclude - extension point for adding extra exclusion filters to a validator. */ 
+	String excludeExtension = "exclude"; //$NON-NLS-1$
+	
 	/** build - is the validator enabled by default for build based validations? true or false */
 	String build = "build"; //$NON-NLS-1$
 	
@@ -156,6 +159,11 @@ public interface ExtensionConstants {
 		String sevError = "error"; //$NON-NLS-1$
 		String sevWarning = "warning"; //$NON-NLS-1$
 		String sevIgnore = "ignore";  //$NON-NLS-1$
+	}
+	
+	interface Exclude {
+		/** id - fully qualified id of the validator that is being extended. */
+		String id = "id"; //$NON-NLS-1$
 	}
 	
 	/** true */
