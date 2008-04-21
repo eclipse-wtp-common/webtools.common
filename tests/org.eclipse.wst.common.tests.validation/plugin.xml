@@ -288,5 +288,19 @@
        </listener>
     </group>
  </extension>
+ <extension
+       id="exclude1"
+       point="org.eclipse.wst.validation.exclude">
+    <validator
+          id="org.eclipse.wst.common.tests.validation.T1A">
+       <exclude>
+          <rules>
+             <projectNature
+                   id="org.eclipse.jst.j2ee.ModuleCoreNature">
+             </projectNature>
+          </rules>
+       </exclude>
+    </validator>
+ </extension>
  
 </plugin>
