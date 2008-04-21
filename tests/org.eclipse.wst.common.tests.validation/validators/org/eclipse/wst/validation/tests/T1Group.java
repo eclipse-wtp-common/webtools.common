@@ -3,8 +3,7 @@ package org.eclipse.wst.validation.tests;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.IValidatorGroupListener;
-import org.eclipse.wst.validation.internal.ValOperation;
-import org.eclipse.wst.validation.internal.ValType;
+import org.eclipse.wst.validation.ValidationState;
 
 public class T1Group implements IValidatorGroupListener {
 	
@@ -22,13 +21,13 @@ public class T1Group implements IValidatorGroupListener {
 	}
 
 	public void validationFinishing(IResource resource,
-			IProgressMonitor monitor, ValType valType, ValOperation operation) {
+			IProgressMonitor monitor, ValidationState state) {
 		_starting++;
 
 	}
 
 	public void validationStarting(IResource resource,
-			IProgressMonitor monitor, ValType valType, ValOperation operation) {
+			IProgressMonitor monitor, ValidationState state) {
 		_finishing++;
 
 	}
