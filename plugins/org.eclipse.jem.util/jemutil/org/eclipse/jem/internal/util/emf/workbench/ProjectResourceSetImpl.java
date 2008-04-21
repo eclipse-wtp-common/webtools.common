@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.20 $$  $$Date: 2008/03/12 14:21:40 $$ 
+ *  $$Revision: 1.21 $$  $$Date: 2008/04/21 14:50:16 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -379,6 +379,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 						} // if embedded uri content type is different than resource content type, continue searching
 						if (resourceContentTypeID != null
 								&& uriContentTypeID != null) {
+							if ((resourceContentTypeID.equals(uriContentTypeID)) && existingMapKeyType == null) continue;
 							if ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
 									.equals(uriContentTypeID)))
 								continue;
