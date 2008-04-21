@@ -625,17 +625,18 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		if (vp != null){
 			BitSet bs = vp.getConfigSet();
 			for (Validator val : getValidators(project)){
-				if (monitor.isCanceled())return;
-				if (!bs.get(_idManager.getIndex(val.getId())))continue;
-				Validator.V2 v2 = val.asV2Validator();
-				if (v2 != null) {
-					notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
-				}
-				try {
-					visitor.visit(val, project, valType, operation, monitor);
-				}
-				catch (Exception e){
-					ValidationPlugin.getPlugin().handleException(e);
+				if (!monitor.isCanceled()) {
+					if (!bs.get(_idManager.getIndex(val.getId())))continue;
+					Validator.V2 v2 = val.asV2Validator();
+					if (v2 != null) {
+						notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
+					}
+					try {
+						visitor.visit(val, project, valType, operation, monitor);
+					}
+					catch (Exception e){
+						ValidationPlugin.getPlugin().handleException(e);
+					}
 				}
 			}
 			notifyGroupFinishing(resource, operation.getState(), monitor, groupListeners);
@@ -646,22 +647,23 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		vp.setConfigNumber(_configNumber);
 		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (Validator val : getValidators(project)){
-			if (monitor.isCanceled())return;
-			if (!_projectManager.shouldValidate(val, project, valType))continue;
-			if (Friend.shouldValidate(val, resource, valType, ctw)){
-				vp.getConfigSet().set(_idManager.getIndex(val.getId()));
-				// we do the suspend check after figuring out if it needs to be validated, because we save
-				// this information for the session.
-				if (operation.isSuspended(val, project))continue;
-				Validator.V2 v2 = val.asV2Validator();
-				if (v2 != null) {
-					notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
-				}
-				try {
-					visitor.visit(val, project, valType, operation, monitor);
-				}
-				catch (Exception e){
-					ValidationPlugin.getPlugin().handleException(e);
+			if (!monitor.isCanceled()) {
+				if (!_projectManager.shouldValidate(val, project, valType))continue;
+				if (Friend.shouldValidate(val, resource, valType, ctw)){
+					vp.getConfigSet().set(_idManager.getIndex(val.getId()));
+					// we do the suspend check after figuring out if it needs to be validated, because we save
+					// this information for the session.
+					if (operation.isSuspended(val, project))continue;
+					Validator.V2 v2 = val.asV2Validator();
+					if (v2 != null) {
+						notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
+					}
+					try {
+						visitor.visit(val, project, valType, operation, monitor);
+					}
+					catch (Exception e){
+						ValidationPlugin.getPlugin().handleException(e);
+					}
 				}
 			}
 		}
