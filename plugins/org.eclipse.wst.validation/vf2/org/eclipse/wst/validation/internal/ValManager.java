@@ -45,6 +45,7 @@ import org.eclipse.wst.validation.IValidatorGroupListener;
 import org.eclipse.wst.validation.PerformanceCounters;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResult;
+import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
@@ -628,7 +629,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				if (!bs.get(_idManager.getIndex(val.getId())))continue;
 				Validator.V2 v2 = val.asV2Validator();
 				if (v2 != null) {
-					notifyGroupListenersStarting(resource, valType, operation, monitor, groupListeners, v2);
+					notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
 				}
 				try {
 					visitor.visit(val, project, valType, operation, monitor);
@@ -637,7 +638,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
-			notifyGroupFinishing(resource, valType, operation, monitor, groupListeners);
+			notifyGroupFinishing(resource, operation.getState(), monitor, groupListeners);
 			return;
 		}
 		
@@ -654,7 +655,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				if (operation.isSuspended(val, project))continue;
 				Validator.V2 v2 = val.asV2Validator();
 				if (v2 != null) {
-					notifyGroupListenersStarting(resource, valType, operation, monitor, groupListeners, v2);
+					notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
 				}
 				try {
 					visitor.visit(val, project, valType, operation, monitor);
@@ -664,15 +665,15 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				}
 			}
 		}
-		notifyGroupFinishing(resource, valType, operation, monitor, groupListeners);
+		notifyGroupFinishing(resource, operation.getState(), monitor, groupListeners);
 		putValProperty(vp, resource, valType);
 	}
 
 	/**
 	 * Let the group listeners know that validation might be starting for the group of validators. 
 	 */
-	private void notifyGroupListenersStarting(final IResource resource,	final ValType valType, 
-			final ValOperation operation, final IProgressMonitor monitor, 
+	private void notifyGroupListenersStarting(final IResource resource,	 
+			final ValidationState state, final IProgressMonitor monitor, 
 			Map<String, IValidatorGroupListener[]> groupListeners, Validator.V2 v2) {
 		
 		String[] groups = v2.getValidatorGroups();
@@ -700,7 +701,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				for (final IValidatorGroupListener listener : listeners) {
 					SafeRunner.run(new ISafeRunnable() {
 						public void run() throws Exception {
-							listener.validationStarting(resource, monitor, operation.getState());
+							listener.validationStarting(resource, monitor, state);
 						}
 
 						public void handleException(Throwable exception) {
@@ -715,14 +716,14 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	/**
 	 * Let the group listeners know that validation is finished for the group of validators. 
 	 */
-	private void notifyGroupFinishing(final IResource resource, final ValType valType,
-			final ValOperation operation, final IProgressMonitor monitor,
+	private void notifyGroupFinishing(final IResource resource, 
+			final ValidationState state, final IProgressMonitor monitor,
 			Map<String, IValidatorGroupListener[]> groupListeners) {
 		for (final IValidatorGroupListener[] listeners : groupListeners.values()) {
 			for (final IValidatorGroupListener listener : listeners) {
 				SafeRunner.run(new ISafeRunnable() {
 					public void run() throws Exception {
-						listener.validationFinishing(resource, monitor, operation.getState());
+						listener.validationFinishing(resource, monitor, state);
 					}
 
 					public void handleException(Throwable exception) {
