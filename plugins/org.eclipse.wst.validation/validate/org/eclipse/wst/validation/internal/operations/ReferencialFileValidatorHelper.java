@@ -35,7 +35,7 @@ public class ReferencialFileValidatorHelper {
 	/**
 	 * Return a list of all files contained in project to infinite depth
 	 */
-	public static List getAllProjectFiles(IProject project) {
+	public static List<IFile> getAllProjectFiles(IProject project) {
 		List<IFile> result = new ArrayList<IFile>();
 		if (project == null)return result;
 		

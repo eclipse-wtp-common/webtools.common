@@ -616,7 +616,7 @@ public final class ValidatorManager {
 	
 	
 
-	protected Set getManualEnabledValidators(IProject project) {
+	protected Set<ValidatorMetaData> getManualEnabledValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getManualEnabledValidators();
@@ -628,7 +628,7 @@ public final class ValidatorManager {
 		}
 	}	
 	
-	protected Set getBuildEnabledValidators(IProject project) {
+	protected Set<ValidatorMetaData> getBuildEnabledValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getBuildEnabledValidators();

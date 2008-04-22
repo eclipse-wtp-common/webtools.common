@@ -228,12 +228,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @deprecated Will be removed in Milestone 3.
 	 */
 	protected void terminateCleanup(WorkbenchReporter reporter) {
-		Set enabledValidators = getEnabledValidators();
-		Iterator iterator = enabledValidators.iterator();
-		ValidatorMetaData vmd = null;
-
-		while (iterator.hasNext()) {
-			vmd = (ValidatorMetaData) iterator.next();
+		for (ValidatorMetaData vmd : getEnabledValidators()) {
 			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
 			try {
 				reporter.removeAllMessages(vmd.getValidator());
@@ -468,19 +463,14 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * operation to do.
 	 */
 	public boolean isNecessary(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-		Set enabledValidators = getEnabledValidators();
+		Set<ValidatorMetaData> enabledValidators = getEnabledValidators();
 		if ((enabledValidators == null) || (enabledValidators.size() == 0)) {
 			return false;
 		}
-		if (isFullValidate()) {
-			return true;
-		}
-		Iterator iterator = enabledValidators.iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			if (isValidationNecessary(vmd, getFileDeltas(monitor, vmd))) {
-				return true;
-			}
+		if (isFullValidate())return true;
+		
+		for (ValidatorMetaData vmd : enabledValidators) {
+			if (isValidationNecessary(vmd, getFileDeltas(monitor, vmd)))return true;
 		}
 		return false;
 	}
@@ -554,14 +544,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		return _launchedValidators;
 	}
 
-	protected void setEnabledValidators(Set evmds) {
+	protected void setEnabledValidators(Set<ValidatorMetaData> evmds) {
 		// Check that every VMD in the set is configured on this project.
 		// Necessary because the user can manually choose which validators
 		// to launch, and the validator may not be installed.
 		_enabledValidators.clear();
-		Iterator iterator = evmds.iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+		for (ValidatorMetaData vmd : evmds) {
 			if (ValidationRegistryReader.getReader().isConfiguredOnProject(vmd, getProject())) {
 				_enabledValidators.add(vmd);
 			}
@@ -577,10 +565,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	protected int getUnitsOfWork() {
 		/*
-		 * // Let one unit of work equal one resource. number of enabled validators // i.e., each
+		 * Let one unit of work equal one resource. number of enabled validators. i.e., each
 		 * enabled validator must process (at most) each resource in the project; count each process
-		 * as one unit of work // Note that this is a ceiling number, because if we're doing an
-		 * incremental validation, not all resources will // be validated.
+		 * as one unit of work. Note that this is a ceiling number, because if we're doing an
+		 * incremental validation, not all resources will be validated.
 		 * setNumResources(countResources(getProject())); getEnabledValidators().size();
 		 */
 		// Until the validators can report units-of-work complete,
@@ -657,10 +645,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * @param reporter
-	 * @param referencialFileValidator
-	 */
 	private void refFileValidateFileDelta(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
 		IResourceDelta[] resourceDelta = _delta.getAffectedChildren(IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED);
 		List<IResource> inputFiles = new ArrayList<IResource>();
@@ -686,10 +670,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * @param delta
-	 * @return
-	 */
 	private void getFileResourceDeltaInFolder(IResourceDelta delta, List<IResource> inputFiles) {
 		IResourceDelta[] resourceDelta = delta.getAffectedChildren();
 		for (int i = 0; i < resourceDelta.length; i++) {
@@ -699,17 +679,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * @param reporter
-	 * @param referencialFileValidator
-	 */
 	private void postValidateProject(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
-		Set set = ValidationRegistryReader.getReader().getValidatorMetaData(_project);
-		Iterator it = set.iterator();
-		while (it.hasNext()) {
-			ValidatorMetaData data = (ValidatorMetaData) it.next();
-			List filters = data.getNameFilters();
-			List files = getAllFilesForFilter(filters);
+		Set<ValidatorMetaData> set = ValidationRegistryReader.getReader().getValidatorMetaData(_project);
+		for (ValidatorMetaData data : set) {
+			List<String> filters = data.getNameFilters();
+			List<IFile> files = getAllFilesForFilter(filters);
 			if (!files.isEmpty()) {
 				List<IFile> fileForValidation = refFileValidator.getReferencedFile(files);
 				try {
@@ -721,29 +695,20 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * @param filters
-	 * @return
-	 */
-	private List<IFile> getAllFilesForFilter(List filters) {
+	private List<IFile> getAllFilesForFilter(List<String> filters) {
 		if (!filters.isEmpty()) {
-			List allProjectFiles = ReferencialFileValidatorHelper.getAllProjectFiles(_project);
+			List<IFile> allProjectFiles = ReferencialFileValidatorHelper.getAllProjectFiles(_project);
 			List<IFile> filterFiles = new ArrayList<IFile>();
-			for (int i = 0; i < filters.size(); i++) {
-				String fileName = (String) filters.get(i);
-				if (fileName == null)
-					continue;
-				for (int j = 0; j < allProjectFiles.size(); j++) {
-					IFile projectFile = (IFile) allProjectFiles.get(j);
+			for (String fileName : filters) {
+				if (fileName == null)continue;
+				
+				for (IFile projectFile : allProjectFiles) {
 					if (fileName.charAt(0) == '*') {
 						String extName = fileName.substring(2, fileName.length());
 						String ext = projectFile.getFileExtension();
-						if (ext != null && ext.equals(extName))
-							filterFiles.add(projectFile);
-					} else if (fileName.equals(projectFile.getName()))
-						filterFiles.add(projectFile);
+						if (ext != null && ext.equals(extName))filterFiles.add(projectFile);
+					} else if (fileName.equals(projectFile.getName()))filterFiles.add(projectFile);
 				}
-
 			}
 			return filterFiles;
 		}
@@ -795,7 +760,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		checkCanceled(reporter);
 		reporter.getProgressMonitor().beginTask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_PROGRESSMONITOR_TITLE), getUnitsOfWork());
 		IValidator validator = null;
-		Iterator iterator = null;
+		Iterator<ValidatorMetaData> iterator = null;
 		IFileDelta[] delta = null;
 		
 		Set<ValidatorMetaData> jobValidators = new HashSet<ValidatorMetaData>();
@@ -942,7 +907,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param logger
 	 * @param exc
 	 */
-	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, Iterator iterator, OperationCanceledException exc) {
+	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, 
+		ValidatorMetaData vmd, Iterator<ValidatorMetaData> iterator, OperationCanceledException exc) {
 		/*
 		 * If the user terminates validation (i.e., presses "cancel" on the progress monitor) before
 		 * the validation completes, perform clean up on each configured enabled validator.
@@ -1268,7 +1234,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 //		private IValidationContext _helper = null;
 		private IFileDelta[] __delta = null;
 
-		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta, Iterator iterator) {
+		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, 
+			ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta, Iterator iterator) {
 			_reporter = reporter;
 			_validator = validator;
 			_vmd = vmd;

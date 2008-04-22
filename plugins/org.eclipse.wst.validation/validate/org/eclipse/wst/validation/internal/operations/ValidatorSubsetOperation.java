@@ -258,7 +258,7 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 		for (String name : validatorNames) {
 			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(name);
 			if (vmd == null) {
-				// No validator, with that plugin id, can be run on that project.
+				// No validator, with that plug-in id, can be run on that project.
 				// Either the validator isn't installed, or the IProject passed in
 				// doesn't have the necessary nature.
 				throw new IllegalArgumentException(name);
