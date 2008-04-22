@@ -578,7 +578,7 @@ public final class ValidatorManager {
 	/**
 	 * For use by the validation framework only.
 	 */
-	protected Set getEnabledValidators(IProject project) {
+	protected Set<ValidatorMetaData> getEnabledValidators(IProject project) {
 		try {
 			ValidatorMetaData[] vmds = null;
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);

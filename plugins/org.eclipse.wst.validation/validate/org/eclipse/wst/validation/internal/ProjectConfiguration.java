@@ -443,10 +443,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		if (allow) {
 			// "allow" has changed, so see if the preference and the project validators match.
 			ValidatorMetaData[] projEnabledVmd = super.getEnabledValidators(); // bypass the check
-			// for whether the
-			// global preferences
-			// are to be used or
-			// not
+			// for whether the global preferences are to be used or not
 			GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 			return gp.hasEnabledValidatorsChanged(projEnabledVmd);
 		}
@@ -454,14 +451,14 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return false;
 	}
 
-  public boolean haveDelegatesChanged(Map oldDelegates, boolean allow) throws InvocationTargetException {
+  public boolean haveDelegatesChanged(Map<String, String> oldDelegates, boolean allow) throws InvocationTargetException {
 
     if (super.haveDelegatesChanged(oldDelegates)) {
       return true;
     }
 
     if (allow) {
-      Map projDelegates = super.getDelegatingValidators(); 
+      Map<String, String> projDelegates = super.getDelegatingValidators(); 
       GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
       return gp.haveDelegatesChanged(projDelegates);
     }

@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,15 +67,12 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	
 	private static final String DefaultValue = "default_value"; //$NON-NLS-1$
 
-	public static String getEnabledElementsAsString(Set elements) {
-		if (elements == null) {
-			return null;
-		}
+	public static String getEnabledElementsAsString(Set<ValidatorMetaData> elements) {
+		if (elements == null)return null;
 
 		StringBuffer buffer = new StringBuffer();
-		Iterator iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			buffer.append(((ValidatorMetaData) iterator.next()).getValidatorUniqueName());
+		for (ValidatorMetaData vmd : elements) {
+			buffer.append(vmd.getValidatorUniqueName());
 			buffer.append(ConfigurationConstants.ELEMENT_SEPARATOR);
 		}
 		return buffer.toString();
@@ -521,17 +517,13 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		return t.intValue();
 	}
 
-	public static ValidatorMetaData[] convertToArray(Collection c) {
+	public static ValidatorMetaData[] convertToArray(Collection<ValidatorMetaData> c) {
 		int length = (c == null) ? 0 : c.size();
 		ValidatorMetaData[] result = new ValidatorMetaData[length];
 		if (length == 0)return result;
 
-		Iterator iterator = c.iterator();
 		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			result[count++] = vmd;
-		}
+		for (ValidatorMetaData vmd : c)result[count++] = vmd;
 
 		return result;
 	}
@@ -854,30 +846,20 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
    * @return true if there has been a change, false otherwise.
    * @throws InvocationTargetException
    */
-  protected boolean haveDelegatesChanged(Map oldDelegates) throws InvocationTargetException {
+  protected boolean haveDelegatesChanged(Map<String, String> oldDelegates) throws InvocationTargetException {
     
     if (oldDelegates == null)return true;
     
-    Iterator iterator = oldDelegates.keySet().iterator();
-    
-    while (iterator.hasNext())
-    {
-      String targetID = (String) iterator.next();
-      String oldDelegateID = (String) oldDelegates.get(targetID);
+    for (String targetID : oldDelegates.keySet()) {
+      String oldDelegateID = oldDelegates.get(targetID);
       String newDelegateID = _delegatesByTarget.get(targetID);
       
-      if (oldDelegateID == null || newDelegateID == null) {
-        return true;
-      }
+      if (oldDelegateID == null || newDelegateID == null)return true;
         
-      if (!newDelegateID.equals(oldDelegateID)) {
-        return true;
-      }
+      if (!newDelegateID.equals(oldDelegateID))return true;
     }
     
-    if (oldDelegates.size() != _delegatesByTarget.size()) {
-      return true;
-    }
+    if (oldDelegates.size() != _delegatesByTarget.size())return true;
     
     return false;
   }
@@ -917,20 +899,14 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
    * @param validatorMetaData a Map with the currently configured validators.
    * @return a String.
    */
-  private String getDelegatesAsString(Map validatorMetaData) {
+  private String getDelegatesAsString(Map<ValidatorMetaData, Boolean> validatorMetaData) {
     
     StringBuffer buffer = new StringBuffer();
-    Iterator iterator = validatorMetaData.keySet().iterator();
-    
-    while (iterator.hasNext()) {
-    
-      ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+    for (ValidatorMetaData vmd : validatorMetaData.keySet()) {    
       String targetID = vmd.getValidatorUniqueName();
       String delegateID = getDelegateUniqueName(vmd);
       
-      if (delegateID == null) {
-        continue;
-      }
+      if (delegateID == null)continue;
 
       // Write out pairs targetID=delegateID
 

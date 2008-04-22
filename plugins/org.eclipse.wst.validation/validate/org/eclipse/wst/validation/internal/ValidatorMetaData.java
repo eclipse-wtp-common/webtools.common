@@ -466,12 +466,11 @@ public class ValidatorMetaData {
 	}
 
 	public class MigrationMetaData {
-		private Set _ids = null;
+		private Set<String[]> _ids;
 
 		public MigrationMetaData() {
 		}
 
-		@SuppressWarnings("unchecked")
 		public void addId(String oldId, String newId) {
 			if (oldId == null)return;
 			if (newId == null)return;
@@ -480,8 +479,8 @@ public class ValidatorMetaData {
 			getIds().add(ids);
 		}
 
-		public Set getIds() {
-			if (_ids == null)_ids = new HashSet();
+		public Set<String[]> getIds() {
+			if (_ids == null)_ids = new HashSet<String[]>();
 			return _ids;
 		}
 	}

@@ -14,7 +14,6 @@ package org.eclipse.wst.validation.internal;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -168,7 +167,7 @@ public final class FilterUtil {
 	 * filterIn is false, check if the resources are filtered in by the validator (recommended).
 	 */
 	public static Map<ValidatorMetaData, Set<IFileDelta>> 
-		getFileDeltas(Set enabledValidators, Object[] changedResources, boolean filterIn) {
+		getFileDeltas(Set<ValidatorMetaData> enabledValidators, Object[] changedResources, boolean filterIn) {
 		// by default assume that the resources have changed, i.e. not added or deleted
 		return getFileDeltas(enabledValidators, changedResources, IFileDelta.CHANGED, filterIn); 
 	}
@@ -178,7 +177,7 @@ public final class FilterUtil {
 	 * IFileDelta wrapper around the changed Object[], with each delta of type deltaType.
 	 */
 	public static Map<ValidatorMetaData, Set<IFileDelta>> 
-		getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType) {
+		getFileDeltas(Set<ValidatorMetaData> enabledValidators, Object[] changedResources, int ifileDeltaType) {
 		// by default check if the Objects are filtered in by the validator
 		return getFileDeltas(enabledValidators, changedResources, ifileDeltaType, false); 
 	}
@@ -191,17 +190,17 @@ public final class FilterUtil {
 	 * ValidatorSubsetOperation can use validators that don't filter in these particular resources,
 	 * but can use a defaultExtension's validators instead.
 	 */
-	public static Map<ValidatorMetaData, Set<IFileDelta>> getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType, boolean force) {
+	public static Map<ValidatorMetaData, Set<IFileDelta>> getFileDeltas(Set<ValidatorMetaData> enabledValidators, 
+		Object[] changedResources, int ifileDeltaType, boolean force) {
+		
 		Map<ValidatorMetaData, Set<IFileDelta>> result = new HashMap<ValidatorMetaData, Set<IFileDelta>>();
 		if ((enabledValidators == null) || (enabledValidators.size() == 0)) {
 			return result;
 		}
 
-		Iterator iterator = enabledValidators.iterator();
 		boolean cannotLoad = false;
 		IWorkbenchContext helper = null;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+		for (ValidatorMetaData vmd : enabledValidators) {
 			try {
 				Set<IFileDelta> deltas = new HashSet<IFileDelta>();
 				IProgressMonitor monitor = new NullProgressMonitor();

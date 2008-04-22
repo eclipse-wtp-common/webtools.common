@@ -1228,24 +1228,22 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * "End ValidationOperation"); }
 	 */
 	public class ProjectRunnable implements Runnable {
-		private WorkbenchReporter _reporter = null;
-		private IValidator _validator = null;
-		private ValidatorMetaData _vmd = null;
-//		private IValidationContext _helper = null;
-		private IFileDelta[] __delta = null;
+		private WorkbenchReporter _reporter;
+		private IValidator _validator;
+		private ValidatorMetaData _vmd;
+		private IFileDelta[] _delta;
 
 		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, 
 			ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta, Iterator iterator) {
 			_reporter = reporter;
 			_validator = validator;
 			_vmd = vmd;
-//			_helper = helper;
-			__delta = delta;
+			_delta = delta;
 		}
 
 		public void run() {
 			try {
-				internalValidate(_reporter, _validator, _vmd, context,__delta);
+				internalValidate(_reporter, _validator, _vmd, context,_delta);
 			} catch (OperationCanceledException exc) {
 				// User can't cancel a job in a background thread, so ignore this exception.
 			}

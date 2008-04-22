@@ -17,7 +17,6 @@
 package org.eclipse.wst.validation.internal;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -96,12 +95,8 @@ public class ReferencialFileValidatorRegistryReader {
 
     	//add to the list of post validator extensions only if the extension is not added yet
     	boolean containsExt = true;
-    	List extensions = getReferencialFileValidationExtensions();
-    	Iterator it = extensions.iterator();
-    	while(it.hasNext()) {
-    		ReferencialFileValidatorExtension ext = (ReferencialFileValidatorExtension)it.next();
-    		if(!ext.getElement().getAttribute(Id).equals(newExtension.getAttribute(Id)))
-    			containsExt = false;
+    	for(ReferencialFileValidatorExtension ext : getReferencialFileValidationExtensions()) {
+    		if(!ext.getElement().getAttribute(Id).equals(newExtension.getAttribute(Id)))containsExt = false;
     	}
     	if(!containsExt ||getReferencialFileValidationExtensions().isEmpty())
     		getReferencialFileValidationExtensions().add(new ReferencialFileValidatorExtension(newExtension));
@@ -126,9 +121,7 @@ public class ReferencialFileValidatorRegistryReader {
 	 *         available and enabled
 	 */
 	public ReferencialFileValidator getReferencialFileValidator() {
-		ReferencialFileValidatorExtension refFileValExt;
-		for (Iterator refFileValItr = getReferencialFileValidationExtensions().iterator(); refFileValItr.hasNext();) {
-			refFileValExt = (ReferencialFileValidatorExtension) refFileValItr.next();
+		for (ReferencialFileValidatorExtension refFileValExt: getReferencialFileValidationExtensions()) {
 			return refFileValExt.getInstance();
 		}
 		return null;

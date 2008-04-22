@@ -84,7 +84,7 @@ public class ValidatorDelegatesRegistry {
    */
   public String getDefaultDelegate(String targetID)
   {
-    Map delegates = getDelegateDescriptors(targetID);
+    Map<String,ValidatorDelegateDescriptor> delegates = getDelegateDescriptors(targetID);
 
     if (delegates == null)return null;
 
@@ -92,13 +92,11 @@ public class ValidatorDelegatesRegistry {
     // What happens if two or more delegates claim to be the default one?
     // For now, just pick the first one in the list.
 
-    Iterator delegatesIterator = delegates.values().iterator();
+    Iterator<ValidatorDelegateDescriptor> delegatesIterator = delegates.values().iterator();
 
     if (!delegatesIterator.hasNext())return null;
 
-    ValidatorDelegateDescriptor descriptor = (ValidatorDelegateDescriptor) delegatesIterator.next();
-
-    return descriptor.getId();
+    return delegatesIterator.next().getId();
   }
 
   /**
@@ -165,7 +163,7 @@ public class ValidatorDelegatesRegistry {
    */
   public boolean hasDelegates(String targetID)
   {
-    Map delegatesByID = _delegatesByTarget.get(targetID);
+    Map<String,ValidatorDelegateDescriptor> delegatesByID = _delegatesByTarget.get(targetID);
 
     boolean hasDelegates = (delegatesByID != null && !delegatesByID.isEmpty());
     return hasDelegates;

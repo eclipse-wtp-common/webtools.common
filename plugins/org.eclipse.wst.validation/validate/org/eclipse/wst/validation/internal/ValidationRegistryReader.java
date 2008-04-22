@@ -778,9 +778,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		return null;
 	}
 
-	public Set getValidatorMetaData(IWorkspaceRoot root) {
+	public Set<ValidatorMetaData> getValidatorMetaData(IWorkspaceRoot root) {
 		// Every validator on the Preferences page must be returned
-		Set copy = new HashSet();
+		Set<ValidatorMetaData> copy = new HashSet<ValidatorMetaData>();
 		clone(_indexedValidators.values(), copy);
 		return copy;
 	}
@@ -978,17 +978,16 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 		for (int i = 0; i < projectNatures.length; i++) {
 			String nature = projectNatures[i];
-			Iterator iterator = vmds.iterator();
+			Iterator<ValidatorMetaData> iterator = vmds.iterator();
 			while (iterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+				ValidatorMetaData vmd = iterator.next();
 				ValidatorNameFilter[] natureFilters = vmd.getProjectNatureFilters();
 				if (natureFilters == null) {
 					// Can run on any project
 					continue;
 				}
 
-				for (int j = 0; j < natureFilters.length; j++) {
-					ValidatorNameFilter pn = natureFilters[j];
+				for (ValidatorNameFilter pn : natureFilters) {
 					if (nature.equals(pn.getNameFilter()) && !pn.isInclude()) {
 						iterator.remove();
 						break;
@@ -1078,8 +1077,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	/**
 	 * Return a set of ValidatorMetaData which are enabled by default.
 	 */
-	public Set getValidatorMetaDataEnabledByDefault() {
-		Set copy = new HashSet();
+	public Set<ValidatorMetaData> getValidatorMetaDataEnabledByDefault() {
+		Set<ValidatorMetaData> copy = new HashSet<ValidatorMetaData>();
 		clone(_defaultEnabledValidators, copy);
 		return copy;
 	}
@@ -1101,9 +1100,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * any code not in this package.
 	 */
 	public ValidatorMetaData getValidatorMetaData(String validatorClassName) {
-		if (validatorClassName == null) {
-			return null;
-		}
+		if (validatorClassName == null)return null;
 
 		ValidatorMetaData vmd2 = _indexedValidators.get(validatorClassName);
 		if (vmd2 != null)return vmd2;
@@ -1112,17 +1109,12 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		for (ValidatorMetaData vmd : _indexedValidators.values()) {
 			if (vmd == null)continue;
 
-			if (vmd.getValidatorUniqueName().equals(validatorClassName)) {
-				return vmd;
-			}
+			if (vmd.getValidatorUniqueName().equals(validatorClassName))return vmd;
 
 			String[] aggregateNames = vmd.getAggregatedValidatorNames();
 			if (aggregateNames != null) {
-				for (int i = 0; i < aggregateNames.length; i++) {
-					String aggregateName = aggregateNames[i];
-					if (validatorClassName.equals(aggregateName)) {
-						return vmd;
-					}
+				for (String aggregateName : aggregateNames) {
+					if (validatorClassName.equals(aggregateName))return vmd;
 				}
 			}
 
@@ -1134,15 +1126,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				continue;
 			}
 
-			Set idList = mmd.getIds();
+			Set<String[]> idList = mmd.getIds();
 			if (idList == null) {
 				// Invalid <migrate> element.
 				continue;
 			}
 
-			Iterator idIterator = idList.iterator();
-			while (idIterator.hasNext()) {
-				String[] ids = (String[]) idIterator.next();
+			for (String[] ids : idList) {
 				if (ids.length != 2) {
 					// log
 					continue;

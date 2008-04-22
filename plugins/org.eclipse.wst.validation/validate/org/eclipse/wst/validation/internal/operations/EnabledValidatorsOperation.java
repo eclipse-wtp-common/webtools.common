@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.validation.internal.RegistryConstants;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
 
 
 /**
@@ -116,7 +117,7 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * in the background validation thread, if async is false, it would run in the main thread. 
 	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
-	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, boolean async) {
+	protected EnabledValidatorsOperation(IProject project, Set<ValidatorMetaData> enabledValidators, boolean async) {
 		this(project, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
 		// true = force validation to run whether or not auto-validate is on
 	}
@@ -130,7 +131,8 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * in the background validation thread, if async is false, it would run in the main thread. 
 	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
-	protected EnabledValidatorsOperation(IProject project,IWorkbenchContext aWorkbenchContext, Set enabledValidators, boolean async) {
+	protected EnabledValidatorsOperation(IProject project,IWorkbenchContext aWorkbenchContext, 
+		Set<ValidatorMetaData> enabledValidators, boolean async) {
 		this(project,aWorkbenchContext, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
 		// true = force validation to run whether or not auto-validate is on
 	}
@@ -144,7 +146,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * in the background validation thread, if async is false, it would run in the main thread. 
 	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
-	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
+	protected EnabledValidatorsOperation(IProject project, Set<ValidatorMetaData> enabledValidators, 
+		int ruleGroup, boolean force, boolean async) {
+		
 		super(project, force, ruleGroup, async);
 		setEnabledValidators(enabledValidators);
 	}
@@ -158,7 +162,8 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * in the background validation thread, if async is false, it would run in the main thread. 
 	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
-	protected EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
+	protected EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, 
+		Set<ValidatorMetaData> enabledValidators, int ruleGroup, boolean force, boolean async) {
 		super(project,aWorkbenchContext,force, ruleGroup, async);
 		setEnabledValidators(enabledValidators);
 	}

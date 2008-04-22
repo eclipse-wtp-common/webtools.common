@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IResource;
  * provide the "instanceof" matching functionality.
  */
 public class ValidatorTypeFilter {
-	private Class _typeFilterClass = null;
-	private String _mustImplementClass = null; // the type set in setTypeFilter must implement the
+	private Class _typeFilterClass;
+	private String _mustImplementClass; // the type set in setTypeFilter must implement the
 
 	// class/interface identified by this fully-qualified
 	// Java string.
