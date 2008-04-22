@@ -80,38 +80,39 @@ public class OneValidatorOperation extends ValidatorSubsetOperation {
 	 * OneValidatorOperation constructor comment.
 	 * 
 	 * @param project
-	 *            org.eclipse.core.resources.IProject
+	 *            The project to be validated. It must exist and be open.
 	 * @param validatorId
-	 *            The plugin id of the validator which you wish to run.
+	 *            The plug-in id of the validator which you wish to run.
 	 * @param force
-	 *            If the value is "true", the validator should be run regardless of what the
-	 *            environment settings are; if the value is "false", this operation should be run
-	 *            only if the validation builder will not run the validator.
+	 *            If the value is "true", the validator should be run regardless
+	 *            of what the environment settings are; if the value is "false",
+	 *            this operation should be run only if the validation builder
+	 *            will not run the validator.
 	 * @param ruleGroup
 	 *            Whether a FULL or FAST pass should be invoked.
+	 * @param async
+	 *            If async is true, the validation will run all thread-safe
+	 *            validators in the background validation thread, and all other
+	 *            validators in the main thread. If async is false, all
+	 *            validators will run in in the main thread.
 	 * 
-	 * IllegalArgumentException will be thrown if the named validator is not configured on the
-	 * project.
+	 * IllegalArgumentException will be thrown if the named validator is not
+	 * configured on the project.
 	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
 	 */
 	public OneValidatorOperation(IProject project, String validatorId, boolean force, int ruleGroup, boolean async) throws IllegalArgumentException {
 		super(project, force, ruleGroup, async);
 
 		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validatorId);
 		if (vmd == null) {
-			// No validator, with that plugin id, can be run on that project.
+			// No validator, with that plug-in id, can be run on that project.
 			// Either the validator isn't installed, or the IProject passed in
 			// doesn't have the necessary nature.
 			throw new IllegalArgumentException(validatorId);
 		}
 
 		if (!vmd.isConfiguredOnProject(project)) {
-			// No validator, with that plugin id, can be run on that project.
+			// No validator, with that plug-in id, can be run on that project.
 			// Either the validator isn't installed, or the IProject passed in
 			// doesn't have the necessary nature.
 			throw new IllegalArgumentException(validatorId);

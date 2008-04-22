@@ -33,10 +33,8 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
  * This operation is not intended to be subclassed outside of the validation framework.
  */
 public class ValidatorSubsetOperation extends ValidationOperation {
-	protected static final String DEFAULT_DEFAULTEXTENSION = null; // By default, assume that there
-
-	// is no default fallback
-	// extension
+	// By default, assume that there is no default fallback extension
+	protected static final String DEFAULT_DEFAULTEXTENSION = null; 
 
 	/**
 	 * Create an operation that runs a full validation on the named validators either if validation
@@ -149,40 +147,12 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 	public ValidatorSubsetOperation(IProject project, String fileExtension, String defaultExtension, Object[] changedResources, boolean async) throws IllegalArgumentException {
 		super(project, shouldForce(changedResources), async);
 
-		boolean filterIn = false; // force the resources to be filtered in even if the validator
-		// doesn't normally take them?
-		ValidatorMetaData[] vmds = InternalValidatorManager.getManager().getValidatorsForExtension(project, fileExtension); // return
-		// a
-		// list
-		// of
-		// validators
-		// which
-		// are
-		// configured
-		// to
-		// run
-		// on
-		// files
-		// with
-		// that
-		// extension.
-		// A
-		// validator
-		// will
-		// be
-		// in
-		// the
-		// list
-		// whether
-		// it
-		// has
-		// been
-		// enabled
-		// or
-		// disabled
-		// by
-		// the
-		// user.
+		// force the resources to be filtered in even if the validator doesn't normally take them?
+		boolean filterIn = false; 
+		
+		// a list of validators which are configured to run on files with that extension.
+		// A validator will be in the list whether it has been enabled or disabled by the user.
+		ValidatorMetaData[] vmds = InternalValidatorManager.getManager().getValidatorsForExtension(project, fileExtension);
 		if ((defaultExtension != null) && ((vmds == null) || (vmds.length == 0))) {
 			filterIn = true;
 			vmds = InternalValidatorManager.getManager().getValidatorsForExtension(project, defaultExtension);
@@ -194,23 +164,9 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 
 		setEnabledValidators(InternalValidatorManager.wrapInSet(vmds));
 
-		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, filterIn)); // construct
-		// an
-		// array
-		// of
-		// IFileDelta[]
-		// to
-		// wrap
-		// the
-		// Object[];
-		// one
-		// IFileDelta
-		// for
-		// each
-		// Object
-		// in
-		// the
-		// array
+		// construct an array of IFileDelta[] to wrap the Object[];
+		// one IFileDelta for each Object in the array
+		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, filterIn));
 	}
 
 	/**
