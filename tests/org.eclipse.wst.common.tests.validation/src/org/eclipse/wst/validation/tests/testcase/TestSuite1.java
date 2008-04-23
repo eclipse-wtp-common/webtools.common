@@ -2,6 +2,7 @@ package org.eclipse.wst.validation.tests.testcase;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -84,13 +85,14 @@ public class TestSuite1 extends TestCase {
 			"# We just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
+		_env.addFile(folder, "forFun.xml", "<fun>times</fun>");
 	}
 
 	/**
 	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
 	 * these tests.
 	 */
-	private static void enableOnlyTestValidators() {
+	private static void enableOnlyTestValidators() throws InvocationTargetException {
 		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
 		for (Validator v : vals){
 			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test");
@@ -98,7 +100,9 @@ public class TestSuite1 extends TestCase {
 			v.setManualValidation(enable);
 		}
 		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
-		gp.saveAsPrefs(vals);		
+		gp.saveAsPrefs(vals);
+		
+		TestEnvironment.saveV1Preferences(vals);
 	}
 
 	protected void tearDown() throws Exception {

@@ -2,8 +2,11 @@ package org.eclipse.wst.validation.tests.testcase;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -17,6 +20,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.ValidationFramework;
+import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.Validator.V1;
+import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.GlobalConfiguration;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 
 public class TestEnvironment {
@@ -117,6 +125,31 @@ public class TestEnvironment {
 		IProject project = _workspace.getRoot().getProject(name);
 		if (project.exists())return project;
 		return null;
+	}
+	
+	/**
+	 * Save the V1 preferences.
+	 */
+	public static void saveV1Preferences(Validator[] validators) throws InvocationTargetException {
+		GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
+		
+		List<ValidatorMetaData> manual = new LinkedList<ValidatorMetaData>();
+		List<ValidatorMetaData> build = new LinkedList<ValidatorMetaData>();
+		for (Validator v : validators){
+			V1 v1 = v.asV1Validator();
+			if (v1 == null)continue;
+			if (v1.isManualValidation())manual.add(v1.getVmd());
+			if (v1.isBuildValidation())build.add(v1.getVmd());
+		}
+		
+		ValidatorMetaData[] array = new ValidatorMetaData[manual.size()];
+		gc.setEnabledManualValidators(manual.toArray(array));
+		
+		array = new ValidatorMetaData[build.size()];
+		gc.setEnabledBuildValidators(build.toArray(array));
+
+		gc.passivate();
+		gc.store();
 	}
 
 	public void turnoffAutoBuild() throws CoreException {

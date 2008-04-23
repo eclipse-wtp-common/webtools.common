@@ -1,6 +1,7 @@
 package org.eclipse.wst.validation.tests.testcase;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -85,7 +86,7 @@ public class TestSuite3 extends TestCase {
 	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
 	 * these tests.
 	 */
-	private static void enableOnlyTestValidators() {
+	private static void enableOnlyTestValidators() throws InvocationTargetException {
 		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
 		for (Validator v : vals){
 			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test");
@@ -94,6 +95,7 @@ public class TestSuite3 extends TestCase {
 		}
 		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
 		gp.saveAsPrefs(vals);		
+		TestEnvironment.saveV1Preferences(vals);
 	}
 
 	protected void tearDown() throws Exception {
