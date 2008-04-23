@@ -188,6 +188,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		private GlobalPreferences 	_globalPreferences = ValManager.getDefault().getGlobalPreferences();
 		private GlobalConfiguration _globalConfig;
 		private Validator[] _validators;
+		
+		private int _changeCount;
 
 		/**
 		 * This class is provided for the CheckboxTableViewer in the
@@ -338,15 +340,10 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_validatorsTable.addMouseListener(new MouseAdapter() {
 
 				public void mouseDown(MouseEvent e) {
-					if (e.button != 1)
-						return;
+					if (e.button != 1)return;
 
-					TableItem tableItem = _validatorsTable.getItem(new Point(
-							e.x, e.y));
-					if (tableItem == null || tableItem.isDisposed()) {
-						// item no longer exists
-						return;
-					}
+					TableItem tableItem = _validatorsTable.getItem(new Point(e.x, e.y));
+					if (tableItem == null || tableItem.isDisposed())return;
 					int columnNumber;
 					int columnsCount = _validatorsTable.getColumnCount();
 					if (columnsCount == 0) {
@@ -362,9 +359,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 								break;
 							}
 						}
-						if (columnNumber == -1) {
-							return;
-						}
+						if (columnNumber == -1)return;
 					}
 
 					columnClicked(columnNumber);
@@ -390,9 +385,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 					try {
 						performEnableAll();
 					} catch (InvocationTargetException exc) {
-						displayAndLogError(
-								ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-								ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
+						displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
+							ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 					}
 				}
 			});
@@ -406,9 +400,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 					try {
 						performDisableAll();
 					} catch (InvocationTargetException exc) {
-						displayAndLogError(
-								ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-								ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
+						displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
+							ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 					}
 				}
 			});
@@ -447,6 +440,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_confirmButton.setSelection(_globalPreferences.getConfirmDialog());
 			_confirmButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
+					// do not increment the _changeCount as this by itself should not trigger a build prompt
 					_globalPreferences.setConfirmDialog(_confirmButton.getSelection());
 					_confirmButton.setFocus();
 				}
@@ -463,6 +457,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_autoSave.setSelection(_globalPreferences.getSaveAutomatically());
 			_autoSave.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
+					// do not increment the _changeCount as this by itself should not trigger a build prompt
 					_globalPreferences.setSaveAutomatically(_autoSave.getSelection());
 					_autoSave.setFocus();
 				}
@@ -480,6 +475,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_suspend.setSelection(_globalPreferences.getDisableAllValidation());
 			_suspend.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
+					_changeCount++;
 					_suspend.setFocus();
 					_validatorsTable.setEnabled(!_suspend.getSelection());
 					_enableAllButton.setEnabled(!_suspend.getSelection());
@@ -500,6 +496,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_override.setSelection(_globalPreferences.getOverride());
 			_override.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
+					_changeCount++;
 					_globalPreferences.setOverride(_override.getSelection());
 					_override.setFocus();
 					
@@ -547,9 +544,11 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 			switch (columnToEdit) {
 			case 1:
+				_changeCount++;
 				val.setManualValidation(!val.isManualValidation());
 				break;
 			case 2:
+				_changeCount++;
 				val.setBuildValidation(!val.isBuildValidation());
 				break;
 			case 3:
@@ -557,6 +556,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				if (v2 != null){
 					FilterDialog fd = new FilterDialog(_shell, val, null);
 					if (Window.OK == fd.open()){
+						_changeCount++;
 						val.become(fd.getValidator());
 					}
 				}
@@ -587,7 +587,10 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		    dialog.create();
 		
 		    int result = dialog.open();
-	        if (result == Window.OK)_globalConfig.setDelegateUniqueName(vmd, dialog.getDelegateID());
+	        if (result == Window.OK){
+	        	_changeCount++;
+	        	_globalConfig.setDelegateUniqueName(vmd, dialog.getDelegateID());
+	        }
 		}
 		
 		/**
@@ -629,7 +632,9 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			vpm.savePreferences(_globalPreferences, _validators);
 			saveV1Preferences();
 			
-			if (MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RebuildMsg)){
+			if (_changeCount > 0 && 
+				MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RebuildMsg)){
+				
 				FullBuildJob fbj = new FullBuildJob();
 				try {
 					fbj.runInWorkspace(new NullProgressMonitor());
@@ -701,6 +706,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
+			_changeCount++;
 			_validators = copyValidators(ValManager.getDefaultValidators());
 			updateWidgets();
 			getDefaultsButton().setFocus();
@@ -722,6 +728,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 		
 		private void setAllValidators(boolean bool){
+			_changeCount++;
 			for (Validator v : _validators){
 				v.setBuildValidation(bool);
 				v.setManualValidation(bool);
