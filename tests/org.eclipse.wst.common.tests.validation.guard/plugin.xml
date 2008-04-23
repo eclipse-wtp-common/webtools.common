@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="T3A" name="T3A Validator">
+      <validator
+            build="false"
+            class="org.eclipse.wst.common.tests.validation.guard.T3A"
+            manual="false">
+      </validator>
+   </extension>
+
+</plugin>
