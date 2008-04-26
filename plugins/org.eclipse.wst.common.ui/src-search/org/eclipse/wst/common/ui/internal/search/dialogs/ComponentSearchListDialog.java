@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.osgi.util.TextProcessor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ViewForm;
@@ -311,7 +312,7 @@ public class ComponentSearchListDialog extends Dialog {
     	filePath = file.getFullPath().toString();
         //locationView.redraw();
         
-        locationLabel.setText(filePath);
+        locationLabel.setText(TextProcessor.process(filePath));
         locationLabel.setImage(lp.getFileIcon(component));
     }
     
