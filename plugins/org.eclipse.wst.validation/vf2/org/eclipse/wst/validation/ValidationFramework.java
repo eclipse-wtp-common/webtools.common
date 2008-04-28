@@ -406,7 +406,9 @@ public final class ValidationFramework {
 		}
 
 		public boolean visit(IResource resource) throws CoreException {
-			_set.add(resource);
+			// [225839] the older validators only expect files and folders.
+			int type = resource.getType();
+			if (type == IResource.FILE || type == IResource.FOLDER)_set.add(resource);
 			return true;
 		}
 		
