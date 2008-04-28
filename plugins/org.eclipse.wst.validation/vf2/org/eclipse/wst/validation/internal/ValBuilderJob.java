@@ -145,7 +145,8 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			return false;
 		}
 		int kind = delta.getKind();
-		if ((delta.getFlags() & InterestedFlags) == 0)return true;
+		boolean isChanged = (kind & IResourceDelta.CHANGED) != 0;
+		if (isChanged &&  (delta.getFlags() & InterestedFlags) == 0)return true;
 		
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
 			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
