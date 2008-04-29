@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.ValOperation;
@@ -53,11 +54,19 @@ public class ManualValidationRunner extends WorkspaceJob {
 	 *            Is this a build based validation?
 	 * 
 	 * @param showResults
-	 *            When the validation is finished, show the results in a dialog
-	 *            box.
+	 *            When the validation is finished, show the results in a dialog box.
 	 */
 	public static void validate(Map<IProject, Set<IResource>> projects, ValType valType, boolean showResults){
 		ManualValidationRunner me = new ManualValidationRunner(projects, valType, showResults);
+		
+		//TODO optimize this, I don't like the idea of validators having to lock the entire project
+		Set<IProject> keys = projects.keySet();
+		IProject[] projectArray = new IProject[keys.size()];
+		keys.toArray(projectArray);
+		if (projectArray.length == 1)me.setRule(projectArray[0]);
+		else {
+			me.setRule(MultiRule.combine(projectArray));
+		}
 		me.schedule();
 	}
 	
@@ -71,7 +80,7 @@ public class ManualValidationRunner extends WorkspaceJob {
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		
 		long start = System.currentTimeMillis();
-		final ValOperation vo = ValidationRunner.validate(_projects, _valType, monitor);
+		final ValOperation vo = ValidationRunner.validate(_projects, _valType, monitor, false);
 		final long time = System.currentTimeMillis() - start;
 		int resourceCount = 0;
 		for (Set s : _projects.values())resourceCount += s.size();

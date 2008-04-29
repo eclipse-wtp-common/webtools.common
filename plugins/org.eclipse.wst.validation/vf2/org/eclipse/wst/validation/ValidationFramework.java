@@ -373,7 +373,7 @@ public final class ValidationFramework {
 		IProgressMonitor monitor) throws CoreException{
 		ValType type = ValType.Build;
 		if (isManual)type = ValType.Manual;
-		ValOperation vo = ValidationRunner.validate(createMap(projects), type, monitor);
+		ValOperation vo = ValidationRunner.validate(createMap(projects), type, monitor, true);
 		return vo.getResults();
 	}
 	

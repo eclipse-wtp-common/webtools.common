@@ -16,6 +16,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,11 +49,15 @@ public class ValidationRunner implements IWorkspaceRunnable {
 	 * 
 	 * @param monitor
 	 *            Progress monitor.
+	 * 
+	 * @param atomic
+	 *            Run as an atomic workspace operation?
 	 */
 	public static ValOperation validate(Map<IProject, Set<IResource>> projects, ValType valType, 
-		IProgressMonitor monitor) throws CoreException{
+		IProgressMonitor monitor, boolean atomic) throws CoreException{
 		ValidationRunner me = new ValidationRunner(projects, valType);
-		ResourcesPlugin.getWorkspace().run(me, monitor);
+		if (atomic)ResourcesPlugin.getWorkspace().run(me, null, IWorkspace.AVOID_UPDATE, monitor);
+		else me.execute(monitor);
 		return me._valOperation;
 	}
 	
