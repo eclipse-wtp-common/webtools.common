@@ -275,7 +275,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	  /**
      * 
      */
-    private void addSynchronizationLoadingAdapter() {
+    protected void addSynchronizationLoadingAdapter() {
         if (ResourceIsLoadingAdapter.findAdapter(this) == null)
             eAdapters().add(ResourceIsLoadingAdapterFactory.INSTANCE.createResourceIsLoadingAdapter());
     }
@@ -283,7 +283,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
     /**
      * 
      */
-    private void removeLoadingSynchronizationAdapter() {
+    protected void removeLoadingSynchronizationAdapter() {
         ResourceIsLoadingAdapter adapter = ResourceIsLoadingAdapter.findAdapter(this);
         if (adapter != null) {
             adapter.forceRelease();

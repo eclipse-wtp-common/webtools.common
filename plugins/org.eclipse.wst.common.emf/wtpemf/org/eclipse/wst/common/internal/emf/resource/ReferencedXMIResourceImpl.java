@@ -314,15 +314,26 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doUnload()
 	 */
 	protected void doUnload() {
-		if (isTrackingModification() && editReferenceCount < 1) //do not turn off modification if
-			// we still have a write count
-			setTrackingModification(false);
-		super.doUnload();
-		setForceRefresh(false);
-		setModified(false); //dcb - this is required to ensure that resources without files are
-		// marked as not modified.
-		if (readReferenceCount == 0 && editReferenceCount == 0) {
-			getResourceSet().getResources().remove(this);
+		
+		try {
+			// Using load lock to ensure no other threads will attempt a load during the unload process
+			addSynchronizationLoadingAdapter();
+			waitForResourceToLoadIfNecessary();
+			
+			if (isTrackingModification() && editReferenceCount < 1) //do not turn off modification if
+				// we still have a write count
+				setTrackingModification(false);
+			super.doUnload();
+			setForceRefresh(false);
+			setModified(false); //dcb - this is required to ensure that resources without files are
+			// marked as not modified.
+			if (readReferenceCount == 0 && editReferenceCount == 0) {
+				getResourceSet().getResources().remove(this);
+			}
+		
+		} finally {
+			//Removing the load lock
+			removeLoadingSynchronizationAdapter();
 		}
 			
 	}
