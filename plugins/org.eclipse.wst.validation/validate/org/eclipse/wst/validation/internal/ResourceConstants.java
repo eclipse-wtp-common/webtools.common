@@ -33,7 +33,7 @@ public interface ResourceConstants {
 	// If the validator cannot be loaded because its helper cannot be loaded
 	String VBF_EXC_HELPER_CANNOTLOAD = "VBF_EXC_HELPER_CANNOTLOAD"; //$NON-NLS-1$ 
 
-	// A java.lang.Runtime error has occured during the build.
+	// A java.lang.Runtime error has occurred during the build.
 	String VBF_EXC_RUNTIME = "VBF_EXC_RUNTIME"; //$NON-NLS-1$ 
 
 	// If the "Validator" extension point has been removed from the plugin.xml file.
@@ -67,7 +67,7 @@ public interface ResourceConstants {
 	// particular validator, has begun
 	String VBF_STATUS_STARTING_VALIDATION = "VBF_STATUS_STARTING_VALIDATION"; //$NON-NLS-1$ 
 
-	// After a validator is finished, this message informs the user that validtaion, using a
+	// After a validator is finished, this message informs the user that validation, using a
 	// particular validator, has completed.
 	String VBF_STATUS_ENDING_VALIDATION = "VBF_STATUS_ENDING_VALIDATION"; //$NON-NLS-1$ 
 
@@ -78,7 +78,6 @@ public interface ResourceConstants {
 	// validation will be performed because there's no delta information.
 	String VBF_STATUS_NULL_DELTA = "VBF_STATUS_NULL_DELTA"; //$NON-NLS-1$ 
 
-	String VBF_EXC_SYNTAX_NULL_NAME = "VBF_EXC_SYNTAX_NULL_NAME"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER = "VBF_EXC_SYNTAX_NO_HELPER"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER_CLASS = "VBF_EXC_SYNTAX_NO_HELPER_CLASS"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER_THROWABLE = "VBF_EXC_SYNTAX_NO_HELPER_THROWABLE"; //$NON-NLS-1$ 

@@ -100,14 +100,14 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 
 	/**
 	 * Return the name of the resource, without the project-specific information in front.
-	 * 
+	 * <p>
 	 * This method is used by ValidationOperation to calculate the non-environment specific names of
 	 * the files. Only the IWorkbenchContext implementation knows how much information to strip off
 	 * of the IResource name. For example, if there is an EJB Project named "MyEJBProject", and it
 	 * uses the default names for the source and output folders, "source" and "ejbModule",
 	 * respectively, then the current implementation of EJB Helper knows how much of that structure
 	 * is eclipse-specific.
-	 * 
+	 * </p><p>
 	 * Since the "source" folder contains Java source files, a portable name would be the
 	 * fully-qualified name of the Java class, without the eclipse-specific project and folder names
 	 * in front of the file name. The EJBHelper knows that everything up to the "source" folder, for
@@ -116,12 +116,13 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * Project named "/MyEJBProject/source/com/ibm/myclasses/MyJavaFile.java", this method would
 	 * make this name portable by stripping off the "/MyEJBProject/source", and returning
 	 * "com/ibm/myclasses/MyJavaFile.java".
-	 * 
+	 * </p><p>
 	 * The output of this method is used by the ValidationOperation, when it is calculating the list
 	 * of added/changed/deleted file names for incremental validation. If getPortableName(IResource)
 	 * returns null, that means that the IWorkbenchContext's implementation does not support that
 	 * particular type of resource, and the resource should not be included in the array of
 	 * IFileDelta objects in the IValidator's "validate" method.
+	 * </p>
 	 */
 	String getPortableName(IResource resource);
 
