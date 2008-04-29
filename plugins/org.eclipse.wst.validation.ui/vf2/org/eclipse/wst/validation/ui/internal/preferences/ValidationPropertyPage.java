@@ -19,12 +19,11 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -173,7 +172,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 	private class ValidatorListPage implements IValidationPage {
 		private Composite 		_page;
 
-		private Composite 		_composite;
 		private TableViewer 	_validatorList;
 		private Button 			_enableAllButton;
 		private Button 			_disableAllButton;
@@ -253,36 +251,29 @@ public class ValidationPropertyPage extends PropertyPage  {
 		private void setupTableColumns(Table table) {
 			TableColumn validatorColumn = new TableColumn(table, SWT.NONE);
 			validatorColumn.setText(ValUIMessages.VALIDATOR);
-			validatorColumn.setResizable(false);
-			validatorColumn.setWidth(320);
-			TableColumn manualColumn = new TableColumn(table, SWT.NONE);
+			validatorColumn.setWidth(245);
+			TableColumn manualColumn = new TableColumn(table, SWT.CENTER);
 			manualColumn.setText(ValUIMessages.MANUAL);
-			manualColumn.setResizable(false);
-			manualColumn.setWidth(40);
-			TableColumn buildColumn = new TableColumn(table, SWT.NONE);
+			manualColumn.pack();
+			TableColumn buildColumn = new TableColumn(table, SWT.CENTER);
 			buildColumn.setText(ValUIMessages.BUILD);
-			buildColumn.setResizable(false);
-			buildColumn.setWidth(40);
-			TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
+			buildColumn.pack();
+			TableColumn settingsColumn = new TableColumn(table, SWT.CENTER);
 			settingsColumn.setText(ValUIMessages.SETTINGS);
-			settingsColumn.setResizable(false);
-			settingsColumn.setWidth(50);
+			settingsColumn.pack();
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
 			_validators = copyValidators(ValManager.getDefault().getValidators(getProject(), false));
-			final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
-			_composite = new Composite(sc1, SWT.NONE);
-			sc1.setContent(_composite);
-			_composite.setLayout(new GridLayout());
-			 PlatformUI.getWorkbench().getHelpSystem().setHelp(_composite, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
-			Composite validatorGroup = new Composite(_composite, SWT.NONE);
+			Composite validatorGroup = new Composite(parent, SWT.NONE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			GridLayout validatorGroupLayout = new GridLayout();
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
+			GridDataFactory.fillDefaults().grab(true, true).applyTo(validatorGroup);
+
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			addOverride(validatorGroup);
@@ -297,33 +288,15 @@ public class ValidationPropertyPage extends PropertyPage  {
 			listLabel.setLayoutData(listLabelData);
 			listLabel.setText(ValUIMessages.PREF_VALLIST_TITLE);
 			
-//			ScrolledComposite sc = new ScrolledComposite(validatorGroup, SWT.V_SCROLL);
-//			GridData gd = new GridData(GridData.FILL_BOTH);
-//			gd.horizontalSpan = 2;
-//			sc.setLayoutData(gd);
-//			sc.setLayout(new GridLayout());
-//			Composite table = new Composite(sc, SWT.NONE);
-//			sc.setContent(table);
-//			table.setLayout(new GridLayout());
-
 			_validatorsTable = new Table(validatorGroup, SWT.BORDER | SWT.FULL_SELECTION);
-//			sc.setContent(_validatorsTable);
-			_validatorsTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			TableLayout tableLayout = new TableLayout();
-			tableLayout.addColumnData(new ColumnWeightData(160, true));
-			tableLayout.addColumnData(new ColumnWeightData(40, true));
-			tableLayout.addColumnData(new ColumnWeightData(30, true));
-			tableLayout.addColumnData(new ColumnWeightData(40, true));
+			Point preferredSize = _validatorsTable.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			GridDataFactory.fillDefaults().grab(true, true).hint(preferredSize)
+				.span(2,1).applyTo(_validatorsTable);
 
 			_validatorsTable.setHeaderVisible(true);
 			_validatorsTable.setLinesVisible(true);
-			_validatorsTable.setLayout(tableLayout);
 
 			_validatorList = new TableViewer(_validatorsTable);
-			GridData validatorListData = new GridData(GridData.FILL_HORIZONTAL);
-			validatorListData.horizontalSpan = 2;
-			_validatorsTable.setLayoutData(validatorListData);
-			_validatorList.getTable().setLayoutData(validatorListData);
 			_validatorList.setLabelProvider(new ValidationLabelProvider());
 			_validatorList.setContentProvider(new ValidationContentProvider());
 			_validatorList.setSorter(new ViewerSorter());
@@ -333,11 +306,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_validatorsTable.addMouseListener(new MouseAdapter() {
 
 				public void mouseDown(MouseEvent e) {
-					if (e.button != 1)
-						return;
+					if (e.button != 1)return;
 
-					TableItem tableItem = _validatorsTable.getItem(new Point(
-							e.x, e.y));
+					TableItem tableItem = _validatorsTable.getItem(new Point(e.x, e.y));
 					if (tableItem == null || tableItem.isDisposed()) {
 						// item no longer exists
 						return;
@@ -357,9 +328,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 								break;
 							}
 						}
-						if (columnNumber == -1) {
-							return;
-						}
+						if (columnNumber == -1)return;
 					}
 
 					columnClicked(columnNumber);
@@ -383,15 +352,14 @@ public class ValidationPropertyPage extends PropertyPage  {
 			// Have to set the tab order or only the first checkbox in a
 			// Composite can be tabbed to. (Seems to apply only to checkboxes. Have to use the
 			// arrow key to navigate the checkboxes.)
-			validatorGroup.setTabList(new Control[] { _override, _suspend,
-				});
+			validatorGroup.setTabList(new Control[] { _override, _suspend});
 
 			updateWidgets();
 
-			applyDialogFont(_composite);
-			_composite.setSize(_composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			applyDialogFont(validatorGroup);
+			validatorGroup.setSize(validatorGroup.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-			return _composite;
+			return validatorGroup;
 		}
 
 		private void addButtons(Composite validatorGroup) {
@@ -762,7 +730,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_disableAllButton.dispose();
 			_enableAllButton.dispose();
 			_validatorList.getTable().dispose();
-			_composite.dispose();
 		}
 		
 		/**
