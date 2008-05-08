@@ -21,10 +21,10 @@ import org.eclipse.core.runtime.IAdaptable;
  * 
  * <p>This interface is not intended to be implemented outside of this framework. Client code can 
  * get access to <code>IRuntimeComponent</code> objects by using methods on the 
- * {@see IRuntime} and {@see RuntimeManager} classes.</p>  
+ * {@link IRuntime} and {@link RuntimeManager} classes.</p>  
  * 
- * @see IRuntime.getRuntimeComponents()
- * @see RuntimeManager.createRuntimeComponent(IRuntimeComponentVersion,Map<String,String>) 
+ * @see IRuntime#getRuntimeComponents()
+ * @see RuntimeManager#createRuntimeComponent(IRuntimeComponentVersion,Map) 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

@@ -27,13 +27,13 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * runtime components. 
  * 
  * <p>This interface is not intended to be implemented outside of this framework. Client code can 
- * get access to <code>IRuntime</code> objects by using methods on the {@see RuntimeManager} 
+ * get access to <code>IRuntime</code> objects by using methods on the {@link RuntimeManager} 
  * class.</p>  
  * 
- * @see RuntimeManager.getRuntimes()
- * @see RuntimeManager.getRuntime(String)
- * @see RuntiemManager.isRuntimeDefined(String)
- * @see RuntimeManager.defineRuntime(String,List<IRuntimeComponent>,Map<String,String>)
+ * @see RuntimeManager#getRuntimes()
+ * @see RuntimeManager#getRuntime(String)
+ * @see RuntimeManager#isRuntimeDefined(String)
+ * @see RuntimeManager#defineRuntime(String,List,Map)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -52,7 +52,7 @@ public interface IRuntime
     
     /**
      * Returns the localized name of this runtime. If not specified, this will default to the name
-     * of the runtime as returned by the {@see getName()} method. 
+     * of the runtime as returned by the {@link #getName()} method. 
      * 
      * <p>The localized name should be used in all communications with the user while all metadata 
      * references to the runtime should use the unlocalized name. Note that there is an inherent 

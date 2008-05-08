@@ -21,14 +21,14 @@ import org.eclipse.wst.common.project.facet.core.IVersion;
  * versions are declared using <code>org.eclipse.wst.common.project.facet.core.runtimes</code>
  * extension point. Once declared, client code can get access to 
  * <code>IRuntimeComponentVersion</code> objects by using methods on the 
- * {@see IRuntimeComponentType} class.</p>  
+ * {@link IRuntimeComponentType} class.</p>  
  *
- * @see IRuntimeComponentType.getVersions()
- * @see IRuntimeComponentType.getVersions(String)
- * @see IRuntimeComponentType.getVersion(String)
- * @see IRuntimeComponentType.hasVersion(String)
- * @see IRuntimeComponentType.getLatestVersion()
- * @see IRuntimeComponentType.getSortedVersions(boolean)
+ * @see IRuntimeComponentType#getVersions()
+ * @see IRuntimeComponentType#getVersions(String)
+ * @see IRuntimeComponentType#getVersion(String)
+ * @see IRuntimeComponentType#hasVersion(String)
+ * @see IRuntimeComponentType#getLatestVersion()
+ * @see IRuntimeComponentType#getSortedVersions(boolean)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

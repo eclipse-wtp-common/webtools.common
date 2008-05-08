@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.common.project.facet.core.DefaultVersionComparator;
 
 /**
  * Represents the type of a runtime component. A runtime instance is composed of  multiple runtime 
@@ -25,11 +26,11 @@ import org.eclipse.core.runtime.IAdaptable;
  * <p>This interface is not intended to be implemented outside of this framework. Runtime component
  * types are declared using <code>org.eclipse.wst.common.project.facet.core.runtimes</code>
  * extension point. Once declared, client code can get access to <code>IRuntimeComponentType</code> 
- * objects by using methods on the {@see RuntimeManager} class.</p>  
+ * objects by using methods on the {@link RuntimeManager} class.</p>  
  *
- * @see RuntimeManager.getRuntimeComponentTypes()
- * @see RuntimeManager.getRuntimeComponentType(String)
- * @see RuntimeManager.isRuntimeComponentTypeDefined(String)
+ * @see RuntimeManager#getRuntimeComponentTypes()
+ * @see RuntimeManager#getRuntimeComponentType(String)
+ * @see RuntimeManager#isRuntimeComponentTypeDefined(String)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -78,11 +79,11 @@ public interface IRuntimeComponentType
     boolean hasVersion( String version );
     
     /**
-     * Returns the {@see IRuntimeComponentVersion} object corresponding to the
+     * Returns the {@link IRuntimeComponentVersion} object corresponding to the
      * provided version string.
      * 
      * @param version the version string
-     * @return the {@see IRuntimeComponentVersion} object corresponding to the
+     * @return the {@link IRuntimeComponentVersion} object corresponding to the
      *   provided version string
      * @throws IllegalArgumentException if the version does not exist
      */
@@ -116,7 +117,7 @@ public interface IRuntimeComponentType
     /**
      * Returns the version comparator specified for this runtime component type.
      * If no version comparator is specified, this method will return an 
-     * instance of the {@see DefaultVersionComparator}.
+     * instance of the {@link DefaultVersionComparator}.
      * 
      * @return the version comparator specified for this runtime component type
      */

@@ -54,11 +54,11 @@ public final class RuntimeManager
     }
     
     /**
-     * Returns the {@see IRuntimeComponentType} object corresponding to the
+     * Returns the {@link IRuntimeComponentType} object corresponding to the
      * specified runtime component type id.
      * 
      * @param id the runtime componenet type id
-     * @return the {@see IRuntimeComponentType} object corresponding to the
+     * @return the {@link IRuntimeComponentType} object corresponding to the
      *   specified runtime componenet type id
      * @throws IllegalArgumentException if the runtime component type id is not
      *   recognized
@@ -148,7 +148,7 @@ public final class RuntimeManager
     
     /**
      * Creates a new runtime componenet. This method is intended to be used in
-     * conjunction with the {@see defineRuntime(String,List,Map)} method.
+     * conjunction with the {@link #defineRuntime(String,List,Map)} method.
      * 
      * @param rcv the runtime component version
      * @param properties the runtime component properties

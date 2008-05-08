@@ -33,7 +33,7 @@ public interface IRuntimeBridge
      * Returns the set of names for runtimes that this bridge wants to export.
      * The system will try to accommodate these name choices, but may have to
      * disambiguate names due to collisions. However, even if the runtime name
-     * is changed, the name that will be passed into the {@see bridge(String)}
+     * is changed, the name that will be passed into the {@link #bridge(String)}
      * call will be the original name provided by this method call. 
      * 
      * @return the set of names for runtimes that this bridge wants to export
@@ -46,11 +46,11 @@ public interface IRuntimeBridge
     
     /**
      * Returns a stub that represents the bridged runtime. The system will
-     * wrap this stub and expose it to the clients through the {@see IRuntime}
+     * wrap this stub and expose it to the clients through the {@link IRuntime}
      * interface.
      * 
      * @param name the name of the bridged runtime (as returned by the
-     *   {@see getExportedRuntimeNames()}) method
+     *   {@link #getExportedRuntimeNames()}) method
      * @return a stub that represents the bridged runtime
      * @throws CoreException if failed while bridging
      */
@@ -61,7 +61,7 @@ public interface IRuntimeBridge
     
     /**
      * Represents a single bridged runtime. The system will wrap this interface
-     * and expose it to clients as {@see IRuntime}. All relevant calls will be
+     * and expose it to clients as {@link IRuntime}. All relevant calls will be
      * delegated to this interface.
      * 
      * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -85,8 +85,7 @@ public interface IRuntimeBridge
          * contents will vary depending on how the runtime was created and 
          * what component types/versions it's comprised of.
          * 
-         * @return the properties associated with this runtime (key type: 
-         *   {@see String}, value type: {@see String})
+         * @return the properties associated with this runtime
          */
         
         Map<String,String> getProperties();
@@ -94,7 +93,7 @@ public interface IRuntimeBridge
     
     /**
      * Represents a single bridged runtime. The system will wrap this interface
-     * and expose it to clients as {@see IRuntime}. All relevant calls will be
+     * and expose it to clients as {@link IRuntime}. All relevant calls will be
      * delegated to this interface.
      * 
      * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -123,8 +122,7 @@ public interface IRuntimeBridge
          * contents will vary depending on how the runtime was created and 
          * what component types/versions it's comprised of.
          * 
-         * @return the properties associated with this runtime (key type: 
-         *   {@see String}, value type: {@see String})
+         * @return the properties associated with this runtime
          * @since 3.0
          */
         
