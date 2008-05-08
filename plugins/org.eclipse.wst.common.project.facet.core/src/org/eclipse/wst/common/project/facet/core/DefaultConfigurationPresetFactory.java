@@ -25,9 +25,9 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
  * 
  * <ol>
  *   <li>If a runtime is selected, this preset will contain default facets as specified by
- *     {@see IRuntime.getDefaultFacets(Set)}.</li>
+ *     {@link IRuntime#getDefaultFacets(Set)}.</li>
  *   <li>If no runtime is selected, this preset will contain default versions for all of the 
- *     fixed facets as specified by {@see IProjectFacet.getDefaultVersion()}.
+ *     fixed facets as specified by {@link IProjectFacet#getDefaultVersion()}.
  * </ol>
  * 
  * @since 3.0

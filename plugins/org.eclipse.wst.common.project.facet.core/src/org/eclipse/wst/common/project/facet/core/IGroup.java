@@ -14,7 +14,7 @@ package org.eclipse.wst.common.project.facet.core;
 import java.util.Set;
 
 /**
- * A group is a named collection of {@see IProjectFacetVersion}  objects. It is 
+ * A group is a named collection of {@link IProjectFacetVersion}  objects. It is 
  * used primarily as a parameter to the "requires" and "conflicts" constraints 
  * and allows a level of indirection where a facet does not need to know about 
  * all the members of the group. A given project facet version can belong to 

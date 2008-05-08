@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 
 /**
  * Models a single constraint in the constraint expression. 
@@ -91,9 +92,9 @@ public interface IConstraint
      * Checks this constraint against the given set of project facets.
      * 
      * @param facets a set of project facets
-     * @return a status object with severity of {@see IStatus#OK} if the
-     *   constraint was satisfied or otherwise a {@see MultiStatus} composed of
-     *   {@see ValidationProblem} status objects
+     * @return a status object with severity of {@link IStatus#OK} if the
+     *   constraint was satisfied or otherwise a {@link MultiStatus} composed of
+     *   individual status objects for each of the problems
      */
     
     IStatus check( Collection<IProjectFacetVersion> facets );
@@ -104,9 +105,9 @@ public interface IConstraint
      * @param facets a set of project facets
      * @param validateSoftDependencies if <code>true</code> soft dependencies
      *   will be treated as required
-     * @return a status object with severity of {@see IStatus#OK} if the
-     *   constraint was satisfied or otherwise a {@see MultiStatus} composed of
-     *   {@see ValidationProblem} status objects
+     * @return a status object with severity of {@link IStatus#OK} if the
+     *   constraint was satisfied or otherwise a {@link MultiStatus} composed of
+     *   individual status objects for each of the problems
      */
 
     IStatus check( Collection<IProjectFacetVersion> facets,

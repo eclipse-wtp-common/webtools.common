@@ -13,9 +13,11 @@ package org.eclipse.wst.common.project.facet.core;
 
 import java.util.Map;
 
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+
 /**
  * A dynamic preset is type of preset that needs to be resolved before it can be used. The resolve
- * operation relies the {@see IPresetFactory} specified when the dynamic preset is registered via
+ * operation relies the {@link IPresetFactory} specified when the dynamic preset is registered via
  * the <code>presets</code> extension point and can take into account the context in which the 
  * preset will be used. 
  * 
@@ -29,7 +31,7 @@ public interface IDynamicPreset
     
 {
     /**
-     * The key of the context map entry whose value is an {@see IFacetedProjectBase} object.
+     * The key of the context map entry whose value is an {@link IFacetedProjectBase} object.
      * 
      * @since 3.0
      */
@@ -37,14 +39,14 @@ public interface IDynamicPreset
     static final String CONTEXT_KEY_FACETED_PROJECT = "CONTEXT_KEY_FACETED_PROJECT"; //$NON-NLS-1$
     
     /**
-     * The key of the context map entry whose value is a set of {@see IProjectFacet} objects
+     * The key of the context map entry whose value is a set of {@link IProjectFacet} objects
      * representing the fixed facets.
      */
     
     static final String CONTEXT_KEY_FIXED_FACETS = "CONTEXT_KEY_FIXED_FACETS"; //$NON-NLS-1$
     
     /**
-     * The key of the context map entry whose value is the primary runtime ({@see IRuntime}) or
+     * The key of the context map entry whose value is the primary runtime ({@link IRuntime}) or
      * <code>null</code> if no runtime has been selected.
      */
     

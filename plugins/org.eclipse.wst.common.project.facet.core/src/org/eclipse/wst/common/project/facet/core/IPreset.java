@@ -41,8 +41,8 @@ public interface IPreset
         /**
          * Dynamic presets are created by registering a factory in the <code>presets</code>
          * extension point and are not fully specified until they are resolved within the context
-         * of use. To resolve a dynamic preset, cast the preset object to {@see IDynamicPreset} and
-         * then use the {@see IDynamicPreset.resolve(java.util.Map)} method. 
+         * of use. To resolve a dynamic preset, cast the preset object to {@link IDynamicPreset} and
+         * then use the {@link IDynamicPreset#resolve(java.util.Map)} method. 
          */
         
         DYNAMIC,
@@ -64,8 +64,8 @@ public interface IPreset
     String getId();
     
     /**
-     * Returns the type of the preset. If the preset type is {@see Type.DYNAMIC}, then the preset
-     * object can be cast to {@see IDynamicPreset}.
+     * Returns the type of the preset. If the preset type is {@link Type#DYNAMIC}, then the preset
+     * object can be cast to {@link IDynamicPreset}.
      * 
      * @return the type of the preset
      * @since 2.0
@@ -103,7 +103,7 @@ public interface IPreset
      * 
      * @return <code>true</code> if the preset is user-defined,
      *   <code>false</code> otherwise
-     * @deprecated use the {@see getType()} method instead
+     * @deprecated use the {@link #getType()} method instead
      */
     
     boolean isUserDefined();

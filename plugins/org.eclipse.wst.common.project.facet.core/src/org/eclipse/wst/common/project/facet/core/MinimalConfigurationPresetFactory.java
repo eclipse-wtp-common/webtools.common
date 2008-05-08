@@ -18,6 +18,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.internal.DefaultFacetsExtensionPoint;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * Preset factory for the <code>minimal.configuration</code> preset. This preset only contains
@@ -25,9 +26,9 @@ import org.eclipse.wst.common.project.facet.core.internal.DefaultFacetsExtension
  * 
  * <ol>
  *   <li>If a runtime is selected, the versions are looked up using 
- *     {@see IRuntime.getDefaultFacets(Set)}.</li>
+ *     {@link IRuntime#getDefaultFacets(Set)}.</li>
  *   <li>If no runtime is selected, this versions are the default versions as specified 
- *     by {@see IProjectFacet.getDefaultVersion()}.
+ *     by {@link IProjectFacet#getDefaultVersion()}.
  * </ol>
  * 
  * @since 3.0

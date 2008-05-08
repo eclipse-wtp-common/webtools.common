@@ -30,7 +30,7 @@ public interface IPresetFactory
      * The factory method for creating a preset definition. The definition contains all of the 
      * information necessary for the system to create a preset. The factory can take into account 
      * the context that the preset will be used in when creating a preset definition. See
-     * {@see IDynamicPreset} for documentation on what type of information the context can contain.
+     * {@link IDynamicPreset} for documentation on what type of information the context can contain.
      *
      * @param presetId the id of the preset
      * @param context the information about context that this preset will be used in

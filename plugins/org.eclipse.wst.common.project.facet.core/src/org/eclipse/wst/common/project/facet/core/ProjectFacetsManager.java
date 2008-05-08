@@ -19,13 +19,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 
 /**
  * This is the entry point to the project facet framework API. From here, you 
  * can (among other things) list available project facets and create instances 
- * of {@see IFacetedProject}.
+ * of {@link IFacetedProject}.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
@@ -406,9 +407,9 @@ public final class ProjectFacetsManager
      *
      * @param base the set of project facets that the actions will be applied to
      * @param actions the set of actions to evaluate
-     * @return a status object with severity of {@see IStatus#OK} if all of the
-     *   constraints were satisfied or otherwise a {@see MultiStatus} composed
-     *   of {@see ValidationProblem} status objects
+     * @return a status object with severity of {@link IStatus#OK} if all of the
+     *   constraints were satisfied or otherwise a {@link MultiStatus} composed of
+     *   individual status objects for each of the problems
      */
     
     public static IStatus check( final Set<IProjectFacetVersion> base,

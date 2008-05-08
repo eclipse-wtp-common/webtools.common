@@ -82,7 +82,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /**
- * The implementation of the {@see ProjectFacetsManager} abstract class.
+ * The implementation of the {@link ProjectFacetsManager} abstract class.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */

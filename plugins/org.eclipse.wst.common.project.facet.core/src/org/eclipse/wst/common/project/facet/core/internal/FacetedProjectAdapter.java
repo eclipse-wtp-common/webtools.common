@@ -18,7 +18,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
- * Adapts {@see IProject} to {@see IFacetedProject}.
+ * Adapts {@link IProject} to {@link IFacetedProject}.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */

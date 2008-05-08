@@ -143,7 +143,7 @@ public interface IProjectFacet
     /**
      * Returns the facet version that should be selected by default. If the
      * default version is not explicitly specified in the facet definition, the
-     * latest version (as specified by {@see getLatestVersion()} method) will
+     * latest version (as specified by {@link #getLatestVersion()} method) will
      * be returned. 
      * 
      * @return the facet version that should be selected by default
@@ -168,7 +168,7 @@ public interface IProjectFacet
     /**
      * Returns the version comparator specified for this project facet. If no 
      * version comparator is specified, this method will return an instance of 
-     * the {@see DefaultVersionComparator}.
+     * the {@link DefaultVersionComparator}.
      * 
      * @return the version comparator specified for this project facet
      */

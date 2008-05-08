@@ -38,7 +38,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right before a facet is installed. Events of this 
-         * type can be cast to {@see IProjectFacetActionEvent} interface to get additional details 
+         * type can be cast to {@link IProjectFacetActionEvent} interface to get additional details 
          * about the change. 
          */
         
@@ -46,7 +46,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right after a facet is installed. Events of this 
-         * type can be cast to {@see IProjectFacetActionEvent} interface to get additional details 
+         * type can be cast to {@link IProjectFacetActionEvent} interface to get additional details 
          * about the change. 
          */
         
@@ -54,7 +54,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right before a facet is uninstalled. Events of this 
-         * type can be cast to {@see IProjectFacetActionEvent} interface to get additional details 
+         * type can be cast to {@link IProjectFacetActionEvent} interface to get additional details 
          * about the change. 
          */
         
@@ -62,7 +62,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right after a facet is uninstalled. Events of this 
-         * type can be cast to {@see IProjectFacetActionEvent} interface to get additional details 
+         * type can be cast to {@link IProjectFacetActionEvent} interface to get additional details 
          * about the change. 
          */
         
@@ -70,7 +70,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right before a facet version is changed. Events of 
-         * this type can be cast to {@see IProjectFacetActionEvent} interface to get additional 
+         * this type can be cast to {@link IProjectFacetActionEvent} interface to get additional 
          * details about the change. 
          */
         
@@ -78,7 +78,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered right after a facet version is changed. Events of 
-         * this type can be cast to {@see IProjectFacetActionEvent} interface to get additional 
+         * this type can be cast to {@link IProjectFacetActionEvent} interface to get additional 
          * details about the change. 
          */
         
@@ -86,7 +86,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered when project's fixed facets are changed. Events
-         * of this type can be cast to {@see IFixedFacetsChangedEvent} interface to get additional
+         * of this type can be cast to {@link IFixedFacetsChangedEvent} interface to get additional
          * details about the change.
          */
         
@@ -94,7 +94,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered when the set of runtimes that the project targets
-         * is changed. Events of this type can be cast to {@see ITargetedRuntimesChangedEvent} 
+         * is changed. Events of this type can be cast to {@link ITargetedRuntimesChangedEvent} 
          * interface to get additional details about the change.
          */
         
@@ -102,7 +102,7 @@ public interface IFacetedProjectEvent
         
         /**
          * Type of the event that gets triggered when the primary targeted runtime of the project
-         * is changed. Events of this type can be cast to {@see IPrimaryRuntimeChangedEvent}
+         * is changed. Events of this type can be cast to {@link IPrimaryRuntimeChangedEvent}
          * interface to get additional details about the change. 
          */
         

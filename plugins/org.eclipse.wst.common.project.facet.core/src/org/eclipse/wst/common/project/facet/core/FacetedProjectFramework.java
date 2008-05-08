@@ -19,6 +19,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFramework
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -35,9 +36,9 @@ public final class FacetedProjectFramework
      * 
      * <ol>
      *   <li>If a runtime is selected, this preset will contain default facets as specified by
-     *     {@see IRuntime.getDefaultFacets(Set)}.</li>
+     *     {@link IRuntime#getDefaultFacets(Set)}.</li>
      *   <li>If no runtime is selected, this preset will contain default versions for all of the 
-     *     fixed facets as specified by {@see IProjectFacet.getDefaultVersion()}.
+     *     fixed facets as specified by {@link IProjectFacet#getDefaultVersion()}.
      * </ol>
      * 
      * @since 2.0
@@ -65,13 +66,13 @@ public final class FacetedProjectFramework
      * Project Framework if the project is not faceted. For the code that
      * operates in the context where it can be assumed that the framework has
      * started already, better performance can be achieved by storing 
-     * {@see IProjectFacet} and {@see IProjectFacetVersion} instances using the
+     * {@link IProjectFacet} and {@link IProjectFacetVersion} instances using the
      * singleton pattern and using the
-     * {@see IFacetedProject.hasProjectFacet(IProjectFacet)} or
-     * {@see IFacetedProject.hasProjectFacet(IProjectFacetVersion)} methods.</p>
+     * {@link IFacetedProject#hasProjectFacet(IProjectFacet)} or
+     * {@link IFacetedProject#hasProjectFacet(IProjectFacetVersion)} methods.</p>
      * 
      * <p>This method is equivalent to calling 
-     * {@see hasProjectFacet(IProject,String,String)} with <code>null</code>
+     * {@link #hasProjectFacet(IProject,String,String)} with <code>null</code>
      * version expression parameter.</p>
      * 
      * @param project the project to check for the facet presence
@@ -97,10 +98,10 @@ public final class FacetedProjectFramework
      * Project Framework if the project is not faceted. For the code that
      * operates in the context where it can be assumed that the framework has
      * started already, better performance can be achieved by storing 
-     * {@see IProjectFacet} and {@see IProjectFacetVersion} instances using the
+     * {@link IProjectFacet} and {@link IProjectFacetVersion} instances using the
      * singleton pattern and using the
-     * {@see IFacetedProject.hasProjectFacet(IProjectFacet)} or
-     * {@see IFacetedProject.hasProjectFacet(IProjectFacetVersion)} methods.</p>
+     * {@link IFacetedProject#hasProjectFacet(IProjectFacet)} or
+     * {@link IFacetedProject#hasProjectFacet(IProjectFacetVersion)} methods.</p>
      * 
      * @param project the project to check for the facet presence
      * @param fid the project facet id
@@ -159,9 +160,9 @@ public final class FacetedProjectFramework
      * @param types the types of the events to listen for
      * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code> or
      *   the <code>types</code> parameter is <code>null</code> or empty.
-     * @see removeListener(IFacetedProjectListener)
-     * @see IFacetedProject.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see IFacetedProject.removeListener(IFacetedProjectListener)
+     * @see #removeListener(IFacetedProjectListener)
+     * @see IFacetedProject#addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject#removeListener(IFacetedProjectListener)
      */
     
     public static void addListener( final IFacetedProjectListener listener,
@@ -180,14 +181,14 @@ public final class FacetedProjectFramework
     
     /**
      * Removes the faceted project listener that was previously registered using the
-     * {@see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
+     * {@link #addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
      * specified listener is not present in the listener registry, this call will be ignored.
      * 
      * @param listener the faceted project listener
      * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code>
-     * @see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see IFacetedProject.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see IFacetedProject.removeListener(IFacetedProjectListener)
+     * @see #addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject#addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject#removeListener(IFacetedProjectListener)
      */
     
     public static void removeListener( final IFacetedProjectListener listener )

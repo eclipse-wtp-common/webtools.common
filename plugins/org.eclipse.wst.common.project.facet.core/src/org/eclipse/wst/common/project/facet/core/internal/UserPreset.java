@@ -19,7 +19,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
- * The implementation of the {@see IPreset} interface that's used for user-defined presets.
+ * The implementation of the {@link IPreset} interface that's used for user-defined presets.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */

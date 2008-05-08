@@ -83,7 +83,7 @@ public class DefaultVersionComparator
      * @param version the full version string
      * @param segment the version segment
      * @param position the position of the segment in the version string
-     * @return the parsed representation of the segment as a {@see Comparable}
+     * @return the parsed representation of the segment as a {@link Comparable}
      * @throws VersionFormatException if encountered an error while parsing
      */
     

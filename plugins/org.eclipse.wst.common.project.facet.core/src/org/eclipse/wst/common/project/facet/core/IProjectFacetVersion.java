@@ -88,7 +88,7 @@ public interface IProjectFacetVersion
      * @param type action type
      * @return <code>true</code> if this project facet supports the provided 
      *   action type, <code>false</code> otherwise
-     * @deprecated use {@link supports( Set, Action.Type)} instead
+     * @deprecated use {@link #supports( Set, IFacetedProject.Action.Type)} instead
      */
     
     boolean supports( Action.Type type );
@@ -118,7 +118,7 @@ public interface IProjectFacetVersion
     
     /**
      * Returns the action definition corresponding to a particular action type
-     * over this project facet version. The {@link supports( Set, Action.Type )} 
+     * over this project facet version. The {@link #supports( Set, IFacetedProject.Action.Type )} 
      * method can be used to check whether the action is supported prior to
      * calling this method.
      * 

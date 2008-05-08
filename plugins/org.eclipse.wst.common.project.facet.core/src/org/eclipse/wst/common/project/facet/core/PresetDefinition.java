@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * The preset definition is used in several contexts as a means of describing a preset. It is
- * different from {@see IPreset} in that the preset definition is not an actual preset that's
+ * different from {@link IPreset} in that the preset definition is not an actual preset that's
  * registered with the system. 
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>

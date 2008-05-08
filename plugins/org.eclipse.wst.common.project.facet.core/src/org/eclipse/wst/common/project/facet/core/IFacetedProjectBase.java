@@ -22,7 +22,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * This interface is used for manipulating the set of facets installed on a
- * project. Use {@see ProjectFacetsManager#create(IProject)} to get an instance 
+ * project. Use {@link ProjectFacetsManager#create(IProject)} to get an instance 
  * of this interface.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -156,9 +156,9 @@ public interface IFacetedProjectBase
      * @param types the types of the events to listen for
      * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code> or
      *   the <code>types</code> parameter is <code>null</code> or empty.
-     * @see removeListener(IFacetedProjectListener)
-     * @see FacetedProjectFramework.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see FacetedProjectFramework.removeListener(IFacetedProjectListener)
+     * @see #removeListener(IFacetedProjectListener)
+     * @see FacetedProjectFramework#addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework#removeListener(IFacetedProjectListener)
      */
     
     void addListener( IFacetedProjectListener listener,
@@ -166,14 +166,14 @@ public interface IFacetedProjectBase
     
     /**
      * Removes the faceted project listener that was previously registered using the
-     * {@see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
+     * {@link #addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
      * specified listener is not present in the listener registry, this call will be ignored.
      * 
      * @param listener the faceted project listener
      * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code>
-     * @see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see FacetedProjectFramework.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
-     * @see FacetedProjectFramework.removeListener(IFacetedProjectListener)
+     * @see #addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework#addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework#removeListener(IFacetedProjectListener)
      */
     
     void removeListener( IFacetedProjectListener listener );

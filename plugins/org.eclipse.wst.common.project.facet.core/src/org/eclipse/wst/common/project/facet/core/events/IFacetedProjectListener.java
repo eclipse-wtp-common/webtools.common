@@ -11,10 +11,13 @@
 
 package org.eclipse.wst.common.project.facet.core.events;
 
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+
 /**
  * This interface is implemented by those who wish to receive events when a faceted project is
- * changed. There are three ways to register a listener: (a) using methods on {@see 
- * IFacetedProject}, (b) using methods on {@see FacetedProjectFramework}, or (c) using the provided
+ * changed. There are three ways to register a listener: (a) using methods on {@link 
+ * IFacetedProject}, (b) using methods on {@link FacetedProjectFramework}, or (c) using the provided
  * extension point. Method (a) catches only events for a specific faceted project while methods
  * (b) and (c) catch events for all faceted projects in the workspace.
  * 
@@ -29,7 +32,7 @@ public interface IFacetedProjectListener
      * <p>All events except for <code>PROJECT_MODIFIED</code> of this type are triggered in the 
      * lock context of the operation that caused the original change. This guarantees that the 
      * project has not changed further from the state it was in after the change was complete, 
-     * however the listener is unable to call any modifier methods on the {@see IFacetedProject} 
+     * however the listener is unable to call any modifier methods on the {@link IFacetedProject} 
      * interface. To do so, the listener must spin off a thread.</p>
      * 
      * <p>It is highly advised that any listener that performs non-critical or long-running tasks 

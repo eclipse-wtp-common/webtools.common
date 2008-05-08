@@ -22,7 +22,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * This interface is used for manipulating the set of facets installed on a
- * project. Use {@see ProjectFacetsManager#create(IProject)} to get an instance 
+ * project. Use {@link ProjectFacetsManager#create(IProject)} to get an instance 
  * of this interface.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -185,7 +185,7 @@ public interface IFacetedProject
     
     /**
      * <p>Installs a project facet on this project. This method is equivalent to 
-     * calling the {@see #modify(Set, IProgressMonitor)} method with a single 
+     * calling the {@link #modify(Set, IProgressMonitor)} method with a single 
      * install action.</p>
      * 
      * <p>This method should not be called from the UI thread as it is long-
@@ -209,7 +209,7 @@ public interface IFacetedProject
     
     /**
      * <p>Uninstalls a project facet from this project. This method is 
-     * equivalent to calling the {@see #modify(Set, IProgressMonitor)} method 
+     * equivalent to calling the {@link #modify(Set, IProgressMonitor)} method 
      * with a single uninstall action.</p>
      * 
      * <p>This method should not be called from the UI thread as it is long-
