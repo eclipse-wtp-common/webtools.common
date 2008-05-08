@@ -78,6 +78,7 @@ public interface ResourceConstants {
 	// validation will be performed because there's no delta information.
 	String VBF_STATUS_NULL_DELTA = "VBF_STATUS_NULL_DELTA"; //$NON-NLS-1$ 
 
+	String VBF_EXC_SYNTAX_NULL_NAME = "VBF_EXC_SYNTAX_NULL_NAME"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER = "VBF_EXC_SYNTAX_NO_HELPER"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER_CLASS = "VBF_EXC_SYNTAX_NO_HELPER_CLASS"; //$NON-NLS-1$ 
 	String VBF_EXC_SYNTAX_NO_HELPER_THROWABLE = "VBF_EXC_SYNTAX_NO_HELPER_THROWABLE"; //$NON-NLS-1$ 
