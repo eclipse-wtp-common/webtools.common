@@ -1019,6 +1019,13 @@ public final static class V2 extends Validator implements IAdaptable {
 			vr = getDelegatedValidator().validate(resource, kind, operation.getState(), monitor);
 		}
 		catch (Exception e){
+			try {
+				String msg = NLS.bind(ValMessages.LogValEnd, getName(), resource.getLocationURI());
+				ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, msg);
+			}
+			catch (Exception e2 ){
+				// ignore it
+			}
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		
