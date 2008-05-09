@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+    <image 
+      runtime-component-type="standard.jre"
+      path="images/standard-jre-component.gif"/>
+    <image 
+      facet="jst.java" 
+      path="images/java-facet.gif"/>
+  </extension>
+  
+  <extension
+    point="org.eclipse.ui.ide.markerResolution">
+	<markerResolutionGenerator
+      markerType="org.eclipse.jst.common.project.facet.core.javaVersionMismatch"
+      class="org.eclipse.jst.common.project.facet.ui.internal.JavaVersionMismatchMarkerResolutions">
+    </markerResolutionGenerator>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+    <adapter>
+      <runtime-component id="standard.jre"/>
+      <factory class="org.eclipse.jst.common.project.facet.ui.internal.StandardJreComponentLabelProvider$Factory"/>
+      <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
+    </adapter>
+  </extension>
+  
+</plugin>
