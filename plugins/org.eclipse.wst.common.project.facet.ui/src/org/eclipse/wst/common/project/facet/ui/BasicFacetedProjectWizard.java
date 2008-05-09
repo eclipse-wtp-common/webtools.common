@@ -56,7 +56,7 @@ public class BasicFacetedProjectWizard
      * project name and location. The default implementation users a basic first page
      * provided by the Eclipse Platform. Extenders can override this method in order 
      * to supply a custom page. Anyone overriding this page will probably also need to
-     * override the {@see getProjectName()} method.
+     * override the {@link #getProjectName()} method.
      * 
      * @return the first page that will be used by this wizard
      */
@@ -73,8 +73,8 @@ public class BasicFacetedProjectWizard
     /**
      * Used by the wizard to retrieve the project name that the user specifies on the
      * first page of the wizard. The default implementation works with any subclass of
-     * the {@see WizardNewProjectCreationPage} class. Extenders who override the
-     * {@see createFirstPage()} method will probably also need to override this method.
+     * the {@link WizardNewProjectCreationPage} class. Extenders who override the
+     * {@link #createFirstPage()} method will probably also need to override this method.
      * 
      * @return the project name specified by the user
      */

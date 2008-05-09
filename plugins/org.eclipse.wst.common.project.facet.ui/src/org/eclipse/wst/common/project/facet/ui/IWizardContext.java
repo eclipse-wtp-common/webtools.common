@@ -44,14 +44,14 @@ public interface IWizardContext
      * modified by the current set of actions. 
      * 
      * @return the set of facets currently selected in the wizard (element type:
-     *   {@see IProjectFacetVersion})
+     *   {@link IProjectFacetVersion})
      */
     
     Set getSelectedProjectFacets();
     
     /**
      * Determines whether the specified facet is currently selected in the
-     * wizard. See {@see getSelectedProjectFacets()} for more information.
+     * wizard. See {@link #getSelectedProjectFacets()} for more information.
      * 
      * @param fv the project facet version object
      * @return <code>true</code> if an only if the provided project facet is

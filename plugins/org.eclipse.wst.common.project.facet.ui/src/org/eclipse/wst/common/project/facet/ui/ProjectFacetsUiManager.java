@@ -31,7 +31,7 @@ public final class ProjectFacetsUiManager
     }
 
     /**
-     * @return (element type: {@see IFacetWizardPage})
+     * @return (element type: {@link IFacetWizardPage})
      * @deprecated
      */
     

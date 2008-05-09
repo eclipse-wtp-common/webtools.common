@@ -109,7 +109,7 @@ public final class ProjectFacetsUiManagerImpl
     }
 
     /**
-     * @return (element type: {@see IFacetWizardPage})
+     * @return (element type: {@link IFacetWizardPage})
      * @deprecated
      */
     
