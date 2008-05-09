@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Faceted Project Framework Developer Guide" topic="content/description.html">
-    <topic label="Tutorial"
-       href="content/tutorial/tutorial.html">
+<toc label="Faceted Project Framework Developer Guide">
+
+  <topic label="Programmer's Guide" href="guide/description.html">
+    <topic 
+      label="Tutorial" 
+      href="guide/tutorial/tutorial.html"/>
+    <topic 
+      label="Listening for Changes to Faceted Projects"
+      href="guide/listeners.html"/>
+    <topic 
+      label="Enabling UI Elements Based on Project Facets"
+      href="guide/enabling-based-on-facets.html"/>
+    <topic 
+      label="Questions &amp; Answers"
+      href="guide/questions.html"/>
+    <topic 
+      label="New for 1.5"
+      href="guide/whatsnew150.html"/>
+    <topic 
+      label="New for 1.5.1"
+      href="guide/whatsnew151.html"/>
+    <topic 
+      label="New for 2.0"
+      href="guide/whatsnew20.html"/>
+  </topic>
+    
+  <topic label="Reference">
+    <topic label="API Reference" href="reference/api/overview-summary.html">
+      <topic 
+        label="org.eclipse.wst.common.project.facet.core"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.events"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/events/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.runtime"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/runtime/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.runtime.events"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/runtime/events/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.util"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/util/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.ui"
+        href="reference/api/org/eclipse/wst/common/project/facet/ui/package-summary.html"/>
     </topic>
-    <topic label="Listening for Changes to Faceted Projects"
-       href="content/listeners.html">
-    </topic>	    
-    <topic label="Enabling UI Elements Based on Project Facets"
-       href="content/enabling-based-on-facets.html">
-    </topic>
-    <topic label="Questions &amp; Answers"
-       href="content/questions.html">
-    </topic>
-    <topic label="New for 1.5"
-       href="content/whatsnew150.html">
-    </topic>
-    <topic label="New for 1.5.1"
-       href="content/whatsnew151.html">
-    </topic>
-    <topic label="New for 2.0"
-       href="content/whatsnew20.html">
-    </topic>
+  </topic>   
+      
 </toc>
