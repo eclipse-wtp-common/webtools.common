@@ -28,9 +28,9 @@ import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 
 public class JavaFacetInstallConfig
 {
-    private static final String PROD_PROP_SOURCE_FOLDER = "defaultJavaSourceFolder"; //$NON-NLS-1$
-    private static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$
-    private static final String DEFAULT_SOURCE_FOLDER = "src"; //$NON-NLS-1$
+//    private static final String PROD_PROP_SOURCE_FOLDER = "defaultJavaSourceFolder"; //$NON-NLS-1$
+//    private static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$
+//    private static final String DEFAULT_SOURCE_FOLDER = "src"; //$NON-NLS-1$
 
     private static final String PROD_PROP_OUTPUT_FOLDER = "defaultJavaOutputFolder"; //$NON-NLS-1$
     private static final String PROD_PROP_OUTPUT_FOLDER_LEGACY = "outputFolder"; //$NON-NLS-1$
@@ -78,17 +78,7 @@ public class JavaFacetInstallConfig
         this.sourceFoldersReadOnly = Collections.unmodifiableList( this.sourceFolders );
         this.defaultOutputFolder = null;
         
-        String sourceFolder = getProductProperty( PROD_PROP_SOURCE_FOLDER );
-        
-        if( sourceFolder == null )
-        {
-            sourceFolder = getProductProperty( PROD_PROP_SOURCE_FOLDER_LEGACY );
-        }
-        
-        if( sourceFolder == null )
-        {
-            sourceFolder = DEFAULT_SOURCE_FOLDER;
-        }
+        String sourceFolder = FacetCorePlugin.getJavaSrcFolder();
         
         this.sourceFolders.add( new Path( sourceFolder ) );
         
