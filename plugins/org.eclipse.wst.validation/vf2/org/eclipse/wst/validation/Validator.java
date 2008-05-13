@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.validation.internal.ConfigurationConstants;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
@@ -1112,6 +1113,10 @@ public final static class V2 extends Validator implements IAdaptable {
 							vm.setAttribute(IMarker.CHAR_START, offset);
 							vm.setAttribute(IMarker.CHAR_END, offset+len);
 						}
+					}
+					String groupName = message.getGroupName();
+					if (groupName != null){
+						vm.setAttribute(ConfigurationConstants.VALIDATION_MARKER_GROUP, groupName);
 					}
 					
 					copyAttributes(message, vm);
