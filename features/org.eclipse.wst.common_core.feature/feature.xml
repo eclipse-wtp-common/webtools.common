@@ -36,12 +36,12 @@
       <import plugin="org.eclipse.core.commands" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.wst.common.environment" version="1.0.200" match="compatible"/>
       <import plugin="org.apache.ant" version="1.7.0" match="compatible"/>
-      <import plugin="org.eclipse.ant.core" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.osgi.util" version="3.1.300" match="compatible"/>
       <import plugin="org.eclipse.emf.ecore" version="2.4.0" match="compatible"/>
       <import plugin="org.eclipse.wst.common.emfworkbench.integration" version="1.1.200" match="compatible"/>
       <import plugin="org.eclipse.wst.common.uriresolver" version="1.1.301" match="compatible"/>
       <import plugin="com.ibm.icu" version="3.8.1.1" match="compatible"/>
+      <import plugin="org.eclipse.ant.core" version="3.1.300" match="compatible"/>
    </requires>
 
    <plugin
