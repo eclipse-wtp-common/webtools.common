@@ -63,7 +63,7 @@ physical:          run after all pre and postnormalization resolvers
                   The class that implements &lt;code&gt;org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver&lt;/code&gt;.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension"/>
                </appInfo>
             </annotation>
          </attribute>
