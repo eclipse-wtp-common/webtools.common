@@ -29,10 +29,7 @@
                <fileext
                      ext="jsp">
                </fileext>
-               <file
-                     name="somefile.txt"
-                     type="file">
-               </file>
+               <file name="somefile.txt" type="file"/>
                <fileext
                      ext="jspx">
                </fileext>
@@ -169,6 +166,22 @@
                <fileext
                      ext="test1">
                </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+	<extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test8" name="Test8">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator8"
+            manual="false">
+         <include>
+            <rules>
+               <file name="file.specific" type="file"/>
+               <file name="source/full.specific" type="full"/>
             </rules>
          </include>
       </validator>

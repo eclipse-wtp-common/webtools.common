@@ -86,6 +86,12 @@ public class TestSuite1 extends TestCase {
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
 		_env.addFile(folder, "forFun.xml", "<fun>times</fun>");
+		
+		_env.addFile(_testProject.getFullPath(), "file.specific", "# This should be validated by Test2");
+		_env.addFile(folder, "file.specific", "# This should be validated by Test2");
+		
+		_env.addFile(_testProject.getFullPath(), "full.specific", "# This should not be validated by Test2");
+		_env.addFile(folder, "full.specific", "# This should be validated by Test2");
 	}
 
 	/**
@@ -223,7 +229,7 @@ public class TestSuite1 extends TestCase {
 			int i = v.getId().indexOf(".Test");
 			if (i != -1)count++;
 		}
-		assertEquals("Expected there to be 7 Test validators", 7, count);
+		assertEquals("Expected number of Test validators", 8, count);
 	}
 	
 	/**
@@ -292,11 +298,11 @@ public class TestSuite1 extends TestCase {
 	}
 	
 	private void checkFirstPass(IResource resource, ValidationResults vr) throws CoreException {
-		assertTrue("We expect there to be exactly two error messages, but errors=" + vr.getSeverityError(), vr.getSeverityError() == 2);
-		assertTrue("We expect there to be exactly two warning messages, but warnings=" + vr.getSeverityWarning(), vr.getSeverityWarning() == 2);
-		assertTrue("We expect there to be exactly two info messages, but info=" + vr.getSeverityInfo(), vr.getSeverityInfo() == 2);
+		assertEquals("Expected number of error messages", 5, vr.getSeverityError());
+		assertEquals("Expected number of warning messages", 2, vr.getSeverityWarning());
+		assertEquals("Expected number of info messages", 2, vr.getSeverityInfo());
 		
-		assertTrue("We expect six messages, but got back: "+vr.getMessages().length , vr.getMessages().length == 6);
+		assertEquals("Expected number of messages", 9, vr.getMessages().length);
 		
 		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
 		int errors =0, warnings=0, info=0;
