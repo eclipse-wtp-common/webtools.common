@@ -1046,16 +1046,16 @@ public final static class V2 extends Validator implements IAdaptable {
 			}
 			
 			ValidatorMessage[] msgs = vr.getMessages();
-			if (sanityTest(msgs.length, resource)){
+//			if (sanityTest(msgs.length, resource)){
 				MarkerManager mm = MarkerManager.getDefault();
 				for (ValidatorMessage m : msgs){
 					mm.createMarker(m, getId());
 				}
-			}
-			else {
-				setBuildValidation(false);
-				setManualValidation(false);
-			}
+//			}
+//			else {
+//				setBuildValidation(false);
+//				setManualValidation(false);
+//			}
 		}
 		return vr;		
 	}
@@ -1065,18 +1065,18 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * @param numberofMessages number of messages that the validator produced.
 	 * @return true if the test passed
 	 */
-	private boolean sanityTest(int numberofMessages, IResource resource) {
-		//FIXME make this more general and configurable
-		if (numberofMessages < 201)return true;
-		
-		String resName = ""; //$NON-NLS-1$
-		if (resource != null)resName = resource.getName();
-		String message = NLS.bind(ValMessages.ConfigError, new Object[]{
-				getName(), getId(), String.valueOf(numberofMessages), resName});
-		ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
-		
-		return false;
-	}
+//	private boolean sanityTest(int numberofMessages, IResource resource) {
+//		//FIXME make this more general and configurable
+//		if (numberofMessages < 201)return true;
+//		
+//		String resName = ""; //$NON-NLS-1$
+//		if (resource != null)resName = resource.getName();
+//		String message = NLS.bind(ValMessages.ConfigError, new Object[]{
+//				getName(), getId(), String.valueOf(numberofMessages), resName});
+//		ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
+//		
+//		return false;
+//	}
 
 	/**
 	 * If the validator is using a report helper then update it with any of the messages that were

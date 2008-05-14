@@ -100,6 +100,7 @@ public class ValUIMessages extends NLS {
 	public static String FrFolderFilter;
 	public static String FrProjectNature;
 	public static String FrProjectNatureLabel;
+	public static String FrSimpleFileName;
 	public static String FrFacit;
 	public static String FrFacitLabel;
 	public static String FrContentType;

@@ -238,9 +238,12 @@ public class NewFilterRule extends Wizard {
 		private Button	_browseFile;
 		private Button	_browseFolder;
 		private Button	_case;
+		private Button	_simpleFileName;
 		
 		private IProject	_project;
-		private int			_type;
+		private int			_type = FilterRule.File.FileTypeFile;
+		private IPath		_fullFileName;
+		private String		_root;
 		
 		public FilePage(IProject project){
 			super("file", ValUIMessages.FrFolderOrFile, null); //$NON-NLS-1$
@@ -262,9 +265,15 @@ public class NewFilterRule extends Wizard {
 				}
 				
 			});
-			
+
+			_root = null;
+			IPath base = _project == null ? ResourcesPlugin.getWorkspace().getRoot().getLocation() :
+				_project.getLocation();
+			if (base != null)_root = base.toOSString();
+						
 			_browseFile = new Button(control, SWT.PUSH);
 			_browseFile.setText(ValUIMessages.FrBrowseFile);
+			_browseFile.setEnabled(_root != null);
 			_browseFile.addSelectionListener(new SelectionListener(){
 
 				public void widgetDefaultSelected(SelectionEvent e) {
@@ -278,34 +287,36 @@ public class NewFilterRule extends Wizard {
 				private void browse(){
 					FileDialog fd = new FileDialog(control.getShell(), SWT.OPEN);
 					fd.setText(ValUIMessages.FrFileFilter);
-					IPath base = _project == null ? 
-						ResourcesPlugin.getWorkspace().getRoot().getLocation() :
-						_project.getLocation();
-					String root = null;
-					if (base != null){
-						root = base.toOSString();
-						fd.setFilterPath(root);
-					}
+					fd.setFilterPath(_root);
 					
 					String file = fd.open();
 					if (file != null){
-						if (root != null && file.startsWith(root) && file.length() > root.length()){
-							file = file.substring(root.length()+1);
-							IPath path = new Path(file);
-							if (_project == null)path = path.removeFirstSegments(1);
+						if (file.startsWith(_root))file = file.substring(_root.length()+1);
+						else file = null;
+					}
+					if (file != null){
+						_fullFileName = new Path(file);
+						if (_project == null)_fullFileName = _fullFileName.removeFirstSegments(1);
+
+						if (_simpleFileName.getSelection()){
 							_type = FilterRule.File.FileTypeFile;
-							_pattern.setText(path.toPortableString());
+							_pattern.setText(_fullFileName.lastSegment());
 						}
 						else {
 							_type = FilterRule.File.FileTypeFull;
-							_pattern.setText(file);
+							_pattern.setText(_fullFileName.toPortableString());
 						}
+					}
+					else {
+						_fullFileName = null;
+						_pattern.setText(""); //$NON-NLS-1$
 					}
 				}				
 			});
 			
 			_browseFolder = new Button(control, SWT.PUSH);
 			_browseFolder.setText(ValUIMessages.FrBrowseFolder);
+			_browseFolder.setEnabled(_root != null);
 			_browseFolder.addSelectionListener(new SelectionListener(){
 
 				public void widgetDefaultSelected(SelectionEvent e) {
@@ -319,25 +330,19 @@ public class NewFilterRule extends Wizard {
 				private void browse(){
 					DirectoryDialog fd = new DirectoryDialog(control.getShell());
 					fd.setMessage(ValUIMessages.FrFolderFilter);
-					IPath base = _project == null ? 
-						ResourcesPlugin.getWorkspace().getRoot().getLocation() : _project.getLocation();
-					String root = null;
-					if (base != null){
-						root = base.toOSString();
-						fd.setFilterPath(root);
-					}
+					fd.setFilterPath(_root);
 					String dir = fd.open();
 					if (dir != null){
-						if (root != null && dir.startsWith(root) && dir.length() > root.length()){
-							dir = dir.substring(root.length()+1);
+						_fullFileName = null;
+						_type = FilterRule.File.FileTypeFolder;
+						if (dir.startsWith(_root) && dir.length() > _root.length()){
+							dir = dir.substring(_root.length()+1);
 							IPath path = new Path(dir);
 							if (_project == null)path = path.removeFirstSegments(1);
-							_type = FilterRule.File.FileTypeFolder;
 							_pattern.setText(path.toPortableString());
 						}
 						else {
-							_type = FilterRule.File.FileTypeFull;
-							_pattern.setText(dir);				
+							_pattern.setText(""); //$NON-NLS-1$
 						}
 					}
 				}
@@ -347,7 +352,33 @@ public class NewFilterRule extends Wizard {
 			_case = new Button(control, SWT.CHECK);
 			_case.setText(ValUIMessages.FrCaseSensitive);
 			_case.setSelection(false);
-			_case.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING,false, false, 2, 1));
+			_case.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING,false, false, 4, 1));
+			
+			addSimpleFileNameButton(control);
+		}
+
+		private void addSimpleFileNameButton(final Composite control) {
+			_simpleFileName = new Button(control, SWT.CHECK);
+			_simpleFileName.setText(ValUIMessages.FrSimpleFileName);
+			_simpleFileName.setSelection(_type == FilterRule.File.FileTypeFile);
+			_simpleFileName.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING,false, false, 4, 1));
+			
+			_simpleFileName.addSelectionListener(new SelectionListener(){
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					if (_type == FilterRule.File.FileTypeFolder)return;
+					if (_simpleFileName.getSelection()){
+						if (_fullFileName != null)_pattern.setText(_fullFileName.lastSegment());
+						_type = FilterRule.File.FileTypeFile;
+					}
+					else {
+						if (_fullFileName != null)_pattern.setText(_fullFileName.toPortableString());
+						_type = FilterRule.File.FileTypeFull;					}
+					}				
+				});
 		}
 
 		public FilterRule getFilterRule() {

@@ -264,7 +264,7 @@ public abstract class FilterRule implements IAdaptable {
 	}
 	
 	/**
-	 * A rule that is used to filter based on file of folder names.
+	 * A rule that is used to filter based on file or folder names.
 	 * @author karasiuk
 	 *
 	 */
@@ -307,6 +307,7 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public String getDisplayableType() {
 			if (_type == FileTypeFolder)return ValMessages.RuleFolder;
+			if (_type == FileTypeFull)return ValMessages.RuleFull;
 			return ValMessages.RuleFile;
 		}
 		
@@ -346,7 +347,7 @@ public abstract class FilterRule implements IAdaptable {
 			String name = null;
 			switch (_type){
 			case FileTypeFile:
-				name = resource.getProjectRelativePath().toPortableString();
+				name = resource.getName();
 				break;
 				
 			case FileTypeFolder:
@@ -354,7 +355,7 @@ public abstract class FilterRule implements IAdaptable {
 				break;
 				
 			case FileTypeFull:
-				name = resource.getProjectRelativePath().toString();
+				name = resource.getProjectRelativePath().toPortableString();
 				break;
 			}
 			
