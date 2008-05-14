@@ -47,6 +47,17 @@ public interface ICreateReferenceComponentsDataModelProperties {
 	public static final String TARGET_COMPONENTS_DEPLOY_PATH = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_DEPLOY_PATH"; //$NON-NLS-1$
 
 	/**
+	 * <p>
+	 * This optional property is the {@link Map} containing keys of {@link IVirtualComponent}s and
+	 * values of {@link String}s. This map is used to specify the String which should be used by
+	 * the {@link IVirtualComponent} specified by the {@link #SOURCE_COMPONENT} property to lookup
+	 * the deploy path. The {@link Set} of {@link IVirtualComponent}s in the
+	 * keys of this {@link Map} should have the same contents as the {@link List}.
+	 * </p>
+	 */
+	public static final String TARGET_COMPONENTS_DEPLOY_PATH_MAP = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_DEPLOY_PATH_MAP"; //$NON-NLS-1$
+
+	/**
 	 * Optional, archive name for the dependent component, default is ""
 	 * 
 	 * @deprecated
