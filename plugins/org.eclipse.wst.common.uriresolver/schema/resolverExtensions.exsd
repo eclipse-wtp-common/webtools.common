@@ -63,7 +63,7 @@ physical:          run after all pre and postnormalization resolvers
                   The class that implements &lt;code&gt;org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver&lt;/code&gt;.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension"/>
+                  <meta.attribute kind="java"/>
                </appInfo>
             </annotation>
          </attribute>
@@ -156,7 +156,7 @@ provides an URI resolver that resolves references from an XML catalog
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2000, 2008 IBM Corporation and others.&lt;br&gt;
+         Copyright (c) 2000, 2005 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a
