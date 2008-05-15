@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.util.EventListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 
@@ -28,10 +29,6 @@ import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 
 public class JavaFacetInstallConfig
 {
-//    private static final String PROD_PROP_SOURCE_FOLDER = "defaultJavaSourceFolder"; //$NON-NLS-1$
-//    private static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$
-//    private static final String DEFAULT_SOURCE_FOLDER = "src"; //$NON-NLS-1$
-
     private static final String PROD_PROP_OUTPUT_FOLDER = "defaultJavaOutputFolder"; //$NON-NLS-1$
     private static final String PROD_PROP_OUTPUT_FOLDER_LEGACY = "outputFolder"; //$NON-NLS-1$
     private static final String DEFAULT_OUTPUT_FOLDER = "build/classes"; //$NON-NLS-1$
