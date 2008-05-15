@@ -79,7 +79,7 @@ public final class PresetSelectionPanel
         this.presetsCombo.setLayoutData( gdhfill() );
         
         this.modifyButton = new Button( this.group, SWT.PUSH );
-        this.modifyButton.setText( "Modify..." ); //$NON-NLS-1$
+        this.modifyButton.setText( Resources.modifyButtonLabel );
         
         this.modifyButton.addSelectionListener
         (
@@ -157,6 +157,7 @@ public final class PresetSelectionPanel
     {
         public static String groupTitle;
         public static String hint;
+        public static String modifyButtonLabel;
         
         static
         {
