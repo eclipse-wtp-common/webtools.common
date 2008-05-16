@@ -11,7 +11,6 @@
 package org.eclipse.wst.validation.internal;
 
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -255,9 +254,11 @@ public final class FilterUtil {
 		if (fileName == null) {
 			// The resource is not contained in the current project.
 			// Can't see how this would happen, but check for it anyway.
-			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
-				new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
-			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);
+			
+			// [122960] null should be allowed
+//			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
+//				new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
+//			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);
 
 			IPath resourcePath = resource.getFullPath();
 			if (resourcePath != null) {
