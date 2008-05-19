@@ -15,6 +15,13 @@ import org.eclipse.wst.validation.internal.ValMessages;
 
 /**
  * Associate a message severity with a message category.
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
+ * @noextend
  * @author karasiuk
  *
  */
@@ -36,6 +43,9 @@ public class MessageSeveritySetting {
 			return _severityLabel;
 		}
 
+		/**
+		 * Answer the associated IMarker severity.
+		 */
 		public int getMarkerSeverity() {
 			return _markerSeverity;
 		}
@@ -48,16 +58,19 @@ public class MessageSeveritySetting {
 	private Severity 	_current;
 	
 	/**
-	 * Create an association between a label and a message severity. 
+	 * Create an association between a label and a message severity.
 	 * 
-	 * @param id an id that is used to identify this particular setting. This must be unique within the
-	 * scope of this particular validator.
+	 * @param id
+	 * 		An id that is used to identify this particular setting. This must be
+	 * 		unique within the scope of this particular validator.
 	 * 
-	 * @param label an end user string,
-	 * that can describe either an individual message or a message category.
+	 * @param label
+	 * 		An end user string, that can describe either an individual message
+	 * 		or a message category.
 	 * 
-	 * @param defaultSeverity the default severity for this label. If the user doesn't change anything
-	 * this is what the severity will be.
+	 * @param defaultSeverity
+	 * 		The default severity for this label. If the end user doesn't change
+	 * 		anything this is what the severity will be.
 	 */
 	public MessageSeveritySetting(String id, String label, Severity defaultSeverity){
 		_id = id;
@@ -77,21 +90,30 @@ public class MessageSeveritySetting {
 		return _label;
 	}
 
+	/** Answer the default severity as defined by the validator owner. */
 	public Severity getDefault() {
 		return _default;
 	}
 
+	/** 
+	 * Answer the current severity for the message. The end user may have changed this through a
+	 * preference dialog.
+	 */
 	public Severity getCurrent() {
 		if (_current != null)return _current;
 		return _default;
 	}
 
+	/**
+	 * The id that the validator owner assigned to the message.
+	 */
 	public String getId() {
 		return _id;
 	}
 
 	/**
-	 * Set the current message severity. 
+	 * Set the current message severity.
+	 * 
 	 * @param severity
 	 * @return true if the setting changed
 	 */
@@ -106,6 +128,9 @@ public class MessageSeveritySetting {
 		return _id + " " + getCurrent().toString(); //$NON-NLS-1$
 	}
 
+	/**
+	 * Answer a copy of this object.
+	 */
 	public MessageSeveritySetting copy() {
 		MessageSeveritySetting ms = new MessageSeveritySetting(_id, _label, _default);
 		ms._current = _current;

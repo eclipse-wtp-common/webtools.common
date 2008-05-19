@@ -21,7 +21,14 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 
 /**
- * The result of running a validate operation.
+ * The result of running a validate operation. Validators create and return this objects as part of
+ * performing their validation.
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
  * @author karasiuk
  *
  */
@@ -59,24 +66,29 @@ public final class ValidationResult {
 	private ValidationException	_validationException;
 	
 	/**
-	 * This is an optional method, that a validator can use to return error messages. When the validation framework
-	 * is invoking the validator these will be converted into IMarkers. If the validator is being called directly then
-	 * the caller is responsible for using the messages.
+	 * This is an optional method, that a validator can use to return error
+	 * messages. The validation framework converts these into IMarkers.
 	 * <p>
-	 * The scenario that motivated this method, is when a validator is used both for as-you-type validation and batch
-	 * validation. In this scenario the validator when called in as-you-type mode doesn't want to directly create IMarkers,
-	 * because the resource hasn't even been saved. It needs to return something other than an IMarker. But when called
-	 * in batch mode, it does ultimately want IMarkers. By returning ValidatorMessages, it only needs to return one type
-	 * of message, and those messages can be either be directly used by the caller, or automatically converted into IMarkers by
-	 * the validation framework.
+	 * The scenario that motivated this method, is when a validator is used both
+	 * for <b>as you type</b> validation and <b>build</b> validation. When
+	 * called in as you type mode, the validator doesn't want to directly create IMarkers,
+	 * because the resource hasn't been saved yet. It needs to return something
+	 * other than an IMarker. But when called in build mode, it does ultimately
+	 * want IMarkers. By returning ValidatorMessages, it only needs to return
+	 * one type of message, and those messages can be either be directly used by
+	 * the caller, or automatically converted into IMarkers by the validation
+	 * framework.
 	 * <p>
-	 * To make matters even more complicated there is a third way to return messages. To make it easier for 
-	 * old validators to port to the new framework, they can continue to use an IReporter. If a validator calls the
-	 * getReporter() method then it is assumed by the framework that that is the approach that they have chosen.  
+	 * To make matters even more complicated there is a third way to return
+	 * messages. To make it easier for old validators to port to the new
+	 * framework, they can continue to use an IReporter. If a validator calls
+	 * the getReporter() method then it is assumed by the framework that that is
+	 * the approach that they have chosen.
 	 * 
 	 * @see #getReporter(IProgressMonitor)
 	 * 
-	 * @param message a message
+	 * @param message
+	 * 		A validation message.
 	 */
 	public void add(ValidatorMessage message){
 		getMessageList().add(message);
@@ -134,7 +146,9 @@ public final class ValidationResult {
 		
 	}
 
-
+	/**
+	 * Answer the resources that the validated resource depends on.
+	 */
 	public IResource[] getDependsOn() {
 		return _dependsOn;
 	}
@@ -151,13 +165,15 @@ public final class ValidationResult {
 	}
 
 	/**
-	 * Update the resources that the validated resource depends on. This can be left null.
-	 * For example, an XML file may depend on a XSD in order to know if it is valid or not.
-	 * It would pass back the XSD file. 
+	 * Update the resources that the validated resource depends on. This can be
+	 * left null. For example, a XML file may depend on a XSD file in order to
+	 * know if it is valid or not. It would pass back that XSD file.
 	 * 
-	 * @param dependsOn if this is null then the dependency information is not updated. To remove the
-	 * dependency information, an empty array needs to be supplied. A non null parameter, <b>replaces</b> all the
-	 * dependency information for this resource, for this validator. 
+	 * @param dependsOn
+	 * 		If this is null then the dependency information is not updated. To
+	 * 		remove the dependency information, an empty array needs to be
+	 * 		supplied. A non null parameter, <b>replaces</b> all the dependency
+	 * 		information for this resource, for this validator.
 	 */
 	public void setDependsOn(IResource[] dependsOn) {
 		_dependsOn = dependsOn;
@@ -169,19 +185,22 @@ public final class ValidationResult {
 	}
 
 	/**
-	 * @return All the resources that were validated as a side-effect of validating the main resource, or null if none were.
+	 * @return All the resources that were validated as a side-effect of
+	 * 	validating the main resource, or null if none were.
 	 */
 	public IResource[] getValidated() {
 		return _validated;
 	}
 	
 	/**
-	 * Indicate that additional resources have been validated as part of this validate operation. 
-	 * Sometimes in the course of performing a validation on one one resource it is
-	 * necessary to validate other resources as well. This method is used to let the framework know about these 
-	 * additional validated resources, to possibly save them being validated redundantly.
+	 * Indicate that additional resources have been validated as part of this
+	 * validate operation. Sometimes in the course of performing a validation on
+	 * one resource it is necessary to validate other resources as well. This
+	 * method is used to let the framework know about these additional validated
+	 * resources, to possibly save them being validated redundantly.
 	 * 
 	 * @param validated
+	 * 		Any additional resources that were validated.
 	 */
 	public void setValidated(IResource[] validated) {
 		_validated = validated;
@@ -199,6 +218,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 */
 	public void setSeverityError(int severityError) {
 		_severityError = severityError;
@@ -210,6 +230,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 * 
 	 * @return the current number of errors.
 	 */
@@ -230,6 +251,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 */
 	public void setSeverityWarning(int severityWarning) {
 		_severityWarning = severityWarning;
@@ -240,6 +262,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 * 
 	 * @return the current number of warnings.
 	 */
@@ -260,6 +283,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 */
 	public void setSeverityInfo(int severityInfo) {
 		_severityInfo = severityInfo;
@@ -270,6 +294,7 @@ public final class ValidationResult {
 	 * <p>
 	 * Messages added through the add(ValidationMessage) method should not be included here, as this
 	 * information will be determined from the ValidationMessage.
+	 * </p>
 	 * 
 	 * @return the current number of informational message.
 	 */
@@ -280,7 +305,7 @@ public final class ValidationResult {
 
 	/**
 	 * Was the operation canceled before it completed? For example if the validation is being run through the
-	 * UI, the end user can cancel the operation through the progress monitor.
+	 * user interface, the end user can cancel the operation through the progress monitor.
 	 * 
 	 * @return true if the operation was canceled
 	 */
@@ -290,7 +315,9 @@ public final class ValidationResult {
 
 	/**
 	 * Indicate if the operation was canceled.
+	 * 
 	 * @param canceled
+	 * 		Set to true if it was canceled and false if it was not canceled.
 	 */
 	public void setCanceled(boolean canceled) {
 		_canceled = canceled;
@@ -304,6 +331,10 @@ public final class ValidationResult {
 		return _numberOfValidatedResources + _validated.length;
 	}
 
+	/**
+	 * If the validation ended with an exception, answer it.
+	 * @return null if the validator did not finish with an exception.
+	 */
 	public ValidationException getValidationException() {
 		return _validationException;
 	}
@@ -312,6 +343,7 @@ public final class ValidationResult {
 	 * If the validation failed with an exception, it can be recorded here.
 	 * <p>
 	 * This method is provided for old validators to ease their transition to the new framework.
+	 * </p>
 	 * @param validationException
 	 */
 	public void setValidationException(ValidationException validationException) {

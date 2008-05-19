@@ -16,7 +16,13 @@ import org.eclipse.wst.validation.internal.ValMessages;
 
 /**
  * Some performance information for a validation invocation. This object is immutable.
- * 
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
+ * @noextend
  * @author karasiuk
  *
  */
@@ -66,7 +72,7 @@ public class PerformanceCounters {
 	
 	/**
 	 * Answer the amount of CPU time in nanoseconds. If this can not be determined,
-	 * answer -1;
+	 * answer -1.
 	 */
 	public long getCpuTime() {
 		return _cpuTime;
@@ -94,7 +100,11 @@ public class PerformanceCounters {
 		return _validatorName;
 	}
 
-	/** Answer when was the event logged. */
+	/** 
+	 * Answer when was the event logged. 
+	 * 
+	 * @see System#currentTimeMillis()
+	 */
 	public long getWhen() {
 		return _when;
 	}

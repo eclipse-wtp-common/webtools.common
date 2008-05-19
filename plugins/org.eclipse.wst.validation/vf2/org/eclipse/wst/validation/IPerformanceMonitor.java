@@ -14,11 +14,21 @@ import java.util.List;
 
 /**
  * A service that collects performance information on validation operations.
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
+ * @noimplement
  * @author karasiuk
  *
  */
 public interface IPerformanceMonitor {
 	
+	/**
+	 * The level of information to collect.
+	 */
 	public enum CollectionLevel {None, Default}
 	
 	/** 
@@ -30,18 +40,19 @@ public interface IPerformanceMonitor {
 	public void add(PerformanceCounters counters);
 	
 	/**
-	 * Answer true if we have been asked to collect performance events.
+	 * Answer true if the performance monitor is collecting performance events.
 	 */
 	public boolean isCollecting();
 	
-	/** Answer true if only summary information is wanted. */
+	/** Answer true if only summary information is requested. */
 	public boolean isSummaryOnly();
 	
-	/** 
-	 * Set the performance event collection level. This controls which performance events are
-	 * collected, including none of them.
+	/**
+	 * Set the performance event collection level. This controls which
+	 * performance events are collected, including none of them.
 	 * 
-	 * @param level the level to collect. The default is to not collect anything.
+	 * @param level
+	 * 		The level to collect. The default is to not collect anything.
 	 */
 	public void setCollectionLevel(CollectionLevel level);
 	
@@ -51,10 +62,11 @@ public interface IPerformanceMonitor {
 	public CollectionLevel getCollectionLevel();
 	
 	/**
-	 * Answer the performance counters that have been collected so far. Some monitors do
-	 * not save counters, and they will always return an empty list.
+	 * Answer the performance counters that have been collected so far. Some
+	 * monitors do not save counters, and they will always return an empty list.
 	 * 
-	 * @param asSummary if true only answer a summary of the counters
+	 * @param asSummary
+	 * 		If this parameter is true, only answer a summary of the counters.
 	 */
 	public List<PerformanceCounters> getPerformanceCounters(boolean asSummary);
 	

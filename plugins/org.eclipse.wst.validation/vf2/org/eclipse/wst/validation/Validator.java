@@ -60,6 +60,9 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 /**
  * Represents a validator. This gets instantiated through one of the validator extension points.
+ * <p>
+ * <b>This class is not API</b>.
+ * </p>
  * 
  * @author karasiuk
  *

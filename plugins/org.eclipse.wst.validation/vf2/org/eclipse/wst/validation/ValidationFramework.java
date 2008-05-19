@@ -51,6 +51,12 @@ import org.eclipse.wst.validation.internal.provisional.core.IReporter;
  * The central class of the Validation Framework.
  * <p>
  * This is a singleton class that is accessed through the getDefault() method. 
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
  * @author karasiuk
  *
  */
@@ -76,9 +82,11 @@ public final class ValidationFramework {
 	
 	/**
 	 * Clear any validation markers that may have been set by this validator.
-	 *  
-	 * @param resource the resource that may have it's markers cleared
-	 * @param validatorId the id of validator that created the marker
+	 * 
+	 * @param resource
+	 * 		The resource that may have it's markers cleared.
+	 * @param validatorId
+	 * 		The id of validator that created the marker.
 	 */
 	public void clearMessages(IResource resource, String validatorId) throws CoreException {
 		Validator v = getValidator(validatorId, null);
@@ -86,12 +94,13 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Disable all validation for the given resource. This method instructions
+	 * Disable all validation for the given resource. This method instructs
 	 * the framework to not run any validators on the given resource or any of
 	 * it's children. This setting is persistent. Currently this only works with version 2
 	 * validators.
-	 * 
+	 * <p>
 	 * Use the enableValidation method to restore validation.
+	 * </p>
 	 * 
 	 * @param resource
 	 *            The resource that is having validation disabled. It must be an IFolder or an IFile.
@@ -104,11 +113,12 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Enable validation for the given resource. If the resource was not previously
-	 * disabled this method call has no effect. Currently this only works with version 2 
-	 * validators.
+	 * Enable validation for the given resource. If the resource was not
+	 * previously disabled this method call has no effect. Currently this only
+	 * works with version 2 validators.
 	 * 
-	 * @param resource The resource that is having validation re-enabled.
+	 * @param resource
+	 * 		The resource that is having validation re-enabled.
 	 * 
 	 * @see #disableValidation(IResource)
 	 */
@@ -130,6 +140,9 @@ public final class ValidationFramework {
 		return _dependencyIndex;
 	}
 	
+	/**
+	 * Answer a performance monitor for the validators.
+	 */
 	public synchronized IPerformanceMonitor getPerformanceMonitor(){
 		if (_performanceMonitor == null){
 			boolean traceTimes = Misc.debugOptionAsBoolean(DebugConstants.TraceTimes);
@@ -153,19 +166,26 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Answer all the validators that are applicable for the given resource, even if the
-	 * validator has been turned off by the user.
+	 * Answer all the validators that are applicable for the given resource. A validator is
+	 * still returned even if it has been turned off by the user.
 	 * <p>
-	 * The caller may still need to test if the validator has been turned off by the
-	 * user, by using the isBuildValidation() and isManualValidation() methods.
+	 * The caller may still need to test if the validator has been turned off by
+	 * the user, by using the isBuildValidation() and isManualValidation()
+	 * methods.
 	 * </p>
-	 * @param resource the resource that determines which validators are applicable.
 	 * 
-	 * @param isManual if true then the validator must be turned on for manual validation. 
-	 * If false then the isManualValidation setting isn't used to filter out validators.
-	 *   
-	 * @param isBuild if true then the validator must be turned on for build based validation.
-	 * If false then the isBuildValidation setting isn't used to filter out validators.  
+	 * @param resource
+	 * 		The resource that determines which validators are applicable.
+	 * 
+	 * @param isManual
+	 * 		If true then the validator must be turned on for manual validation.
+	 * 		If false then the isManualValidation setting isn't used to filter
+	 * 		out validators.
+	 * 
+	 * @param isBuild
+	 * 		If true then the validator must be turned on for build based
+	 * 		validation. If false then the isBuildValidation setting isn't used
+	 * 		to filter out validators.
 	 * 
 	 * @see Validator#isBuildValidation()
 	 * @see Validator#isManualValidation()
@@ -184,10 +204,12 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Answer all the validators that should not validate the resource, either because
-	 * their filters don't support the resource, or the validator has been disabled for
-	 * both build validation and manual validation.
+	 * Answer all the validators that should not validate the resource, either
+	 * because their filters don't support the resource, or the validator has
+	 * been disabled for both build validation and manual validation.
+	 * 
 	 * @param resource
+	 * 		The resource this is being tested.
 	 */
 	public Set<Validator> getDisabledValidatorsFor(IResource resource){
 		return DisabledValidatorManager.getDefault().getDisabledValidatorsFor(resource);
@@ -206,19 +228,25 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Answer the validator with the given id that is in effect for the given project.
+	 * Answer the validator with the given id that is in effect for the given
+	 * project.
 	 * <p>
-	 * Individual projects may override the global validation preference settings. If this is allowed and if
-	 * the project has it's own settings, then those validators are returned via this method.
+	 * Individual projects may override the global validation preference
+	 * settings. If this is allowed and if the project has it's own settings,
+	 * then those validators are returned via this method.
 	 * </p>
 	 * <p>
-	 * The following approach is used. For version 1 validators, the validator is only returned if it
-	 * is defined to operate on this project type. This is the way that the previous version of the framework
-	 * did it. For version 2 validators, they are all returned.
+	 * The following approach is used. For version 1 validators, the validator
+	 * is only returned if it is defined to operate on this project type. This
+	 * is the way that the previous version of the framework did it. For version
+	 * 2 validators, they are all returned.
 	 * </p>
 	 * 
-	 * @param id validator id.
-	 * @param project this can be null, in which case all the registered validators are checked.
+	 * @param id
+	 * 		Validator id.
+	 * @param project
+	 * 		This can be null, in which case all the registered validators are
+	 * 		checked.
 	 * @return null if the validator is not found
 	 */
 	public Validator getValidator(String id, IProject project){
@@ -242,41 +270,52 @@ public final class ValidationFramework {
 	/**
 	 * Answer true if the resource has any enabled validators.
 	 * 
-	 * @param resource a file, folder or project.
+	 * @param resource
+	 * 		A file, folder or project.
 	 * 
-	 * @param isManual if true then the validator must be turned on for manual validation. 
-	 * If false then the isManualValidation setting isn't used to filter out validators.
-	 *   
-	 * @param isBuild if true then the validator must be turned on for build based validation.
-	 * If false then the isBuildValidation setting isn't used to filter out validators.  
+	 * @param isManual
+	 * 		If true then the validator must be turned on for manual validation.
+	 * 		If false then the isManualValidation setting isn't used to filter
+	 * 		out validators.
+	 * 
+	 * @param isBuild
+	 * 		If true then the validator must be turned on for build based
+	 * 		validation. If false then the isBuildValidation setting isn't used
+	 * 		to filter out validators.
 	 */
 	public boolean hasValidators(IResource resource, boolean isManual, boolean isBuild){
 		return ValManager.getDefault().hasValidators(resource, isManual, isBuild);
 	}
 	
 	/**
-	 * Waits until all validation jobs are finished.  This method will block the 
-	 * calling thread until all such jobs have finished executing, or until this thread is
-	 * interrupted.   If there are no validation jobs in 
-	 * that are currently waiting, running, or sleeping, this method returns 
-	 * immediately.  Feedback on how the join is progressing is provided to a progress monitor.
+	 * Waits until all validation jobs are finished. This method will block the
+	 * calling thread until all such jobs have finished executing, or until this
+	 * thread is interrupted. If there are no validation jobs that are
+	 * currently waiting, running, or sleeping, this method returns immediately.
+	 * Feedback on how the join is progressing is provided to the progress
+	 * monitor.
 	 * <p>
 	 * If this method is called while the job manager is suspended, only jobs
-	 * that are currently running will be joined; Once there are no jobs
-	 * in the family in the {@link Job#RUNNING} state, this method returns.
+	 * that are currently running will be joined. Once there are no jobs in the
+	 * family in the {@link Job#RUNNING} state, this method returns.
 	 * </p>
 	 * <p>
-	 * Note that there is a deadlock risk when using join.  If the calling thread owns
-	 * a lock or object monitor that the joined thread is waiting for, deadlock 
-	 * will occur. This method can also result in starvation of the current thread if
-	 * another thread continues to add jobs of the given family, or if a
-	 * job in the given family reschedules itself in an infinite loop.
+	 * Note that there is a deadlock risk when using join. If the calling thread
+	 * owns a lock or object monitor that the joined thread is waiting for,
+	 * deadlock will occur. This method can also result in starvation of the
+	 * current thread if another thread continues to add jobs of the given
+	 * family, or if a job in the given family reschedules itself in an infinite
+	 * loop.
 	 * </p>
 	 * 
-	 * @param monitor Progress monitor for reporting progress on how the
-	 * wait is progressing, or <code>null</code> if no progress monitoring is required.
-	 * @exception InterruptedException if this thread is interrupted while waiting
-	 * @exception OperationCanceledException if the progress monitor is canceled while waiting
+	 * @param monitor
+	 * 		Progress monitor for reporting progress on how the wait is
+	 * 		progressing, or <code>null</code> if no progress monitoring is
+	 * 		required.
+	 * @exception InterruptedException
+	 * 		if this thread is interrupted while waiting
+	 * @exception OperationCanceledException
+	 * 		if the progress monitor is canceled while waiting
 	 */
 	public void join(IProgressMonitor monitor) throws InterruptedException, OperationCanceledException {
 		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, monitor);
@@ -284,16 +323,22 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Suspends, or undoes the suspension of, validation on the current project. If "suspend" is
-	 * true then validation is suspended and if it's "false" then validation is not suspended on the
-	 * project. The value of this variable is not persisted.
+	 * Suspends, or undoes the suspension of, validation on the current project.
+	 * If <b>suspend</b> is true then validation is suspended and if it's false
+	 * then validation is not suspended on the project. The value of this
+	 * variable is not persisted.
 	 * <p>
-	 * Be VERY CAREFUL when you use this method! Turn validation back on in a finally block because
-	 * if the code which suspended validation crashes, the user has no way to reset the suspension.
-	 * The user will have to shut down and restart the workbench to get validation to work again.
+	 * Be <b>very careful</b> when you use this method! Turn validation back on in a
+	 * finally block because if the code which suspended validation crashes, the
+	 * user has no way to reset the suspension. The user will have to shut down
+	 * and restart the workbench to get validation to work again.
 	 * </p>
-	 * @param project the project that is to be suspended or unsuspended.
-	 * @param suspend if true validation on the project will be suspend. If false it will not be suspended.
+	 * 
+	 * @param project
+	 * 		The project that is to be suspended or unsuspended.
+	 * @param suspend
+	 * 		If true, validation on the project will be suspend. If false it will
+	 * 		not be suspended.
 	 */
 	public void suspendValidation(IProject project, boolean suspend) {
 		if (project == null)return;
@@ -307,13 +352,16 @@ public final class ValidationFramework {
 	}
 
 	/**
-	 * Suspends, or undoes the suspension of, validation on all projects in the workbench. If
-	 * "suspend" is true then validation is suspended and if it's "false" then validation is not suspended.
-	 * The value of this variable is not persisted.
+	 * Suspends, or undoes the suspension of, validation on all projects in the
+	 * workbench. If "suspend" is true then validation is suspended and if it's
+	 * "false" then validation is not suspended. The value of this variable is
+	 * not persisted.
 	 * <p>
-	 * Be VERY CAREFUL when you use this method! Turn validation back on in a finally block because
-	 * if the code which suspended validation crashes, the user has no way to reset the suspension.
-	 * The user will have to shut down and restart the workbench to get validation to work again.
+	 * Be <b>very careful</b> when you use this method! Turn validation back on in a
+	 * finally block because if the code which suspended validation crashes, the
+	 * user has no way to reset the suspension. The user will have to shut down
+	 * and restart the workbench to get validation to work again.
+	 * </p>
 	 */
 	public void suspendAllValidation(boolean suspend) {
 		_suspendAllValidation = suspend;

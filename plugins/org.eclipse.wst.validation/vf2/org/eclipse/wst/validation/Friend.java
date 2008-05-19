@@ -19,6 +19,9 @@ import org.eclipse.wst.validation.internal.ValType;
 /**
  * This class is only to be called by the validation framework and it's test cases.
  * This class is NOT part of the API.
+ * <p>
+ * This class provides access to some internal methods.
+ * </p>
  * @author karasiuk
  *
  */

@@ -26,6 +26,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * called, then the <code>validationFinishing</code> method will be called once all the
  * validators have processed the resource.
  * </p>
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
  */
 public interface IValidatorGroupListener {
 	/**
@@ -36,22 +42,23 @@ public interface IValidatorGroupListener {
 	 * @param resource
 	 *            The resource that is being validated.
 	 * @param monitor
-	 *            A progress monitor that the method can use.
+	 *            A progress monitor that the method should use.
 	 * @param state
 	 *            The validation state for the current operation.
 	 */
 	void validationStarting(IResource resource, IProgressMonitor monitor, ValidationState state);
 	
 	/**
-	 * If the validationStarting method was called on the resource, then this method will be called after the last
-	 * validator has processed the resource.
+	 * If the validationStarting method was called on the resource, then this
+	 * method will be called after the last validator has processed the
+	 * resource.
 	 * 
 	 * @param resource
-	 *            The resource that is being validated.
+	 * 		The resource that is being validated.
 	 * @param monitor
-	 *            A progress monitor that the method can use.
+	 * 		A progress monitor that the method can use.
 	 * @param state
-	 *            The validation state for the current operation.
+	 * 		The validation state for the current operation.
 	 */
 	void validationFinishing(IResource resource, IProgressMonitor monitor, ValidationState state);
 }
