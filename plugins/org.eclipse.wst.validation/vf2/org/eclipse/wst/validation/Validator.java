@@ -454,7 +454,6 @@ public abstract class Validator implements Comparable<Validator> {
 		
 	/**
 	 * Answer the name of the class that implements the validator.
-	 * @return
 	 */
 	public abstract String getValidatorClassname();
 	
@@ -878,8 +877,6 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * Answer the actual validator that is going to perform the validation. If this is a normal validator this
 	 * method will simply answer itself. However if this is a delegating validator, then this will answer the
 	 * "real" validator.
-	 *
-	 * @return
 	 */
 	public AbstractValidator getDelegatedValidator(){
 		AbstractValidator delegated = _delegated;
@@ -1251,7 +1248,6 @@ public void bumpChangeCountGlobal(){
 /**
  * Answer true if you have the same configuration settings as validator.
  * @param validator this can be null.
- * @return
  */
 public boolean sameConfig(Validator validator) {
 	if (validator == null)return false;

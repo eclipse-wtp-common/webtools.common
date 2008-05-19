@@ -61,8 +61,6 @@ public interface IReporter {
 	 * Show a text representation of this message, formatted in the default Locale, to the user
 	 * immediately. This message indicates which subtask is currently being processed. The message
 	 * is not stored. The subtask message in this context is the subtask in a IProgressMontior 
-	 * 
-	 * @see IProgressMonitor#subTask(String)
 	 * </p>
 	 * <p>
 	 * Both parameters must not be null. 
