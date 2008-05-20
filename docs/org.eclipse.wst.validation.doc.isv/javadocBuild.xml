@@ -31,7 +31,7 @@
 			noindex="true" 
 			nonavbar="false" 
 			notree="true" 
-        	overview="${basedir}/reference/api/overview.html"
+        	overview="${basedir}/overview.html"
 			packagenames="${api.packages}" 
 			sourcepath="${sourcepath}" 
 			use="true" 
