@@ -9,7 +9,7 @@
 <H1 style="text-align:center">Validator Group</H1>
 <p></p>
 <h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.validation.validatorGroup<p></p>
-<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>3.0
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.4
 <p></p>
 
 <h6 class="CaptionFigColumn SchemaHeader">Description: </h6>Defines a grouping for validators with listeners notified of group members' activites.  Useful for pre-caching common information used by multiple validators and disposing of that information when they're all done.<p></p>
@@ -28,7 +28,7 @@
 <p class="code SchemaDtdAttlist">class&nbsp;CDATA #REQUIRED&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
-A listener for activities in this group</p>
+A listener for activities in this group.</p>
 <br>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>class</b> - The listener's class.</li>
@@ -43,13 +43,15 @@ Declares a validator group.  A group may have multiple listeners.</p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>id</b> - </li>
 </ul>
-<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><extension point="org.eclipse.wst.validation.validatorGroup">
-   <group id="validatorGroup">
-     <listener class="org.eclipse.wst.validation.example.ValidatorGroupListener"/>
-   </group>
- </extension>
+<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6>Define a listener that simply prints that it has been called.
+<pre class="Example"><span class="code SchemaTag">
+&lt;extension point=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.validatorGroup&quot;</span><span class="code SchemaTag">&gt;
+   &lt;group id=</span><span class="code SchemaCstring">&quot;validatorGroup&quot;</span><span class="code SchemaTag">&gt;
+     &lt;listener class=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.example.ValidatorGroupListener&quot;</span><span class="code SchemaTag">/&gt;
+   &lt;/group&gt;
+&lt;/extension&gt;
 
- public class org.eclipse.wst.validation.example.ValidatorGroupListener implements IValidatorGroupListener {
+public class org.eclipse.wst.validation.example.ValidatorGroupListener implements IValidatorGroupListener {
 
   public ValidatorGroupListener() {
   }
@@ -61,25 +63,27 @@ Declares a validator group.  A group may have multiple listeners.</p>
   public void validationStarting(IResource resource, IProgressMonitor monitor, ValType valType, ValOperation operation) {
    System.out.println("Starting:" + resource.getFullPath());
   }
- }
+}
  
-   <extension id="id" name="name" point="org.eclipse.wst.validation.validatorV2">
-      <validator
-            class="org.eclipse.wst.validation.example.Validator"
-            version="1">
-         <group id="org.eclipse.wst.validation.example.validatorGroup"/>
-      </validator>
-   </extension>
+&lt;extension id=</span><span class="code SchemaCstring">&quot;id&quot;</span><span class="code SchemaTag"> name=</span><span class="code SchemaCstring">&quot;name&quot;</span><span class="code SchemaTag"> point=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.validatorV2&quot;</span><span class="code SchemaTag">&gt;
+  &lt;validator class=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.example.Validator&quot;</span><span class="code SchemaTag">&gt;
+    &lt;group id=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.example.validatorGroup&quot;</span><span class="code SchemaTag">/&gt;
+  &lt;/validator&gt;
+&lt;/extension&gt;
+</span></pre>
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>[Enter API information here.]
-<p></p>
-
-<h6 class="CaptionFigColumn SchemaHeader">Supplied Implementation: </h6>[Enter information about supplied implementation of this extension point.]
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>Provisional API.
 <p></p>
 
 <br>
 <p class="note SchemaCopyright">
+Copyright (c) 2008 IBM Corporation and others.<br>
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at <a
+href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+
 </p>
 </BODY>
 </HTML>

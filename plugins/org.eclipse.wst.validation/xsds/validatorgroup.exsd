@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="group" minOccurs="1" maxOccurs="unbounded"/>
@@ -45,7 +50,7 @@
    <element name="listener">
       <annotation>
          <documentation>
-            A listener for activities in this group
+            A listener for activities in this group.
          </documentation>
       </annotation>
       <complexType>
@@ -90,7 +95,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         3.0
+         WebTools 3.4
       </documentation>
    </annotation>
 
@@ -99,13 +104,15 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         &lt;extension point=&quot;org.eclipse.wst.validation.validatorGroup&quot;&gt;
+         Define a listener that simply prints that it has been called.
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.validation.validatorGroup&quot;&gt;
    &lt;group id=&quot;validatorGroup&quot;&gt;
      &lt;listener class=&quot;org.eclipse.wst.validation.example.ValidatorGroupListener&quot;/&gt;
    &lt;/group&gt;
- &lt;/extension&gt;
+&lt;/extension&gt;
 
- public class org.eclipse.wst.validation.example.ValidatorGroupListener implements IValidatorGroupListener {
+public class org.eclipse.wst.validation.example.ValidatorGroupListener implements IValidatorGroupListener {
 
   public ValidatorGroupListener() {
   }
@@ -117,15 +124,14 @@
   public void validationStarting(IResource resource, IProgressMonitor monitor, ValType valType, ValOperation operation) {
    System.out.println(&quot;Starting:&quot; + resource.getFullPath());
   }
- }
+}
  
-   &lt;extension id=&quot;id&quot; name=&quot;name&quot; point=&quot;org.eclipse.wst.validation.validatorV2&quot;&gt;
-      &lt;validator
-            class=&quot;org.eclipse.wst.validation.example.Validator&quot;
-            version=&quot;1&quot;&gt;
-         &lt;group id=&quot;org.eclipse.wst.validation.example.validatorGroup&quot;/&gt;
-      &lt;/validator&gt;
-   &lt;/extension&gt;
+&lt;extension id=&quot;id&quot; name=&quot;name&quot; point=&quot;org.eclipse.wst.validation.validatorV2&quot;&gt;
+  &lt;validator class=&quot;org.eclipse.wst.validation.example.Validator&quot;&gt;
+    &lt;group id=&quot;org.eclipse.wst.validation.example.validatorGroup&quot;/&gt;
+  &lt;/validator&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -134,18 +140,22 @@
          <meta.section type="apiinfo"/>
       </appinfo>
       <documentation>
-         [Enter API information here.]
+         Provisional API.
       </documentation>
    </annotation>
+
 
    <annotation>
       <appinfo>
-         <meta.section type="implementation"/>
+         <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         Copyright (c) 2008 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
-
 
 </schema>

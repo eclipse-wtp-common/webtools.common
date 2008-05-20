@@ -9,10 +9,10 @@
 <H1 style="text-align:center">Validator V2</H1>
 <p></p>
 <h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.validation.validator-v2<p></p>
-<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.0
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.4.
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>All validators that wish to use version 2 of the validation framework need to extend this extension point.<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>This is used to register a validator to the validation framework (version 2). In addition to specifying the validator to invoke, it registers a set of default filter rules, to control which resources are passsed to the validator.<p></p>
 <h6 class="CaptionFigColumn SchemaHeader">Configuration Markup:</h6>
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.validator">validator</a>)&gt;</p>
@@ -124,28 +124,31 @@ Used to group together a set of messages, where the user can change the message 
 <li><b>label</b> - A short, one line label that is displayed to the end user, that describes the message category.</li>
 <li><b>severity</b> - The default severity for this category.</li>
 </ul>
-<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><!-- A validator that will be called on resources that have html or htm file extensions. -->
-   <extension
-         point="org.eclipse.wst.validation.validator"
-         id="Test" name="%Validator.Name">
-      <validator
-            class="org.eclipse.wst.validation.test.TestValidator">
-         <include>
-            <rules>
-               <fileext ext="html"/>
-               <fileext ext="htm"/>
-            </rules>
-         </include>
-         <group
-               id="org.eclipse.wst.common.tests.validation.t1group">
-         </group>
-         
-      </validator>
-   </extension>
+<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6>An example of a validator that will be called on resources that have html or htm file extensions.
+<pre class="Example"><span class="code SchemaTag">
+   &lt;extension
+         point=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.validator&quot;</span><span class="code SchemaTag">
+         id=</span><span class="code SchemaCstring">&quot;Test&quot;</span><span class="code SchemaTag"> name=</span><span class="code SchemaCstring">&quot;%Validator.Name&quot;</span><span class="code SchemaTag">&gt;
+      &lt;validator class=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.validation.test.TestValidator&quot;</span><span class="code SchemaTag">&gt;
+         &lt;include&gt;
+            &lt;rules&gt;
+               &lt;fileext ext=</span><span class="code SchemaCstring">&quot;html&quot;</span><span class="code SchemaTag">/&gt;
+               &lt;fileext ext=</span><span class="code SchemaCstring">&quot;htm&quot;</span><span class="code SchemaTag">/&gt;
+            &lt;/rules&gt;
+         &lt;/include&gt;
+      &lt;/validator&gt;
+   &lt;/extension&gt;
+</span></pre>
 <p></p>
 
 <br>
 <p class="note SchemaCopyright">
+Copyright (c) 2007,2008 IBM Corporation and others.<br>
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at <a
+href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+
 </p>
 </BODY>
 </HTML>

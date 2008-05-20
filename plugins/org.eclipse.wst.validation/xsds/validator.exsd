@@ -6,11 +6,16 @@
          <meta.schema plugin="org.eclipse.wst.validation" id="validator-v2" name="Validator V2"/>
       </appinfo>
       <documentation>
-         All validators that wish to use version 2 of the validation framework need to extend this extension point.
+         This is used to register a validator to the validation framework (version 2). In addition to specifying the validator to invoke, it registers a set of default filter rules, to control which resources are passsed to the validator.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="validator"/>
@@ -329,7 +334,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         WebTools 3.0
+         WebTools 3.4.
       </documentation>
    </annotation>
 
@@ -338,24 +343,21 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         &lt;!-- A validator that will be called on resources that have html or htm file extensions. --&gt;
+         An example of a validator that will be called on resources that have html or htm file extensions.
+&lt;pre&gt;
    &lt;extension
          point=&quot;org.eclipse.wst.validation.validator&quot;
          id=&quot;Test&quot; name=&quot;%Validator.Name&quot;&gt;
-      &lt;validator
-            class=&quot;org.eclipse.wst.validation.test.TestValidator&quot;&gt;
+      &lt;validator class=&quot;org.eclipse.wst.validation.test.TestValidator&quot;&gt;
          &lt;include&gt;
             &lt;rules&gt;
                &lt;fileext ext=&quot;html&quot;/&gt;
                &lt;fileext ext=&quot;htm&quot;/&gt;
             &lt;/rules&gt;
          &lt;/include&gt;
-         &lt;group
-               id=&quot;org.eclipse.wst.common.tests.validation.t1group&quot;&gt;
-         &lt;/group&gt;
-         
       &lt;/validator&gt;
    &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -369,6 +371,17 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
    </annotation>
 
 
-
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2007,2008 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
 
 </schema>
