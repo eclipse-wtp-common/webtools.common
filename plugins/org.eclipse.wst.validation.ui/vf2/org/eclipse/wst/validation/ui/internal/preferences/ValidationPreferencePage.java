@@ -67,9 +67,9 @@ import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.ui.ContextIds;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.validation.ui.internal.HelpContextIds;
 import org.eclipse.wst.validation.ui.internal.ImageNames;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 import org.eclipse.wst.validation.ui.internal.dialog.FilterDialog;
@@ -129,7 +129,6 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			sc1.setContent(composite);
 			layout = new GridLayout();
 			composite.setLayout(layout);
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			messageLabel = new Label(composite, SWT.NONE);
 			messageLabel.setText(ValUIMessages.VBF_EXC_INVALID_REGISTER);
@@ -289,8 +288,6 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			validatorGroup.setLayout(validatorGroupLayout);
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(validatorGroup);
 			
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
-
 			new Label(validatorGroup, SWT.NONE).setLayoutData(new GridData());
 
 			addOverride(validatorGroup);
@@ -363,7 +360,6 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			});
 
 			addEnableDisable(validatorGroup);
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(_disableAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			// Have to set the tab order or only the first checkbox in a
 			// Composite can be tabbed to. (Seems to apply only to checkboxes. Have to use the
@@ -392,7 +388,6 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 					}
 				}
 			});
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(_enableAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			_disableAllButton = new Button(validatorGroup, SWT.PUSH);
 			_disableAllButton.setLayoutData(new GridData());
@@ -724,7 +719,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 
 		protected void updateHelp() {
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(_suspend, ContextIds.VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED);
+//			PlatformUI.getWorkbench().getHelpSystem().setHelp(_suspend, ContextIds.VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED);
 		}
 
 		/*
@@ -756,6 +751,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 	 * @see PreferencePage#createContents(Composite)
 	 */
 	protected Control createContents(Composite parent) {
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.PreferencePage);
 		try {
 			_shell = parent.getShell();
 			_pageImpl = new ValidatorListPage(parent);

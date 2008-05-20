@@ -71,9 +71,9 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.ui.ContextIds;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.validation.ui.internal.HelpContextIds;
 import org.eclipse.wst.validation.ui.internal.ImageNames;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 import org.eclipse.wst.validation.ui.internal.dialog.FilterDialog;
@@ -130,7 +130,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 			sc1.setContent(composite);
 			layout = new GridLayout();
 			composite.setLayout(layout);
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			messageLabel = new Label(composite, SWT.NONE);
 			messageLabel.setText(ValUIMessages.VBF_EXC_INVALID_REGISTER);
@@ -267,14 +266,11 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_validators = copyValidators(ValManager.getDefault().getValidators(getProject(), false));
 
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			GridLayout validatorGroupLayout = new GridLayout();
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(validatorGroup);
-
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			addOverride(validatorGroup);
 			addConfigLink(validatorGroup);
@@ -347,7 +343,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 			});
 			
 			addButtons(validatorGroup);
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(_disableAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			// Have to set the tab order or only the first checkbox in a
 			// Composite can be tabbed to. (Seems to apply only to checkboxes. Have to use the
@@ -712,7 +707,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		protected void updateHelp() {
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(_suspend, ContextIds.VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED);
+//			PlatformUI.getWorkbench().getHelpSystem().setHelp(_suspend, ContextIds.VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED);
 		}
 
 		/*
@@ -755,6 +750,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 	protected Control createContents(Composite parent) {
 		try {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.ProjectPage);
 			_shell = parent.getShell();
 			_pageImpl = new ValidatorListPage(parent);
 		} catch (Exception exc) {

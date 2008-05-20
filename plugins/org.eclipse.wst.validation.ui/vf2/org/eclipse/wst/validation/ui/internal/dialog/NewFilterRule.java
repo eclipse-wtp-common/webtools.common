@@ -37,7 +37,9 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.validation.internal.model.FilterRule;
+import org.eclipse.wst.validation.ui.internal.HelpContextIds;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
 /**
@@ -124,6 +126,8 @@ public class NewFilterRule extends Wizard {
 		}
 		
 		public void createControl(Composite parent) {
+			String helpId = _project == null ? HelpContextIds.FilterRule : HelpContextIds.ProjectFilterRule;
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, helpId);
 			String[] labels = null;
 			String[] desc = null;
 			if (_project != null){
@@ -199,6 +203,7 @@ public class NewFilterRule extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRFileExt);
 			Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
@@ -251,6 +256,7 @@ public class NewFilterRule extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRName);
 			final Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(4, false));
@@ -387,6 +393,8 @@ public class NewFilterRule extends Wizard {
 		}
 		
 		public boolean isPageComplete() {
+			if (_pattern == null)return false;
+			if (_pattern.getText() == null)return false;
 			return _pattern.getText().trim().length() > 0;
 		}
 		
@@ -402,6 +410,7 @@ public class NewFilterRule extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRProjectNature);
 			Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
@@ -435,6 +444,8 @@ public class NewFilterRule extends Wizard {
 		}
 		
 		public boolean isPageComplete() {
+			if (_natures == null)return false;
+			if (_natures.getText() == null)return false;
 			return _natures.getText().trim().length() > 0;
 		}
 	
@@ -449,6 +460,7 @@ public class NewFilterRule extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRFacet);
 			Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
@@ -472,6 +484,8 @@ public class NewFilterRule extends Wizard {
 		}
 		
 		public boolean isPageComplete() {
+			if (_pattern == null)return false;
+			if (_pattern.getText() == null)return false;
 			return _pattern.getText().trim().length() > 0;
 		}
 		
@@ -487,6 +501,7 @@ public class NewFilterRule extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRContentType);
 			Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
@@ -533,6 +548,8 @@ public class NewFilterRule extends Wizard {
 		}
 		
 		public boolean isPageComplete() {
+			if (_pattern == null)return false;
+			if (_pattern.getText() == null)return false;
 			return _pattern.getText().trim().length() > 0;
 		}
 		
