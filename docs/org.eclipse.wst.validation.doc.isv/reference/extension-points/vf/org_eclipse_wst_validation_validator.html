@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Validator</title>
+<style type="text/css">@import url("../../book.css");</style>
+<style type="text/css">@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1 style="text-align:center">Validator</H1>
+<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.validation.validator<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6><b>This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.</b>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>This extension point give the ability to create a new validator that can validate resources in a Java Project. The validator needs to registered for a given nature of the project for it to run on that project. The user can specifiy file filters to filter out files that need to be validated. The new validator registered by the project nature on the project can be run manually or incrementally if  Auto Build is turned on, during incremental builds the changed delta of files are only validated if those files are part of the validation filters specified.<p>
+<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Configuration Markup:</h6>
+<p></p>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.validator">validator</a>)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST extension</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>point</b> - A fully qualified identifier of the target extension point</li>
+<li><b>id</b> - An optional identifier of the extension instance</li>
+<li><b>name</b> - An optional name of the extension instance</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.validator">validator</a> (<a href="#e.projectNature">projectNature</a>* , <a href="#e.filter">filter</a>* , <a href="#e.enablement">enablement</a>* , <a href="#e.helper">helper</a> , <a href="#e.dependentValidator">dependentValidator</a>? , <a href="#e.run">run</a> , <a href="#e.markerId">markerId</a>? , <a href="#e.facet">facet</a>* , <a href="#e.contentTypeBinding">contentTypeBinding</a>*)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST validator</p>
+<p class="code SchemaDtdAttlist">to&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">from&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>to</b> - Optional migration tag</li>
+<li><b>from</b> - Optional migration tag</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.projectNature">projectNature</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST projectNature</p>
+<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">include&nbsp;(true | false) &gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - </li>
+<li><b>include</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.contentTypeBinding">contentTypeBinding</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST contentTypeBinding</p>
+<p class="code SchemaDtdAttlist">contentTypeId&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Associates a particular content type with the current validator, and enables the validator to be run on resources of the specified content type.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>contentTypeId</b> - The content type identifier. This is an ID defined by the 'org.eclipse.core.runtime.contentTypes' extension point.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.filter">filter</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST filter</p>
+<p class="code SchemaDtdAttlist">objectClass&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">nameFilter&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">caseSensitive&nbsp;(true | false) <p class="code SchemaDtdAttlist">action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>objectClass</b> - </li>
+<li><b>nameFilter</b> - </li>
+<li><b>caseSensitive</b> - </li>
+<li><b>action</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.helper">helper</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST helper</p>
+<p class="code SchemaDtdAttlist">class&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>class</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.dependentValidator">dependentValidator</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST dependentValidator</p>
+<p class="code SchemaDtdAttlist">depValValue&nbsp;(true | false) &gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>depValValue</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.run">run</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST run</p>
+<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">incremental&nbsp;(true | false) <p class="code SchemaDtdAttlist">enabled&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(true | false) <p class="code SchemaDtdAttlist">fullBuild&nbsp;&nbsp;&nbsp;(true | false) <p class="code SchemaDtdAttlist">async&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(true | false) &gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>class</b> - </li>
+<li><b>incremental</b> - </li>
+<li><b>enabled</b> - </li>
+<li><b>fullBuild</b> - </li>
+<li><b>async</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.markerId">markerId</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST markerId</p>
+<p class="code SchemaDtdAttlist">markerIdValue&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+The markerId element is is used to get a custom problem marker for the custom validator implemented using this extension point
+
+This markerId element also needs a corresponding problemMarker extension to be defined bythis validator with the same Id as the makerIdValue for the validator to have its own marker type. Here is an example of the a problemMarker extension defined for a markerIdValue "FooMarker"
+
+ <extension
+         id="FooMarker"
+         name="%EJB_VALIDATION_PROBLEMMARKER_NAME"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.wst.validation.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="owner">
+      </attribute>
+      <attribute
+            name="validationSeverity">
+      </attribute>
+      <attribute
+            name="targetObject">
+      </attribute>
+      <attribute
+            name="groupName">
+      </attribute>
+      <attribute
+            name="messageId">
+      </attribute>
+   </extension>
+   
+   Without a problemMarker extension defined, the customer validator will use the base Validation Message problemMarker type.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>markerIdValue</b> - </li>
+</ul>
+<br><div style="color: red; font-style: italic;">The <b>facet</b> element is deprecated</div> <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.facet">facet</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST facet</p>
+<p class="code SchemaDtdAttlist">facetId&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is deprecated and enablement is the new recommended approach to filter validators based on facets.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>facetId</b> - </li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.enablement">enablement</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+A generic root element. The element can be used inside an extension point to define its enablement expression.
+            The children of an enablement expression are combined using the and operator.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.not">not</a> (<a href="#e.not">not</a> | <a href="#e.and">and</a> | <a href="#e.or">or</a> | <a href="#e.instanceof">instanceof</a> | <a href="#e.test">test</a> | <a href="#e.systemTest">systemTest</a> | <a href="#e.equals">equals</a> | <a href="#e.count">count</a> | <a href="#e.with">with</a> | <a href="#e.resolve">resolve</a> | <a href="#e.adapt">adapt</a> | <a href="#e.iterate">iterate</a> | <a href="#e.reference">reference</a>)&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element represent a NOT operation on the result of evaluating it's sub-element expression.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.and">and</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element represent an AND operation on the result of evaluating all it's sub-elements expressions.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.or">or</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element represent an  OR operation on the result of evaluating all it's sub-element expressions.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.instanceof">instanceof</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST instanceof</p>
+<p class="code SchemaDtdAttlist">value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to perform an instanceof check of the object in focus. The expression returns
+            EvaluationResult.TRUE if the object's type is a sub type of the type specified by the attribute value.
+            Otherwise EvaluationResult.FALSE is returned.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>value</b> - a fully qualified name of a class or interface.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.test">test</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST test</p>
+<p class="code SchemaDtdAttlist">property&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">args&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">forcePluginActivation&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to evaluate the property state of the object in focus. The set of
+            testable properties can be extended using the propery tester extension point. The test
+            expression returns EvaluationResult.NOT_LOADED if the property tester doing the actual
+            testing isn't loaded yet and the attribute forcePluginActivation is set to false. 
+            If forcePluginActivation is set to true and the evaluation context used to evaluate
+            this expression support plug-in activation then evaluating the property will result in 
+            activating the plug-in defining the tester.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>property</b> - the name of an object's property to test.</li>
+<li><b>args</b> - additional arguments passed to the property tester. Multiple arguments are seperated
+                  by commas. Each individual argument is converted into a Java base type using the same
+                  rules as defined for the value attribute of the test expression.</li>
+<li><b>value</b> - the expected value of the property. Can be omitted if the property 
+                  is a boolean property. The test expression is supposed to return 
+EvaluationResult.TRUE if the property matches the value and EvaluationResult.FALSE
+otherwise. The value attribute is converted into a Java base type using the following
+rules:
+<ul>
+ <li>the string &quot;true&quot; is converted into Boolean.TRUE</li>
+ <li>the string &quot;false&quot; is converted into Boolean.FALSE</li>
+ <li>if the string contains a dot then the interpreter tries to convert
+ the value into a Float object. If this fails the string is treated as a
+ java.lang.String</li>
+ <li>if the string only consists of numbers then the interpreter
+ converts the value in an Integer object.</li>
+ <li>in all other cases the string is treated as a java.lang.String</li>
+ <li>the conversion of the string into a Boolean, Float, or Integer can
+ be suppressed by surrounding the string with single quotes. For
+ example, the attribute value=&quot;'true'&quot; is converted into the
+ string &quot;true&quot;</li>
+</ul></li>
+<li><b>forcePluginActivation</b> - a flag indicating whether the plug-in contributing the property tester
+                  should be loaded if necessary. As such, this flag should be used judiciously, 
+                  in order to avoid unnecessary plug-in activations. Most clients should avoid
+                  setting this flag to true. This flag is only honored if the evaluation context
+                  used to evaluate this expression allows plug-in activation. Otherwise the flag
+                  is ignored and no plug-in loading takes place.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.systemTest">systemTest</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST systemTest</p>
+<p class="code SchemaDtdAttlist">property&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">value&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Tests a system property by calling the System.getProperty method and compares the result
+            with the value specified through the value attribute.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>property</b> - the name of an system property to test.</li>
+<li><b>value</b> - the expected value of the property. The value is interpreted as a string value.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.equals">equals</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST equals</p>
+<p class="code SchemaDtdAttlist">value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to perform an equals check of the object in focus. The expression returns
+            EvaluationResult.TRUE if the object is equal to the value provided by the attribute value. Otherwise
+            EvaluationResult.FALSE is returned.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>value</b> - the expected value. The value provided as a string is converted into
+                  a Java base type using the same rules as for the value attribute of the test expression.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.count">count</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST count</p>
+<p class="code SchemaDtdAttlist">value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to test the number of elements in a collection.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>value</b> - an expression to specify the number of elements in a list. Following wildcard
+                  characters can be used:
+                  <dl>
+                    <dt>*</dt> <dd>any number of elements</dd>
+                    <dt>?</dt> <dd>no elements or one element</dd>
+                    <dt>+</dt> <dd>one or more elements</dd>
+                    <dt>!</dt> <dd>no elements</dd>
+                    <dt>integer value</dt> <dd>the list must contain the exact number of elements</dd>
+                  </dl></li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.with">with</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST with</p>
+<p class="code SchemaDtdAttlist">variable&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element changes the object to be inspected for all its child element to the object
+            referenced by the given variable. If the variable can not be resolved then the expression
+            will throw a ExpressionException when evaluating it. The children of a with expression 
+            are combined using the and operator.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>variable</b> - the name of the variable to be used for further inspection. It is up to the evaluator
+                  of an extension point to provide the variable in the variable pool.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.resolve">resolve</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST resolve</p>
+<p class="code SchemaDtdAttlist">variable&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">args&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element changes the object to be inspected for all its child element to the object
+            referenced by the given variable. If the variable can not be resolved then the expression
+            will throw a ExpressionException when evaluating it. The children of a with expression 
+            are combined using the and operator.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>variable</b> - the name of the variable to be resolved. This variable is then used as the object in focus
+                  for child element evaluation. It is up to the evaluator of an extension point to provide a 
+                  corresponding variable resolver (see IVariableResolver) through the evaluation context passed
+                  to the root expression element when evaluating the expression.</li>
+<li><b>args</b> - additional arguments passed to the variable resolver. Multiple arguments are seperated
+                  by commas. Each individual argument is converted into a Java base type using the same
+                  rules as defined for the value attribute of the test expression.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.adapt">adapt</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST adapt</p>
+<p class="code SchemaDtdAttlist">type&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to adapt the object in focus to the type specified by the attribute
+            type. The expression returns not loaded if either the adapter or the type referenced isn't
+            loaded yet. It throws a ExpressionException during evaluation if the type name doesn't exist 
+            at all. The children of an adapt expression are combined using the and operator.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>type</b> - the type to which the object in focus is to be adapted.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.iterate">iterate</a> (<a href="#e.not">not</a> , <a href="#e.and">and</a> , <a href="#e.or">or</a> , <a href="#e.instanceof">instanceof</a> , <a href="#e.test">test</a> , <a href="#e.systemTest">systemTest</a> , <a href="#e.equals">equals</a> , <a href="#e.count">count</a> , <a href="#e.with">with</a> , <a href="#e.resolve">resolve</a> , <a href="#e.adapt">adapt</a> , <a href="#e.iterate">iterate</a> , <a href="#e.reference">reference</a>)*&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST iterate</p>
+<p class="code SchemaDtdAttlist">operator&nbsp;(or|and) <p class="code SchemaDtdAttlist">ifEmpty&nbsp;&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to iterate over a variable that is of type java.util.Collection. If
+            the object in focus is not of type java.util.Collection then an ExpressionException will
+            be thrown while evaluating the expression.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>operator</b> - either "and" or "or". The operator defines how the child
+                  elements will be combined. If not specified, "and" will be used.</li>
+<li><b>ifEmpty</b> - the value return from the iterate expression if the collection is empty. If
+                 not specified then true is returned when the operator equals "and" 
+                 and false is return if the operator equals "or".</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.reference">reference</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST reference</p>
+<p class="code SchemaDtdAttlist">definitionId&nbsp;IDREF #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This element is used to reference an expression from the <b>org.eclipse.core.expressions.definitions</b> extension point.  The expression definition will be evaluated within the current expression element using the current evaluation context.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>definitionId</b> - The unique id of an expression from <b>org.eclipse.core.expressions.definitions</b>.</li>
+</ul>
+<br><br>
+<p class="note SchemaCopyright">
+Copyright (c) 2005 IBM Corporation and others.<br>
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at <a
+href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+
+</p>
+</BODY>
+</HTML>

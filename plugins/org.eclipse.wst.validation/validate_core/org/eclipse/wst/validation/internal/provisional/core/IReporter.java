@@ -151,9 +151,9 @@ public interface IReporter {
 	 * method.)
 	 * </p>
 	 * 
-	 * @param origin
+	 * @param validator
 	 * 		Originator validator of the message.
-	 * @param object
+	 * @param obj
 	 * 		Object to which the message belongs.
 	 * @param groupName
 	 * 		Name of the group to which the message belongs.

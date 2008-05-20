@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Validator Exclusion</title>
+<style type="text/css">@import url("../../book.css");</style>
+<style type="text/css">@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1 style="text-align:center">Validator Exclusion</H1>
+<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.validation.exclude<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.0
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>A way to add additional exclusion filters to a V2 validator.<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Configuration Markup:</h6>
+<p></p>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.validator">validator</a>+)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST extension</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - A short id that is unique within the plug-in, so that this set of extra exclusion filters can be identified.</li>
+<li><b>name</b> - The short user friendly name for the exclusion.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.validator">validator</a> (<a href="#e.exclude">exclude</a>)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST validator</p>
+<p class="code SchemaDtdAttlist">id&nbsp;IDREF #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Identifies the validator that is being extended.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - The fully qualifed validator id that is being extended.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.exclude">exclude</a> (<a href="#e.rules">rules</a>)&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+This contains a set of exclusion rules, used in filtering which resources get validated. If any of these rules are matched, then the validator is not called on this resource.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.fileext">fileext</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST fileext</p>
+<p class="code SchemaDtdAttlist">ext&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">caseSensitive&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+A file extension, for example html.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>ext</b> - The file extension, for example html.</li>
+<li><b>caseSensitive</b> - If the file extension is case sensitive, then this needs to be set to true.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.projectNature">projectNature</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST projectNature</p>
+<p class="code SchemaDtdAttlist">id&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Used to filter on project natures.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - The fully qualified project nature id, for example "org.eclipse.jdt.core.javanature".</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.file">file</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST file</p>
+<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">caseSensitive&nbsp;(true | false) <p class="code SchemaDtdAttlist">type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(folder|file|full) &gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>name</b> - The file or folder name. The file name can be fully qualified, that is it starts with a leading slash ("/"), or it can be a relative name. Folder names are separated with the forward slash ("/") character.</li>
+<li><b>caseSensitive</b> - If the file name is not case senstitive, then this needs to be set to false.</li>
+<li><b>type</b> - Type of name, there are three choices. <ul><li>folder - specifies a project relative folder name.</li><li>file - a simple file name (i.e. no path information).</li><li>full - a fully qualified (project relative) file name.</li></ul></li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.rules">rules</a> (<a href="#e.fileext">fileext</a>* , <a href="#e.file">file</a>* , <a href="#e.projectNature">projectNature</a>* , <a href="#e.facet">facet</a>* , <a href="#e.contentType">contentType</a>*)&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+A set of rules for determining if a resource is passed to this validator or not. The rules are OR'ed together.</p>
+<br><br>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.facet">facet</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST facet</p>
+<p class="code SchemaDtdAttlist">id&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - The facet id.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.contentType">contentType</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST contentType</p>
+<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">exactMatch&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Used to filter based on content types.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>id</b> - The content type id.</li>
+<li><b>exactMatch</b> - Set to true if the content type needs to match exactly. Set to false if sub types are considered matches as well.</li>
+</ul>
+<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><!-- A plug-in is turning off the T1A validator for projects that have the ModuleCoreNature -->
+ <extension
+       id="exclude1"
+       point="org.eclipse.wst.validation.exclude">
+    <validator
+          id="org.eclipse.wst.common.tests.validation.T1A">
+       <exclude>
+          <rules>
+             <projectNature
+                   id="org.eclipse.jst.j2ee.ModuleCoreNature">
+             </projectNature>
+          </rules>
+       </exclude>
+    </validator>
+ </extension>
+<p></p>
+
+<br>
+<p class="note SchemaCopyright">
+</p>
+</BODY>
+</HTML>

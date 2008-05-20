@@ -221,7 +221,7 @@ public interface IMessage {
 	/**
 	 * Set the attributeName and value as key value pair.
 	 * 
-	 * @see getAttribute(String attributeName)
+	 * @see #getAttribute(String attributeName)
 	 * @param attributeName
 	 */
 	
