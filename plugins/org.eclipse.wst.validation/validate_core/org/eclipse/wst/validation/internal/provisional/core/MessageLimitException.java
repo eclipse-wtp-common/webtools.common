@@ -10,17 +10,18 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.provisional.core;
 
-
-/**
- * This exception is thrown by
- * 
- * @see IReporter#addMessage(IValidator, IMessage) method if no more messages can be reported
- *      because the maximum number of messages has been reported.
+/*
  * [issue: LM - Going along with my comment on the addMessage method in IReporter I 
  *  think this class should be internal to the validation framework.
  *  I don't think there's a need for this class to be exposed to clients. If too many
  *  messages are added the framework should handle this without notifying the client
  *  validator. ]
+ */
+/**
+ * This exception is thrown by
+ * 
+ * @see IReporter#addMessage(IValidator, IMessage) method if no more messages can be reported
+ *      because the maximum number of messages has been reported.
  *  @deprecated This class is not longer used by the framework. The framework is
  *  not going to limit the number of messages displayed by a validator.
  */

@@ -22,17 +22,24 @@ import java.util.List;
  * The interface used by IValidator's to report messages. The implementation of the IReporter could
  * simply log the messages to stdout, a file, or retain them in a buffer for later access by a user
  * interface.
- * 
- * Reporter implementations should keep non-localized versions of their messages
- * 
+ * <p>
+ * Reporter implementations should keep non-localized versions of their messages.
+ * </p>
+ * <p>
  * Any messages which need to be displayed to the user are done through this class, and if the user
  * cancels the current function, this class is the one which registers the cancellation.
- * 
+ * </p>
+ * <p>
  * The IReporter instance is created at the time validation begins and ends when validation is complete.
  * There is only one IReporter instance created for all validators that are run on a IResource. The IResource
  * provides a way to get messages put out each validator and add and delete messages for one validator
  * at a time. 
- * ] 
+ * <p>
+ * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ * </p>
  */
 public interface IReporter {
 	/**
@@ -52,25 +59,24 @@ public interface IReporter {
 	 * @param origin
 	 *            The validator which is the source of the message.
 	 * @param message
-	 *            A message to be reported
+	 *            A message to be reported.
 	 */
 	void addMessage(IValidator origin, IMessage message);
 
 	/**
+	 * Show a text representation of this message, formatted in the default
+	 * Locale, to the user immediately. This message indicates which subtask is
+	 * currently being processed. The message is not stored. The subtask message
+	 * in this context is the subtask in a IProgressMontior
 	 * <p>
-	 * Show a text representation of this message, formatted in the default Locale, to the user
-	 * immediately. This message indicates which subtask is currently being processed. The message
-	 * is not stored. The subtask message in this context is the subtask in a IProgressMontior 
-	 * </p>
-	 * <p>
-	 * Both parameters must not be null. 
+	 * Both parameters must not be null.
 	 * </p>
 	 * 
-	 * @param IValidator
-	 *            validator The validator issuing the subtask message.
-	 * @param IValidatorMessage
-	 *            message The message to be displayed to the user.
-	 *                       
+	 * @param validator
+	 * 		The validator issuing the subtask message.
+	 * @param message
+	 * 		The message to be displayed to the user.
+	 * 
 	 */
 	void displaySubtask(IValidator validator, IMessage message);
 
@@ -82,72 +88,75 @@ public interface IReporter {
 	List getMessages();
 
 	/**
-	 * <p>
 	 * Return true if the user canceled validation, and false otherwise. This method should be
 	 * called by IValidators periodically, because no event is fired to notify IValidators that the
 	 * user canceled validation. If a validator does not check this method, a cancellation request
 	 * is ignored.
-	 * </p>
 	 * 
-	 * @return true if the user cancelled validation, and false otherwise.
+	 * @return true if the user canceled validation, and false otherwise.
 	 *  
 	 */
 	boolean isCancelled();
 
 	/**
-	 * <p>
 	 * Remove all validation messages entered by the identified validator. This method is provided
 	 * for incremental validation. 
-	 * </p>
 	 * <p>
 	 * The IValidator parameter must not be null.
 	 * </p>
 	 * @param origin
-	 * 			originator validator of the message.  
+	 * 			Originator validator of the message.  
 	 */
 	void removeAllMessages(IValidator origin);
 
 	/**
-	 * Remove all validation messages, entered by the identified validator, pertaining to the Object
-	 * provided. This method is provided for incremental validation. <br>
+	 * Remove all validation messages, entered by the identified validator,
+	 * pertaining to the Object provided. This method is provided for
+	 * incremental validation. <br>
 	 * <br>
-	 * If <code>object</code> is null, then this method should remove all messages owned by the
-	 * validator. (i.e., the same behaviour as the removeAllMessages(IValidator) method.) <br>
+	 * If <code>object</code> is null, then this method should remove all
+	 * messages owned by the validator. (i.e., the same behaviour as the
+	 * removeAllMessages(IValidator) method.) <br>
 	 * <br>
 	 * <p>
 	 * The IValidator parameter must not be null.
 	 * </p>
-	 * @param origin
-	 * 			originator validator of the message.
-	 * @param object
-	 * 			Object to which the message belongs. Object is the target object that was set on the IMessage
-	 * when adding the message as problem marker.
 	 * 
- 	 */
+	 * @param origin
+	 * 		Originator validator of the message.
+	 * @param object
+	 * 		Object to which the message belongs. Object is the target object
+	 * 		that was set on the IMessage when adding the message as problem
+	 * 		marker.
+	 * 
+	 */
 	void removeAllMessages(IValidator origin, Object object);
 
 	/**
-	 * To support removal of a subset of validation messages, an IValidator may assign group names
-	 * to IMessages. An IMessage subset will be identified by the name of its group. This method
-	 * will remove only the IMessage's that are in the group identified by groupName. <br>
-	 * <br>
-	 * <br>
-	 * 
-	 * The IValidator parameter must not be null. <br>
-	 * <br>
-	 * 
-	 * If <code>object</code> is null, then this method should remove all messages owned by the
-	 * validator. (i.e., the same behaviour as the removeAllMessages(IValidator) method.)
-	 * 
-	 * If groupName is null, that's the same as no group (i.e., the same behaviour as the
-	 * <code>removeAllMessages(IValidator, Object)</code> method.) <br>
+	 * To support removal of a subset of validation messages, an IValidator may
+	 * assign group names to IMessages. An IMessage subset will be identified by
+	 * the name of its group. This method will remove only the IMessage's that
+	 * are in the group identified by groupName. 
+	 * <p>
+	 * The IValidator parameter must not be null.
+	 * </p>
+	 * <p>
+	 * If <code>object</code> is null, then this method should remove all
+	 * messages owned by the validator. (i.e., the same behaviour as the
+	 * removeAllMessages(IValidator) method.)
+	 * </p>
+	 * <p>
+	 * If groupName is null, that's the same as no group (i.e., the same
+	 * behaviour as the <code>removeAllMessages(IValidator, Object)</code>
+	 * method.)
+	 * </p>
 	 * 
 	 * @param origin
-	 * 			originator validator of the message.
+	 * 		Originator validator of the message.
 	 * @param object
-	 * 			Object to which the message belongs. 
+	 * 		Object to which the message belongs.
 	 * @param groupName
-	 * 			name of the group to which the message belongs. 
+	 * 		Name of the group to which the message belongs.
 	 */
 	void removeMessageSubset(IValidator validator, Object obj, String groupName);
 }
