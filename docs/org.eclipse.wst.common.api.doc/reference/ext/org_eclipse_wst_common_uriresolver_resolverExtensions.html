@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>URI Resolver Extensions Point</title>
+<style type="text/css">@import url("../../book.css");</style>
+<style type="text/css">@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1 style="text-align:center">URI Resolver Extensions Point</H1>
+<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.common.uriresolver.resolverExtensions<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6><b>This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.</b>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>The URI Resolver Extensions point allows clients to register custom URI resolvers that will be used in the resolution of resources by tools such as editors, generators, validators, and wizards.<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Configuration Markup:</h6>
+<p></p>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.resolverExtension">resolverExtension</a>+)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST extension</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>point</b> - a fully qualified identifier of the target extension point</li>
+<li><b>id</b> - an optional identifier of the extension instance</li>
+<li><b>name</b> - an optional name of the extension instance</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.resolverExtension">resolverExtension</a> (<a href="#e.projectNature">projectNature</a>*)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST resolverExtension</p>
+<p class="code SchemaDtdAttlist">stage&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">priority&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>stage</b> - The stage in which to run this extension resolver: prenormalization, postnormalization, or physical. Defaults to postnormalization.<br>
+prenormalization:  run before normalization of the input<br>
+postnormalization: run after normalization of the input<br>
+physical:          run after all pre and postnormalization resolvers</li>
+<li><b>class</b> - The class that implements <code>org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver</code>.</li>
+<li><b>priority</b> - The priority of this resolver: high, medium, or low. Defaults to medium. The priority allows you to specify when this resolver should run with respect to other resolvers defined for the same stage.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.projectNature">projectNature</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST projectNature</p>
+<p class="code SchemaDtdAttlist">value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+If a project nature is specified the URI resolver will only be used for projects that contain one of the specified project natures. If no project natures are specified the URI resolver will be used for all projects.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>value</b> - A project nature ID for which the URI resolver should be used.</li>
+</ul>
+<br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6>The following is an example of an URI resolver contribution:
+<pre class="Example"><span class="code SchemaTag">
+   &lt;extension
+         point=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.common.uriresolver.resolverExtensions&quot;</span><span class="code SchemaTag">&gt;
+      &lt;resolverExtension
+            stage=</span><span class="code SchemaCstring">&quot;physical&quot;</span><span class="code SchemaTag">
+            priority=</span><span class="code SchemaCstring">&quot;low&quot;</span><span class="code SchemaTag">
+            class=</span><span class="code SchemaCstring">&quot;org.eclipse.wst.common.uriresolver.SampleResolver&quot;</span><span class="code SchemaTag">&gt;
+      &lt;/resolverExtension&gt;
+   &lt;/extension&gt;
+</span></pre>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">Supplied Implementation: </h6><code>
+org.eclipse.wst.common.componentcore.internal.util.ComponentResolver
+</code>
+provides an URI resolver that resolves references in a project with multiple components
+<code>
+org.eclipse.wst.internet.cache.internal.CacheURIResolverExtension
+</code>
+provides an URI resolver that resolves references in a cache
+<code>
+org.eclipse.wst.xml.core.internal.catalog.XMLCatalogURIResolverExtension
+</code>
+provides an URI resolver that resolves references from an XML catalog
+<p></p>
+
+<br>
+<p class="note SchemaCopyright">
+Copyright (c) 2000, 2008 IBM Corporation and others.<br>
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at <a
+href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+
+</p>
+</BODY>
+</HTML>

@@ -10,5 +10,7 @@
 	
 	<extension point="org.eclipse.help.toc">
 		<toc file="topicsEnv_Reference.xml"/>
+		<toc file="envjavadoctoc.xml"/>
+		<toc file="topics_ExtPoint_Reference.xml"/>
 	</extension>
 </plugin>

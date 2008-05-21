@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Build Extension Point Documentation" default="createExtDocs" basedir=".">
+
+	<property file="buildExtDocs.properties"/>
+	<property name="outputDir" value="${basedir}"/>
+    <property name="apioutputDir" value="${outputDir}${file.separator}reference${file.separator}ext"/>
+
+	<target name="createExtDocs" depends="buildExtDocs, createDocListings"/>
+	
+	<target name="buildExtDocs" depends="buildJSFExtDocs"/>
+		
+ 	<target name="buildJSFExtDocs">
+ 		
+ 		<!-- cleanup old -->
+ 		<delete>
+ 	 		<fileset dir="${apioutputDir}" casesensitive="yes" id="ext-docs-list-ent">
+ 	 			<include name="*.html"/>
+ 			</fileset>
+ 		</delete>
+ 		
+ 		<!-- generate new html from ext-pt schemas -->
+ 		<pde.convertSchemaToHTML manifest="../org.eclipse.wst.common.uriresolver/plugin.xml" destination="${apioutputDir}" />
+ 		
+ 		<!-- Get the list of extension doc files. -->
+ 		<fileset dir="${apioutputDir}" casesensitive="yes" id="ext-docs-list-ent" >
+ 			<include name="*.html"/>
+		</fileset>
+ 		
+ 		<!-- Convert the list to an XML representation. -->
+ 		<pathconvert property="ext-doc-ent" refid="ext-docs-list-ent" pathsep="&lt;/file&gt;/n/n&lt;file&gt;" >
+ 			<map from="${apioutputDir}${file.separator}" to=""/>
+ 		</pathconvert>
+ 		<echo file="extdocs.xml">&lt;files component="webservice"&gt;&lt;file&gt;${ext-doc-ent}&lt;/file&gt;&lt;/files&gt;</echo>
+ 		 						
+ 	</target>
+	
+	<target name="createDocListings">
+		<delete file="${apioutputDir}${file.separator}index.html"/>
+		<!-- Create the overview document. -->
+		<xslt basedir="${basedir}" in="extDocListings.xml" out="${apioutputDir}${file.separator}index.html" style="extDocOverview.xsl">
+	  		<param name="title" expression="${title}"/>
+	  		<param name="header" expression="${header}"/>
+	  		<param name="overview" expression="${overview}"/>
+			<param name="listed-ext-points" expression="${listed-ext-points}"/>
+		</xslt>
+			
+		<!-- Create the extention point toc. -->
+		<xslt basedir="${basedir}" in="extDocListings.xml" out="topics_ExtPoint_Reference.xml" style="extDocToc.xsl">
+			<param name="listed-ext-points" expression="${listed-ext-points}"/>
+			<outputproperty name="method" value="xml"/>
+			<outputproperty name="indent" value="yes"/>
+		</xslt>
+			
+	</target>
+</project>
