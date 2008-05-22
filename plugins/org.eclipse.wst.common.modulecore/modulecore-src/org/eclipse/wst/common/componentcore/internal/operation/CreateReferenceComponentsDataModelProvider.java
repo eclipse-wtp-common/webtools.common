@@ -30,6 +30,7 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 		propertyNames.add(SOURCE_COMPONENT);
 		propertyNames.add(TARGET_COMPONENT_LIST);
 		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH);
+		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH_MAP);
 		propertyNames.add(TARGET_COMPONENTS_TO_URI_MAP);
 		return propertyNames;
 	}
@@ -40,6 +41,11 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 
 	public Object getDefaultProperty(String propertyName) {
 		if (TARGET_COMPONENTS_TO_URI_MAP.equals(propertyName)) {
+			Map map = new HashMap();
+			setProperty(propertyName, map);
+			return map;
+		}
+		else if (TARGET_COMPONENTS_DEPLOY_PATH_MAP.equals(propertyName)) {
 			Map map = new HashMap();
 			setProperty(propertyName, map);
 			return map;

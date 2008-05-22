@@ -99,8 +99,10 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		List vlist = new ArrayList();
 		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
+		Map modDeployPathMap = (Map) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH_MAP);
 		String deployPathStr = model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH);
 		IPath deployPath = null;
+		IPath archiveDeployPath = null;
 		if (deployPathStr != null && deployPathStr.length() > 0){
 			deployPath = new Path(deployPathStr);
 		}
@@ -108,8 +110,17 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
 			if (!srcComponentContainsReference(sourceComp, comp, deployPath)) {
 				IVirtualReference ref = ComponentCore.createReference(sourceComp, comp);
-				if(deployPath != null){
-					ref.setRuntimePath(new Path(deployPathStr));
+				deployPathStr = (String)modDeployPathMap.get(comp);
+				if (deployPathStr != null)
+				{
+					archiveDeployPath = new Path(deployPathStr);
+				}
+				else
+				{
+					archiveDeployPath = deployPath;
+				}
+				if(archiveDeployPath != null){
+					ref.setRuntimePath(archiveDeployPath);
 				}
 
 				String archiveName = getArchiveName(comp);
