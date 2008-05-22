@@ -20,7 +20,7 @@
    <url>
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
-        
+
    <includes
          id="org.eclipse.wst.common_ui.feature"
          version="0.0.0"/>
@@ -28,16 +28,23 @@
    <includes
          id="org.eclipse.wst.common_ui.feature.source"
          version="0.0.0"/>
-         
+
    <plugin
          id="org.eclipse.wst.common.project.facet.doc.api"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.wst.common.api.doc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.validation.doc.isv"
          download-size="0"
          install-size="0"
          version="0.0.0"
