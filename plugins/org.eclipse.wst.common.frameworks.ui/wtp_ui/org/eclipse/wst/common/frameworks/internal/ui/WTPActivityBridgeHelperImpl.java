@@ -17,6 +17,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPluginContribution;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.activities.IActivityManager;
@@ -54,7 +55,7 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 			newEnabledActivities.remove(activityID);
 		}
 		if (null != newEnabledActivities) {
-			workbenchActivitySupport.setEnabledActivityIds(newEnabledActivities);
+			setEnabledActivityIds(newEnabledActivities);
 		}
 	}
 
@@ -63,7 +64,17 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 	}
 
 	public void setEnabledActivityIds(Set activityIDs) {
-		workbenchActivitySupport.setEnabledActivityIds(activityIDs);
+		Display display = PlatformUI.getWorkbench().getDisplay();
+		if (display.getThread() == Thread.currentThread()) {
+			workbenchActivitySupport.setEnabledActivityIds(activityIDs);
+		} else {
+			final Set newActivityIDs = activityIDs; 
+			display.asyncExec(new Runnable() {
+				public void run() {
+					workbenchActivitySupport.setEnabledActivityIds(newActivityIDs);
+				}
+			});
+		}
 	}
 
 	public Set getActivityIDsFromContribution(final String localID, final String pluginID) {
