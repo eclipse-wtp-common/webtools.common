@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -136,7 +135,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			ValManager.getDefault().isDisabled(project))return referenced;
 
 		try {
-			newBuild(kind, parameters, monitor);
+			newBuild(kind, monitor);
 
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			delta = getDelta(project);
@@ -222,7 +221,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * @see IncrementalProjectBuilder#FULL_BUILD
 	 * @see IncrementalProjectBuilder#INCREMENTAL_BUILD
 	 */
-	private void newBuild(int kind, Map args, IProgressMonitor monitor)	throws CoreException {
+	private void newBuild(int kind, IProgressMonitor monitor)	throws CoreException {
 
 		IResourceDelta delta = null;
 		IProject project = getProject();
@@ -234,8 +233,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				break;
 		}
 		
-		Job job = new ValBuilderJob(project, delta, kind, ValOperationManager.getDefault().getOperation());		
-		job.schedule();
+		ValBuilderJob.validateProject(project, delta, kind, ValOperationManager.getDefault().getOperation());		
 	}
 	
 	

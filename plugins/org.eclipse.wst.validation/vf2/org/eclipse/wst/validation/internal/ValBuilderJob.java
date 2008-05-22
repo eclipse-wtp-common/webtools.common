@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -43,29 +46,39 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor, IResourceVisitor {
 	
-	/** The project that is being built. */
-	private IProject 			_project;
-	
-	/** The resource delta that triggered the build, it will be null for a full build. */
-	private IResourceDelta		_delta;
-	
-	private ValOperation		_operation;
-	
-	/** 
-	 * The kind of build.
-	 * 
-	 *  @see org.eclipse.core.resources.IncrementalProjectBuilder
-	 */
-	private int					_buildKind;
+	private static ValBuilderJob _job;
+	private static Queue<ValidationRequest> _work = new LinkedList<ValidationRequest>();
 	
 	/** The monitor to use while running the build. */
 	private IProgressMonitor	_monitor;
 	
 	private SubMonitor			_subMonitor;
 	
+	private ValidationRequest	_request;
+	
 	/** The types of changes we are interested in. */
 	private final static int	InterestedFlags = IResourceDelta.CONTENT | IResourceDelta.ENCODING |
 		IResourceDelta.MOVED_FROM | IResourceDelta.MOVED_TO;
+	
+	public static synchronized void validateProject(IProject project, IResourceDelta delta, int buildKind, ValOperation operation){
+		ValidationRequest request = new ValidationRequest(project, delta, buildKind, operation);
+		if (_job == null){
+			_job = new ValBuilderJob();
+			_job.add(request);
+			_job.schedule();
+		}
+		else {
+			_job.add(request);
+		}
+	}
+	
+	private static synchronized ValidationRequest getRequest(){
+		ValidationRequest request = _work.poll();
+		if (request == null){
+			_job = null;
+		}
+		return request;
+	}
 	
 	/**
 	 * Each validation run is done in it's own job.
@@ -83,12 +96,12 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	 * @param operation some global context for the validation operation
 	 * 
 	 */
-	public ValBuilderJob(IProject project, IResourceDelta delta, int buildKind, ValOperation operation){
+	private ValBuilderJob(){
 		super(ValMessages.JobName);
-		_project = project;
-		_delta = delta;
-		_buildKind = buildKind;
-		_operation = operation;
+	}
+	
+	private void add(ValidationRequest request){
+		_work.add(request);
 	}
 	
 	public boolean belongsTo(Object family) {
@@ -104,8 +117,21 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		Tracing.log("ValBuilderJob-01: Starting"); //$NON-NLS-1$
 		_monitor = monitor;
 		
+		ValidationRequest request = getRequest();
+		while(request != null){
+			_request = request;
+			run();
+			request = getRequest();
+		}
+		
+		Tracing.log("ValBuilderJob-02: Finished"); //$NON-NLS-1$
+		return Status.OK_STATUS;
+	}
+	
+	private void run(){
+		setName(ValMessages.JobName + " " + _request.getProject().getName()); //$NON-NLS-1$
 		try {		
-			if (_delta == null)fullBuild();
+			if (_request.getDelta() == null)fullBuild();
 			else deltaBuild();
 			
 		}
@@ -119,29 +145,27 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		
-		Tracing.log("ValBuilderJob-02: Finished"); //$NON-NLS-1$
-		return Status.OK_STATUS;
 	}
 
 	private void deltaBuild() throws CoreException {
 		ResourceCounter counter = new ResourceCounter();
-		_delta.accept(counter);
+		_request.getDelta().accept(counter);
 		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
-		_delta.accept(this);		
+		_request.getDelta().accept(this);		
 	}
 
 	private void fullBuild() throws CoreException {
 		ResourceCounter counter = new ResourceCounter();
-		_project.accept(counter, 0);
+		_request.getProject().accept(counter, 0);
 		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
-		_project.accept(this);
+		_request.getProject().accept(this);
 		
 	}
 
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		IResource resource = delta.getResource();
 		if (DisabledResourceManager.getDefault().isDisabled(resource)){
-			MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+			MarkerManager.getDefault().deleteMarkers(resource, _request.getOperation().getStarted(), IResource.DEPTH_INFINITE);
 			return false;
 		}
 		int kind = delta.getKind();
@@ -149,8 +173,8 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		if (isChanged &&  (delta.getFlags() & InterestedFlags) == 0)return true;
 		
 		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
-			ValManager.getDefault().validate(_project, resource, delta.getKind(), ValType.Build, _buildKind, 
-				_operation, _subMonitor.newChild(1));
+			ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build, 
+				_request.getBuildKind(), _request.getOperation(), _subMonitor.newChild(1));
 		}
 				
 		IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
@@ -159,8 +183,8 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			for (DependentResource dr : index.get(resource)){
 				if (Friend.shouldValidate(dr.getValidator(), dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 					mm.clearMarker(dr.getResource(), dr.getValidator()); 
-					_operation.getState().put(ValidationState.TriggerResource, resource);
-					ValManager.getDefault().validate(dr.getValidator(), _operation, dr.getResource(), 
+					_request.getOperation().getState().put(ValidationState.TriggerResource, resource);
+					ValManager.getDefault().validate(dr.getValidator(), _request.getOperation(), dr.getResource(), 
 						IResourceDelta.NO_CHANGE, _monitor);
 				}
 			}
@@ -172,11 +196,11 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	public boolean visit(IResource resource) throws CoreException {
 		try {
 			if (DisabledResourceManager.getDefault().isDisabled(resource)){
-				MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+				MarkerManager.getDefault().deleteMarkers(resource, _request.getOperation().getStarted(), IResource.DEPTH_INFINITE);
 				return false;
 			}
-			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, ValType.Build, 
-				_buildKind, _operation, _subMonitor.newChild(1));
+			ValManager.getDefault().validate(_request.getProject(), resource, IResourceDelta.NO_CHANGE, ValType.Build, 
+				_request.getBuildKind(), _request.getOperation(), _subMonitor.newChild(1));
 		}
 		catch (ResourceUnavailableError e){
 			if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
@@ -201,8 +225,47 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			_count++;
 			return true;
-		}
+		}		
+	}
+	
+	static class ValidationRequest {
+		/** The project that is being built. */
+		private IProject 			_project;
 		
+		/** The resource delta that triggered the build, it will be null for a full build. */
+		private IResourceDelta		_delta;
+		
+		private ValOperation		_operation;
+		
+		/** 
+		 * The kind of build.
+		 * 
+		 *  @see org.eclipse.core.resources.IncrementalProjectBuilder
+		 */
+		private int					_buildKind;
+		
+		public ValidationRequest(IProject project, IResourceDelta delta, int buildKind, ValOperation operation){
+			_project = project;
+			_delta = delta;
+			_buildKind = buildKind;
+			_operation = operation;
+		}
+
+		public IProject getProject() {
+			return _project;
+		}
+
+		public IResourceDelta getDelta() {
+			return _delta;
+		}
+
+		public ValOperation getOperation() {
+			return _operation;
+		}
+
+		public int getBuildKind() {
+			return _buildKind;
+		}
 	}
 
 }
