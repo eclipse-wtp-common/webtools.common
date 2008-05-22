@@ -28,7 +28,7 @@
         <include name="**/*"/>
         <exclude name="**/internal/**"/>
       </packageset>
-      <!-- <classpath refid="@dot.classpath"/> -->
+      <classpath refid="@dot.classpath"/>
       <link href="http://java.sun.com/j2se/1.5/docs/api" offline="true" packagelistLoc="package-lists/java"/>
       <link href="/org.eclipse.platform.doc.isv/reference/api" offline="true" packagelistLoc="package-lists/eclipse-platform"/>
     </javadoc>
