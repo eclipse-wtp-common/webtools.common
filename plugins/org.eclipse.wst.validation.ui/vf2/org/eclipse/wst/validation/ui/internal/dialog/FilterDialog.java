@@ -352,6 +352,7 @@ public class FilterDialog extends Dialog {
 		
 		Composite line = new Composite(c, SWT.NONE);
 		line.setLayout(new RowLayout(SWT.HORIZONTAL));
+		line.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
 		Label label = new Label(line, SWT.CENTER);
 		label.setText(ValUIMessages.DelegatesComboLabel);
@@ -448,7 +449,7 @@ public class FilterDialog extends Dialog {
 	}
 	
 	protected Point getInitialSize() {
-		return new Point(550, 475);
+		return new Point(600, 475);
 	}
 
 	public Validator getValidator() {
