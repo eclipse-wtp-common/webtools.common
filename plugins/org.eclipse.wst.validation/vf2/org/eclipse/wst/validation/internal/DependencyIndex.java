@@ -293,8 +293,11 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				}				
 			}
 			if (set.size() > 0){
-				IPath path = me.getKey().getFullPath();
-				if (path != null)map.put(path.toPortableString(), set);
+				IResource res = me.getKey();
+				if (res != null){
+					IPath path = res.getFullPath();
+					if (path != null)map.put(path.toPortableString(), set);
+				}
 			}
 		}
 		return map;
