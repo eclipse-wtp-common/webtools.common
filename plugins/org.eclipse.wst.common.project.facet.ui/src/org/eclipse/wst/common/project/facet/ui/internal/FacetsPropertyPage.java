@@ -458,6 +458,7 @@ public final class FacetsPropertyPage
 		};
 		
 		dialog.open();
+		updateFurtherConfigHyperlink();
 	}
 
     private void handleDisposeEvent()
