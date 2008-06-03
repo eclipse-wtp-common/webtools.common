@@ -426,6 +426,14 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 * Blocks until the graph is finished updating
 	 */
 	public void waitForAllUpdates(IProgressMonitor monitor) {
+		if(graphUpdateJob.getThread() != Thread.currentThread()) {
+			try {
+				graphUpdateJob.join();
+			} catch (InterruptedException e) {
+				ModulecorePlugin.logError(e);
+			}
+		}
+			
 		if(graphUpdateJob.shouldSchedule()){
 			graphUpdateJob.run(monitor);
 		}
