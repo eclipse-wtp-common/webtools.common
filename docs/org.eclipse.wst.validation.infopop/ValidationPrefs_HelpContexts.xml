@@ -19,6 +19,7 @@ In the list of validators, select the check boxes next to each validator you wan
 </description>
 <topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjval.html" label="Validating code in enterprise applications"/>
 <topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjvalglobalpref.html" label="Overriding global validation preferences"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/rtunevalidat.html" label="Tuning validators"/>
 <topic href="../org.eclipse.jst.j2ee.doc.user/topics/rvalerr.html" label="Common validation errors and solutions"/>
 </context>
 
