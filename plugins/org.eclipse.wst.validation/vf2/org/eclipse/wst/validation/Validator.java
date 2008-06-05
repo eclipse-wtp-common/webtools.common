@@ -1086,6 +1086,7 @@ public final static class V2 extends Validator implements IAdaptable {
 	private void updateResults(ValidationResult vr) {
 		ReporterHelper rh = vr.getReporterHelper();
 		if (rh == null)return;
+		ClassLoader classloader = getDelegatedValidator().getClass().getClassLoader();
 		for (IMessage message : rh.getMessages()){
 			Object target = message.getTargetObject();
 			if (target != null){
@@ -1096,7 +1097,8 @@ public final static class V2 extends Validator implements IAdaptable {
 					if (target != null && target instanceof IResource)res = (IResource)target;
 				}
 				if (res != null){
-					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
+					
+					ValidatorMessage vm = ValidatorMessage.create(message.getText(classloader), res);
 					if (getMarkerId() != null)vm.setType(getMarkerId());
 					vr.add(vm);
 					int markerSeverity = IMarker.SEVERITY_INFO;
