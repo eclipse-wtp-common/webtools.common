@@ -22,8 +22,9 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.platform" version="3.4.0" match="compatible"/>
-      <import feature="org.eclipse.emf" version="2.4.0" match="compatible"/>
+      <import feature="org.eclipse.emf.edit" version="2.4.0"/>
+      <import feature="org.eclipse.emf.ecore" version="2.4.0"/>
+      <import feature="org.eclipse.platform" version="3.4.0.v20080528-9I96EhtEm-T_5C48s6QSenwkJ3cHInkRH3nTT"/>
    </requires>
 
    <plugin

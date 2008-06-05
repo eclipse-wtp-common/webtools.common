@@ -26,7 +26,8 @@
          version="0.0.0"/>
 
    <requires>
-      <import feature="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H2748"/>
+      <import feature="org.eclipse.gef" version="3.4.0"/>
+      <import feature="org.eclipse.platform" version="3.4.0"/>
    </requires>
 
    <plugin
