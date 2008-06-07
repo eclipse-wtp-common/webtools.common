@@ -22,21 +22,21 @@
    </url>
 
    <includes
+         id="org.eclipse.wst.common_core.feature"
+         version="0.0.0"/>
+
+   <includes
          id="org.eclipse.wst.common_ui.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.wst.common_core.feature.source"
          version="0.0.0"/>
 
    <includes
          id="org.eclipse.wst.common_ui.feature.source"
          version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.wst.common_core.feature"
-         version="0.0.0"/>
-   
-   <includes
-         id="org.eclipse.wst.common_core.feature.source"
-         version="0.0.0"/>
-         
+            
    <plugin
          id="org.eclipse.wst.common.project.facet.doc.api"
          download-size="0"
