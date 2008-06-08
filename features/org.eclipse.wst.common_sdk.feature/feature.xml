@@ -30,10 +30,6 @@
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.wst.common_core.feature.source"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.wst.common_ui.feature.source"
          version="0.0.0"/>
             
