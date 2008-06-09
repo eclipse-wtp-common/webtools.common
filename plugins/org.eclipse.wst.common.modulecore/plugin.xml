@@ -15,7 +15,7 @@
    <!--============================-->
    <extension
          id="ModuleCoreNature"
-         name="Web Properties"
+         name="%Nature.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
@@ -76,7 +76,7 @@
   
   <extension
          id="ModuleCoreValidator"
-         name="ModuleCore Validator"
+         name="%Validator.name"
          point="org.eclipse.wst.validation.validator">
       <validator>
       	<projectNature
@@ -106,7 +106,7 @@
 
 <extension
          id="ModuleCoreValidatorMarker"
-         name="ModuleCore Validation Marker"
+         name="%ValidationMarker.name"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.wst.validation.problemmarker">
