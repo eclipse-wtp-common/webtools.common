@@ -80,7 +80,7 @@ public class HRefTranslator extends Translator {
 					if( contentModelRoot != null )
 					{
 						res = contentModelRoot.eResource();
-						if (res != null)
+						if (res != null && res instanceof CompatibilityXMIResource)
 							retVal = res.getEObject(aValue);
 					}
 				}
