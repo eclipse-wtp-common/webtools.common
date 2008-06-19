@@ -367,4 +367,40 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public void setUseOldFormat(boolean useOldFormat) {
 		this.useOldFormat = useOldFormat;
 	}
+	
+	public void saveIfNecessary(IProgressMonitor monitor, Object accessorKey) {
+		// Always force save
+		super.save(monitor, accessorKey);
+	}
+	@Override
+	public void access(Object accessorKey) {
+		
+		super.access(accessorKey);
+//		StringBuffer buffer = new StringBuffer("Access Module model (");
+//		buffer.append(this.hashCode());
+//		buffer.append(") Project: ");
+//		buffer.append(this.getProject());
+//		if (isReadOnly())
+//			buffer.append(" R = "); //$NON-NLS-1$
+//		else
+//			buffer.append(" W = "); //$NON-NLS-1$
+//		buffer.append(getRegistry().size());
+//		System.out.println(buffer.toString());
+				
+	}
+	@Override
+	public void releaseAccess(Object accessorKey) {
+		
+		super.releaseAccess(accessorKey);
+//		StringBuffer buffer = new StringBuffer("Release Module model (");
+//		buffer.append(this.hashCode());
+//		buffer.append(") Project: ");
+//		buffer.append(this.getProject());
+//		if (isReadOnly())
+//			buffer.append(" R = "); //$NON-NLS-1$
+//		else
+//			buffer.append(" W = "); //$NON-NLS-1$
+//		buffer.append(getRegistry().size());
+//		System.out.println(buffer.toString());
+	}
 }
