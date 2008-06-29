@@ -2,3 +2,4 @@ bin
 build.xml
 javaCompiler...args
 @dot
+temp.folder
