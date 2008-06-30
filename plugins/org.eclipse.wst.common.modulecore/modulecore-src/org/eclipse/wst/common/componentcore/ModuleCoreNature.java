@@ -143,7 +143,8 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, ISynchronizerExtender {
 	
     public static final String VALIDATION_BUILDER_ID = ValidationPlugin.VALIDATION_BUILDER_ID;
-    private ModuleStructuralModel cachedModel;
+    private ModuleStructuralModel cachedWriteHandle;
+    private ModuleStructuralModel cachedReadHandle;
 	/**
 	 * <p>
 	 * Find and return the ModuleCoreNature of aProject, if available.
@@ -237,7 +238,20 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @return A {@see ModuleStructuralModel}for the project of the current nature.
 	 */
 	public ModuleStructuralModel getModuleStructuralModelForRead(Object anAccessorKey) {
-		return (ModuleStructuralModel) getEditModelForRead(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, anAccessorKey);
+		// Return self managed edit model - will always cache locally
+		ModuleStructuralModel editModel = (ModuleStructuralModel)getEmfContext().getExistingEditModel(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, null,true);
+		if (editModel == null) {
+			editModel = (ModuleStructuralModel)EditModelRegistry.getInstance().createEditModelForRead(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, getEmfContext(), null);
+			synchronized (editModel) {
+				getEmfContext().cacheEditModel(editModel, null);
+				editModel.access(anAccessorKey);
+			}
+		} else {
+			synchronized (editModel) {
+				editModel.access(anAccessorKey);
+			}
+		}
+		return editModel;
 	}
 
 	/**
@@ -263,7 +277,20 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @return A {@see ModuleStructuralModel}for the project of the current nature.
 	 */
 	public ModuleStructuralModel getModuleStructuralModelForWrite(Object anAccessorKey) {
-		return (ModuleStructuralModel) getEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, anAccessorKey);
+		// Return self managed edit model - will always cache locally
+		ModuleStructuralModel editModel = (ModuleStructuralModel)getEmfContext().getExistingEditModel(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, null,false);
+		if (editModel == null) {
+			editModel = (ModuleStructuralModel)EditModelRegistry.getInstance().createEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, getEmfContext(), null);
+			synchronized (editModel) {
+				getEmfContext().cacheEditModel(editModel, null);
+				editModel.access(anAccessorKey);
+			}
+		} else {
+			synchronized (editModel) {
+				editModel.access(anAccessorKey);
+			}
+		}
+		return editModel;
 	}
 
 	/**
@@ -495,7 +522,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// addAdapterFactories(set);
 		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
 		// new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
-		cacheModuleStructuralModel();
+		projectResourceSet.getSynchronizer().addExtender(this); // added so we can be informed of closes
+		cacheModuleStructuralModels();
 	}
 	
 	/**
@@ -551,9 +579,11 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		
 	}
 
-	private void cacheModuleStructuralModel() {
-		if (cachedModel == null)
-			cachedModel = getModuleStructuralModelForRead(this);
+	private void cacheModuleStructuralModels() {
+		if (cachedWriteHandle == null)
+			cachedWriteHandle = getModuleStructuralModelForWrite(this);
+		if (cachedReadHandle == null)
+			cachedReadHandle = getModuleStructuralModelForRead(this);
 	}
 
 	protected String getPluginID() {
@@ -566,9 +596,17 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	public void shutdown() {
 		super.shutdown();
-		if (cachedModel != null) {
-			cachedModel.dispose();
-			cachedModel = null;
+		if (cachedWriteHandle != null) {
+			if (cachedWriteHandle.isDirty())
+				cachedWriteHandle.saveIfNecessary(this);
+			cachedWriteHandle.dispose();
+			cachedWriteHandle = null;
+		}
+		if (cachedReadHandle != null) {
+			if (cachedReadHandle.isDirty())
+				cachedReadHandle.saveIfNecessary(this);
+			cachedReadHandle.dispose();
+			cachedReadHandle = null;
 		}
 	}
 
@@ -578,9 +616,12 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
 	 */
 	public void projectChanged(IResourceDelta delta) {
-		if (delta.getKind() == IResourceDelta.OPEN)
-			if (cachedModel == null)
-				cachedModel = getModuleStructuralModelForRead(this);
+		if (delta.getKind() == IResourceDelta.OPEN) {
+			if (cachedWriteHandle == null)
+				cachedWriteHandle = getModuleStructuralModelForWrite(this);
+			if (cachedReadHandle == null)
+				cachedReadHandle = getModuleStructuralModelForRead(this);
+		}
 	
 	}
 
@@ -590,10 +631,19 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectClosed()
 	 */
 	public void projectClosed() {
+//		StringBuffer buffer = new StringBuffer("Disposing Module models for project: ");
+//		buffer.append(this.getProject());
+//		System.out.println(buffer.toString());
 		this.emfContext = null;
-		if (cachedModel != null) {
-			cachedModel.dispose();
-			cachedModel = null;
+		if (cachedWriteHandle != null) {
+			if (cachedWriteHandle.isDirty())
+				cachedWriteHandle.saveIfNecessary(this);
+			cachedWriteHandle.dispose();
+			cachedWriteHandle = null;
+		}
+		if (cachedReadHandle != null) {
+			cachedReadHandle.dispose();
+			cachedReadHandle = null;
 		}
 	}
 
