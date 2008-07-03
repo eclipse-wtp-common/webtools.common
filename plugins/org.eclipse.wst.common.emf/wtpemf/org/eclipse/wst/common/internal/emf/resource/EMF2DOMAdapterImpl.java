@@ -481,8 +481,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getExistingAdapter(value, EMF2DOMAdapter.ADAPTER_CLASS);
 		if (adapter != null) {
 			// Remove the adapter from BOTH the MOF Object and the DOM Nodes
-			value.eAdapters().remove(adapter);
 			removeAdapters(adapter.getNode());
+			value.eAdapters().remove(adapter);
 		}
 
 		EStructuralFeature feature = translator.getFeature();
@@ -607,8 +607,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	protected EMF2DOMAdapter getExistingAdapter(EObject refObject) {
 		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getExistingAdapter(refObject, EMF2DOMAdapter.ADAPTER_CLASS);
 		if (adapter != null && adapter.isMOFProxy()) {
-			refObject.eAdapters().remove(adapter);
 			removeDOMAdapter(adapter.getNode(), adapter);
+			refObject.eAdapters().remove(adapter);
 			adapter = null;
 		}
 		return adapter;
@@ -702,6 +702,12 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Remove the DOM adapters from the node AND all its child nodes, recursively.
 	 */
 	public void removeAdapters(Node node) {
+		NodeList nl = node.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			removeAdapters(n);
+		}
+		
 		EMF2DOMAdapter adapter = primGetExistingAdapter(node);
 		if (adapter != null) {
 			// Remove the adapter from both the DOM node and the MOF Object.
@@ -711,12 +717,6 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 				if (localTarget != null)
 					localTarget.eAdapters().remove(adapter);
 			}
-		}
-
-		NodeList nl = node.getChildNodes();
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node n = nl.item(i);
-			removeAdapters(n);
 		}
 	}
 
@@ -802,8 +802,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getAdapter(mofObject.eAdapters(), EMF2DOMAdapter.ADAPTER_CLASS);
 
 		if (adapter != null && adapter.isMOFProxy()) {
-			mofObject.eAdapters().remove(adapter);
 			removeAdapters(adapter.getNode());
+			mofObject.eAdapters().remove(adapter);
 			adapter = null;
 		}
 		if (adapter == null)
