@@ -212,7 +212,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		public GraphUpdateJob() {
 			super("Graph Update Job");
 			setSystem(true);
-			setRule(null);
+			//[Bug 238685] need to lock on workspace to avoid dead lock
+			setRule(ResourcesPlugin.getWorkspace().getRoot());
 		}
 
 		public boolean belongsTo(Object family) {
