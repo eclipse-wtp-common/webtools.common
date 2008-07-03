@@ -19,8 +19,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -36,6 +38,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.ui.IFacetWizardPage;
 import org.osgi.framework.Bundle;
@@ -113,6 +116,7 @@ public final class ProjectFacetsUiManagerImpl
      * @deprecated
      */
     
+    @SuppressWarnings( "unchecked" )
     public static List getWizardPages( final Action.Type actionType,
                                        final IProjectFacetVersion fv )
     {
@@ -162,7 +166,7 @@ public final class ProjectFacetsUiManagerImpl
         
         try
         {
-            final Class cl = bundle.loadClass( clname );
+            final Class<?> cl = bundle.loadClass( clname );
             return cl.newInstance();
         }
         catch( Exception e )
@@ -365,7 +369,7 @@ public final class ProjectFacetsUiManagerImpl
                 final String cid = config.getAttribute( ATTR_CATEGORY );
                 final String rct = config.getAttribute( ATTR_RUNTIME_COMPONENT_TYPE );
                 
-                final Object target;
+                final Set<Object> targets = new HashSet<Object>();
                 
                 if( fid != null )
                 {
@@ -380,7 +384,7 @@ public final class ProjectFacetsUiManagerImpl
                         break;
                     }
                     
-                    target = ProjectFacetsManager.getProjectFacet( fid );
+                    targets.add( ProjectFacetsManager.getProjectFacet( fid ) );
                 }
                 else if( cid != null )
                 {
@@ -395,7 +399,7 @@ public final class ProjectFacetsUiManagerImpl
                         break;
                     }
                     
-                    target = ProjectFacetsManager.getCategory( cid );
+                    targets.add( ProjectFacetsManager.getCategory( cid ) );
                 }
                 else if( rct != null )
                 {
@@ -410,7 +414,24 @@ public final class ProjectFacetsUiManagerImpl
                         break;
                     }
                     
-                    target = RuntimeManager.getRuntimeComponentType( rct );
+                    final IRuntimeComponentType type = RuntimeManager.getRuntimeComponentType( rct );
+                    final String vexpr = config.getAttribute( ATTR_VERSION );
+                    
+                    if( vexpr == null )
+                    {
+                        targets.addAll( type.getVersions() );
+                    }
+                    else
+                    {
+                        try
+                        {
+                            targets.addAll( type.getVersions( vexpr ) );
+                        }
+                        catch( Exception e )
+                        {
+                            FacetUiPlugin.log( e );
+                        }
+                    }
                 }
                 else
                 {
@@ -441,7 +462,10 @@ public final class ProjectFacetsUiManagerImpl
                     final ImageDescriptor imgdesc
                         = ImageDescriptor.createFromURL( url );
                     
-                    icons.put( target, imgdesc );
+                    for( Object target : targets )
+                    {
+                        icons.put( target, imgdesc );
+                    }
                 }
             }
         }

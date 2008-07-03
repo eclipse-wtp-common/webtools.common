@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>What's New for 2.0?</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="format.css">
+</head>
+
+<body>
+<p class="ueberschrift">What's New for 3.0.1?</p>
+
+<p>This document describes the API changes that have been made in the Faceted Project Framework for 
+the WTP 3.0.1 release. Both Java API and extension point changes are covered. All API that was 
+deprecated in this release is still supported, but clients are advised to switch to non-deprecated 
+alternatives as soon as feasible.</p>
+
+<ol>
+  <li><a href="#separate-icons">Separate Icons for Different Versions of a Runtime Component Type</a></li>
+  <li><a href="#rcv-adaptable">IRuntimeComponentVersion Extends IAdaptable</a></li>
+</ol>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#separate-icons">1. Separate Icons for Different Versions of a Runtime Component Type</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The <code>images</code> extension point now supports a <code>version</code> attribute when used
+together with <code>runtime-component-type</code> attribute. This allows separate icons to be used
+for different versions of the same runtime component type.</p>  
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#rcv-adaptable">2. IRuntimeComponentVersion Extends IAdaptable</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>IRuntimeComponentVersion interface now extends platform's IAdaptable interface.</p>
+
+</body>
+</html>

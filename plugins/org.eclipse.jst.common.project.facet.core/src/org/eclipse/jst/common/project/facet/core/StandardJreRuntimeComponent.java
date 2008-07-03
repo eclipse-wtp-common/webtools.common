@@ -63,19 +63,19 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_6_0;
         } 
-        else if( jvmver.startsWith( "1.3" ) )
+        else if( jvmver.startsWith( "1.3" ) ) //$NON-NLS-1$
         {
             rcv = StandardJreRuntimeComponent.VERSION_1_3;
         }
-        else if( jvmver.startsWith( "1.4" ) )
+        else if( jvmver.startsWith( "1.4" ) ) //$NON-NLS-1$
         {
             rcv = StandardJreRuntimeComponent.VERSION_1_4;
         }
-        else if( jvmver.startsWith( "1.5" ) || jvmver.startsWith( "5.0" ) )
+        else if( jvmver.startsWith( "1.5" ) || jvmver.startsWith( "5.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
         {
             rcv = StandardJreRuntimeComponent.VERSION_5_0;
         }
-        else if( jvmver.startsWith( "1.6" ) || jvmver.startsWith( "6.0" ) )
+        else if( jvmver.startsWith( "1.6" ) || jvmver.startsWith( "6.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
         {
             rcv = StandardJreRuntimeComponent.VERSION_6_0;
         }

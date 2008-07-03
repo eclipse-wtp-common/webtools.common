@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -108,9 +109,6 @@ import org.osgi.service.prefs.Preferences;
 
 public final class ClasspathHelper
 {
-    private static final String PLUGIN_ID
-        = "org.eclipse.jst.common.project.facet.core";
-    
     private static final Object SYSTEM_OWNER = new Object();
     
     private ClasspathHelper() {}
@@ -223,7 +221,7 @@ public final class ClasspathHelper
         catch( BackingStoreException e )
         {
             final IStatus st
-                = new Status( IStatus.ERROR, PLUGIN_ID, 0, 
+                = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
                               Resources.failedWritingPreferences, e );
             
             throw new CoreException( st );
@@ -293,7 +291,7 @@ public final class ClasspathHelper
         catch( BackingStoreException e )
         {
             final IStatus st
-                = new Status( IStatus.ERROR, PLUGIN_ID, 0, 
+                = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
                               Resources.failedWritingPreferences, e );
             
             throw new CoreException( st );
@@ -343,15 +341,15 @@ public final class ClasspathHelper
             final String key = keys[ i ];
             final Preferences node = root.node( key );
             
-            final String owners = node.get( "owners", null );
-            final String[] split = owners.split( ";" );
+            final String owners = node.get( "owners", null ); //$NON-NLS-1$
+            final String[] split = owners.split( ";" ); //$NON-NLS-1$
             final Set set = new HashSet();
             
             for( int j = 0; j < split.length; j++ )
             {
                 final String segment = split[ j ];
                 
-                if( segment.equals( "#system#" ) )
+                if( segment.equals( "#system#" ) ) //$NON-NLS-1$
                 {
                     set.add( SYSTEM_OWNER );
                 }
@@ -403,7 +401,7 @@ public final class ClasspathHelper
                 
                 if( owner == SYSTEM_OWNER )
                 {
-                    buf.append( "#system#" );
+                    buf.append( "#system#" ); //$NON-NLS-1$
                 }
                 else
                 {
@@ -417,7 +415,7 @@ public final class ClasspathHelper
             }
 
             final Preferences node = root.node( encode( path ) );
-            node.put( "owners", buf.toString() );
+            node.put( "owners", buf.toString() ); //$NON-NLS-1$
         }
         
         root.flush();
@@ -427,8 +425,8 @@ public final class ClasspathHelper
     private static Preferences getPreferencesNode( final IProject project )
     {
         final ProjectScope scope = new ProjectScope( project );
-        final IEclipsePreferences pluginRoot = scope.getNode( PLUGIN_ID );
-        return pluginRoot.node( "classpath.helper" );
+        final IEclipsePreferences pluginRoot = scope.getNode( FacetCorePlugin.PLUGIN_ID );
+        return pluginRoot.node( "classpath.helper" ); //$NON-NLS-1$
     }
     
     private static IProjectFacetVersion parseFeatureVersion( final String str )
@@ -442,12 +440,12 @@ public final class ClasspathHelper
     
     private static String encode( final IPath path )
     {
-        return path.toString().replaceAll( "/", "::" );
+        return path.toString().replaceAll( "/", "::" ); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     private static IPath decode( final String path )
     {
-        return new Path( path.replaceAll( "::", "/" ) );
+        return new Path( path.replaceAll( "::", "/" ) ); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     private static final class Resources

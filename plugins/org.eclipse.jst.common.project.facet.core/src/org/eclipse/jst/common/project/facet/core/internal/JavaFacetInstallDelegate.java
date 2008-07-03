@@ -66,13 +66,13 @@ public final class JavaFacetInstallDelegate
             for( IPath srcFolderPath : config.getSourceFolders() )
             {
                 final IFolder folder = project.getFolder( srcFolderPath );
-                mkdirs( folder );
+                mkdirs( folder, false );
                 
                 cp.add( JavaCore.newSourceEntry( folder.getFullPath() ) );
             }
             
             final IFolder defOutputFolder = project.getFolder( config.getDefaultOutputFolder() );
-            mkdirs( defOutputFolder );
+            mkdirs( defOutputFolder, true );
 
             // Add the java nature. This will automatically add the builder.
 
@@ -127,7 +127,8 @@ public final class JavaFacetInstallDelegate
         }
     }
     
-    private static void mkdirs( final IFolder folder )
+    private static void mkdirs( final IFolder folder,
+                                final boolean isDerived )
     
         throws CoreException
         
@@ -138,10 +139,11 @@ public final class JavaFacetInstallDelegate
             
             if( parent instanceof IFolder )
             {
-                mkdirs( (IFolder) parent );
+                mkdirs( (IFolder) parent, isDerived );
             }
             
             folder.create( true, true, null );
+            folder.setDerived( isDerived );
         }
     }
 

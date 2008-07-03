@@ -22,10 +22,9 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.common.project.facet.core.IClasspathProvider;
+import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.jst.common.project.facet.core.StandardJreRuntimeComponent;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
 /**
@@ -37,8 +36,6 @@ public final class StandardJreClasspathProvider
     implements IClasspathProvider 
     
 {
-	private static final IProjectFacet JAVA_FACET = ProjectFacetsManager.getProjectFacet("jst.java");
-
 	private IRuntimeComponent rc;
 
 	public StandardJreClasspathProvider( final IRuntimeComponent rc ) 
@@ -48,7 +45,7 @@ public final class StandardJreClasspathProvider
 
 	public List<IClasspathEntry> getClasspathEntries( final IProjectFacetVersion fv ) 
 	{
-		if( fv.getProjectFacet() == JAVA_FACET ) 
+		if( fv.getProjectFacet() == JavaFacet.FACET ) 
 		{
 		    final IVMInstall vmInstall = getVMInstall();
 		    

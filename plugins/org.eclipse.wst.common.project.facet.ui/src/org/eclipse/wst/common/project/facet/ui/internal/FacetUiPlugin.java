@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -30,6 +31,9 @@ public final class FacetUiPlugin
 {
     public static final String PLUGIN_ID 
         = "org.eclipse.wst.common.project.facet.ui"; //$NON-NLS-1$
+    
+    private static final String TRACING_PROP_PAGE_ACTION_CONFIG_VALIDATION
+        = PLUGIN_ID + "/propPage/actionConfigValidation"; //$NON-NLS-1$
     
     private static FacetUiPlugin plugin;
     private static final Set<String> messagesLogged = new HashSet<String>();
@@ -106,6 +110,19 @@ public final class FacetUiPlugin
                                              final Exception e )
     {
         return new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID, 0, msg, e );
+    }
+    
+    public static boolean isTracingPropPageActionConfigValidation()
+    {
+        return checkDebugOption( TRACING_PROP_PAGE_ACTION_CONFIG_VALIDATION );
+    }
+    
+    private static boolean checkDebugOption( final String debugOption )
+    {
+        final String optionValue = Platform.getDebugOption( debugOption );
+        
+        return optionValue == null 
+               ? false : Boolean.valueOf( optionValue ).equals( Boolean.TRUE );
     }
     
 }

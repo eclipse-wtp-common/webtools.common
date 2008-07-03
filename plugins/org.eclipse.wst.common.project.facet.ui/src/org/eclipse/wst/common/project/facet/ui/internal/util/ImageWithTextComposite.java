@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -35,7 +36,7 @@ public final class ImageWithTextComposite
     
 {
     private final Label imageLabel;
-    private final Label textLabel;
+    private final Text textField;
     
     public ImageWithTextComposite( final Composite parent )
     {
@@ -50,8 +51,8 @@ public final class ImageWithTextComposite
         this.imageLabel = new Label( internalComposite, SWT.NONE );
         this.imageLabel.setLayoutData( gdvalign( gd(), SWT.TOP ) );
         
-        this.textLabel = new Label( internalComposite, SWT.WRAP );
-        this.textLabel.setLayoutData( gdhfill() );
+        this.textField = new Text( internalComposite, SWT.WRAP | SWT.READ_ONLY );
+        this.textField.setLayoutData( gdhfill() );
     }
     
     public void setImage( final Image image )
@@ -61,11 +62,11 @@ public final class ImageWithTextComposite
     
     public void setText( final String textLabel )
     {
-        this.textLabel.setText( textLabel );
+        this.textField.setText( textLabel );
     }
     
     public void setFont( final Font font )
     {
-        this.textLabel.setFont( font );
+        this.textField.setFont( font );
     }
 }

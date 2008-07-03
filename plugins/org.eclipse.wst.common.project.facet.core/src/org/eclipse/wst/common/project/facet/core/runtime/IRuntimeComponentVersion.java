@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.runtime;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 
 /**
@@ -34,7 +35,7 @@ import org.eclipse.wst.common.project.facet.core.IVersion;
 
 public interface IRuntimeComponentVersion
 
-    extends Comparable, IVersion
+    extends Comparable, IVersion, IAdaptable
     
 {
     /**

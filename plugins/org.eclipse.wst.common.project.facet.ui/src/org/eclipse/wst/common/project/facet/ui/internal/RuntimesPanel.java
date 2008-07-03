@@ -75,6 +75,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
 import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
@@ -288,9 +289,13 @@ public final class RuntimesPanel
         final Color infoBackgroundColor
             = parent.getDisplay().getSystemColor( SWT.COLOR_INFO_BACKGROUND );
         
+        final Color infoForegroundColor
+            = parent.getDisplay().getSystemColor( SWT.COLOR_INFO_FOREGROUND );
+        
         this.runtimeComponents = new TableViewer( this, SWT.BORDER );
         this.runtimeComponents.getTable().setLayoutData( gdhhint( gdhfill(), 50 ) );
         this.runtimeComponents.getTable().setBackground( infoBackgroundColor );
+        this.runtimeComponents.getTable().setForeground( infoForegroundColor );
         this.runtimeComponents.setContentProvider( new RuntimeComponentsContentProvider() );
         this.runtimeComponents.setLabelProvider( new RuntimeComponentsLabelProvider() );
         
@@ -687,6 +692,7 @@ public final class RuntimesPanel
             final IRuntime r = (IRuntime) element;
             final IRuntimeComponent rc = r.getRuntimeComponents().get( 0 );
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
+            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
             final IRuntime primary = getFacetedProjectWorkingCopy().getPrimaryRuntime();
             final boolean isPrimary = primary != null && primary.equals( r );
             final IStatus valResult = getRuntimeValidationAssistant().getValidationResult( r );
@@ -697,7 +703,7 @@ public final class RuntimesPanel
             if( image == null )
             {
                 final IDecorationsProvider decprov
-                    = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
+                    = (IDecorationsProvider) rcv.getAdapter( IDecorationsProvider.class );
 
                 final ImageDescriptor imgdesc
                     = new DecoratedRuntimeImageDescriptor( decprov.getIcon(), isPrimary, valResult );
@@ -852,16 +858,18 @@ public final class RuntimesPanel
 
             final IRuntimeComponent rc = (IRuntimeComponent) element;
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
+            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
             
-            Image image = this.imageRegistry.get( rct.getId() );
+            final String key = rct.getId() + ":" + rcv.getVersionString(); //$NON-NLS-1$
+            Image image = this.imageRegistry.get( key );
             
             if( image == null )
             {
                 final IDecorationsProvider decprov
-                    = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
+                    = (IDecorationsProvider) rcv.getAdapter( IDecorationsProvider.class );
                 
-                this.imageRegistry.put( rct.getId(), decprov.getIcon() );
-                image = this.imageRegistry.get( rct.getId() );
+                this.imageRegistry.put( key, decprov.getIcon() );
+                image = this.imageRegistry.get( key );
             }
 
             return image;

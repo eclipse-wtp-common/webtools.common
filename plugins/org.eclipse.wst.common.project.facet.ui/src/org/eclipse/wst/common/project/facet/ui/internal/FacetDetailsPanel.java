@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import static org.eclipse.jface.resource.JFaceResources.getFontRegistry;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhindent;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdvindent;
@@ -29,6 +28,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -36,6 +36,11 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.internal.Constraint;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetRef;
+import org.eclipse.wst.common.project.facet.ui.internal.constraints.ConstraintOperator;
+import org.eclipse.wst.common.project.facet.ui.internal.constraints.ConstraintUtil;
+import org.eclipse.wst.common.project.facet.ui.internal.constraints.GroupingConstraintOperator;
+import org.eclipse.wst.common.project.facet.ui.internal.constraints.MultiFacetConstraintOperator;
 import org.eclipse.wst.common.project.facet.ui.internal.util.ImageWithTextComposite;
 
 /**
@@ -47,11 +52,28 @@ public final class FacetDetailsPanel
     extends Composite
 
 {
+    private static final Comparator<ProjectFacetRef> FACET_REF_COMPARATOR 
+        = new Comparator<ProjectFacetRef>()
+    {
+        public int compare( final ProjectFacetRef x,
+                            final ProjectFacetRef y )
+        {
+            final String xLabel = x.getProjectFacet().getLabel();
+            final String yLabel = y.getProjectFacet().getLabel();
+            
+            return xLabel.compareTo( yLabel );
+        }
+    };
+
+    private final FacetsSelectionPanel facetsSelectionPanel;
+    
     public FacetDetailsPanel( final Composite parent,
                               final FacetsSelectionPanel facetsSelectionPanel,
                               final IProjectFacetVersion facet )
     {
         super( parent, SWT.NONE );
+        
+        this.facetsSelectionPanel = facetsSelectionPanel;
         
         setLayout( glmargins( gl( 1 ), 0, 0 ) );
         
@@ -67,33 +89,84 @@ public final class FacetDetailsPanel
         final Label separator = new Label( this, SWT.SEPARATOR | SWT.HORIZONTAL );
         separator.setLayoutData( gdhfill() );
 
-        final Label descLabel = new Label( this, SWT.WRAP );
-        descLabel.setLayoutData( gdhfill() );
-        descLabel.setText( facet.getProjectFacet().getDescription() );
+        final Text descTextField = new Text( this, SWT.WRAP | SWT.READ_ONLY );
+        descTextField.setLayoutData( gdhfill() );
+        descTextField.setText( facet.getProjectFacet().getDescription() );
         
         final IConstraint prunedConstraint 
             = Constraint.pruneConstraint( facet, fpjwc.getFixedProjectFacets() );
         
         if( prunedConstraint != null )
         {
-            final List<IConstraint> requirements = getRequiresConstraints( prunedConstraint );
+            final ConstraintOperator normalizedConstraint
+                = ConstraintUtil.normalize( ConstraintUtil.convert( prunedConstraint ) );
             
-            if( requirements != null )
+            final List<ConstraintOperator> topLevelOperators;
+            
+            if( normalizedConstraint.getType() == ConstraintOperator.Type.AND )
             {
-                final Label requiredFacetsLabel = new Label( this, SWT.NONE );
-                requiredFacetsLabel.setLayoutData( gdvindent( gdhfill(), 5 ) );
-                requiredFacetsLabel.setText( Resources.requiredFacetsLabel );
+                topLevelOperators = ( (GroupingConstraintOperator) normalizedConstraint ).getChildren();
+            }
+            else
+            {
+                topLevelOperators = Collections.singletonList( normalizedConstraint );
+            }
+
+            renderConstraints( this, topLevelOperators );
+        }
+    }
+    
+    private void renderConstraints( final Composite parent,
+                                    final List<ConstraintOperator> constraints )
+    {
+        for( ConstraintOperator op : constraints )
+        {
+            final ConstraintOperator.Type type = op.getType();
+            
+            if( op instanceof MultiFacetConstraintOperator )
+            {
+                final MultiFacetConstraintOperator mfop = (MultiFacetConstraintOperator) op;
+                final String labelText;
                 
-                final Composite requiredFacetsComposite = new Composite( this, SWT.NONE );
-                requiredFacetsComposite.setLayoutData( gdhindent( gdvindent( gdfill(), 5 ), 5 ) );
-                requiredFacetsComposite.setLayout( glspacing( glmargins( gl( 1 ), 0, 0 ), 0, 3 ) );
-                
-                for( IConstraint requirement : requirements )
+                if( type == ConstraintOperator.Type.REQUIRES_ALL )
                 {
-                    final IProjectFacet f = (IProjectFacet) requirement.getOperand( 0 );
+                    labelText = Resources.requiresAllFacetsLabel;
+                }
+                else if( type == ConstraintOperator.Type.REQUIRES_ONE )
+                {
+                    if( mfop.getProjectFacetRefs().size() == 1 )
+                    {
+                        labelText = Resources.requiresFacetLabel;
+                    }
+                    else
+                    {
+                        labelText = Resources.requiresOneOfFacetsLabel;
+                    }
+                }
+                else
+                {
+                    labelText = Resources.conflictingFacetsLabel;
+                }
+
+                final Text label = new Text( parent, SWT.NONE | SWT.READ_ONLY );
+                label.setLayoutData( gdvindent( gdhfill(), 5 ) );
+                label.setText( labelText );
+                
+                final Composite facetsComposite = new Composite( parent, SWT.NONE );
+                facetsComposite.setLayoutData( gdhindent( gdvindent( gdhfill(), 5 ), 5 ) );
+                facetsComposite.setLayout( glspacing( glmargins( gl( 1 ), 0, 0 ), 0, 3 ) );
+                
+                final List<ProjectFacetRef> sortedProjectFacetRefs 
+                    = new ArrayList<ProjectFacetRef>( mfop.getProjectFacetRefs() );
+                
+                Collections.sort( sortedProjectFacetRefs, FACET_REF_COMPARATOR );
+                
+                for( ProjectFacetRef requirement : sortedProjectFacetRefs )
+                {
+                    final IProjectFacet f = requirement.getProjectFacet();
+                    final IVersionExpr vexpr = requirement.getVersionExpr();
                     
                     final StringBuilder text = new StringBuilder();
-                    final IVersionExpr vexpr = (IVersionExpr) requirement.getOperand( 1 );
                     
                     text.append( f.getLabel() );
                     
@@ -104,71 +177,24 @@ public final class FacetDetailsPanel
                         text.append( vexpr.toDisplayString() );
                     }
                     
-                    final ImageWithTextComposite fLabel = new ImageWithTextComposite( requiredFacetsComposite );
+                    final ImageWithTextComposite fLabel = new ImageWithTextComposite( facetsComposite );
                     fLabel.setLayoutData( gdhfill() );
-                    fLabel.setImage( facetsSelectionPanel.getImage( f, false ) );
+                    fLabel.setImage( this.facetsSelectionPanel.getImage( f, false ) );
                     fLabel.setText( text.toString() );
                 }
             }
             else
             {
-            	final Label label = new Label( this, SWT.NONE );
-            	label.setText( Resources.constraintTooComplex );
-            	label.setLayoutData( gdvindent( gdhfill(), 4 ) );
+                final Label requiredFacetsLabel = new Label( parent, SWT.NONE );
+                requiredFacetsLabel.setLayoutData( gdhfill() );
+                requiredFacetsLabel.setText( op.getType().name() );
+                
+                final Composite composite = new Composite( parent, SWT.NONE );
+                composite.setLayoutData( gdhindent( gdhfill(), 5 ) );
+                composite.setLayout( glspacing( glmargins( gl( 1 ), 0, 0 ), 0, 3 ) );
+                
+                renderConstraints( composite, ( (GroupingConstraintOperator) op ).getChildren() );
             }
-        }
-    }
-    
-    private static List<IConstraint> getRequiresConstraints( final IConstraint constraint )
-    {
-        final List<IConstraint> requirements
-            = getRequiresConstraints( constraint, new ArrayList<IConstraint>() );
-        
-        if( requirements != null )
-        {
-            Collections.sort
-            ( 
-                requirements,
-                new Comparator<IConstraint>()
-                {
-                    public int compare( final IConstraint x,
-                                        final IConstraint y )
-                    {
-                        final String xLabel = ( (IProjectFacet) x.getOperand( 0 ) ).getLabel();
-                        final String yLabel = ( (IProjectFacet) y.getOperand( 0 ) ).getLabel();
-                        
-                        return xLabel.compareTo( yLabel );
-                    }
-                }
-            );
-        }
-        
-        return requirements;
-    }
-    
-    private static List<IConstraint> getRequiresConstraints( final IConstraint constraint,
-                                                             final List<IConstraint> requirements )
-    {
-        if( constraint.getType() == IConstraint.Type.AND )
-        {
-            for( Object operand : constraint.getOperands() )
-            {
-                if( getRequiresConstraints( (IConstraint) operand, requirements ) == null )
-                {
-                    return null;
-                }
-            }
-            
-            return requirements;
-        }
-        else if( constraint.getType() == IConstraint.Type.REQUIRES )
-        {
-            requirements.add( constraint );
-            return requirements;
-        }
-        else
-        {
-            return null;
         }
     }
     
@@ -177,8 +203,10 @@ public final class FacetDetailsPanel
         extends NLS
         
     {
-        public static String constraintTooComplex;
-        public static String requiredFacetsLabel;
+        public static String requiresFacetLabel;
+        public static String requiresAllFacetsLabel;
+        public static String requiresOneOfFacetsLabel;
+        public static String conflictingFacetsLabel;
         
         static
         {

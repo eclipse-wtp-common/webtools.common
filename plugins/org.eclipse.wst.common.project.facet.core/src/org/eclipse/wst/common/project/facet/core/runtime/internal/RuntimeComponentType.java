@@ -55,6 +55,7 @@ public final class RuntimeComponentType
         this.versions.add( ver.getVersionString(), ver );
     }
     
+    @SuppressWarnings( "unchecked" )
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );

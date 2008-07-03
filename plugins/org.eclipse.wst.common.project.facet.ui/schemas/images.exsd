@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.project.facet.ui">
+<schema targetNamespace="org.eclipse.wst.common.project.facet.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="images" name="Project Facet Images Extension Point"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Used for specifying the image that should be used with a facet, a category, or a runtime component type.
       </documentation>
@@ -12,6 +12,9 @@
 
    <element name="extension">
       <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
          <documentation>
             (no description available)
          </documentation>
@@ -39,9 +42,9 @@
                <documentation>
                   An optional name of the extension instance.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -80,9 +83,16 @@
                <documentation>
                   The relative path to the image within this plugin.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="resource"/>
-               </appInfo>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  This attribute is only applicable when specifying an image for a runtime component type. It specifies the version of the runtime component type that this image applies to. Multiple versions can be specified using version expression syntax. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. If omitted, the image applies to all versions of the runtime component type.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
@@ -90,9 +100,9 @@
 
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;p&gt;The following example associates images with two facets and a category.&lt;/p&gt;
 
@@ -109,9 +119,9 @@
 
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2005 BEA Systems, Inc. and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 

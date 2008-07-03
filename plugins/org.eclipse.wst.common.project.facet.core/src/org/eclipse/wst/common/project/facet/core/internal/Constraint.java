@@ -445,6 +445,34 @@ public final class Constraint
         return new MultiStatus( FacetCorePlugin.PLUGIN_ID, 0, children, 
                                 Resources.validationProblems, null );
     }
+    
+    public String toString()
+    {
+        final StringBuilder buf = new StringBuilder();
+        
+        buf.append( this.type.name() );
+        buf.append( "( " ); //$NON-NLS-1$
+        
+        boolean isFirst = true;
+        
+        for( Object operand : this.operands )
+        {
+            if( isFirst )
+            {
+                isFirst = false;
+            }
+            else
+            {
+                buf.append( ", " ); //$NON-NLS-1$
+            }
+            
+            buf.append( operand.toString() );
+        }
+        
+        buf.append( " )" ); //$NON-NLS-1$
+        
+        return buf.toString();
+    }
 
     private static final class Resources
     

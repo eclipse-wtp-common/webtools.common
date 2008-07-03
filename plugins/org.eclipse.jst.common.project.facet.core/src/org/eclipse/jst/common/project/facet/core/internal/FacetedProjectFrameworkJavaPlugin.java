@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.Status;
 
 public final class FacetedProjectFrameworkJavaPlugin 
 {
-    public static final String PLUGIN_ID = "org.eclipse.jst.common.project.facet.core";
+    public static final String PLUGIN_ID = "org.eclipse.jst.common.project.facet.core"; //$NON-NLS-1$
     
     private static final ILog platformLog
         = Platform.getLog( Platform.getBundle( PLUGIN_ID ) );

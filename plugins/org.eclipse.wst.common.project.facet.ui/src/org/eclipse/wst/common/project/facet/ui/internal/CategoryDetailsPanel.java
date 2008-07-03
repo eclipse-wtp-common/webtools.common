@@ -19,6 +19,7 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.ui.internal.util.ImageWithTextComposite;
 
@@ -48,9 +49,9 @@ public final class CategoryDetailsPanel
         final Label separator = new Label( this, SWT.SEPARATOR | SWT.HORIZONTAL );
         separator.setLayoutData( gdhfill() );
 
-        final Label descLabel = new Label( this, SWT.WRAP );
-        descLabel.setLayoutData( gdhfill() );
-        descLabel.setText( category.getDescription() );
+        final Text descTextField = new Text( this, SWT.WRAP | SWT.READ_ONLY );
+        descTextField.setLayoutData( gdhfill() );
+        descTextField.setText( category.getDescription() );
     }
     
 }

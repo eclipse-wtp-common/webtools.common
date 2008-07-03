@@ -19,6 +19,8 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.runOnDisplayThread;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
@@ -113,7 +115,7 @@ public final class FacetsPropertyPage
         this.topComposite.setLayoutData( gdfill() );
         this.topComposite.setLayout( glmargins( gl( 1 ), 0, 0, 0, 5 ) );
 
-        this.fpjwc = this.project.createWorkingCopy();
+        this.fpjwc = SharedWorkingCopyManager.getWorkingCopy( this.project );
         
         final FacetsSelectionPanel facetsSelectionPanel 
         	= new FacetsSelectionPanel( this.topComposite, this.fpjwc );
@@ -286,13 +288,14 @@ public final class FacetsPropertyPage
 		{
 			for( IFacetedProject.Action action : this.fpjwc.getProjectFacetActions() )
 			{
+			    final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                
 				if( ! configPagesAvailable )
 				{
 		            try
 		            {
 		            	final IFacetedProject.Action.Type actionType = action.getType();
-		    			final IProjectFacetVersion fv = action.getProjectFacetVersion();
-		                final IActionDefinition actiondef = fv.getActionDefinition( base, actionType );
+		    			final IActionDefinition actiondef = fv.getActionDefinition( base, actionType );
 		                
 		                if( ! ProjectFacetsUiManager.getWizardPages( actiondef.getId() ).isEmpty() )
 		                {
@@ -330,6 +333,7 @@ public final class FacetsPropertyPage
 	                        
 	                        if( result.getSeverity() == IStatus.ERROR )
 	                        {
+	                            traceActionConfigValidation( fv, result );
 	                        	errors = true;
 	                        }
 	                    }
@@ -353,6 +357,7 @@ public final class FacetsPropertyPage
 	                        
 	                        if( result.getSeverity() == IStatus.ERROR )
 	                        {
+                                traceActionConfigValidation( fv, result );
 	                        	errors = true;
 	                        }
 	                    }
@@ -463,7 +468,28 @@ public final class FacetsPropertyPage
 
     private void handleDisposeEvent()
     {
-    	this.fpjwc.dispose();
+        SharedWorkingCopyManager.releaseWorkingCopy( this.project );
+    }
+    
+    private void traceActionConfigValidation( final IProjectFacetVersion fv,
+                                              final IStatus result )
+    {
+        if( FacetUiPlugin.isTracingPropPageActionConfigValidation() )
+        {
+            System.out.println( fv.getProjectFacet().getId() + " : " + fv.getVersionString() ); //$NON-NLS-1$
+            System.out.println( result );
+            
+            final Throwable e = result.getException();
+            
+            if( e != null )
+            {
+                final StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter( sw );
+                e.printStackTrace( pw );
+                
+                System.out.println( sw.getBuffer().toString() );
+            }
+        }
     }
 
     private static final class Resources 

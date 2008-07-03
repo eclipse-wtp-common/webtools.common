@@ -84,7 +84,6 @@ public final class ActionDefinition
         return this.versionMatchExpr;
     }
     
-    @SuppressWarnings( "unchecked" )
     void setVersionExpr( final IVersionExpr expr )
     {
         this.versionMatchExpr = expr;

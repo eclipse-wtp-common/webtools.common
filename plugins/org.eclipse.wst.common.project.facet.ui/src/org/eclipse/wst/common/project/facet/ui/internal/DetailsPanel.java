@@ -25,7 +25,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
@@ -95,9 +95,9 @@ public final class DetailsPanel
             this.content = new Composite( this, SWT.NONE );
             this.content.setLayout( glmargins( gl( 1 ), 0, 0 ) );
             
-            final Label noSelectionLabel = new Label( this.content, SWT.WRAP );
-            noSelectionLabel.setLayoutData( gdhfill() );
-            noSelectionLabel.setText( Resources.noSelectionLabel );
+            final Text noSelectionTextField = new Text( this.content, SWT.WRAP | SWT.READ_ONLY );
+            noSelectionTextField.setLayoutData( gdhfill() );
+            noSelectionTextField.setText( Resources.noSelectionLabel );
         }
         else if( selection instanceof IProjectFacetVersion )
         {

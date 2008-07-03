@@ -55,6 +55,11 @@ public final class ProjectFacetRef
         return this.f;
     }
     
+    public IVersionExpr getVersionExpr()
+    {
+        return this.vexpr;
+    }
+    
     public boolean hasVersionExpr()
     {
         return ( this.vexpr != null );

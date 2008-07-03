@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
@@ -76,7 +77,7 @@ public final class RuntimeComponentVersion
         return (Versionable) this.type;
     }
 
-    public IAdapterFactory getAdapterFactory( final Class type )
+    public IAdapterFactory getAdapterFactory( final Class<?> type )
     
         throws CoreException
         
@@ -158,6 +159,12 @@ public final class RuntimeComponentVersion
         
     }
     
+    @SuppressWarnings( "unchecked" )
+    public Object getAdapter( final Class type )
+    {
+        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
+    }
+
     public String toString()
     {
         return this.type.getId() + " " + this.version; //$NON-NLS-1$

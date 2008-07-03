@@ -37,7 +37,7 @@
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 
       class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
-      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType">
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion">
       <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
     </factory>
   </extension>

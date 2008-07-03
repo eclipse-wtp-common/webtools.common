@@ -14,12 +14,8 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -77,7 +73,7 @@ public class RuntimesPropertyPage extends PropertyPage
                 return null;
             }
             
-            this.fpjwc = this.project.createWorkingCopy();
+            this.fpjwc = SharedWorkingCopyManager.getWorkingCopy( this.project );
             
             this.projectListener = new IFacetedProjectListener()
             {
@@ -149,53 +145,27 @@ public class RuntimesPropertyPage extends PropertyPage
     
     public boolean performOk() 
     {
-        final Set<IRuntime> targeted = this.fpjwc.getTargetedRuntimes();
-        final IRuntime primary = this.fpjwc.getPrimaryRuntime();
-        
-        if( ! this.project.getTargetedRuntimes().equals( targeted ) ||
-            ! equals( this.project.getPrimaryRuntime(), primary ) )
+        final Runnable op = new Runnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            public void run()
             {
-                public void run( final IProgressMonitor monitor )
-                
-                    throws CoreException
-                    
+                try
                 {
-                    final IFacetedProject fpj = RuntimesPropertyPage.this.project;
-                    fpj.setTargetedRuntimes( targeted, null );
-                    
-                    if( primary != null )
-                    {
-                        fpj.setPrimaryRuntime( primary, null );
-                    }
+                    RuntimesPropertyPage.this.fpjwc.commitChanges( null );
                 }
-            };
-            
-            final Runnable op = new Runnable()
-            {
-                public void run()
+                catch( CoreException e )
                 {
-                    final IWorkspace ws = ResourcesPlugin.getWorkspace();
+                    final IStatus st = e.getStatus();
                     
-                    try
-                    {
-                        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-                    }
-                    catch( CoreException e )
-                    {
-                        final IStatus st = e.getStatus();
-                        
-                        ErrorDialog.openError( getShell(), Resources.errDlgTitle,
-                                               st.getMessage(), st );
-                        
-                        FacetUiPlugin.log( st );
-                    }
+                    ErrorDialog.openError( getShell(), Resources.errDlgTitle,
+                                           st.getMessage(), st );
+                    
+                    FacetUiPlugin.log( st );
                 }
-            };
-            
-            BusyIndicator.showWhile( null, op );
-        }
+            }
+        };
+        
+        BusyIndicator.showWhile( null, op );
         
         return true;
     }
@@ -230,26 +200,9 @@ public class RuntimesPropertyPage extends PropertyPage
     private void handleDisposeEvent()
     {
         this.project.removeListener( this.projectListener );
-        this.fpjwc.dispose();
+        SharedWorkingCopyManager.releaseWorkingCopy( this.project );
     }
     
-    private static boolean equals( final IRuntime r1,
-                                   final IRuntime r2 )
-    {
-        if( r1 == null && r2 == null )
-        {
-            return true;
-        }
-        else if( r1 == null || r2 == null )
-        {
-            return false;
-        }
-        else
-        {
-            return r1.equals( r2 );
-        }
-    }
-
     private static GridData gdfill()
     {
         return new GridData( SWT.FILL, SWT.FILL, true, true );

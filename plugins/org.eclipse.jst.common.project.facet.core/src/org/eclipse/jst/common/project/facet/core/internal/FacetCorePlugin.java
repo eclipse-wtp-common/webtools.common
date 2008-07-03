@@ -60,14 +60,14 @@ public final class FacetCorePlugin
     
     public static String getJavaSrcFolder(){
     	String srcFolder = FacetCorePlugin.getDefault().getPluginPreferences().getString(PROD_PROP_SOURCE_FOLDER_LEGACY);
-    	if( srcFolder == null || srcFolder.equals("") ){
+    	if( srcFolder == null || srcFolder.equals("") ){ //$NON-NLS-1$
     		if( Platform.getProduct() != null ){
     			srcFolder = Platform.getProduct().getProperty( PROD_PROP_SOURCE_FOLDER );
     		    if( srcFolder == null || srcFolder.equals("")){ //$NON-NLS-1$
     		    	srcFolder = Platform.getProduct().getProperty( PROD_PROP_SOURCE_FOLDER_LEGACY );
     		    }      			
     		}
-	    	if( srcFolder == null || srcFolder.equals("") ){
+	    	if( srcFolder == null || srcFolder.equals("") ){ //$NON-NLS-1$
 	    		srcFolder = DEFAULT_SOURCE_FOLDER;
 	    	}
 
