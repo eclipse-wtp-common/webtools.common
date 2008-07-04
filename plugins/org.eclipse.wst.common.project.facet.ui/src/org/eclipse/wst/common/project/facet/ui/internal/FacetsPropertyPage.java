@@ -57,6 +57,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -206,12 +207,23 @@ public final class FacetsPropertyPage
             
             if( te instanceof CoreException )
             {
-                final IStatus st = ( (CoreException) te ).getStatus();
+                IStatus st = ( (CoreException) te ).getStatus();
+                final String msg = st.getMessage();
+
+                if( ! ( te instanceof FacetedProjectFrameworkException ) ||
+                    ! ( (FacetedProjectFrameworkException) te ).isExpected() )
+                {
+                    FacetUiPlugin.log( st );
+                }
                 
-                ErrorDialog.openError( getShell(), Resources.errDlgTitle,
-                                       st.getMessage(), st );
+                final Throwable cause = st.getException();
                 
-                FacetUiPlugin.log( st );
+                if( cause instanceof CoreException )
+                {
+                    st = ( (CoreException) cause ).getStatus();
+                }
+
+                ErrorDialog.openError( getShell(), Resources.errDlgTitle, msg, st );
             }
             else
             {

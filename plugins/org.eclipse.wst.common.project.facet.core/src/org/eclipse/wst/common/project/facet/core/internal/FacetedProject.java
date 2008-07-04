@@ -55,6 +55,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -1420,7 +1421,16 @@ public final class FacetedProject
                 = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
                               msg, e );
 
-            throw new CoreException( status ); 
+            final FacetedProjectFrameworkException wrapper 
+                = new FacetedProjectFrameworkException( status );
+            
+            if( e instanceof FacetedProjectFrameworkException &&
+                ( (FacetedProjectFrameworkException) e ).isExpected() )
+            {
+                wrapper.setExpected( true );
+            }
+            
+            throw wrapper;
         }
         
         if( tracingDelegateCalls )

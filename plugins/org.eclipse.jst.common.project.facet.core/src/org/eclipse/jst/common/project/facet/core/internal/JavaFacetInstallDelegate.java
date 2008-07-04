@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.common.project.facet.core.JavaFacetInstallConfig;
-import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
@@ -36,7 +35,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 public final class JavaFacetInstallDelegate 
 
-    implements IDelegate 
+    extends JavaFacetDelegate 
     
 {
     public void execute( final IProject project, 
@@ -47,6 +46,7 @@ public final class JavaFacetInstallDelegate
         throws CoreException 
         
     {
+        validateEdit( project );
         
         final JavaFacetInstallConfig config = castToConfig( cfg );
 

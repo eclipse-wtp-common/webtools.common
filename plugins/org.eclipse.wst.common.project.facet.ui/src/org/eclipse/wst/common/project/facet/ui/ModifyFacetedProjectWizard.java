@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -364,12 +365,23 @@ public class ModifyFacetedProjectWizard
             
             if( te instanceof CoreException )
             {
-                final IStatus st = ( (CoreException) te ).getStatus();
+                IStatus st = ( (CoreException) te ).getStatus();
+                final String msg = st.getMessage();
+
+                if( ! ( te instanceof FacetedProjectFrameworkException ) ||
+                    ! ( (FacetedProjectFrameworkException) te ).isExpected() )
+                {
+                    FacetUiPlugin.log( st );
+                }
                 
-                ErrorDialog.openError( getShell(), Resources.errDlgTitle,
-                                       st.getMessage(), st );
+                final Throwable cause = st.getException();
                 
-                FacetUiPlugin.log( st );
+                if( cause instanceof CoreException )
+                {
+                    st = ( (CoreException) cause ).getStatus();
+                }
+
+                ErrorDialog.openError( getShell(), Resources.errDlgTitle, msg, st );
             }
             else
             {
@@ -415,6 +427,11 @@ public class ModifyFacetedProjectWizard
                 {
                     public void run()
                     {
+                        if( combo.isDisposed() )
+                        {
+                            return;
+                        }
+                        
                         synchronized( sortedPresets )
                         {
                             sortedPresets.clear();

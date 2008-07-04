@@ -90,6 +90,10 @@
       <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
     </action>
 
+    <action facet="jst.java" type="uninstall">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUninstallDelegate"/>
+    </action>
+
     <action facet="jst.java" type="version-change">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate"/>
     </action>

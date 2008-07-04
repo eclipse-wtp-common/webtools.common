@@ -341,24 +341,28 @@ public final class ClasspathHelper
             final String key = keys[ i ];
             final Preferences node = root.node( key );
             
-            final String owners = node.get( "owners", null ); //$NON-NLS-1$
-            final String[] split = owners.split( ";" ); //$NON-NLS-1$
             final Set set = new HashSet();
+            final String owners = node.get( "owners", null ); //$NON-NLS-1$
             
-            for( int j = 0; j < split.length; j++ )
+            if( owners != null )
             {
-                final String segment = split[ j ];
+                final String[] split = owners.split( ";" ); //$NON-NLS-1$
                 
-                if( segment.equals( "#system#" ) ) //$NON-NLS-1$
+                for( int j = 0; j < split.length; j++ )
                 {
-                    set.add( SYSTEM_OWNER );
-                }
-                else
-                {
-                    final IProjectFacetVersion fv 
-                        = parseFeatureVersion( segment );
+                    final String segment = split[ j ];
                     
-                    set.add( fv );
+                    if( segment.equals( "#system#" ) ) //$NON-NLS-1$
+                    {
+                        set.add( SYSTEM_OWNER );
+                    }
+                    else
+                    {
+                        final IProjectFacetVersion fv 
+                            = parseFeatureVersion( segment );
+                        
+                        set.add( fv );
+                    }
                 }
             }
             
