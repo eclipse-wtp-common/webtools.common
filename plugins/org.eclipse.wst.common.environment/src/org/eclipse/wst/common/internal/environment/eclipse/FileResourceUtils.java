@@ -7,6 +7,9 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ * yyyymmdd bug      Email and other contact information
+ * -------- -------- -----------------------------------------------------------
+ * 20080711   240408 rkklai@ca.ibm.com - Raymond Lai, support case-insensitive platform makeFile when a file with variant case exists
  *******************************************************************************/
 package org.eclipse.wst.common.internal.environment.eclipse;
 
@@ -15,11 +18,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Vector;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -31,8 +36,8 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.environment.Choice;
-import org.eclipse.wst.common.environment.StatusException;
 import org.eclipse.wst.common.environment.IStatusHandler;
+import org.eclipse.wst.common.environment.StatusException;
 
 
 
@@ -490,61 +495,80 @@ public final class FileResourceUtils
   // The container must already exist.
   //
  private static IFile makeFile (
-    IContainer       parent,
-    String           fileName,
-    InputStream      inputStream,
-    IStatusHandler    statusHandler )
- 
-    throws CoreException
-  {
-    IResource child  = parent.findMember(fileName);
-    
-    if( child != null )
-    {
-      if( child.getType() == IResource.FILE )
-      {        
-        //We have permission to overwrite so check if file is read-only
-        if( child.getResourceAttributes().isReadOnly() )
-        {
-          IFile[] files = new IFile[1];
-          files[0] = (IFile)child;
-          
-          IStatus status = getWorkspace().validateEdit(files,null);
-          
-          try
-          {
-            statusHandler.report( status );
-          }
-          catch( StatusException exc )
-          {
-            return null;
-          }
-        }
+		 IContainer       parent,
+		 String           fileName,
+		 InputStream      inputStream,
+		 IStatusHandler    statusHandler )
 
-        //Change the contents of the existing file.
-        IFile file = parent.getFile( new Path(fileName) );
-        file.setContents( inputStream, true, true, null );
-        
-        return file;
-      
-      }
-      else
-      {
-        throw new CoreException( 
-          new Status( IStatus.ERROR,
-                      "ResourceUtils",
-                      0, 
-				      NLS.bind( Messages.MSG_ERROR_RESOURCE_NOT_FILE, parent.getFullPath().append(fileName)),
-					  null ) );
-      }
-    }
-    else
-    {
-      //Create a new file.
-      IFile file = parent.getFile( new Path(fileName) );
-      file.create( inputStream, true, null);
-      
-      return file;
-    }
-  }
+ throws CoreException
+ {
+	 IFile file = parent.getFile( new Path(fileName) );
+
+	 // create the file if it doesn't exist
+	 if (!file.exists()) {
+		 try {
+			 file.create( inputStream, true, null);    
+			 return file;
+		 } catch (CoreException coreException) {
+			 // this error only happens in a case-insensitive file system; so ignore the cases.
+			 if (coreException.getStatus().getCode() == IResourceStatus.CASE_VARIANT_EXISTS) {
+				 boolean foundIgnoringCase = false;
+
+				 for (IResource resource : parent.members()) {
+					 if (resource.getName().equalsIgnoreCase(fileName)) {
+						 // found the file
+						 foundIgnoringCase = true;
+						 fileName = resource.getName();
+						 file = parent.getFile( new Path(fileName));
+						 break;
+					 }
+				 }
+
+				 // can't find the file causing the CASE_VARIANT_EXISTS exception; throw the exception
+				 if (!foundIgnoringCase)
+					 throw coreException;
+			 } else {
+				 // throw other exceptions
+				 throw coreException;
+			 }
+		 }
+	 }
+
+	 // file exists; overwrite the existing file
+	 if( file.getType() == IResource.FILE )
+	 {        
+		 //We have permission to overwrite so check if file is read-only
+		 if( file.getResourceAttributes().isReadOnly() )
+		 {
+			 IFile[] files = new IFile[1];
+			 files[0] = file;
+
+			 IStatus status = getWorkspace().validateEdit(files,null);
+
+			 try
+			 {
+				 statusHandler.report( status );
+			 }
+			 catch( StatusException exc )
+			 {
+				 return null;
+			 }
+		 }
+
+		 //Change the contents of the existing file.
+		 file.setContents( inputStream, true, true, null );
+
+		 return file;
+
+	 }
+	 else
+	 {
+		 throw new CoreException( 
+				 new Status( IStatus.ERROR,
+						 "ResourceUtils",
+						 0, 
+						 NLS.bind( Messages.MSG_ERROR_RESOURCE_NOT_FILE, parent.getFullPath().append(fileName)),
+						 null ) );
+	 }
+ }
 }
