@@ -338,6 +338,11 @@ public class ModelModifier {
 		return aHelper.createNewObjectFromFeature();
 	}
 
+	
+	/**
+	 * Used to remove an object on unset.  Makes the object a proxy  
+	 * on execute and redo commands.  Undo will remove the proxy.
+	 */
 	public class ProxyWrappingCommand extends AbstractCommand {
 		protected Command baseCommand = null;
 		protected EObject eObject = null;
@@ -368,6 +373,7 @@ public class ModelModifier {
 		}
 
 		public void redo() {
+			ExtendedEcoreUtil.becomeProxy(eObject, resource);
 			baseCommand.redo();
 		}
 
