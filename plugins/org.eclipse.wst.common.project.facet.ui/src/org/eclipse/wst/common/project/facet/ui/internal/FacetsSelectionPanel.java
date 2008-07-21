@@ -360,11 +360,11 @@ public final class FacetsSelectionPanel
             {
                 public void selectionChanged( final SelectionChangedEvent e )
                 {
-                    FacetsSelectionPanel.this.handleSelectionChangedEvent( e );
+                    FacetsSelectionPanel.this.handleSelectionChangedEvent();
                 }
             }
         );
-
+        
         this.treeViewer.addCheckStateListener
         (
             new ICheckStateListener()
@@ -547,6 +547,16 @@ public final class FacetsSelectionPanel
             IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED,
             IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED
         );
+        
+        // Select the first item in the table.
+        
+        if( this.tree.getItemCount() > 0 )
+        {
+            final TreeItem firstItem = this.tree.getItem( 0 );
+            this.treeViewer.setSelection( new StructuredSelection( firstItem.getData() ) );
+        }
+        
+        handleSelectionChangedEvent();
     }
     
     public IFacetedProjectWorkingCopy getFacetedProjectWorkingCopy()
@@ -796,9 +806,9 @@ public final class FacetsSelectionPanel
         }
     }
     
-    private void handleSelectionChangedEvent( final SelectionChangedEvent event )
+    private void handleSelectionChangedEvent()
     {
-        Object selection = ( (IStructuredSelection) event.getSelection() ).getFirstElement();
+        Object selection = ( (IStructuredSelection) this.treeViewer.getSelection() ).getFirstElement();
 
         if( selection != null && selection instanceof IProjectFacet )
         {
