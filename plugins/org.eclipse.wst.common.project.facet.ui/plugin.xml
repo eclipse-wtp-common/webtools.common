@@ -87,5 +87,8 @@
       category="org.eclipse.ui.Basic">
     </wizard>
   </extension>
+  <extension
+        point="org.eclipse.ui.activitySupport">
+  </extension>
 
 </plugin>

@@ -109,6 +109,13 @@ import org.osgi.service.prefs.Preferences;
 
 public final class ClasspathHelper
 {
+    /**
+     * @since 3.1
+     */
+    
+    public static final String METADATA_FILE_NAME 
+        = ".settings/org.eclipse.jst.common.project.facet.core.prefs"; //$NON-NLS-1$
+    
     private static final Object SYSTEM_OWNER = new Object();
     
     private ClasspathHelper() {}

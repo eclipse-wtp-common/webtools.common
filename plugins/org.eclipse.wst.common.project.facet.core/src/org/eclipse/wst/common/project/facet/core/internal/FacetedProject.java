@@ -55,6 +55,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
@@ -342,6 +343,26 @@ public final class FacetedProject
             if( ! st.isOK() )
             {
                 throw new CoreException( st );
+            }
+            
+            // Perform batched validateEdit call.
+            
+            final Set<IFile> files = new HashSet<IFile>();
+            files.add( this.f );
+            
+            for( Action action : actions )
+            {
+                final Object actionConfig = action.getConfig();
+                
+                if( actionConfig instanceof ActionConfig )
+                {
+                    files.addAll( ( (ActionConfig) actionConfig ).getValidateEditFiles() );
+                }
+            }
+            
+            if( ! validateEdit( files ) )
+            {
+                return false;
             }
             
             // Sort the actions into the order of execution.

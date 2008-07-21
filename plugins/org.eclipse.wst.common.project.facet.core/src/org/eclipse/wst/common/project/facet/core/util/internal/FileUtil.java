@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -56,6 +59,32 @@ public final class FileUtil
         {
             throw new CoreException( st );
         }
+    }
+    
+    public static boolean validateEdit( final Set<IFile> files )
+    {
+        final IFile[] filesArray = files.toArray( new IFile[ files.size() ] );
+        
+        Arrays.sort
+        ( 
+            filesArray, 
+            new Comparator<IFile>()
+            {
+                public int compare( final IFile file1, 
+                                    final IFile file2 )
+                {
+                    final String path1 = file1.getFullPath().toOSString();
+                    final String path2 = file2.getFullPath().toOSString();
+                    
+                    return path1.compareTo( path2 );
+                }
+            }
+        );
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        final IStatus st = ws.validateEdit( filesArray, IWorkspace.VALIDATE_PROMPT );
+        
+        return ( st.getSeverity() != IStatus.ERROR );
     }
     
     /**

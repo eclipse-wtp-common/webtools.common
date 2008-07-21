@@ -14,12 +14,18 @@ package org.eclipse.jst.common.project.facet.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin;
+import org.eclipse.jst.common.project.facet.core.internal.JavaFacetUtil;
+import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.util.EventListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 
@@ -28,6 +34,9 @@ import org.eclipse.wst.common.project.facet.core.util.IEventListener;
  */
 
 public class JavaFacetInstallConfig
+
+    extends ActionConfig
+    
 {
     private static final String PROD_PROP_OUTPUT_FOLDER = "defaultJavaOutputFolder"; //$NON-NLS-1$
     private static final String PROD_PROP_OUTPUT_FOLDER_LEGACY = "outputFolder"; //$NON-NLS-1$
@@ -94,6 +103,23 @@ public class JavaFacetInstallConfig
         this.defaultOutputFolder = new Path( outputFolder );
     }
     
+    @Override
+    public Set<IFile> getValidateEditFiles()
+    {
+        final Set<IFile> files = super.getValidateEditFiles();
+        final IProject project = getFacetedProjectWorkingCopy().getProject();
+        
+        if( project != null )
+        {
+            files.add( project.getFile( IProjectDescription.DESCRIPTION_FILE_NAME ) );
+            files.add( project.getFile( JavaFacetUtil.FILE_CLASSPATH ) );
+            files.add( project.getFile( JavaFacetUtil.FILE_JDT_CORE_PREFS ) );
+            files.add( project.getFile( ClasspathHelper.METADATA_FILE_NAME ) );
+        }
+        
+        return files;
+    }
+
     public List<IPath> getSourceFolders()
     {
         return this.sourceFoldersReadOnly;
@@ -167,6 +193,8 @@ public class JavaFacetInstallConfig
     {
         this.listeners.removeListener( listener );
     }
+    
+    
 
     private static boolean equal( final Object obj1,
                                   final Object obj2 )

@@ -16,10 +16,12 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jst.common.project.facet.core.ClasspathHelper;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 
@@ -41,10 +43,10 @@ public abstract class JavaFacetDelegate
         
         public RelevantFiles( final IProject project )
         {
-            this.dotProjectFile = project.getFile( ".project" ); //$NON-NLS-1$
-            this.dotClasspathFile = project.getFile( ".classpath" ); //$NON-NLS-1$
-            this.jdtCorePrefsFile = project.getFile( ".settings/org.eclipse.jdt.core.prefs" ); //$NON-NLS-1$
-            this.jstFacetCorePrefsFile = project.getFile( ".settings/org.eclipse.jst.common.project.facet.core.prefs" ); //$NON-NLS-1$
+            this.dotProjectFile = project.getFile( IProjectDescription.DESCRIPTION_FILE_NAME );
+            this.dotClasspathFile = project.getFile( JavaFacetUtil.FILE_CLASSPATH );
+            this.jdtCorePrefsFile = project.getFile( JavaFacetUtil.FILE_JDT_CORE_PREFS );
+            this.jstFacetCorePrefsFile = project.getFile( ClasspathHelper.METADATA_FILE_NAME );
         }
     }
     

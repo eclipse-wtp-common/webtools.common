@@ -92,10 +92,12 @@
 
     <action facet="jst.java" type="uninstall">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUninstallDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUninstallConfigFactory"/>
     </action>
 
     <action facet="jst.java" type="version-change">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeConfigFactory"/>
     </action>
 
   </extension>

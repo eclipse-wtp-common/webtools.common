@@ -11,6 +11,10 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
@@ -42,6 +46,20 @@ public abstract class ActionConfig
     public void setProjectFacetVersion( final IProjectFacetVersion fv )
     {
         this.fv = fv;
+    }
+    
+    /**
+     * Returns the set of files that might be modified during execution of this action. This
+     * allows calls to IWorkspace.validateEdit() to be batched, resulting in fewer prompts to the
+     * user. The default implementation returns an empty (modifiable) set.
+     * 
+     * @return the set of files that might be modified during the execution of the action
+     * @since 3.1
+     */
+    
+    public Set<IFile> getValidateEditFiles()
+    {
+        return new HashSet<IFile>();
     }
     
     public IStatus validate()

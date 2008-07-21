@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.common.project.facet.core.ClasspathHelper;
@@ -48,6 +49,9 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public final class JavaFacetUtil
 {
+    public static final String FILE_CLASSPATH = JavaProject.CLASSPATH_FILENAME;
+    public static final String FILE_JDT_CORE_PREFS = ".settings/org.eclipse.jdt.core.prefs"; //$NON-NLS-1$
+    
     public static String getCompilerLevel()
     {
         final IScopeContext context = new InstanceScope();

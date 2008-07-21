@@ -20,6 +20,7 @@ the WTP 3.1 release. Both Java API and extension point changes are covered.</p>
 
 <ol>
   <li><a href="#framework-exception">FacetedProjectFrameworkException</a></li>
+  <li><a href="#batching-validate-edit">Batching Validate Edit Calls</a></li>
 </ol>
 
 
@@ -46,6 +47,28 @@ interface org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkExcep
 </pre>
 </td></tr></table>
 
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#batching-validate-edit">2. Batching Validate Edit Calls</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>It is often desirable to batch IWorkspace.validateEdit() calls in order to reduce the number
+of prompts to the user. An API has been added to allow a facet action to specify the files that
+it intends to operate on. The framework will make a batched call to validateEdit prior to running 
+any of the actions.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">public abstract class ActionConfig
+{</font>    
+    public Set<IFile> getValidateEditFiles()
+    {
+        return new HashSet<IFile>();
+    }
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
 
 </body>
 </html>
