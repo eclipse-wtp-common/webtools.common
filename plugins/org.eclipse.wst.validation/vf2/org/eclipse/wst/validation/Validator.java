@@ -686,7 +686,12 @@ public static class V1 extends Validator {
 				files.add(wc.getPortableName(resource));
 				wc.setValidationFileURIs(files);
 			}
-			ValidatorLauncher.getLauncher().start(helper, v, reporter);
+			try {
+				ValidatorLauncher.getLauncher().start(helper, v, reporter);
+			}
+			finally {
+				helper.cleanup(reporter);
+			}
 			
 			vr.incrementError(reporter.getSeverityHigh());
 			vr.incrementWarning(reporter.getSeverityNormal());
