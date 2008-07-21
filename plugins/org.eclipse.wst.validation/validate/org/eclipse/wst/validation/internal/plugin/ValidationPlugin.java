@@ -130,8 +130,21 @@ public class ValidationPlugin extends Plugin {
 	 * @param e the throwable, this can be null in which case it is a nop.
 	 */
 	public void handleException(Throwable e){
+		handleException(e, IStatus.ERROR);
+	}
+	
+	/**
+	 * Write this exception to the log.
+	 * <p>
+	 * We are in the transition of moving to a new approach for localized messages. This is the new 
+	 * approach for exceptions.
+	 * 
+	 * @param e the throwable, this can be null in which case it is a nop.
+	 * @param severity the severity of the message. This must be one of the IStatus severities. 
+	 */
+	public void handleException(Throwable e, int severity){
 		if (e == null)return;
-		Status status = new Status(IStatus.ERROR, PLUGIN_ID, e.getLocalizedMessage(), e);
+		Status status = new Status(severity, PLUGIN_ID, e.getLocalizedMessage(), e);
 		getLog().log(status);
 	}
 	

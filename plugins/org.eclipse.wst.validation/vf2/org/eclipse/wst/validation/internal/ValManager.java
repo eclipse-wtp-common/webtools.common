@@ -775,7 +775,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			else if (valType == ValType.Manual)resource.setSessionProperty(StatusManual, vp);
 		}
 		catch (CoreException e){
-			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e, IStatus.WARNING);
 		}
 	}
 
