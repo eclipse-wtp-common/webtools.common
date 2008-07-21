@@ -50,6 +50,7 @@ import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
+import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -137,23 +138,6 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	}
 	
 	/**
-	 * Answer all the validators that are in effect for the given project.
-	 * <p>
-	 * Individual projects may override the global validation preference settings. If this is allowed and if
-	 * the project has it's own settings, then those validators are returned via this method.
-	 * </p>
-	 * <p>
-	 * The following approach is used. For version 1 validators, the validator is only returned if it
-	 * is defined to operate on this project type. This is the way that the previous version of the framework
-	 * did it. For version 2 validators, they are all returned.
-	 * </p>
-	 * @param project this may be null, in which case the global preferences are returned.
-	 */
-	public Validator[] getValidators(IProject project) throws ProjectUnavailableError {
-		return getValidators(project, true);
-	}
-	
-	/**
 	 * Answer all the validators for the given project.
 	 * <p>
 	 * Individual projects may override the global validation preference
@@ -176,17 +160,52 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 *            preferences do not allow project overrides then none of the
 	 *            project settings are used. Normal validation would set this to true.
 	 *            The properties page would set this to false.
+	 *            
+	 * @deprecated Use {@link #getValidators(IProject)} instead            
 	 */
 	public synchronized Validator[] getValidators(IProject project, boolean respectOverrideSettings) throws ProjectUnavailableError {
+		return getValidators(project);
+	}
+	
+	/**
+	 * Answer all the validators for the given project.
+	 * <p>
+	 * Individual projects may override the global validation preference
+	 * settings. If the project has it's own settings, then those validators are
+	 * returned via this method.
+	 * </p>
+	 * <p>
+	 * The following approach is used. For version 1 validators, the validator
+	 * is only returned if it is defined to operate on this project type. This
+	 * is the way that the previous version of the framework did it. For version
+	 * 2 validators, they are all returned.
+	 * </p>
+	 * 
+	 * @param project
+	 *            This may be null, in which case the global preferences are returned.
+	 */
+	public synchronized Validator[] getValidators(IProject project) throws ProjectUnavailableError {
 		Map<String,Validator> v2Vals = getV2Validators(project);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
 		for (Validator v : v2Vals.values())sorted.add(v);
 		
 		try {
 			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
-			for (ValidatorMetaData vmd : vc.getValidators()){
-				Validator v = Validator.create(vmd, vc, project);
-				sorted.add(v);
+			if (project == null){
+				// If the project is null we need to use this approach, since you can not use new ManualValidatorsOperation(null)
+				ValidatorMetaData[] vmds = vc.getValidators();
+				for (ValidatorMetaData vmd : vmds){
+					Validator v = Validator.create(vmd, vc, project);
+					sorted.add(v);
+				}
+			}
+			else {
+				ManualValidatorsOperation mvo = new ManualValidatorsOperation(project);
+				Set<ValidatorMetaData> vmds = mvo.getEnabledValidators();
+				for (ValidatorMetaData vmd : vmds){
+					Validator v = Validator.create(vmd, vc, project);
+					sorted.add(v);
+				}
 			}
 		}
 		catch (InvocationTargetException e){
