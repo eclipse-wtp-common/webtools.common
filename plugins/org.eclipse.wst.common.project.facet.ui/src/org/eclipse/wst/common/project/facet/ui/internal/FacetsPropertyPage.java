@@ -262,20 +262,12 @@ public final class FacetsPropertyPage
 		super.performDefaults();
 	}
 
-	@Override
-	public boolean isValid() 
-	{
-		return this.fpjwc.validate().getSeverity() != IStatus.ERROR;
-	}
-	
 	private void handleProjectModifiedEvent()
 	{
         final Runnable runnable = new Runnable()
         {
             public void run()
             {
-                updateApplyButton();
-                getContainer().updateButtons();
                 updateFurtherConfigHyperlink();
             }
         };
@@ -293,10 +285,13 @@ public final class FacetsPropertyPage
 		final Set<IProjectFacetVersion> base 
 			= this.fpjwc.getFacetedProject().getProjectFacets();
 		
-		boolean errors = false;
+		final boolean basicValidationErrorsPresent 
+		    = ( this.fpjwc.validate().getSeverity() == IStatus.ERROR );
+		
+		boolean actionConfigErrorsPresent = false;
 		boolean configPagesAvailable = false;
 		
-		if( this.fpjwc.validate().getSeverity() != IStatus.ERROR )
+		if( ! basicValidationErrorsPresent )
 		{
 			for( IFacetedProject.Action action : this.fpjwc.getProjectFacetActions() )
 			{
@@ -320,7 +315,7 @@ public final class FacetsPropertyPage
 		            }
 				}
 				
-				if( ! errors )
+				if( ! actionConfigErrorsPresent )
 				{
 	                final Object config = action.getConfig();
 	                
@@ -346,7 +341,7 @@ public final class FacetsPropertyPage
 	                        if( result.getSeverity() == IStatus.ERROR )
 	                        {
 	                            traceActionConfigValidation( fv, result );
-	                        	errors = true;
+	                        	actionConfigErrorsPresent = true;
 	                        }
 	                    }
 	                    
@@ -370,7 +365,7 @@ public final class FacetsPropertyPage
 	                        if( result.getSeverity() == IStatus.ERROR )
 	                        {
                                 traceActionConfigValidation( fv, result );
-	                        	errors = true;
+	                        	actionConfigErrorsPresent = true;
 	                        }
 	                    }
 	                }
@@ -397,14 +392,14 @@ public final class FacetsPropertyPage
 	        image.setBackground( infoBackgroundColor );
 	        
 	        final String imageType 
-	        	= ( errors ? ISharedImages.IMG_OBJS_ERROR_TSK : ISharedImages.IMG_OBJS_INFO_TSK );
+	        	= ( actionConfigErrorsPresent ? ISharedImages.IMG_OBJS_ERROR_TSK : ISharedImages.IMG_OBJS_INFO_TSK );
 	        
 	        image.setImage( sharedImages.getImage( imageType ) );
 
 	        final EnhancedHyperlink link = new EnhancedHyperlink( subComposite, SWT.NONE );
 	        link.setBackground( infoBackgroundColor );
 	
-			if( errors )
+			if( actionConfigErrorsPresent )
 			{
 				link.setText( Resources.furtherConfigRequired );
 			}
@@ -430,6 +425,8 @@ public final class FacetsPropertyPage
 		}
 		
 		this.topComposite.layout( true, true );
+		
+		setValid( ! basicValidationErrorsPresent && ! actionConfigErrorsPresent );
 	}
 	
 	private void handleFurtherConfigHyperlinkEvent()
