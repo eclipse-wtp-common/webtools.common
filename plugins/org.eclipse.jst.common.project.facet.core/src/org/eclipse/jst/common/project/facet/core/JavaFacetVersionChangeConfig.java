@@ -36,7 +36,7 @@ public class JavaFacetVersionChangeConfig
         
         files.add( project.getFile( JavaFacetUtil.FILE_CLASSPATH ) );
         files.add( project.getFile( JavaFacetUtil.FILE_JDT_CORE_PREFS ) );
-        files.add( project.getFile( ClasspathHelper.METADATA_FILE_NAME ) );
+        files.add( project.getFile( ClasspathHelper.LEGACY_METADATA_FILE_NAME ) );
         
         return files;
     }

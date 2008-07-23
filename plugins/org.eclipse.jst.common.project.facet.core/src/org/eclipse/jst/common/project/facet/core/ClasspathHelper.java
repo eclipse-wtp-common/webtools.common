@@ -14,24 +14,24 @@ package org.eclipse.jst.common.project.facet.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -107,16 +107,19 @@ import org.osgi.service.prefs.Preferences;
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
+@SuppressWarnings( "restriction" )
+
 public final class ClasspathHelper
 {
     /**
      * @since 3.1
      */
     
-    public static final String METADATA_FILE_NAME 
+    public static final String LEGACY_METADATA_FILE_NAME 
         = ".settings/org.eclipse.jst.common.project.facet.core.prefs"; //$NON-NLS-1$
     
     private static final Object SYSTEM_OWNER = new Object();
+    private static final String OWNER_PROJECT_FACETS_ATTR = "owner.project.facets"; //$NON-NLS-1$
     
     private ClasspathHelper() {}
     
@@ -140,9 +143,7 @@ public final class ClasspathHelper
         throws CoreException
         
     {
-        final IFacetedProject fproj 
-            = ProjectFacetsManager.create( project );
-    
+        final IFacetedProject fproj = ProjectFacetsManager.create( project );
         final IRuntime runtime = fproj.getPrimaryRuntime();
         
         if( runtime != null )
@@ -150,7 +151,7 @@ public final class ClasspathHelper
             final IClasspathProvider cpprov 
                 = (IClasspathProvider) runtime.getAdapter( IClasspathProvider.class );
             
-            final List cpentries = cpprov.getClasspathEntries( fv );
+            final List<IClasspathEntry> cpentries = cpprov.getClasspathEntries( fv );
             
             if( cpentries != null )
             {
@@ -175,64 +176,48 @@ public final class ClasspathHelper
     
     public static void addClasspathEntries( final IProject project,
                                             final IProjectFacetVersion fv,
-                                            final List cpentries )
+                                            final List<IClasspathEntry> cpentries )
     
         throws CoreException
         
     {
-        try
+        final IJavaProject jproj = JavaCore.create( project );
+        
+        convertLegacyMetadata( jproj );
+        
+        final List<IClasspathEntry> cp = getProjectClasspath( jproj );
+        
+        for( IClasspathEntry cpe : cpentries )
         {
-            final IJavaProject jproj = JavaCore.create( project );
-            final List cp = getClasspath( jproj );
-            boolean cpchanged = false;
-
-            final Map prefs = readPreferences( project );
+            IClasspathEntry existingClasspathEntry = null;
             
-            for( Iterator itr = cpentries.iterator(); itr.hasNext(); )
+            for( IClasspathEntry x : cp )
             {
-                final IClasspathEntry cpentry = (IClasspathEntry) itr.next();
-                final IPath path = cpentry.getPath();
-                
-                final boolean contains = cp.contains( cpentry );
-                
-                Set owners = (Set) prefs.get( path );
-                
-                if( owners == null )
+                if( x.getPath().equals( cpe.getPath() ) )
                 {
-                    owners = new HashSet();
-
-                    if( contains )
-                    {
-                        owners.add( SYSTEM_OWNER );
-                    }
-                    
-                    prefs.put( path, owners );
-                }
-                
-                owners.add( fv );
-                
-                if( ! contains )
-                {
-                    cp.add( cpentry );
-                    cpchanged = true;
+                    existingClasspathEntry = x;
+                    break;
                 }
             }
+
+            final Set<Object> owners = getOwners( existingClasspathEntry );
             
-            if( cpchanged )
+            owners.add( fv );
+            
+            if( existingClasspathEntry != null )
             {
-                setClasspath( jproj, cp );
+                final IClasspathEntry annotatedEntry = setOwners( existingClasspathEntry, owners );
+                final int existingIndex = cp.indexOf( existingClasspathEntry );
+                cp.set( existingIndex, annotatedEntry );
             }
-            
-            writePreferences( project, prefs );
+            else
+            {
+                final IClasspathEntry annotatedEntry = setOwners( cpe, owners );
+                cp.add( annotatedEntry );
+            }
         }
-        catch( BackingStoreException e )
-        {
-            final IStatus st
-                = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
-                              Resources.failedWritingPreferences, e );
-            
-            throw new CoreException( st );
-        }
+
+        setProjectClasspath( jproj, cp );
     }
     
     /**
@@ -250,197 +235,116 @@ public final class ClasspathHelper
         throws CoreException
         
     {
-        try
+        final IJavaProject jproj = JavaCore.create( project );
+        
+        convertLegacyMetadata( jproj );
+        
+        final List<IClasspathEntry> cp = getProjectClasspath( jproj );
+        boolean cpchanged = false;
+        
+        for( ListIterator<IClasspathEntry> itr = cp.listIterator(); itr.hasNext(); )
         {
-            final IJavaProject jproj = JavaCore.create( project );
-            final List cp = getClasspath( jproj );
-            boolean cpchanged = false;
-
-            final Map prefs = readPreferences( project );
+            final IClasspathEntry cpe = itr.next();
+            final Set<Object> owners = getOwners( cpe );
             
-            for( Iterator itr1 = prefs.entrySet().iterator(); itr1.hasNext(); )
+            if( owners.remove( fv ) )
             {
-                final Map.Entry entry = (Map.Entry) itr1.next();
-                final IPath path = (IPath) entry.getKey();
-                final Set owners = (Set) entry.getValue();
-                
-                if( owners.contains( fv ) )
+                if( owners.size() == 0 )
                 {
-                    owners.remove( fv );
-                    
-                    if( owners.size() == 0 )
-                    {
-                        itr1.remove();
-                        
-                        for( Iterator itr2 = cp.iterator(); itr2.hasNext(); )
-                        {
-                            final IClasspathEntry cpentry
-                                = (IClasspathEntry) itr2.next();
-                            
-                            if( cpentry.getPath().equals( path ) )
-                            {
-                                itr2.remove();
-                                cpchanged = true;
-                                break;
-                            }
-                        }
-                    }
+                    itr.remove();
                 }
+                else
+                {
+                    itr.set( setOwners( cpe, owners ) );
+                }
+                
+                cpchanged = true;
             }
-
-            if( cpchanged )
-            {
-                setClasspath( jproj, cp );
-            }
-            
-            writePreferences( project, prefs );
         }
-        catch( BackingStoreException e )
+
+        if( cpchanged )
         {
-            final IStatus st
-                = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
-                              Resources.failedWritingPreferences, e );
-            
-            throw new CoreException( st );
+            setProjectClasspath( jproj, cp );
         }
     }
     
-    private static List getClasspath( final IJavaProject jproj )
+    private static List<IClasspathEntry> getProjectClasspath( final IJavaProject jproj )
     
         throws CoreException
         
     {
-        final ArrayList list = new ArrayList();
-        final IClasspathEntry[] cp = jproj.getRawClasspath();
+        final List<IClasspathEntry> result = new ArrayList<IClasspathEntry>();
         
-        for( int i = 0; i < cp.length; i++ )
+        for( IClasspathEntry cpe : jproj.getRawClasspath() )
         {
-            list.add( cp[ i ] );
-        }
-        
-        return list;
-    }
-    
-    private static void setClasspath( final IJavaProject jproj,
-                                      final List cp )
-    
-        throws CoreException
-        
-    {
-        final IClasspathEntry[] newcp
-            = (IClasspathEntry[]) cp.toArray( new IClasspathEntry[ cp.size() ] );
-        
-        jproj.setRawClasspath( newcp, null );
-    }
-    
-    private static Map readPreferences( final IProject project )
-    
-        throws BackingStoreException
-        
-    {
-        final Preferences root = getPreferencesNode( project );
-        final Map result = new HashMap();
-        
-        final String[] keys = root.childrenNames();
-        
-        for( int i = 0; i < keys.length; i++ )
-        {
-            final String key = keys[ i ];
-            final Preferences node = root.node( key );
-            
-            final Set set = new HashSet();
-            final String owners = node.get( "owners", null ); //$NON-NLS-1$
-            
-            if( owners != null )
-            {
-                final String[] split = owners.split( ";" ); //$NON-NLS-1$
-                
-                for( int j = 0; j < split.length; j++ )
-                {
-                    final String segment = split[ j ];
-                    
-                    if( segment.equals( "#system#" ) ) //$NON-NLS-1$
-                    {
-                        set.add( SYSTEM_OWNER );
-                    }
-                    else
-                    {
-                        final IProjectFacetVersion fv 
-                            = parseFeatureVersion( segment );
-                        
-                        set.add( fv );
-                    }
-                }
-            }
-            
-            result.put( decode( key ), set );
+            result.add( cpe );
         }
         
         return result;
     }
     
-    private static void writePreferences( final IProject project,
-                                          final Map prefs )
+    private static void setProjectClasspath( final IJavaProject jproj,
+                                             final List<IClasspathEntry> cp )
     
-        throws BackingStoreException
+        throws CoreException
         
     {
-        final Preferences root = getPreferencesNode( project );
-        final String[] children = root.childrenNames();
+        jproj.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), null );
+    }
+    
+    private static String encodeOwnersString( final Set<Object> owners )
+    {
+        final StringBuilder buf = new StringBuilder();
         
-        for( int i = 0; i < children.length; i++ )
+        for( Object owner : owners )
         {
-            root.node( children[ i ] ).removeNode();
-        }
-        
-        for( Iterator itr1 = prefs.entrySet().iterator(); itr1.hasNext(); )
-        {
-            final Map.Entry entry = (Map.Entry) itr1.next();
-            final IPath path = (IPath) entry.getKey();
-            final Set owners = (Set) entry.getValue();
-            
-            final StringBuffer buf = new StringBuffer();
-            
-            for( Iterator itr2 = owners.iterator(); itr2.hasNext(); )
+            if( buf.length() > 0 ) 
             {
-                final Object owner = itr2.next();
-
-                if( buf.length() > 0 ) 
-                {
-                    buf.append( ';' );
-                }
-                
-                if( owner == SYSTEM_OWNER )
-                {
-                    buf.append( "#system#" ); //$NON-NLS-1$
-                }
-                else
-                {
-                    final IProjectFacetVersion fv 
-                        = (IProjectFacetVersion) owner;
-                    
-                    buf.append( fv.getProjectFacet().getId() );
-                    buf.append( ':' );
-                    buf.append( fv.getVersionString() );
-                }
+                buf.append( ';' );
             }
-
-            final Preferences node = root.node( encode( path ) );
-            node.put( "owners", buf.toString() ); //$NON-NLS-1$
+            
+            if( owner == SYSTEM_OWNER )
+            {
+                buf.append( "#system#" ); //$NON-NLS-1$
+            }
+            else
+            {
+                final IProjectFacetVersion fv 
+                    = (IProjectFacetVersion) owner;
+                
+                buf.append( fv.getProjectFacet().getId() );
+                buf.append( ':' );
+                buf.append( fv.getVersionString() );
+            }
         }
         
-        root.flush();
+        return buf.toString();
     }
     
-    
-    private static Preferences getPreferencesNode( final IProject project )
+    private static Set<Object> decodeOwnersString( final String str )
     {
-        final ProjectScope scope = new ProjectScope( project );
-        final IEclipsePreferences pluginRoot = scope.getNode( FacetCorePlugin.PLUGIN_ID );
-        return pluginRoot.node( "classpath.helper" ); //$NON-NLS-1$
+        final Set<Object> owners = new HashSet<Object>();
+        final String[] split = str.split( ";" ); //$NON-NLS-1$
+        
+        for( int j = 0; j < split.length; j++ )
+        {
+            final String segment = split[ j ];
+            
+            if( segment.equals( "#system#" ) ) //$NON-NLS-1$
+            {
+                owners.add( SYSTEM_OWNER );
+            }
+            else
+            {
+                final IProjectFacetVersion fv = decodeFacetVersion( segment );
+                owners.add( fv );
+            }
+        }
+        
+        return owners;
     }
     
-    private static IProjectFacetVersion parseFeatureVersion( final String str )
+    private static IProjectFacetVersion decodeFacetVersion( final String str )
     {
         final int colon = str.indexOf( ':' );
         final String id = str.substring( 0, colon );
@@ -448,28 +352,130 @@ public final class ClasspathHelper
         
         return ProjectFacetsManager.getProjectFacet( id ).getVersion( ver );
     }
-    
-    private static String encode( final IPath path )
+
+    private static Set<Object> getOwners( final IClasspathEntry cpe )
     {
-        return path.toString().replaceAll( "/", "::" ); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-    
-    private static IPath decode( final String path )
-    {
-        return new Path( path.replaceAll( "::", "/" ) ); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-    
-    private static final class Resources
-    
-        extends NLS
+        final Set<Object> owners = new HashSet<Object>();
         
-    {
-        public static String failedWritingPreferences;
-        
-        static
+        if( cpe != null )
         {
-            initializeMessages( ClasspathHelper.class.getName(), 
-                                Resources.class );
+            for( IClasspathAttribute attr : cpe.getExtraAttributes() )
+            {
+                if( attr.getName().equals( OWNER_PROJECT_FACETS_ATTR ) )
+                {
+                    owners.addAll( decodeOwnersString( attr.getValue() ) );
+                    break;
+                }
+            }
+            
+            if( owners.isEmpty() )
+            {
+                owners.add( SYSTEM_OWNER );
+            }
+        }
+        
+        return owners;
+    }
+    
+    private static IClasspathEntry setOwners( final IClasspathEntry cpe,
+                                              final Set<Object> owners )
+    {
+        if( owners.size() == 1 && owners.iterator().next() == SYSTEM_OWNER )
+        {
+            owners.clear();
+        }
+        
+        final String ownersString = ( owners.size() == 0 ? null : encodeOwnersString( owners ) );
+        return setOwners( cpe, ownersString );
+    }
+
+    private static IClasspathEntry setOwners( final IClasspathEntry cpe,
+                                              final String owners )
+    {
+        final List<IClasspathAttribute> attrs = new ArrayList<IClasspathAttribute>();
+        
+        for( IClasspathAttribute attr : cpe.getExtraAttributes() )
+        {
+            if( ! attr.getName().equals( OWNER_PROJECT_FACETS_ATTR ) )
+            {
+                attrs.add( attr );
+            }
+        }
+        
+        if( owners != null )
+        {
+            attrs.add( JavaCore.newClasspathAttribute( OWNER_PROJECT_FACETS_ATTR, owners ) );
+        }
+        
+        return new ClasspathEntry( cpe.getContentKind(), cpe.getEntryKind(), cpe.getPath(),
+                                   cpe.getInclusionPatterns(), cpe.getExclusionPatterns(),
+                                   cpe.getSourceAttachmentPath(), cpe.getSourceAttachmentRootPath(),
+                                   cpe.getOutputLocation(), cpe.isExported(), cpe.getAccessRules(),
+                                   cpe.combineAccessRules(), 
+                                   attrs.toArray( new IClasspathAttribute[ attrs.size() ] ) );
+    }
+    
+    private static void convertLegacyMetadata( final IJavaProject jproj )
+    
+        throws CoreException
+        
+    {
+        final IProject project = jproj.getProject();
+        final IFile legacyMetadataFile = project.getFile( LEGACY_METADATA_FILE_NAME );
+        
+        if( legacyMetadataFile.exists() )
+        {
+            final ProjectScope scope = new ProjectScope( project );
+            final IEclipsePreferences pluginRoot = scope.getNode( FacetCorePlugin.PLUGIN_ID );
+            final Preferences root = pluginRoot.node( "classpath.helper" ); //$NON-NLS-1$
+            final Map<IPath,String> metadata = new HashMap<IPath,String>();
+            
+            final String[] keys;
+            
+            try
+            {
+                keys = root.childrenNames();
+            }
+            catch( BackingStoreException e )
+            {
+                throw new CoreException( FacetCorePlugin.createErrorStatus( e.getMessage(), e ) );
+            }
+            
+            for( String key : keys )
+            {
+                final Preferences node = root.node( key );
+                final String owners = node.get( "owners", null ); //$NON-NLS-1$
+                
+                if( owners != null )
+                {
+                    metadata.put( new Path( key.replaceAll( "::", "/" ) ), owners ); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+            }
+            
+            if( ! metadata.isEmpty() )
+            {
+                final List<IClasspathEntry> cp = getProjectClasspath( jproj );
+                boolean cpchanged = false;
+                
+                for( ListIterator<IClasspathEntry> itr = cp.listIterator(); itr.hasNext(); )
+                {
+                    final IClasspathEntry cpe = itr.next();
+                    final String owners = metadata.get( cpe.getPath() );
+                    
+                    if( owners != null )
+                    {
+                        itr.set( setOwners( cpe, owners ) );
+                        cpchanged = true;
+                    }
+                }
+                
+                if( cpchanged )
+                {
+                    setProjectClasspath( jproj, cp );
+                }
+            }
+            
+            legacyMetadataFile.delete( true, null );
         }
     }
 

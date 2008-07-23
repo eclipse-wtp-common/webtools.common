@@ -46,7 +46,7 @@ public abstract class JavaFacetDelegate
             this.dotProjectFile = project.getFile( IProjectDescription.DESCRIPTION_FILE_NAME );
             this.dotClasspathFile = project.getFile( JavaFacetUtil.FILE_CLASSPATH );
             this.jdtCorePrefsFile = project.getFile( JavaFacetUtil.FILE_JDT_CORE_PREFS );
-            this.jstFacetCorePrefsFile = project.getFile( ClasspathHelper.METADATA_FILE_NAME );
+            this.jstFacetCorePrefsFile = project.getFile( ClasspathHelper.LEGACY_METADATA_FILE_NAME );
         }
     }
     

@@ -57,6 +57,18 @@ public final class FacetCorePlugin
         log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
     
+    public static IStatus createErrorStatus( final String msg )
+    {
+        return createErrorStatus( msg, null );
+    }
+
+    public static IStatus createErrorStatus( final String msg,
+                                             final Exception e )
+    {
+        return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, e );
+    }
+    
+    
     
     public static String getJavaSrcFolder(){
     	String srcFolder = FacetCorePlugin.getDefault().getPluginPreferences().getString(PROD_PROP_SOURCE_FOLDER_LEGACY);
