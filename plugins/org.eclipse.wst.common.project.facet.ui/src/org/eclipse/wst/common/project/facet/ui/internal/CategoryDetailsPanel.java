@@ -52,7 +52,7 @@ public final class CategoryDetailsPanel
         final Text descTextField = new Text( this, SWT.WRAP | SWT.READ_ONLY );
         descTextField.setLayoutData( gdhfill() );
         descTextField.setText( category.getDescription() );
-        descTextField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+        //descTextField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
     }
     
 }

@@ -104,7 +104,7 @@ public final class FacetDetailsPanel
         final Text descTextField = new Text( nestedDetailsComposite, SWT.WRAP | SWT.READ_ONLY );
         descTextField.setLayoutData( gdhfill() );
         descTextField.setText( facet.getProjectFacet().getDescription() );
-        descTextField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+        //descTextField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
         
         final IConstraint prunedConstraint 
             = Constraint.pruneConstraint( facet, fpjwc.getFixedProjectFacets() );
@@ -166,7 +166,7 @@ public final class FacetDetailsPanel
                 final Text label = new Text( parent, SWT.READ_ONLY );
                 label.setLayoutData( gdvindent( gdhfill(), 5 ) );
                 label.setText( labelText );
-                label.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
+                //label.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
                 
                 final Composite facetsComposite = new Composite( parent, SWT.NONE );
                 facetsComposite.setLayoutData( gdhindent( gdvindent( gdhfill(), 5 ), 5 ) );
