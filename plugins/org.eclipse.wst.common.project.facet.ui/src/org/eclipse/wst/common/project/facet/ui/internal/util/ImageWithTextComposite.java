@@ -53,6 +53,7 @@ public final class ImageWithTextComposite
         
         this.textField = new Text( internalComposite, SWT.WRAP | SWT.READ_ONLY );
         this.textField.setLayoutData( gdhfill() );
+        this.textField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
     }
     
     public void setImage( final Image image )

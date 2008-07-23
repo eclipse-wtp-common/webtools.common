@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -67,30 +69,36 @@ public final class DetailsPanel
             {
                 public void selectionChanged( final SelectionChangedEvent event )
                 {
-                    handleSelectionChangedEvent( event );
+                    refresh();
                 }
             }
         );
         
-        handleSelectionChangedEvent( null );
+        this.facetsSelectionPanel.getFacetedProjectWorkingCopy().addListener
+        (
+            new IFacetedProjectListener()
+            {
+                public void handleEvent( final IFacetedProjectEvent event ) 
+                {
+                    refresh();
+                }
+            }, 
+            IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED
+        );
+        
+        refresh();
     }
     
-    private void handleSelectionChangedEvent( final SelectionChangedEvent event )
+    private void refresh()
     {
         if( this.content != null )
         {
             this.content.dispose();
         }
         
-        Object selection = null;
+        final IStructuredSelection sel = (IStructuredSelection) this.facetsSelectionPanel.getSelection();
         
-        if( event != null )
-        {
-            final IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            selection = sel.getFirstElement();
-        }
-        
-        if( selection == null )
+        if( sel == null || sel.isEmpty() )
         {
             this.content = new Composite( this, SWT.NONE );
             this.content.setLayout( glmargins( gl( 1 ), 0, 0 ) );
@@ -99,15 +107,20 @@ public final class DetailsPanel
             noSelectionTextField.setLayoutData( gdhfill() );
             noSelectionTextField.setText( Resources.noSelectionLabel );
         }
-        else if( selection instanceof IProjectFacetVersion )
+        else
         {
-            final IProjectFacetVersion fv = (IProjectFacetVersion) selection;
-            this.content = new FacetDetailsPanel( this, this.facetsSelectionPanel, fv );
-        }
-        else if( selection instanceof ICategory )
-        {
-            final ICategory cat = (ICategory) selection;
-            this.content = new CategoryDetailsPanel( this, this.facetsSelectionPanel, cat );
+            final Object selection = sel.getFirstElement();
+
+            if( selection instanceof IProjectFacetVersion )
+            {
+                final IProjectFacetVersion fv = (IProjectFacetVersion) selection;
+                this.content = new FacetDetailsPanel( this, this.facetsSelectionPanel, fv );
+            }
+            else if( selection instanceof ICategory )
+            {
+                final ICategory cat = (ICategory) selection;
+                this.content = new CategoryDetailsPanel( this, this.facetsSelectionPanel, cat );
+            }
         }
 
         this.content.setLayoutData( gdfill() );

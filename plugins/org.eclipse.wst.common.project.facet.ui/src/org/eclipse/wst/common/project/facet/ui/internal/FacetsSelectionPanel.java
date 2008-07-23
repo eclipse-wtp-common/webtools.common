@@ -452,10 +452,10 @@ public final class FacetsSelectionPanel
         if( this.settings.get( SASH2W2 ) == null ) this.settings.put( SASH2W2, 40 );
         
         final int[] weights1
-        	= new int[] { this.settings.getInt( SASH1W1 ),
+            = new int[] { this.settings.getInt( SASH1W1 ),
                           this.settings.getInt( SASH1W2 ) };
 
-    	this.sform1.setWeights( weights1 );
+        this.sform1.setWeights( weights1 );
 
         final int[] weights2
             = new int[] { this.settings.getInt( SASH2W1 ),
@@ -586,14 +586,14 @@ public final class FacetsSelectionPanel
 
     public ISelection getSelection()
     {
-    	if( this.selection != null )
-    	{
-    		return new StructuredSelection( this.selection );
-    	}
-    	else
-    	{
-    		return new StructuredSelection( new Object[ 0 ] );
-    	}
+        if( this.selection != null )
+        {
+            return new StructuredSelection( this.selection );
+        }
+        else
+        {
+            return new StructuredSelection( new Object[ 0 ] );
+        }
     }
 
     public void setSelection( final ISelection selection )
@@ -918,29 +918,29 @@ public final class FacetsSelectionPanel
 
     private void handleMouseDownEvent( final Event event )
     {
-    	handleMouseDownEventHelper( event, this.tree.getItems() );
+        handleMouseDownEventHelper( event, this.tree.getItems() );
     }
     
     private boolean handleMouseDownEventHelper( final Event event,
-    		                                    final TreeItem[] items )
+                                                final TreeItem[] items )
     {
         for( TreeItem item : items )
         {
-        	if( item.getBounds( 1 ).contains( event.x, event.y ) )
+            if( item.getBounds( 1 ).contains( event.x, event.y ) )
             {
-            	final TreeItem[] newSelection = new TreeItem[] { item };
-            	
-            	if( ! Arrays.equals( this.tree.getSelection(), newSelection ) )
-            	{
-	                this.tree.setSelection( new TreeItem[] { item } );
-	                this.treeViewer.editElement( item.getData(), 1 );
-            	}
+                final TreeItem[] newSelection = new TreeItem[] { item };
+                
+                if( ! Arrays.equals( this.tree.getSelection(), newSelection ) )
+                {
+                    this.tree.setSelection( new TreeItem[] { item } );
+                    this.treeViewer.editElement( item.getData(), 1 );
+                }
                 
                 return true;
             }
-        	else if( handleMouseDownEventHelper( event, item.getItems() ) )
+            else if( handleMouseDownEventHelper( event, item.getItems() ) )
             {
-            	return true;
+                return true;
             }
         }
         
@@ -964,15 +964,10 @@ public final class FacetsSelectionPanel
                 final int columnWidth = this.colVersion.getColumn().getWidth();
                 final int itemHeight = this.tree.getItemHeight();
                 
-                final int bgcolor;
-                
-                bgcolor = SWT.COLOR_LIST_BACKGROUND;
-                
                 int x, y;
                 
                 x = event.x + columnWidth - arrowImageBounds.width - 10;
                 y = event.y;
-                event.gc.setBackground( item.getDisplay().getSystemColor( bgcolor ) );
                 event.gc.fillRectangle( x, y, arrowImageBounds.width + 10, itemHeight );
                 
                 y = event.y + ( itemHeight - arrowImageBounds.height ) / 2;
@@ -1142,65 +1137,65 @@ public final class FacetsSelectionPanel
     
     private void handleChangeVersionMenuSelected()
     {
-    	final IProjectFacet f = getSelectedProjectFacet();
-    	final IProjectFacetVersion fv = getSelectedVersion( f );
-    	final SortedSet<IProjectFacetVersion> versions = this.fpjwc.getAvailableVersions( f );
-    	
-    	final IProjectFacetVersion newVersion
-    		= ChangeFacetVersionDialog.showDialog( getShell(), f, fv, versions );
-    		
-    	if( newVersion != null )
-    	{
-    		this.fpjwc.changeProjectFacetVersion( newVersion );
-    	}
+        final IProjectFacet f = getSelectedProjectFacet();
+        final IProjectFacetVersion fv = getSelectedVersion( f );
+        final SortedSet<IProjectFacetVersion> versions = this.fpjwc.getAvailableVersions( f );
+        
+        final IProjectFacetVersion newVersion
+            = ChangeFacetVersionDialog.showDialog( getShell(), f, fv, versions );
+            
+        if( newVersion != null )
+        {
+            this.fpjwc.changeProjectFacetVersion( newVersion );
+        }
     }
     
     private void handleFacetLockUnlock()
     {
-    	final IProjectFacet f = getSelectedProjectFacet();
-    	
-    	final Set<IProjectFacet> fixedFacets 
-    		= new HashSet<IProjectFacet>( this.fpjwc.getFixedProjectFacets() );
-    	
-    	if( fixedFacets.contains( f ) )
-    	{
-    		fixedFacets.remove( f );
-    	}
-    	else
-    	{
-    		fixedFacets.add( f );
-    	}
-    	
-    	this.fpjwc.setFixedProjectFacets( fixedFacets );
-    	
-    	updatePopupMenu();
+        final IProjectFacet f = getSelectedProjectFacet();
+        
+        final Set<IProjectFacet> fixedFacets 
+            = new HashSet<IProjectFacet>( this.fpjwc.getFixedProjectFacets() );
+        
+        if( fixedFacets.contains( f ) )
+        {
+            fixedFacets.remove( f );
+        }
+        else
+        {
+            fixedFacets.add( f );
+        }
+        
+        this.fpjwc.setFixedProjectFacets( fixedFacets );
+        
+        updatePopupMenu();
     }
     
     private void updatePopupMenu()
     {
         if( this.selection instanceof IProjectFacetVersion )
         {
-			this.tree.setMenu( this.popupMenu );
+            this.tree.setMenu( this.popupMenu );
 
-			final IProjectFacet f = ( (IProjectFacetVersion) this.selection ).getProjectFacet();
-			
-			if( this.fpjwc.isFixedProjectFacet( f ) )
-			{
-				this.popupMenuLockUnlock.setText( Resources.unlockMenuItem );
-			}
-			else
-			{
-				this.popupMenuLockUnlock.setText( Resources.lockMenuItem );
-			}
-			
-			this.popupMenuLockUnlock.setEnabled( this.fpjwc.hasProjectFacet( f ) );
-			
-			final int numAvailableVersions = this.fpjwc.getAvailableVersions( f ).size();
-			this.popupMenuChangeVersion.setEnabled( numAvailableVersions > 1 );
-    	}
+            final IProjectFacet f = ( (IProjectFacetVersion) this.selection ).getProjectFacet();
+            
+            if( this.fpjwc.isFixedProjectFacet( f ) )
+            {
+                this.popupMenuLockUnlock.setText( Resources.unlockMenuItem );
+            }
+            else
+            {
+                this.popupMenuLockUnlock.setText( Resources.lockMenuItem );
+            }
+            
+            this.popupMenuLockUnlock.setEnabled( this.fpjwc.hasProjectFacet( f ) );
+            
+            final int numAvailableVersions = this.fpjwc.getAvailableVersions( f ).size();
+            this.popupMenuChangeVersion.setEnabled( numAvailableVersions > 1 );
+        }
         else
         {
-        	this.tree.setMenu( null );
+            this.tree.setMenu( null );
         }
     }
     
@@ -1489,7 +1484,7 @@ public final class FacetsSelectionPanel
         @Override
         protected CellEditor getCellEditor( final Object element )
         {
-            final IProjectFacet f = getSelectedProjectFacet();
+            final IProjectFacet f = (IProjectFacet) element;
             
             if( f == null )
             {
@@ -1824,19 +1819,19 @@ public final class FacetsSelectionPanel
         public Image getColumnImage( final Object element,
                                      final int column )
         {
-        	final ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-	        final String imageType;
-	        
-	        if( ( (IStatus) element ).getSeverity() == IStatus.ERROR )
-	        {
-	        	imageType = ISharedImages.IMG_OBJS_ERROR_TSK;
-	        }
-	        else
-	        {
-	        	imageType = ISharedImages.IMG_OBJS_WARN_TSK;
-	        }
-	        
-	        return sharedImages.getImage( imageType );
+            final ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+            final String imageType;
+            
+            if( ( (IStatus) element ).getSeverity() == IStatus.ERROR )
+            {
+                imageType = ISharedImages.IMG_OBJS_ERROR_TSK;
+            }
+            else
+            {
+                imageType = ISharedImages.IMG_OBJS_WARN_TSK;
+            }
+            
+            return sharedImages.getImage( imageType );
         }
 
         public boolean isLabelProperty( final Object obj,

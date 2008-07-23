@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import static org.eclipse.jface.resource.JFaceResources.getFontRegistry;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhindent;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdvindent;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -88,10 +90,21 @@ public final class FacetDetailsPanel
         
         final Label separator = new Label( this, SWT.SEPARATOR | SWT.HORIZONTAL );
         separator.setLayoutData( gdhfill() );
+        
+        final ScrolledComposite details = new ScrolledComposite( this, SWT.V_SCROLL | SWT.H_SCROLL );
+        details.setLayoutData( gdfill() );
+        details.setMinWidth( 300 );
+        details.setExpandHorizontal( true );
+        details.setExpandVertical( true );
+        
+        final Composite nestedDetailsComposite = new Composite( details, SWT.NONE );
+        nestedDetailsComposite.setLayout( glmargins( gl( 1 ), 0, 10, 0, 0 ) );
+        details.setContent( nestedDetailsComposite );
 
-        final Text descTextField = new Text( this, SWT.WRAP | SWT.READ_ONLY );
+        final Text descTextField = new Text( nestedDetailsComposite, SWT.WRAP | SWT.READ_ONLY );
         descTextField.setLayoutData( gdhfill() );
         descTextField.setText( facet.getProjectFacet().getDescription() );
+        descTextField.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
         
         final IConstraint prunedConstraint 
             = Constraint.pruneConstraint( facet, fpjwc.getFixedProjectFacets() );
@@ -112,8 +125,10 @@ public final class FacetDetailsPanel
                 topLevelOperators = Collections.singletonList( normalizedConstraint );
             }
 
-            renderConstraints( this, topLevelOperators );
+            renderConstraints( nestedDetailsComposite, topLevelOperators );
         }
+        
+        details.setMinHeight( nestedDetailsComposite.computeSize( 300, SWT.DEFAULT ).y );
     }
     
     private void renderConstraints( final Composite parent,
@@ -148,9 +163,10 @@ public final class FacetDetailsPanel
                     labelText = Resources.conflictingFacetsLabel;
                 }
 
-                final Text label = new Text( parent, SWT.NONE | SWT.READ_ONLY );
+                final Text label = new Text( parent, SWT.READ_ONLY );
                 label.setLayoutData( gdvindent( gdhfill(), 5 ) );
                 label.setText( labelText );
+                label.setBackground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
                 
                 final Composite facetsComposite = new Composite( parent, SWT.NONE );
                 facetsComposite.setLayoutData( gdhindent( gdvindent( gdhfill(), 5 ), 5 ) );
