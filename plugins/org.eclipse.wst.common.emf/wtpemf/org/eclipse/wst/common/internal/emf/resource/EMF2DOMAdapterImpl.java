@@ -702,12 +702,6 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Remove the DOM adapters from the node AND all its child nodes, recursively.
 	 */
 	public void removeAdapters(Node node) {
-		NodeList nl = node.getChildNodes();
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node n = nl.item(i);
-			removeAdapters(n);
-		}
-		
 		EMF2DOMAdapter adapter = primGetExistingAdapter(node);
 		if (adapter != null) {
 			// Remove the adapter from both the DOM node and the MOF Object.
@@ -717,6 +711,11 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 				if (localTarget != null)
 					localTarget.eAdapters().remove(adapter);
 			}
+		}
+		NodeList nl = node.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			removeAdapters(n);
 		}
 	}
 
