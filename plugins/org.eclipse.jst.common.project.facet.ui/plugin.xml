@@ -27,5 +27,11 @@
       <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
     </adapter>
   </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.ui.wizardPages">
+    <wizard-pages action="jst.java.install">
+      <page class="org.eclipse.jst.common.project.facet.ui.internal.JavaFacetInstallPage"/>
+    </wizard-pages>
+  </extension>
   
 </plugin>

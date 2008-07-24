@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 BEA Systems, Inc.
+ * Copyright (c) 2008 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.CoreException;
  * specified from the start, a dynamic preset uses a factory to synthesize the preset definition on 
  * the fly based on the context in which it will be used. 
  * 
- * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 2.0
  */
 

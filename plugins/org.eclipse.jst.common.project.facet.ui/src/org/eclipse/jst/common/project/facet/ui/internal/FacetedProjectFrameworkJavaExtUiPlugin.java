@@ -9,37 +9,25 @@
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.ui.internal.constraints;
+package org.eclipse.jst.common.project.facet.ui.internal;
+
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
-public abstract class ConstraintOperator
+public final class FacetedProjectFrameworkJavaExtUiPlugin 
 {
-    public static enum Type
-    {
-        AND,
-        OR,
-        REQUIRES_ALL,
-        REQUIRES_ONE,
-        CONFLICTS
-    }
+    public static final String PLUGIN_ID = "org.eclipse.jst.common.project.facet.ui"; //$NON-NLS-1$
     
-    private Type type;
+    public static final String IMG_PATH_JAVA_WIZBAN = "images/java-wizban.png"; //$NON-NLS-1$
+    public static final String IMG_PATH_SOURCE_FOLDER = "images/source-folder.gif"; //$NON-NLS-1$
     
-    protected ConstraintOperator( final Type type )
+    public static ImageDescriptor getImageDescriptor( final String path )
     {
-        this.type = type;
+        return AbstractUIPlugin.imageDescriptorFromPlugin( PLUGIN_ID, path );
     }
-    
-    public Type getType()
-    {
-        return this.type;
-    }
-    
-    public void setType( final Type type )
-    {
-        this.type = type;
-    }
+
 }

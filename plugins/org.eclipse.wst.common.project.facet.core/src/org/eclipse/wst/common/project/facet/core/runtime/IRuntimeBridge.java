@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 BEA Systems, Inc.
+ * Copyright (c) 2008 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Status;
  * The interface implemented by extensions wishing to expose runtimes defined
  * through other means to the project facets framework.
  * 
- * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
 public interface IRuntimeBridge
@@ -64,7 +64,7 @@ public interface IRuntimeBridge
      * and expose it to clients as {@link IRuntime}. All relevant calls will be
      * delegated to this interface.
      * 
-     * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+     * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
      */
 
     public interface IStub
@@ -96,7 +96,7 @@ public interface IRuntimeBridge
      * and expose it to clients as {@link IRuntime}. All relevant calls will be
      * delegated to this interface.
      * 
-     * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+     * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
      * @since 3.0
      */
 

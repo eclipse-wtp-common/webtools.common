@@ -85,7 +85,7 @@
       </constraint>
     </project-facet-version>
 
-    <action facet="jst.java" type="install">
+    <action facet="jst.java" type="install" id="jst.java.install">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
       <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
     </action>

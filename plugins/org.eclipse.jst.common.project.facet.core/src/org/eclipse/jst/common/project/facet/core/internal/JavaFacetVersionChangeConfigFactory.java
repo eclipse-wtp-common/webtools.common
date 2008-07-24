@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 BEA Systems, Inc.
+ * Copyright (c) 2008 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.jst.common.project.facet.core.JavaFacetVersionChangeConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 
 /**
- * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
 public final class JavaFacetVersionChangeConfigFactory

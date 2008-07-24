@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 BEA Systems, Inc.
+ * Copyright (c) 2008 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
  * extension point. Method (a) catches only events for a specific faceted project while methods
  * (b) and (c) catch events for all faceted projects in the workspace.
  * 
- * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
 public interface IFacetedProjectFrameworkListener

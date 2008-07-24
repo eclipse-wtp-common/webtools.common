@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 BEA Systems, Inc.
+ * Copyright (c) 2008 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
  * This interface is implemented by the event object that is used for the FIXED_FACETS_CHANGED 
  * event. 
  * 
- * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
 public interface IFixedFacetsChangedEvent
