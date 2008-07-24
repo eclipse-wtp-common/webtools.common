@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?NLS TYPE="org.eclipse.help.toc"?>
-	 <toc label="Javadoc Packages Reference">
-<topic href="reference/envapi/org/eclipse/wst/common/environment/package-summary.html" label="org.eclipse.wst.common.environment"/>
-<topic href="reference/envapi/org/eclipse/wst/common/environment/uri/package-summary.html" label="org.eclipse.wst.common.environment.uri"/>
-</toc>
