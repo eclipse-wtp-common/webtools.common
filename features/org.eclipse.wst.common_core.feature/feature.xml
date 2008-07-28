@@ -21,6 +21,10 @@
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
+   <includes
+         id="org.eclipse.wst.common.fproj.feature"
+         version="0.0.0"/>
+
    <requires>
       <import feature="org.eclipse.platform" version="3.4.0"/>
       <import feature="org.eclipse.emf.edit" version="2.4.0"/>
@@ -70,13 +74,6 @@
 
    <plugin
          id="org.eclipse.wst.common.modulecore"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.wst.common.project.facet.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
