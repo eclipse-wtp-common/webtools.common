@@ -26,10 +26,20 @@
          id="org.eclipse.wst.common.fproj.feature"
          version="0.0.0"/>
 
-   <includes
-         id="org.eclipse.wst.common.fproj.source.feature"
-         version="0.0.0"/>
-
+   <plugin
+         id="org.eclipse.wst.common.project.facet.core.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+   <plugin
+         id="org.eclipse.wst.common.project.facet.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
    <plugin
          id="org.eclipse.wst.common.project.facet.doc.api"
          download-size="0"
