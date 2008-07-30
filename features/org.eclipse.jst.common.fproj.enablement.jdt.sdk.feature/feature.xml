@@ -30,4 +30,11 @@
          id="org.eclipse.jst.common.fproj.enablement.jdt.source.feature"
          version="0.0.0"/>
 
+   <plugin
+         id="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
