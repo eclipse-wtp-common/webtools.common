@@ -3,7 +3,8 @@
       id="org.eclipse.wst.common.fproj.sdk.feature"
       label="%featureName"
       version="3.1.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      plugin="org.eclipse.wst.common.fproj.sdk">
 
    <description>
       %description
