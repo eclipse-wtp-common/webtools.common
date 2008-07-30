@@ -30,7 +30,7 @@
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.wst.common.fproj.sdk.feature"
+         id="org.eclipse.wst.common.fproj.sdk"
          version="0.0.0"/>
 
    <plugin

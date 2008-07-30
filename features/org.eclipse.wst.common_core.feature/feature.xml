@@ -22,7 +22,7 @@
    </url>
 
    <includes
-         id="org.eclipse.wst.common.fproj.feature"
+         id="org.eclipse.wst.common.fproj"
          version="0.0.0"/>
 
    <requires>
