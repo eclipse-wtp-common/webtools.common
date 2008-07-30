@@ -11,13 +11,15 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.*;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhspan;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -25,7 +27,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
@@ -45,7 +48,7 @@ public final class PresetSelectionPanel
     private final Group group;
     private final Combo presetsCombo;
     private final Button modifyButton;
-    private final Label descLabel;
+    private final Text descTextField;
     private final IFacetedProjectWorkingCopy fpjwc;
     
     public PresetSelectionPanel( final Composite parent,
@@ -93,14 +96,14 @@ public final class PresetSelectionPanel
             }
         );
         
-        this.descLabel = new Label( this.group, SWT.WRAP );
+        this.descTextField = new Text( this.group, SWT.READ_ONLY | SWT.WRAP );
    
         final GridData gd = gdhspan( gdhfill(), 2 );
         gd.widthHint = 400;
         gd.minimumHeight = 30;
         gd.grabExcessVerticalSpace = true;
         
-        this.descLabel.setLayoutData( gd );
+        this.descTextField.setLayoutData( gd );
         
         refreshDescription();
         
@@ -142,7 +145,20 @@ public final class PresetSelectionPanel
             desc = preset.getDescription();
         }
         
-        this.descLabel.setText( desc );
+        this.descTextField.setText( desc );
+        
+        final int currentHeight = this.descTextField.getSize().y;;
+        ( (GridData) this.descTextField.getLayoutData() ).minimumHeight = currentHeight;
+
+        final Shell shell = getShell();
+        shell.layout( true, true );
+        final Point currentSize = shell.getSize();
+        final Point preferredSize = shell.computeSize( currentSize.x - 30, SWT.DEFAULT );
+        
+        if( preferredSize.y > currentSize.y )
+        {
+            shell.setSize( currentSize.x, preferredSize.y );
+        }
     }
     
     private void handleModifyButtonPressed()
