@@ -11,11 +11,15 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
+import static org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin.getImageDescriptor;
+
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 
@@ -34,10 +38,20 @@ public class BasicFacetedProjectWizard
     
 {
     private IWizardPage firstPage;
+    private IWorkbench workbench;
+    private IStructuredSelection selection;
     
     public BasicFacetedProjectWizard()
     {
         this.setWindowTitle( Resources.wizardTitle );
+        setDefaultPageImageDescriptor( getImageDescriptor( "images/newprj-wizban.png" ) ); //$NON-NLS-1$
+    }
+    
+    public void init( final IWorkbench workbench, 
+                      final IStructuredSelection selection )
+    {
+        this.workbench = workbench;
+        this.selection = selection;
     }
     
     /**
@@ -52,6 +66,30 @@ public class BasicFacetedProjectWizard
     }
     
     /**
+     * Returns the workbench that this wizard belongs to.
+     * 
+     * @return the workbench that this wizard belongs to
+     * @since 3.1
+     */
+    
+    public IWorkbench getWorkbench()
+    {
+        return this.workbench;
+    }
+    
+    /**
+     * Returns the selection that this wizard was launched from.
+     * 
+     * @return the selection that this wizard was launched from
+     * @since 3.1
+     */
+    
+    public IStructuredSelection getSelection()
+    {
+        return this.selection;
+    }
+    
+    /**
      * Creates the first wizard page. Typically, this is where the user specifies the
      * project name and location. The default implementation users a basic first page
      * provided by the Eclipse Platform. Extenders can override this method in order 
@@ -63,7 +101,7 @@ public class BasicFacetedProjectWizard
     
     protected IWizardPage createFirstPage()
     {
-        final IWizardPage firstPage = new WizardNewProjectCreationPage( "first.page" ); //$NON-NLS-1$
+        final IWizardPage firstPage = new BasicFacetedProjectWizardFirstPage( "first.page" ); //$NON-NLS-1$
         firstPage.setTitle( Resources.wizardTitle );
         firstPage.setDescription( Resources.firstPageDescription );
         
@@ -119,10 +157,19 @@ public class BasicFacetedProjectWizard
         return this.firstPage.isPageComplete() && super.canFinish();
     }
     
-    public void init( final IWorkbench workbench, 
-                      final IStructuredSelection selection )
+    public boolean performFinish() 
     {
-        
+        super.performFinish();
+
+        if( this.firstPage instanceof WizardNewProjectCreationPage )
+        {
+            final IProject project = this.getFacetedProjectWorkingCopy().getProject();
+            final WizardNewProjectCreationPage mainPage = (WizardNewProjectCreationPage) this.firstPage;
+            final IWorkingSet[] workingSets = mainPage.getSelectedWorkingSets();
+            getWorkbench().getWorkingSetManager().addToWorkingSets( project, workingSets );
+        }
+
+        return true;
     }
     
     private static final class Resources

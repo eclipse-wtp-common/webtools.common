@@ -21,6 +21,7 @@ the WTP 3.1 release. Both Java API and extension point changes are covered.</p>
 <ol>
   <li><a href="#framework-exception">FacetedProjectFrameworkException</a></li>
   <li><a href="#batching-validate-edit">Batching Validate Edit Calls</a></li>
+  <li><a href="#basic-wizard">Improvements to BasicFacetedProjectWizard</a></li>
 </ol>
 
 
@@ -38,7 +39,7 @@ stack trace and/or not logging it).</p>
 
 <table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
 <pre>
-interface org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException extends CoreException
+interface FacetedProjectFrameworkException extends CoreException
 {
     FacetedProjectFrameworkException( IStatus status );
     boolean isExpected();
@@ -46,6 +47,7 @@ interface org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkExcep
 }
 </pre>
 </td></tr></table>
+
 
 <!--  ********************************************************************** -->
 <p><font size="+1"><a name="#batching-validate-edit">2. Batching Validate Edit Calls</a></font></p>
@@ -60,15 +62,37 @@ any of the actions.</p>
 
 <table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
 <pre>
-<font color="#7B7B7B">public abstract class ActionConfig
+<font color="#7B7B7B">abstract class ActionConfig
 {</font>    
-    public Set<IFile> getValidateEditFiles()
-    {
-        return new HashSet<IFile>();
-    }
+    Set<IFile> getValidateEditFiles();
 <font color="#7B7B7B">}</font>
 </pre>
 </td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#basic-wizard">3. Improvements to BasicFacetedProjectWizard</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The generic New Faceted Project wizard now allows the project to be added to working
+sets via UI on the first page.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">class BasicFacetedProjectWizard
+{</font>    
+    IWorkbench getWorkbench();
+    IStructuredSelection getSelection();
+<font color="#7B7B7B">}</font>
+
+class BasicFacetedProjectWizardFirstPage extends WizardNewProjectCreationPage
+{    
+}
+</pre>
+</td></tr></table>
+ 
 
 </body>
 </html>

@@ -80,8 +80,8 @@
       canFinishEarly="false"
       class="org.eclipse.wst.common.project.facet.ui.BasicFacetedProjectWizard"
       hasPages="true"
-      icon="images/newprj_wiz.gif"
-      id="org.eclipse.wst.common.project.facet.examples.standalone.FacetedJavaProjectWizard"
+      icon="images/newprj-wiz.gif"
+      id="org.eclipse.wst.common.project.facet.ui.BasicFacetedProjectWizard"
       name="%basicFacetedProjectWizardName"
       project="true"
       category="org.eclipse.ui.Basic">
