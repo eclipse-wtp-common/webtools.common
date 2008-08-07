@@ -18,11 +18,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
+import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 
 
 /**
@@ -48,6 +49,11 @@ public abstract class OperationTestCase extends BaseTestCase {
 	}
 	
 	public static void deleteAllProjects() {
+		try {
+			waitOnJobs();
+		} catch (InterruptedException e1) {
+			
+		}
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(null) {
 			public void run(IProgressMonitor pm) throws CoreException {
 				try {
@@ -248,11 +254,18 @@ public abstract class OperationTestCase extends BaseTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		// Wait for all validation jobs to end before ending test....
+		waitOnJobs();
+		
+	}
+
+	public static void waitOnJobs() throws InterruptedException {
 		IProject[] projects = ProjectUtility.getAllProjects();
 		for (int i = 0; i < projects.length; i++) {
 			IProject project = projects[i];
-			Platform.getJobManager().join(project.getName() + VALIDATOR_JOB_FAMILY,null);
+			Job.getJobManager().join(project.getName() + VALIDATOR_JOB_FAMILY,null);
 		}
-		
+		Job.getJobManager().join(ResourcesPlugin.FAMILY_MANUAL_BUILD,null);
+		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD,null);
+		Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB,null);
 	}
 }
