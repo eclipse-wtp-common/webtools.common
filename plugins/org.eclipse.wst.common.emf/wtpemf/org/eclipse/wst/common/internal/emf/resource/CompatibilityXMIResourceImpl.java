@@ -271,13 +271,47 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
             }
         }
     }
+	public void loadExisting(Map options) throws IOException {
+
+		
+        ResourceIsLoadingAdapter adapter = null;
+        if (isLoaded) {
+            adapter = ResourceIsLoadingAdapter.findAdapter(this);
+            if (adapter != null) 
+                adapter.waitForResourceToLoad();
+            return;
+        }
+        synchronized (this) {            
+            adapter = ResourceIsLoadingAdapter.findAdapter(this);
+            if (adapter == null && !isLoaded) 
+                addSynchronizationLoadingAdapter();
+        }
+        if(adapter != null)
+            adapter.waitForResourceToLoad();
+        else {
+            try {
+                load((InputStream) null, options);
+            } catch(IOException ioe) {
+                removeLoadingSynchronizationAdapter();
+                throw ioe;
+            } catch(RuntimeException re) {
+                removeLoadingSynchronizationAdapter();
+                throw re;
+            } catch(Error e) {
+                removeLoadingSynchronizationAdapter();
+                throw e;
+            }
+        }
+    }
 	
 	  /**
      * 
      */
     protected void addSynchronizationLoadingAdapter() {
+    	synchronized (eAdapters()) {
         if (ResourceIsLoadingAdapter.findAdapter(this) == null)
             eAdapters().add(ResourceIsLoadingAdapterFactory.INSTANCE.createResourceIsLoadingAdapter());
+    	}
     }
 
     /**
