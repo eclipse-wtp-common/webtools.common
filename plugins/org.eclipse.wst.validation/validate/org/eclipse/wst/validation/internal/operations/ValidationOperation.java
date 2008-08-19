@@ -879,10 +879,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	}
 
 	private void releaseCachedMaps() {
-		if (ValidationRegistryReader.getReader().projectValidationMetaData != null) {
-			ValidationRegistryReader.getReader().projectValidationMetaData.clear();
-			ValidationRegistryReader.getReader().projectValidationMetaData = null;
-		}
+		ValidationRegistryReader.getReader().clearCachedMaps();
 		IProjectValidationHelper helper = ValidationHelperRegistryReader.getInstance().getValidationHelper();
 		if (helper != null)
 			helper.disposeInstance();
