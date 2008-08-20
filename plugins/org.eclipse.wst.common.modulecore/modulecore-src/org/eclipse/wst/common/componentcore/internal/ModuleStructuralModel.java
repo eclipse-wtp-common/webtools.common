@@ -301,15 +301,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		
 		URI uri = URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
 		WTPModulesResource res = (WTPModulesResource)getResource(uri);
-		if (res == null || !res.isLoaded()) {
+		if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
 			removeResource(res);
 			uri = URI.createURI(R1_MODULE_META_FILE_NAME);
 			res = (WTPModulesResource)getResource(uri);
-			if (res == null || !res.isLoaded()) {
+			if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
 				removeResource(res);
 				uri = URI.createURI(R0_7_MODULE_META_FILE_NAME);
 				res = (WTPModulesResource)getResource(uri);
-				if (res == null || !res.isLoaded()) {
+				if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
 					removeResource(res);
 					res = null;
 				}
