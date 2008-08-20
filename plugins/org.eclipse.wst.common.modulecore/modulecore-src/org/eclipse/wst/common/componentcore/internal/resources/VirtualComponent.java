@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -267,6 +268,10 @@ public class VirtualComponent implements IVirtualComponent {
 		}
 	}	
 
+	public IVirtualReference[] getReferences(Map<String, Object> options) {
+		return getReferences();
+	}
+	
 	public IVirtualReference[] getReferences() { 
 		StructureEdit core = null;
 		List references = new ArrayList();
