@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: %Plugin.name
-Bundle-SymbolicName: org.eclipse.wst.validation.infopop; singleton:=true
-Bundle-Version: 1.0.300.qualifier
-Bundle-Localization: plugin
-Bundle-Vendor: %Plugin.providerName
