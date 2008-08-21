@@ -19,9 +19,9 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.core.internal.jobs.LockManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.ILock;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
@@ -54,6 +54,7 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 		return new ResourceSetWorkbenchEditSynchronizer(aResourceSet, aProject);
 	}
 	
+	protected static LockManager lockManager = new LockManager();
 	protected static Map projectLocks = new Hashtable();
 
 	public static ILock getProjectLockObject(IProject aProject){
@@ -64,7 +65,7 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 		synchronized (projectLocks) {
 			ILock lock = (ILock)projectLocks.get(hashCode);
 			if(lock == null){
-				lock = Job.getJobManager().newLock();
+				lock = lockManager.newLock();
 				projectLocks.put(hashCode, lock);
 			}
 			return lock;

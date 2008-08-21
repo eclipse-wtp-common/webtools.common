@@ -98,6 +98,8 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	protected boolean removeResource(Resource aResource) {
 		if (aResource != null) {
+			//First checking if resource is loaded (Which will prevent removing in middle of loading by checking resource adapter lock)
+			aResource.isLoaded();
 			synchronized (aResource) {
 				aResource.eAdapters().remove(resourceAdapter);
 				return getResources().remove(aResource);

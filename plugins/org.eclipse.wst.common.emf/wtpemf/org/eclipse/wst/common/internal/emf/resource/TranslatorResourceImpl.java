@@ -381,18 +381,16 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	public void load(Map options) throws IOException {
-		synchronized (this) {
-			if (isLoaded)
+		
+			if (isLoaded())
 				return;
-			// System.out.println(Thread.currentThread() + "
-			// TranslatorResource.load(): " + this);
+			
 			if (renderer.useStreamsForIO()) {
 				super.load(options);
 			}
-			else if (!isLoaded) {
-				load((InputStream) null, options);
+			else if (!isLoaded()) {
+				isShared();
+				loadExisting(options);
 			}
-		}
-
 	}
 }

@@ -42,9 +42,10 @@ public class ResourceIsLoadingAdapter extends AdapterImpl implements Adapter {
          * removeIsLoadingSupport() will coordinate with this 
          * synchronization.
          */
-        synchronized (aResource) {
-            adapter = (ResourceIsLoadingAdapter) EcoreUtil.getAdapter(aResource.eAdapters(), ResourceIsLoadingAdapter.class);
+        synchronized(aResource.eAdapters()) {
+        	adapter = (ResourceIsLoadingAdapter) EcoreUtil.getAdapter(aResource.eAdapters(), ResourceIsLoadingAdapter.class);
         }
+        
         return adapter;
     }
 
@@ -88,7 +89,7 @@ public class ResourceIsLoadingAdapter extends AdapterImpl implements Adapter {
          */
         if (getTarget() != null) {
             //System.out.println("ResourceIsLoadingAdapter Synchronizing on " + getTarget());
-            synchronized (getTarget()) {
+            synchronized (getTarget().eAdapters()) {
                 getTarget().eAdapters().remove(this);
             }
         }
