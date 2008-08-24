@@ -32,6 +32,8 @@ import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IDependencyIndex;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationState;
+import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -123,6 +125,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			run();
 			request = getRequest();
 		}
+		_request = null;
 		
 		Tracing.log("ValBuilderJob-02: Finished"); //$NON-NLS-1$
 		return Status.OK_STATUS;
@@ -131,8 +134,20 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	private void run(){
 		setName(ValMessages.JobName + " " + _request.getProject().getName()); //$NON-NLS-1$
 		try {		
+	        IValidatorVisitor startingVisitor = new IValidatorVisitor(){
+
+	            public void visit(Validator validator, IProject project, ValType valType, 
+	                ValOperation operation, IProgressMonitor monitor) {
+	                
+	                validator.validationStarting(project, operation.getState(), monitor);                   
+	            }               
+	        };
+
+	        ValManager.getDefault().accept(startingVisitor, _request.getProject(), ValType.Build, _request.getOperation(), _monitor);
+		  
 			if (_request.getDelta() == null)fullBuild();
 			else deltaBuild();
+
 			
 		}
 		catch (ProjectUnavailableError e){
@@ -143,6 +158,17 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		}
 		catch (CoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
+		}
+		finally {
+		  IValidatorVisitor finishedVisitor = new IValidatorVisitor(){
+
+		    public void visit(Validator validator, IProject project, ValType valType,
+		      ValOperation operation, IProgressMonitor monitor) {
+
+		      validator.validationFinishing(project, operation.getState(), monitor);              
+		    }           
+		  };
+          ValManager.getDefault().accept(finishedVisitor, _request.getProject(), ValType.Build, _request.getOperation(), _monitor);
 		}
 		
 	}
