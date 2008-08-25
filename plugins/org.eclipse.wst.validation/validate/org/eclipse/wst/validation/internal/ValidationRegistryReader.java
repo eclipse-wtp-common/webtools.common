@@ -93,7 +93,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	private static final String UNKNOWN_PROJECT = "UNKNOWN"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which can run on a project type which hasn't been explicitly filtered in or out by any validator.
 	private static final String EXCLUDED_PROJECT = "EXCLUDED"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which are excluded on certain projects.
 	
-	public HashMap<IProject, Set<ValidatorMetaData>> projectValidationMetaData;
+	/** @deprecated this instance variable should not be public. */
+	public HashMap<IProject, Set<ValidatorMetaData>> projectValidationMetaData = new HashMap<IProject, Set<ValidatorMetaData>>();
 
 	/**
 	 * The registry is read once - when this class is instantiated.
@@ -1044,17 +1045,25 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	public boolean isConfiguredOnProject(ValidatorMetaData vmd, IProject project) {
-		if (projectValidationMetaData == null)
-			projectValidationMetaData = new HashMap<IProject, Set<ValidatorMetaData>>();
-
-		Set<ValidatorMetaData> vmds = projectValidationMetaData.get(project);
+		Set<ValidatorMetaData> vmds = null;
+		synchronized(projectValidationMetaData){
+			vmds = projectValidationMetaData.get(project);
+		}
 		if (vmds != null) {
 			return vmds.contains(vmd);
 		} else {
 			Set<ValidatorMetaData> prjVmds = getValidatorMetaData(project);
 			if (prjVmds == null || prjVmds.size() == 0)return false;
-			projectValidationMetaData.put(project, prjVmds);
+			synchronized(projectValidationMetaData){
+				projectValidationMetaData.put(project, prjVmds);
+			}
 			return prjVmds.contains(vmd);
+		}
+	}
+	
+	public void clearCachedMaps(){
+		synchronized(projectValidationMetaData){
+			projectValidationMetaData.clear();
 		}
 	}
 
