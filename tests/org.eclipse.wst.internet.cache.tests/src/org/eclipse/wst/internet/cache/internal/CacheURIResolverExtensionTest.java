@@ -84,7 +84,7 @@ public class CacheURIResolverExtensionTest extends TestCase
 	   */
 	  public void testRelativeSystemId()
 	  {
-	    String result = cacheResolver.resolve(null,"http://www.eclipse.org/webtools/community/somefile.xml", null, "community.html");
+	    String result = cacheResolver.resolve(null,"http://www.eclipse.org/webtools/community/somefile.xml", null, "index.php");
 		assertNotNull("The result is null.", result);
 	  }
 	  
