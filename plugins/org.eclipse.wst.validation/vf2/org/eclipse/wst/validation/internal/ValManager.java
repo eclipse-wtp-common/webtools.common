@@ -646,6 +646,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			for (Validator val : getValidators(project)){
 				if (!monitor.isCanceled()) {
 					if (!bs.get(_idManager.getIndex(val.getId())))continue;
+					if (operation.isSuspended(val, project))continue;
 					Validator.V2 v2 = val.asV2Validator();
 					if (v2 != null) {
 						notifyGroupListenersStarting(resource, operation.getState(), monitor, groupListeners, v2);
