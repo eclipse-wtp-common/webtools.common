@@ -69,6 +69,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
@@ -80,6 +81,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
 import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
 import org.eclipse.wst.common.project.facet.core.runtime.events.IValidationStatusChangedEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider;
 import org.eclipse.wst.common.project.facet.ui.internal.util.BasicToolTip;
@@ -433,8 +435,8 @@ public final class RuntimesPanel
     {
         final IRuntime runtime = (IRuntime) e.getElement();
         
-        if( ! this.fpjwc.getTargetableRuntimes().contains( runtime ) &&
-            e.getChecked() )
+        if( ! getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( runtime ) &&
+            ! ( runtime instanceof UnknownRuntime ) && e.getChecked() )
         {
             this.runtimes.setChecked( runtime, false );
             return;
@@ -476,7 +478,7 @@ public final class RuntimesPanel
             if( this.runtimes.getChecked( r ) && 
                 this.fpjwc.getPrimaryRuntime() != null && 
                 ! this.fpjwc.getPrimaryRuntime().equals( r ) &&
-                this.fpjwc.getTargetableRuntimes().contains( r ) )
+                ( this.fpjwc.getTargetableRuntimes().contains( r ) || r instanceof UnknownRuntime ) )
             {
                 this.makePrimaryButton.setEnabled( true );
             }
@@ -632,14 +634,32 @@ public final class RuntimesPanel
     {
         public Object[] getElements( final Object element )
         {
+            final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
+            final ArrayList<IRuntime> runtimes = new ArrayList<IRuntime>();
+            
             if( RuntimesPanel.this.showAllRuntimesSetting )
             {
-                return RuntimeManager.getRuntimes().toArray();
+                runtimes.addAll( RuntimeManager.getRuntimes() );
             }
             else
             {
-                return getFacetedProjectWorkingCopy().getTargetableRuntimes().toArray();
+                runtimes.addAll( fpjwc.getTargetableRuntimes() );
             }
+            
+            final IFacetedProject fpj = fpjwc.getFacetedProject();
+            
+            if( fpj != null )
+            {
+                for( IRuntime runtime : fpj.getTargetedRuntimes() )
+                {
+                    if( runtime instanceof UnknownRuntime )
+                    {
+                        runtimes.add( runtime );
+                    }
+                }
+            }
+            
+            return runtimes.toArray();
         }
     
         public void dispose() { }
@@ -690,9 +710,6 @@ public final class RuntimesPanel
         public Image getImage( final Object element )
         {
             final IRuntime r = (IRuntime) element;
-            final IRuntimeComponent rc = r.getRuntimeComponents().get( 0 );
-            final IRuntimeComponentType rct = rc.getRuntimeComponentType();
-            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
             final IRuntime primary = getFacetedProjectWorkingCopy().getPrimaryRuntime();
             final boolean isPrimary = primary != null && primary.equals( r );
             final IStatus valResult = getRuntimeValidationAssistant().getValidationResult( r );
@@ -703,7 +720,7 @@ public final class RuntimesPanel
             if( image == null )
             {
                 final IDecorationsProvider decprov
-                    = (IDecorationsProvider) rcv.getAdapter( IDecorationsProvider.class );
+                    = (IDecorationsProvider) r.getAdapter( IDecorationsProvider.class );
 
                 final ImageDescriptor imgdesc
                     = new DecoratedRuntimeImageDescriptor( decprov.getIcon(), isPrimary, valResult );
@@ -712,24 +729,19 @@ public final class RuntimesPanel
                 image = this.imageRegistry.get( imgid );
             }
 
-            if( getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( r ) )
+            if( RuntimesPanel.this.fpjwc.getTargetedRuntimes().contains( r ) )
             {
-                if( RuntimesPanel.this.fpjwc.getTargetedRuntimes().contains( r ) )
-                {
-                    RuntimesPanel.this.runtimes.setChecked( r, true );
-                }
-                else
-                {
-                    RuntimesPanel.this.runtimes.setChecked( r, false );
-                }
-                
-                return image;
+                RuntimesPanel.this.runtimes.setChecked( r, true );
             }
             else
             {
                 RuntimesPanel.this.runtimes.setChecked( r, false );
-                
-                final String greyedId = rct.getId() + "##greyed##"; //$NON-NLS-1$
+            }
+            
+            if( ! getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( r ) &&
+                ! ( r instanceof UnknownRuntime ) )
+            {
+                final String greyedId = r.getName() + "##greyed##"; //$NON-NLS-1$
                 Image greyed = this.imageRegistry.get( greyedId );
                 
                 if( greyed == null )
@@ -738,13 +750,16 @@ public final class RuntimesPanel
                     this.imageRegistry.put( greyedId, greyed );
                 }
                 
-                return greyed;
+                image = greyed;
             }
+            
+            return image;
         }
         
         public Color getForeground( final Object element )
         {
-            if( ! getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( element ) )
+            if( ! getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( element ) &&
+                ! ( element instanceof UnknownRuntime ) )
             {
                 return RuntimesPanel.this.colorGray;
             }

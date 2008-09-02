@@ -44,6 +44,14 @@
   
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.RuntimeDecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+  
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
       class="org.eclipse.wst.common.project.facet.ui.internal.FacetedProjectActionFilter$Factory" 
       adaptableType="org.eclipse.wst.common.project.facet.core.IFacetedProject">
       <adapter type="org.eclipse.ui.IActionFilter"/>

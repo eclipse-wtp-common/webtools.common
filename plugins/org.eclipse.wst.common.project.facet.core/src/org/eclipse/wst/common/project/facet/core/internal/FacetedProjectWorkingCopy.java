@@ -1191,14 +1191,7 @@ public final class FacetedProjectWorkingCopy
                 if( ! this.targetedRuntimes.equals( runtimes ) )
                 {
                     this.targetedRuntimes.clear();
-                    
-                    for( IRuntime r : runtimes )
-                    {
-                        if( this.targetableRuntimes.contains( r ) )
-                        {
-                            this.targetedRuntimes.add( r );
-                        }
-                    }
+                    this.targetedRuntimes.addAll( runtimes );
                     
                     notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
                     notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_MODIFIED ) );
