@@ -21,13 +21,14 @@
       <import feature="org.eclipse.wst.common_core.feature" version="3.0.1.v200807220139-7C7_EV6E_EkMNrNZWGV9bi" patch="true"/>
    </requires>
 
+<!--
    <plugin
          id="org.eclipse.wst.common.project.facet.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+-->
    <plugin
          id="org.eclipse.wst.validation"
          download-size="0"
