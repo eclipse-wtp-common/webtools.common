@@ -1770,6 +1770,7 @@ public final class FacetedProject
             f = new ProjectFacet();
             f.setId( id );
             f.setLabel( id );
+            f.setDescription( "" ); //$NON-NLS-1$
             
             this.unknownFacets.put( id, f );
         }

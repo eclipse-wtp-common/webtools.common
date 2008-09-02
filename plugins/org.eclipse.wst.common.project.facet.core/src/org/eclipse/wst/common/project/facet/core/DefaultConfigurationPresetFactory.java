@@ -69,7 +69,14 @@ public class DefaultConfigurationPresetFactory
         final Set<IProjectFacetVersion> facets 
             = DefaultFacetsExtensionPoint.getDefaultFacets( fproj );
         
-        return new PresetDefinition( label, description, facets );
+        if( facets == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new PresetDefinition( label, description, facets );
+        }
     }
     
     private static final class Resources

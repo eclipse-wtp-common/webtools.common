@@ -454,7 +454,7 @@ public final class FacetedProjectWorkingCopy
                 {
                     final IProjectFacetVersion currentVersion = getProjectFacetVersion( f );
                     
-                    if( currentVersion == null )
+                    if( currentVersion == null && f.getVersions().size() > 0 )
                     {
                         IProjectFacetVersion fv = f.getDefaultVersion();
                         

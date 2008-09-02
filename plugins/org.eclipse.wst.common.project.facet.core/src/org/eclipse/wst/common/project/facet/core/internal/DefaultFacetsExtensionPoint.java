@@ -60,13 +60,22 @@ public final class DefaultFacetsExtensionPoint
         throws CoreException
         
     {
+        // Make sure that none of the fixed facets are unknown.
+        
+        final Set<IProjectFacet> fixed = fproj.getFixedProjectFacets();
+        
+        for( IProjectFacet f : fixed )
+        {
+            if( f.getPluginId() == null )
+            {
+                return null;
+            }
+        }
+        
+        // Get the complete list of default facets from declared extensions.
+        
         readExtensions();
 
-        final Set<IProjectFacet> fixed = fproj.getFixedProjectFacets();
-        final IRuntime runtime = fproj.getPrimaryRuntime();
-        
-        // 1. Get the complete list.
-        
         final Map<IProjectFacet,IProjectFacetVersion> facets 
             = new HashMap<IProjectFacet,IProjectFacetVersion>();
         
@@ -81,7 +90,7 @@ public final class DefaultFacetsExtensionPoint
             }
         }
         
-        // 2. Remove the facets that conflict with fixed facets.
+        // Remove the facets that conflict with fixed facets.
         
         final Set<IProjectFacet> toRemove = new HashSet<IProjectFacet>();
         
@@ -98,8 +107,9 @@ public final class DefaultFacetsExtensionPoint
             facets.remove( f );
         }
         
-        // 3. Make sure that the result includes all of the fixed facets.
+        // Make sure that the result includes all of the fixed facets.
         
+        final IRuntime runtime = fproj.getPrimaryRuntime();
         Map<IProjectFacet,IProjectFacetVersion> toadd = null;
         
         for( IProjectFacet f : fixed )
@@ -131,7 +141,7 @@ public final class DefaultFacetsExtensionPoint
             facets.putAll( toadd );
         }
         
-        // 4. Return the result.
+        // Return the result.
         
         return Collections.unmodifiableSet( new HashSet<IProjectFacetVersion>( facets.values() ) );
     }

@@ -315,20 +315,23 @@ public final class ProjectFacetVersion
         
         for( IProjectFacet f : fixed )
         {
-            boolean conflictsWithAllVersions = true;
-
-            for( IProjectFacetVersion fv : f.getVersions() )
+            if( f.getVersions().size() > 0 )
             {
-                if( ! conflictsWith( fv ) )
+                boolean conflictsWithAllVersions = true;
+    
+                for( IProjectFacetVersion fv : f.getVersions() )
                 {
-                    conflictsWithAllVersions = false;
-                    break;
+                    if( ! conflictsWith( fv ) )
+                    {
+                        conflictsWithAllVersions = false;
+                        break;
+                    }
                 }
-            }
-            
-            if( conflictsWithAllVersions )
-            {
-                return false;
+                
+                if( conflictsWithAllVersions )
+                {
+                    return false;
+                }
             }
         }
         

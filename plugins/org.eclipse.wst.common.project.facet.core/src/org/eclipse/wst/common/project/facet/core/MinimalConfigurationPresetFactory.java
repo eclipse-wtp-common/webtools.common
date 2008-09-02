@@ -56,6 +56,11 @@ public class MinimalConfigurationPresetFactory
         final Set<IProjectFacetVersion> defaultFacets 
             = DefaultFacetsExtensionPoint.getDefaultFacets( fproj );
         
+        if( defaultFacets == null )
+        {
+            return null;
+        }
+        
         for( IProjectFacet f : fproj.getFixedProjectFacets() )
         {
             facets.add( findProjectFacetVersion( defaultFacets, f ) );

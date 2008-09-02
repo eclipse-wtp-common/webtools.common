@@ -37,8 +37,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -158,6 +160,22 @@ public final class FacetsPropertyPage
 	@Override
 	public boolean performOk() 
 	{
+	    for( IProjectFacetVersion fv : this.fpjwc.getFacetedProject().getProjectFacets() )
+	    {
+	        if( fv.getPluginId() == null || fv.getProjectFacet().getPluginId() == null )
+	        {
+	            final MessageDialog dialog 
+	                = new MessageDialog( getShell(), Resources.warningDialogTitle, null,
+	                                     Resources.modifyWithUnknownWarningMessage, MessageDialog.WARNING, 
+	                                     new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 1 );
+	            
+	            if( dialog.open() != Window.OK )
+	            {
+	                return false;
+	            }
+	        }
+	    }
+	    
         final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
             public void run( final IProgressMonitor monitor ) 
@@ -510,11 +528,12 @@ public final class FacetsPropertyPage
         public static String furtherConfigAvailable;
         public static String furtherConfigRequired;
         public static String errDlgTitle;
+        public static String warningDialogTitle;
+        public static String modifyWithUnknownWarningMessage;
         
         static
         {
-            initializeMessages( FacetsPropertyPage.class.getName(), 
-                                Resources.class );
+            initializeMessages( FacetsPropertyPage.class.getName(), Resources.class );
         }
     }
 
