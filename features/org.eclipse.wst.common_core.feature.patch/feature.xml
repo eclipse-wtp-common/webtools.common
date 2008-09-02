@@ -25,7 +25,7 @@
          id="org.eclipse.wst.common.project.facet.core"
          download-size="0"
          install-size="0"
-         version="0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
