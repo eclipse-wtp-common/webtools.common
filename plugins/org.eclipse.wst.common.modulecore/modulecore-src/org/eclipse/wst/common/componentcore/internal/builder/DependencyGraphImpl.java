@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -41,12 +40,9 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 * {A, B} }
 	 */
 	private Map<IProject, Set<IProject>> graph = null;
-	
+
 	private long modStamp = 0;
 
-	private Map<String, Object> referenceOptions = new HashMap<String, Object>();
-	
-	
 	/**
 	 * This is not public; only {@link IDependencyGraph#INSTANCE} should be
 	 * used.
@@ -157,8 +153,6 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 */
 	private void initGraph() {
 		synchronized (graphLock) {
-			referenceOptions.put("GET_JAVA_REFS", Boolean.FALSE);
-			referenceOptions.put("GET_FUZZY_EAR_REFS", Boolean.FALSE);
 			try {
 				preUpdate();
 				graph = new HashMap<IProject, Set<IProject>>();
@@ -306,7 +300,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 						for (IProject sourceProject : allProjects) {
 							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 							if (component != null) {
-								IVirtualReference[] references = component instanceof VirtualComponent ? ((VirtualComponent)component).getReferences(referenceOptions): component.getReferences();
+								IVirtualReference[] references = component.getReferences();
 								for (IVirtualReference ref : references) {
 									IVirtualComponent targetComponent = ref.getReferencedComponent();
 									if (targetComponent != null) {
@@ -326,7 +320,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 							if (component != null) {
 								validRefs.clear();
-								IVirtualReference[] references = component instanceof VirtualComponent ? ((VirtualComponent)component).getReferences(referenceOptions): component.getReferences();
+								IVirtualReference[] references = component.getReferences();
 								for (IVirtualReference ref : references) {
 									IVirtualComponent targetComponent = ref.getReferencedComponent();
 									if (targetComponent != null) {
