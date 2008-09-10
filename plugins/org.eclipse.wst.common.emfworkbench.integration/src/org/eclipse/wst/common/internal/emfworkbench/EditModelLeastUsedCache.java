@@ -75,8 +75,8 @@ public class EditModelLeastUsedCache {
 			}
 		}
 		if (shouldAccess) {
+			editModel.access(this);
 			synchronized (lru) {
-				editModel.access(this);
 				lru.add(editModel);
 			}
 		}
@@ -88,6 +88,7 @@ public class EditModelLeastUsedCache {
 	 */
 	public void optimizeLRUSizeIfNecessary() {
 		EditModel model = null;
+		
 		synchronized (lru) {
 			if (lru.size() > threshhold) {
 				// remove oldest element and release the edit model.
@@ -97,9 +98,9 @@ public class EditModelLeastUsedCache {
 					lru.remove(model);	
 				}
 			}
+		}
 		if (model != null)
 			model.releaseAccess(this);
-		}
 	}
 
 	/**
