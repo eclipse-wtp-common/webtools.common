@@ -136,14 +136,6 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		
 		private void init() throws CoreException {
 			shortSegment = element.getAttribute(ATT_SHORT_SEGMENT);
-			if(shortSegment == null || shortSegment.trim().length() == 0)
-				throw new CoreException(
-							ModulecorePlugin.createErrorStatus(0, 
-										"The shortSegment attribute of " + TAG_RESOURCE_FACTORY + //$NON-NLS-1$ 
-										" must specify a valid, non-null, non-empty value in " +   //$NON-NLS-1$
-										element.getNamespaceIdentifier(), null));
-			if ("false".equals(element.getAttribute(ATT_ISDEFAULT)))
-					isDefault = false;
 			
 			IConfigurationElement[] bindings = element.getChildren(TAG_CONTENTTYPE);
 			if (bindings.length > 0) {
@@ -151,14 +143,32 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 				contentTypeId = bindings[0].getAttribute(ATT_CONTENTTYPEID);			
 				if (contentTypeId != null)
 					contentType = Platform.getContentTypeManager().getContentType(contentTypeId);
-				}
+			}
+			
+			if ((shortSegment == null || shortSegment.trim().length() == 0)
+						&& contentType == null) {
+				throw new CoreException(
+							ModulecorePlugin.createErrorStatus(0, 
+										"Either the shortSegment attribute or the contentType element of " //$NON-NLS-1$
+										+ TAG_RESOURCE_FACTORY 
+										+ " must be specified in " 
+										+ element.getNamespaceIdentifier()
+										+ ".  The shortSegment attribute is specified with a valid, non-null, " //$NON-NLS-1$
+										+ "non-empty value, and the contentType element is specified with a " //$NON-NLS-1$
+										+ "valid, non-null, non-empty contentTypeId." //$NON-NLS-1$
+										, null));
+			}
+			
+			if ("false".equals(element.getAttribute(ATT_ISDEFAULT)))
+				isDefault = false;
 		} 
 
 		public boolean isEnabledFor(URI fileURI) {
-			/* shortSegment must be non-null for the descriptor to be created, 
-			 * a validation check in init() verifies this requirement */
-			if(fileURI != null && fileURI.lastSegment() != null)
+			// Not sure where this is actually used, so not sure what the proper 
+			// implementation should be, so simply checking the short segment for now
+			if (fileURI != null && fileURI.lastSegment() != null && shortSegment != null) {
 				return shortSegment.equals(fileURI.lastSegment());
+			}
 			return false;
 		} 
 		
@@ -186,28 +196,37 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		}
 
 		public IContentType getContentType() {
-			
 			return contentType;
 		}
 
 		public boolean isDefault() {
 			return isDefault;
-		}  
+		}
+		
 		public int hashCode() {
-			if (getContentType() != null)
-				return getShortSegment().hashCode() & getContentType().hashCode();
-			else return super.hashCode();
+			int hashCode = 0;
+			if (getContentType() != null) {
+				hashCode |= getContentType().hashCode();
+			}
+			if (getShortSegment() != null) {
+				hashCode |= getShortSegment().hashCode();
+			}
+			return hashCode;
 		}
 		
 		public boolean equals(Object o) {
-			if(o instanceof ResourceFactoryDescriptor && getContentType() != null)
-				return (getShortSegment().equals(((ResourceFactoryDescriptor)o).getShortSegment()) &&
-						getContentType().equals(((ResourceFactoryDescriptor)o).getContentType()));
-			else if (((ResourceFactoryDescriptor)o).getContentType() != null) return false;
-				
-			return super.equals(o);
+			if (! (o instanceof ResourceFactoryDescriptor)) {
+				return false;
+			}
+			ResourceFactoryDescriptor rfdo = (ResourceFactoryDescriptor) o;
+			boolean equals = true;
+			equals &= (getContentType() == null) ? rfdo.getContentType() == null :
+				getContentType().equals(rfdo.getContentType());
+			equals &= (getShortSegment() == null) ? rfdo.getShortSegment() == null :
+				getShortSegment().equals(rfdo.getShortSegment());
+			return equals;
 		}
-	}  
+	}
 	 
 	
 	private class ResourceFactoryRegistryReader extends RegistryReader implements IResourceFactoryExtPtConstants { 
@@ -255,35 +274,39 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri, IContentDescription description) {
 		Set keys = getDescriptors().keySet();
-		ResourceFactoryDescriptor defaultDesc = null;
-		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
-			if (key.shortName.equals(uri.lastSegment())) {
-				ResourceFactoryDescriptor desc = (ResourceFactoryDescriptor)getDescriptors().get(key);
-				if (description == null) {
-					if (key.type == null) 
-						return desc;
-					else if (desc.isDefault()) 
-						return desc;
+		ResourceFactoryDescriptor defaultDescriptor = null;
+		
+		// first check content type
+		if (description != null) {
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+				ResourceFactoryDescriptor descriptor = (ResourceFactoryDescriptor) getDescriptors().get(key);
+				
+				if ((key.type != null) && (description.getContentType().equals(key.type))) {
+					if ((defaultDescriptor == null) || (key.isDefault)) {
+						defaultDescriptor = descriptor;
+					}
 				}
-				//Allow the contentType discrimination to take place
-				if ((key.type != null) && 
-						(description != null) && 
-						(description.getContentType().equals(key.type))) {
-					// If the current describer is "default" then specify
-					if(desc.isDefault())
-						return desc;
-					else 	
-						defaultDesc = desc;
-				}
-					
-				if ((description != null) && (desc.isDefault()) && (defaultDesc == null))
-					defaultDesc = desc;
 			}
 		}
-		return defaultDesc;
+		
+		// then check short name, overriding default if necessary
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+			ResourceFactoryDescriptor descriptor = (ResourceFactoryDescriptor) getDescriptors().get(key);
+						
+			if ((key.shortName != null) && (uri.lastSegment().equals(key.shortName))) {
+				if ((defaultDescriptor == null) 
+						|| ((description == null) && (key.isDefault))) {
+					defaultDescriptor = descriptor;
+				}
+			}
+		}
+		
+		return defaultDescriptor;
 	}
-private URI newPlatformURI(URI aNewURI, IProject project) {
+	
+	private URI newPlatformURI(URI aNewURI, IProject project) {
 		
 		if (project == null)
 			return ModuleURIUtil.trimToDeployPathSegment(aNewURI);
