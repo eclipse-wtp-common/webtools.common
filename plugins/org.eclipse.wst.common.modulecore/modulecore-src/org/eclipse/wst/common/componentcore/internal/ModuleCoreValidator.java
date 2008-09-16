@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -11,6 +12,7 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResource;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResource;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.core.ValidationException;
@@ -40,8 +42,18 @@ public class ModuleCoreValidator implements IValidatorJob {
 				if (structuralModel != null) {
 					// acquiring the ModuleStructuralModel lock here first because the call to getPrimaryResource()
 					// will cause this lock to be acquired later resulting in a potential deadlock
-					synchronized (structuralModel) {
-						return structuralModel.getPrimaryResource();
+					ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(structuralModel.getProject());
+					try{
+						if(null != lock){
+							lock.acquire();
+						}
+						synchronized(structuralModel){
+							return structuralModel.getPrimaryResource();
+						}
+					} finally{
+						if(null != lock){
+							lock.release();
+						}
 					}
 				}
 			}
