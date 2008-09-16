@@ -12,7 +12,9 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +36,7 @@ import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 /**
  * Validation Framework Builder.
@@ -193,6 +196,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				return referenced;
 			}
 			if (doFullBuild) {
+				cleanupReferencedProjectsMarkers(prjp, referenced);
 				performFullBuild(monitor, prjp);
 			} else {
 //				if (doAutoBuild && !prjp.isAutoValidate()) {
@@ -200,8 +204,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 //					return referenced;
 //				}
 				if (delta.getAffectedChildren().length == 0) {
-					if (isReferencedProjectInDelta(referenced))
+					if (isReferencedProjectInDelta(referenced)){
+						cleanupReferencedProjectsMarkers(prjp, referenced);
 						performFullBuildForReferencedProjectChanged(monitor, prjp);
+					}
 					else
 						executionMap |= 0x10;
 					return referenced;
@@ -299,5 +305,50 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		}
 		entry.setToolName("ValidationBuilder"); //$NON-NLS-1$
 		logger.write(Level.FINE, entry);
+	}
+	
+	private void cleanupReferencedProjectsMarkers(final ProjectConfiguration prjp, IProject[] referenced){
+		//When a project references one or more project, performing a clean build on referenced
+		//causes delta to be invoked on referencee, aka, parent. This causes following code to
+		//be invoked.
+		//The following code is trying to fix a case where Ejb project references a utility project,
+		//and the clean build on utility project causes the code to come here, the ejb validator runs
+		//on the ejb  project due to performFullBuildForReferencedProjectChanged() below, but it also
+		//causes marker to be generated for the util project, but the markers for util project are not
+		//cleaned up.   
+		
+		if( referenced == null || referenced.length == 0 ){
+			return;
+		}
+		
+		try{
+			ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, false);
+ 
+			HashSet  set = new HashSet();
+			set.addAll( Arrays.asList( enabledValidators ) );
+			for (int i = 0; i < referenced.length; i++) {
+				IProject p = referenced[i];
+				ProjectConfiguration refProjectCfg = ConfigurationManager.getManager().getProjectConfiguration(p);
+		
+				ValidatorMetaData[] refEnabledValidators = refProjectCfg.getEnabledFullBuildValidators(true, false);
+				for( int j=0; j< refEnabledValidators.length; j++ ){
+					//remove from the set the validators which are also in child
+					set.remove(refEnabledValidators[j]);
+				}
+				Iterator it = set.iterator();
+				while( it.hasNext() ){
+					ValidatorMetaData validatorMetaData = (ValidatorMetaData)it.next();
+					WorkbenchReporter.removeAllMessages(p, validatorMetaData.getValidator());
+				}
+		
+			}	
+		}catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			logInvocationTargetException(logger, exc);
+		} 
+		catch (Throwable exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			logBuildError(logger, exc);
+		}
 	}
 }
