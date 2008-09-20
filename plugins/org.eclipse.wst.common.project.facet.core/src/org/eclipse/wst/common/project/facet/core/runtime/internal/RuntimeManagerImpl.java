@@ -892,16 +892,10 @@ public final class RuntimeManagerImpl
                 }
                 
                 final String pluginId = config.getContributor().getName();
+                final IRuntimeBridge br = instantiate( pluginId, clname, IRuntimeBridge.class );
                 
-                final IRuntimeBridge br;
-                
-                try
+                if( br == null )
                 {
-                    br = instantiate( pluginId, clname, IRuntimeBridge.class );
-                }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e );
                     continue;
                 }
                 

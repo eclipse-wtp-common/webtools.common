@@ -123,5 +123,20 @@
     <attribute name="compilerLevel"/>
     <persistent value="true"/>
   </extension>
+
+  <extension-point 
+   	id="librariesProviders" 
+   	name="%librariesProvidersExtensionPointName" 
+   	schema="schemas/librariesProviders.exsd"/>
+   	
+  <extension point="org.eclipse.jst.common.project.facet.core.librariesProviders">
+    <provider id="unknown-libraries-provider" hidden="true">
+      <label>%unknownLibrariesProviderLabel</label>
+      <action type="UNINSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownProviderUninstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
   
 </plugin>

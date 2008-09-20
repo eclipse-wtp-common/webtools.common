@@ -13,11 +13,9 @@ package org.eclipse.wst.common.project.facet.core.events.internal;
 
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
-import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 
 /**
  * This listener implementation is used to delay class loading of listeners registered via the
@@ -49,15 +47,12 @@ public final class DelayedClassLoadingListener
         {
             if( this.listener == null )
             {
-                try
+                this.listener 
+                    = instantiate( this.pluginId, this.listenerClassName, 
+                                   IFacetedProjectListener.class );
+                
+                if( this.listener == null )
                 {
-                    this.listener 
-                        = instantiate( this.pluginId, this.listenerClassName, 
-                                       IFacetedProjectListener.class );
-                }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e );
                     FacetedProjectFramework.removeListener( this );
                     return;
                 }

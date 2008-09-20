@@ -65,6 +65,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
@@ -1775,17 +1776,13 @@ public final class FacetedProjectFrameworkImpl
                 
                 if( clname != null )
                 {
-                    try
+                    final IDefaultVersionProvider defaultVersionProvider
+                        = instantiate( f.getPluginId(), clname, IDefaultVersionProvider.class );
+
+                    if( defaultVersionProvider != null )
                     {
-                        final IDefaultVersionProvider defaultVersionProvider
-                            = instantiate( f.getPluginId(), clname, IDefaultVersionProvider.class );
-                        
                         f.setDefaultVersionProvider( defaultVersionProvider );
                         defaultVersionSpecified = true;
-                    }
-                    catch( CoreException e )
-                    {
-                        FacetCorePlugin.log( e );
                     }
                 }
                 else

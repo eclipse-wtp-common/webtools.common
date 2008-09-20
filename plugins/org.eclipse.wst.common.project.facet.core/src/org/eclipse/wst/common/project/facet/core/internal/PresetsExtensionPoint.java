@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IDynamicPreset;
@@ -568,16 +567,8 @@ public final class PresetsExtensionPoint
         
         public IPreset resolve( final Map<String,Object> context )
         {
-            IPresetFactory factory = null;
-            
-            try
-            {
-                factory = instantiate( this.pluginId, this.factoryClassName, IPresetFactory.class );
-            }
-            catch( CoreException e )
-            {
-                log( e.getStatus() );
-            }
+            final IPresetFactory factory
+                = instantiate( this.pluginId, this.factoryClassName, IPresetFactory.class );
             
             if( factory != null )
             {

@@ -11,11 +11,13 @@
 
 package org.eclipse.wst.common.project.facet.core.util.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.createErrorStatus;
+import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.log;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -175,38 +177,84 @@ public final class PluginUtil
         return defaultValue;
     }
     
+    public static <T> Class<T> loadClass( final String pluginId,
+                                          final String clname )
+    {
+        return loadClass( pluginId, clname, null );
+    }
+
     @SuppressWarnings( "unchecked" )
-    public static <T> T instantiate( final String pluginId,
-                                     final String clname,
-                                     final Class<T> interfc )
-    
-        throws CoreException
-        
+    public static <T> Class<T> loadClass( final String pluginId,
+                                          final String clname,
+                                          final Class<T> interfc )
     {
         final Bundle bundle = Platform.getBundle( pluginId );
-        
-        final Object obj;
-        
+        final Class cl;
+
         try
         {
-            final Class cl = bundle.loadClass( clname );
-            obj = cl.newInstance();
+            cl = bundle.loadClass( clname );
         }
         catch( Exception e )
         {
-            final String msg = NLS.bind( Resources.failedToCreate, clname );
-            throw new CoreException( FacetCorePlugin.createErrorStatus( msg, e ) );
+            final String msg
+                = Resources.bind( Resources.failedToLoadClass, clname, pluginId );
+
+            log( createErrorStatus( msg, e ) );
+
+            return null;
         }
-        
-        if( ! interfc.isAssignableFrom( obj.getClass() ) )
+
+        if( interfc != null && ! interfc.isAssignableFrom( cl ) )
         {
             final String msg
-                = NLS.bind( Resources.doesNotImplement, clname, interfc.getClass().getName() );
-            
-            throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+                = Resources.bind( Resources.doesNotImplement, clname,
+                                  interfc.getClass().getName() );
+
+            log( createErrorStatus( msg ) );
+
+            return null;
         }
-        
-        return (T) obj;
+
+        return cl;
+    }
+
+    public static <T> T instantiate( final String pluginId,
+                                     final Class<T> cl )
+    {
+        try
+        {
+            return cl.newInstance();
+        }
+        catch( Exception e )
+        {
+            final String msg
+                = NLS.bind( Resources.failedToInstantiate, cl.getName(), pluginId );
+
+            log( createErrorStatus( msg, e ) );
+
+            return null;
+        }
+    }
+
+    public static <T> T instantiate( final String pluginId,
+                                     final String clname )
+    {
+        return instantiate( pluginId, clname, (Class<T>) null );
+    }
+
+    public static <T> T instantiate( final String pluginId,
+                                     final String clname,
+                                     final Class<T> interfc )
+    {
+        final Class<T> cl = loadClass( pluginId, clname, interfc );
+
+        if( cl == null )
+        {
+            return null;
+        }
+
+        return instantiate( pluginId, cl );
     }
     
     private static final class Resources
@@ -216,7 +264,8 @@ public final class PluginUtil
     {
         public static String missingAttribute;
         public static String missingElement;
-        public static String failedToCreate;
+        public static String failedToLoadClass;
+        public static String failedToInstantiate;
         public static String doesNotImplement;
     
         static

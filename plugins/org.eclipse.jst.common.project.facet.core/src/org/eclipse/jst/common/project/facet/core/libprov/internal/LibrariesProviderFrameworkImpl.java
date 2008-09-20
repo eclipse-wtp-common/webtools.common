@@ -1,0 +1,404 @@
+/******************************************************************************
+ * Copyright (c) 2008 Oracle
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ ******************************************************************************/
+
+package org.eclipse.jst.common.project.facet.core.libprov.internal;
+
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.PLUGIN_ID;
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.createErrorStatus;
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.getWorkspacePreferences;
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredElement;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderActionType;
+import org.eclipse.jst.common.project.facet.core.libprov.ILibrariesProvider;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
+
+/**
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ */
+
+public final class LibrariesProviderFrameworkImpl
+{
+    private static final String EXTENSION_POINT_ID = "librariesProviders"; //$NON-NLS-1$
+    
+    private static final String EL_ACTION = "action"; //$NON-NLS-1$
+    private static final String EL_CONFIG = "config"; //$NON-NLS-1$
+    private static final String EL_ENABLEMENT = "enablement"; //$NON-NLS-1$
+    private static final String EL_LABEL = "label"; //$NON-NLS-1$
+    private static final String EL_OPERATION = "operation"; //$NON-NLS-1$
+    private static final String EL_PARAM = "param"; //$NON-NLS-1$
+    private static final String EL_PRIORITY = "priority"; //$NON-NLS-1$
+    private static final String EL_PROVIDER = "provider"; //$NON-NLS-1$
+    private static final String ATTR_ABSTRACT = "abstract"; //$NON-NLS-1$
+    private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+    private static final String ATTR_EXTENDS = "extends"; //$NON-NLS-1$
+    private static final String ATTR_HIDDEN = "hidden"; //$NON-NLS-1$
+    private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ATTR_NAME = "name"; //$NON-NLS-1$
+    private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
+    private static final String ATTR_VALUE = "value"; //$NON-NLS-1$
+    
+    private static final String PREFS_LAST_PROVIDER_USED = "libprov/lastProviderUsed"; //$NON-NLS-1$
+    
+    private final Map<String,ILibrariesProvider> providers;
+    
+    public LibrariesProviderFrameworkImpl()
+    {
+        this.providers = new HashMap<String,ILibrariesProvider>();
+        readExtensions();
+    }
+    
+    public Set<ILibrariesProvider> getProviders( final IFacetedProjectWorkingCopy fpjwc,
+                                                 final IProjectFacetVersion fv )
+    {
+        final Set<ILibrariesProvider> result = new HashSet<ILibrariesProvider>();
+        
+        for( ILibrariesProvider provider : this.providers.values() )
+        {
+            if( ! provider.isAbstract() && ! provider.isHidden() 
+                && provider.isEnabledFor( fpjwc, fv ) )
+            {
+                result.add( provider );
+            }
+        }
+        
+        return result;
+    }
+    
+    public boolean isProviderDefined( final String id )
+    {
+        return this.providers.containsKey( id );
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws IllegalArgumentException if the specified provider id is not recognized
+     */
+    
+    public ILibrariesProvider getProvider( final String id )
+    {
+        if( ! isProviderDefined( id ) )
+        {
+            final String msg = Resources.bind( Resources.librariesProviderNotDefined, id );
+            throw new IllegalArgumentException( msg );
+        }
+        
+        return this.providers.get( id );
+    }
+    
+    public ILibrariesProvider getLastProviderUsed( final IProjectFacetVersion fv )
+    {
+        final Preferences prefs = getLastProviderUsedPreferences();
+        final String prefsKey = createStringKey( fv );
+        
+        final String providerId = prefs.get( prefsKey, null );
+        
+        if( providerId != null )
+        {
+            if( isProviderDefined( providerId ) )
+            {
+                return getProvider( providerId );
+            }
+            else
+            {
+                prefs.remove( prefsKey );
+                
+                try
+                {
+                    prefs.flush();
+                }
+                catch( BackingStoreException e )
+                {
+                    log( e );
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    public void setLastProviderUsed( final IProjectFacetVersion fv,
+                                     final ILibrariesProvider provider )
+    {
+        final Preferences prefs = getLastProviderUsedPreferences();
+        final String prefsKey = createStringKey( fv );
+        
+        prefs.put( prefsKey, provider.getId() );
+        
+        try
+        {
+            prefs.flush();
+        }
+        catch( BackingStoreException e )
+        {
+            log( e );
+        }
+    }
+    
+    private static Preferences getLastProviderUsedPreferences()
+    {
+        final IEclipsePreferences prefs = getWorkspacePreferences();
+        return prefs.node( PREFS_LAST_PROVIDER_USED );
+    }
+    
+    private static String createStringKey( final IProjectFacetVersion fv )
+    {
+        return fv.getProjectFacet().getId() + ":" + fv.getVersionString(); //$NON-NLS-1$
+    }
+    
+    public static void reportInvalidActionType( final String type,
+                                                final String pluginId )
+    {
+        final String msg = Resources.bind( Resources.invalidActionType, type, pluginId ); 
+        log( createErrorStatus( msg ) );
+    }
+    
+    public static void reportProviderNotDefined( final String providerId,
+                                                 final String pluginId )
+    {
+        final String msg 
+            = Resources.bind( Resources.librariesProviderNotDefinedWithPlugin, providerId,
+                              pluginId );
+        
+        log( createErrorStatus( msg ) );
+    }
+    
+    private void readExtensions()
+    {
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        
+        final IExtensionPoint point 
+            = registry.getExtensionPoint( PLUGIN_ID, EXTENSION_POINT_ID );
+        
+        if( point == null )
+        {
+            throw new IllegalStateException();
+        }
+        
+        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
+        
+        for( IExtension extension : point.getExtensions() )
+        {
+            for( IConfigurationElement element : extension.getConfigurationElements() )
+            {
+                cfgels.add( element );
+            }
+        }
+        
+        final Map<LibrariesProvider,String> providerToBaseIdMap 
+            = new HashMap<LibrariesProvider,String>();
+
+        for( IConfigurationElement element : cfgels )
+        {
+            if( ! element.getName().equals( EL_PROVIDER ) )
+            {
+                continue;
+            }
+            
+            try
+            {
+                final LibrariesProvider provider = new LibrariesProvider();
+                provider.setPluginId( element.getContributor().getName() );
+                
+                provider.setId( findRequiredAttribute( element, ATTR_ID ) );
+                
+                if( this.providers.containsKey( provider.getId() ) )
+                {
+                    final String msg 
+                        = Resources.bind( Resources.librariesProviderIdAlreadyUsed, 
+                                          provider.getId() );
+                    
+                    log( createErrorStatus( msg ) );
+                    
+                    throw new InvalidExtensionException();
+                }
+                
+                final String baseProviderId = element.getAttribute( ATTR_EXTENDS );
+                
+                if( baseProviderId != null )
+                {
+                    providerToBaseIdMap.put( provider, baseProviderId.trim() );
+                }
+                
+                final String abstractAttr = element.getAttribute( ATTR_ABSTRACT );
+                
+                if( abstractAttr != null )
+                {
+                    provider.setIsAbstract( Boolean.valueOf( abstractAttr ) );
+                }
+                
+                final String hiddenAttr = element.getAttribute( ATTR_HIDDEN );
+                
+                if( hiddenAttr != null )
+                {
+                    provider.setIsHidden( Boolean.valueOf( hiddenAttr ) );
+                }
+
+                for( IConfigurationElement child : element.getChildren() )
+                {
+                    final String childName = child.getName();
+                    
+                    if( childName.equals( EL_LABEL ) )
+                    {
+                        provider.setLabel( child.getValue().trim() );
+                    }
+                    else if( childName.equals( EL_ENABLEMENT ) )
+                    {
+                        final Expression expr;
+                        
+                        try
+                        {
+                            expr = ExpressionConverter.getDefault().perform( child );
+                        }
+                        catch( CoreException e )
+                        {
+                            log( e );
+                            throw new InvalidExtensionException();
+                        }
+                        
+                        provider.setEnablementCondition( expr );
+                    }
+                    else if( childName.equals( EL_PRIORITY ) )
+                    {
+                        final String priorityString = child.getValue().trim();
+                        final int priority;
+                        
+                        try
+                        {
+                            priority = Integer.parseInt( priorityString );
+                        }
+                        catch( NumberFormatException e )
+                        {
+                            log( e );
+                            throw new InvalidExtensionException();
+                        }
+                        
+                        provider.setPriority( priority );
+                    }
+                    else if( childName.equals( EL_PARAM ) )
+                    {
+                        final String name = findRequiredAttribute( child, ATTR_NAME );
+                        final String value = findRequiredAttribute( child, ATTR_VALUE );
+                        
+                        provider.addParam( name, value );
+                    }
+                    else if( childName.equals( EL_ACTION ) )
+                    {
+                        final String type = findRequiredAttribute( child, ATTR_TYPE ).toUpperCase();
+                        final LibrariesProviderActionType t;
+                        
+                        try
+                        {
+                            t = LibrariesProviderActionType.valueOf( type );
+                        }
+                        catch( IllegalArgumentException e )
+                        {
+                            reportInvalidActionType( type, provider.getPluginId() );
+                            throw new InvalidExtensionException();
+                        }
+                        
+                        final IConfigurationElement elConfig 
+                            = findOptionalElement( child, EL_CONFIG );
+                        
+                        final String configClassName;
+                        
+                        if( elConfig == null )
+                        {
+                            configClassName = null;
+                        }
+                        else
+                        {
+                            configClassName = findRequiredAttribute( elConfig, ATTR_CLASS );
+                        }
+                        
+                        final IConfigurationElement elOperation 
+                            = findRequiredElement( child, EL_OPERATION );
+                        
+                        final String operationClassName 
+                            = findRequiredAttribute( elOperation, ATTR_CLASS );
+                        
+                        provider.addActionDef( t, configClassName, operationClassName );
+                    }
+                }
+                
+                if( provider != null )
+                {
+                    this.providers.put( provider.getId(), provider );
+                }
+            }
+            catch( InvalidExtensionException e )
+            {
+                // Ignore and continue. The problem has already been reported to the user
+                // in the log.
+            }
+        }
+        
+        for( Map.Entry<LibrariesProvider,String> entry : providerToBaseIdMap.entrySet() )
+        {
+            final LibrariesProvider provider = entry.getKey();
+            final String baseProviderId = entry.getValue();
+            final ILibrariesProvider baseProvider = this.providers.get( baseProviderId );
+            
+            if( baseProvider == null )
+            {
+                reportProviderNotDefined( baseProviderId, provider.getPluginId() );
+                this.providers.remove( provider );
+            }
+            else
+            {
+                provider.setBaseProvider( baseProvider );
+            }
+        }
+    }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String librariesProviderNotDefined;
+        public static String librariesProviderNotDefinedWithPlugin;
+        public static String librariesProviderIdAlreadyUsed;
+        public static String invalidActionType;
+        
+        static
+        {
+            initializeMessages( LibrariesProviderFrameworkImpl.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
+}
