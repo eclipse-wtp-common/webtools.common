@@ -62,10 +62,10 @@
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="shortSegment" type="string" use="required">
+         <attribute name="shortSegment" type="string">
             <annotation>
                <documentation>
-                  Declares the short segment of a filename that the resource factory applies to (e.g. &quot;web.xml&quot;).
+                  Optionally declares the short segment of a filename that the resource factory applies to (e.g. &quot;web.xml&quot;).
                </documentation>
             </annotation>
          </attribute>

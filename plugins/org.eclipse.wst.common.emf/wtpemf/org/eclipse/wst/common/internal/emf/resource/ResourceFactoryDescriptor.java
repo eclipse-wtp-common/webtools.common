@@ -56,7 +56,8 @@ public abstract class ResourceFactoryDescriptor {
 	 * instead of comparing the short segments when searching for an
 	 * applicable descriptor from a set.  
 	 * 
-	 * <p><b>Subclasses may NOT return null.</b></p>
+	 * <p><b>Subclasses may NOT return null unless they also override
+	 * {@link #hashCode()} and {@link #equals(Object)}.</b></p>
 	 *  
 	 * @return The short segment that this descriptor is applicable to.
 	 */
