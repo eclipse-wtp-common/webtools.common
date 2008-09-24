@@ -12,7 +12,9 @@ package org.eclipse.wst.common.componentcore.internal.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -215,6 +217,18 @@ public class ComponentUtilities {
 		modHandlesList.addAll(targetComponentProjects);
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, modHandlesList);
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH,"/WEB-INF/lib"); //$NON-NLS-1$
+		if(modHandlesList != null){
+			Map map = new HashMap();
+			for(int i=0; i<modHandlesList.size();i++){
+				IVirtualComponent comp = (IVirtualComponent)modHandlesList.get(i);
+				String uri = comp.getName().replace(' ', '_') + ".jar";
+				map.put(comp, uri);
+			}
+			if(map.size() > 0){
+				model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, map);
+			}
+		}
+		
 		return new CreateReferenceComponentsOp(model);
 	}
 
