@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_ui.feature.patch"
       label="%featureName"
-      version="3.0.1.qualifier"
+      version="1.5.5.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,9 +18,8 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.wst.common_ui.feature" version="3.0.1.v200807220139-7C78ELWE8VrRVorIr-jb1AsOaXHW" patch="true"/>
+      <import feature="org.eclipse.wst.common_ui.feature" version="1.5.5.v200707311635-qKHiZIRPOkpEay9" patch="true"/>
    </requires>
-
 
    <plugin
          id="org.eclipse.wst.common.project.facet.ui"
@@ -28,5 +27,5 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
 </feature>
