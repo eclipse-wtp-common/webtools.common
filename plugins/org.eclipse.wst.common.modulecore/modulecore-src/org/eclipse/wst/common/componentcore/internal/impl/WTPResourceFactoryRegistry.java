@@ -11,6 +11,8 @@
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -115,6 +117,11 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		key.shortName = descriptor.getShortSegment();
 		key.type = descriptor.getContentType();
 		key.isDefault = descriptor.isDefault();
+		if(descriptor instanceof ConfigurationResourceFactoryDescriptor){
+			ConfigurationResourceFactoryDescriptor configurationDescriptor = (ConfigurationResourceFactoryDescriptor)descriptor;
+			key.factoryClassName = configurationDescriptor.getFactoryClassName();
+			key.overridesFactoryClassName = configurationDescriptor.getOverridesFactoryClassName();
+		}
 		return key;
 	}
 	
@@ -126,6 +133,8 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		private String shortSegment;
 		private IContentType contentType;
 		private boolean isDefault = true;
+		private String factoryClassName = null;
+		private String overridesFactoryClassName = null;
 		private final IConfigurationElement element; 
 		
 		public ConfigurationResourceFactoryDescriptor(IConfigurationElement ext) throws CoreException {
@@ -134,6 +143,14 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			init();
 		} 
 		
+		public String getOverridesFactoryClassName() {
+			return overridesFactoryClassName;
+		}
+
+		public String getFactoryClassName() {
+			return factoryClassName;
+		}
+
 		private void init() throws CoreException {
 			shortSegment = element.getAttribute(ATT_SHORT_SEGMENT);
 			
@@ -161,6 +178,9 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			
 			if ("false".equals(element.getAttribute(ATT_ISDEFAULT)))
 				isDefault = false;
+				
+            factoryClassName = element.getAttribute(ATT_CLASS);
+			overridesFactoryClassName = element.getAttribute(ATT_OVERRIDES_FACTORY);				
 		} 
 
 		public boolean isEnabledFor(URI fileURI) {
@@ -258,6 +278,8 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	}
 	private class WTPResourceFactoryRegistryKey { 
  		
+		public String overridesFactoryClassName;
+		public String factoryClassName;
 		public String shortName;
 		public IContentType type;
 		public boolean isDefault = true;
@@ -265,21 +287,82 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			super();
 		}
 		
-		
+		/**
+		 * Sort in the following manner:
+		 * First, sort by shortName
+		 * If shortNames are equal, then sort by isDefault
+		 * If isDefault is also equal, then the one defining a factoryClassName wins
+		 * If both have factoryClassNames, then check to see if one overrides the other via overridesFactoryClassName
+		 * If neither override the other factory class, then sort by factoryClassname
+		 * @param other
+		 * @return
+		 */
+		public int compareTo(WTPResourceFactoryRegistryKey other){
+			if(this == other){
+				return 0;
+			}
+			int shortNameCompare = this.shortName.compareTo(other.shortName);
+			if(shortNameCompare != 0){
+				return shortNameCompare;
+			} else {
+				if(this.isDefault != other.isDefault){
+					if(this.isDefault){
+						return -1;
+					} else {
+						return 1;
+					}
+				} else {
+					if(this.factoryClassName == null && other.factoryClassName == null){
+						return 0;
+					} else if(other.factoryClassName == null){
+						return -1;
+					} else if (this.factoryClassName == null){
+						return 1;
+					} else if(other.factoryClassName.equals(this.overridesFactoryClassName)){
+						return -1;
+					} else if(this.factoryClassName.equals(other.overridesFactoryClassName)){
+						return 1;
+					} else {
+						return this.factoryClassName.compareTo(other.factoryClassName);
+					}	
+				}
+			}
+		}
 	}
 
 	protected void addDescriptor(ResourceFactoryDescriptor descriptor) {
 		getDescriptors().put(getKey(descriptor), descriptor);
 	}
+	
+	private WTPResourceFactoryRegistryKey []  sortedDescriptors = null;
+	
+	private WTPResourceFactoryRegistryKey []  getSortedDescriptorKeys() {
+		if(sortedDescriptors == null || sortedDescriptors.length != getDescriptors().size()){
+			Set keys = getDescriptors().keySet();
+			WTPResourceFactoryRegistryKey [] array = new WTPResourceFactoryRegistryKey [keys.size()];
+			int count = 0;
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();count++) {
+				WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+				array[count] = key;
+			}
+			Arrays.sort(array, new Comparator<WTPResourceFactoryRegistryKey>() {
+				public int compare(WTPResourceFactoryRegistryKey key1,
+						WTPResourceFactoryRegistryKey key2) {
+					return key1.compareTo(key2);
+				}
+			});
+			sortedDescriptors = array;
+		}
+		return sortedDescriptors;
+	}
 
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri, IContentDescription description) {
-		Set keys = getDescriptors().keySet();
+		WTPResourceFactoryRegistryKey [] keys = getSortedDescriptorKeys();
 		ResourceFactoryDescriptor defaultDescriptor = null;
 		
 		// first check content type
 		if (description != null) {
-			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-				WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+			for (WTPResourceFactoryRegistryKey key : keys) {
 				ResourceFactoryDescriptor descriptor = (ResourceFactoryDescriptor) getDescriptors().get(key);
 				
 				if ((key.type != null) && (description.getContentType().equals(key.type))) {
@@ -291,8 +374,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		}
 		
 		// then check short name, overriding default if necessary
-		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+		for (WTPResourceFactoryRegistryKey key : keys) {
 			ResourceFactoryDescriptor descriptor = (ResourceFactoryDescriptor) getDescriptors().get(key);
 						
 			if ((key.shortName != null) && (uri.lastSegment().equals(key.shortName))) {
