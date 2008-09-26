@@ -1,16 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.modulecore">
+<schema targetNamespace="org.eclipse.wst.common.modulecore" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipse.wst.common.modulecore" id="resourceFactories" name="Resource Factory Association (Internal)"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          An *internal* extension point that declares an association between a short-segment filename and a Resource.Factory.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="resourceFactory"/>
@@ -34,9 +39,9 @@
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -57,9 +62,9 @@
                <documentation>
                   Declares an implementation of &lt;code&gt;org.eclipse.emf.ecore.resource.Resource.Factory&lt;/code&gt;.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.emf.ecore.resource.Resource.Factory"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="shortSegment" type="string">
@@ -76,14 +81,24 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="overridesFactoryClass" type="string">
+            <annotation>
+               <documentation>
+                  This optional attribute is to resolve conflicts between multiple defeault factories registered to the same content type and short segments.  The value should be the fully qualified class name of the factory being overridden.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.emf.ecore.resource.Resource.Factory:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
    <element name="contentTypeBinding">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element labelAttribute="contentTypeId"/>
-         </appInfo>
+         </appinfo>
          <documentation>
             Advertises that the containing editor understands the given content type and is suitable for editing files of that type.
          </documentation>
@@ -100,48 +115,40 @@
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          [Enter the first release in which this extension point appears.]
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          [Enter extension point usage example here.]
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="apiInfo"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          [Enter API information here.]
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="implementation"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          [Enter information about supplied implementation of this extension point.]
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="copyright"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
 </schema>

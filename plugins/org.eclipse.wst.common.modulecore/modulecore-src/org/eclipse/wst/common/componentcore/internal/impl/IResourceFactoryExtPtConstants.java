@@ -26,6 +26,8 @@ public interface IResourceFactoryExtPtConstants {
 	String ATT_CONTENTTYPEID = "contentTypeId"; //$NON-NLS-1$ 
 	
 	String ATT_ISDEFAULT = "isDefault"; //$NON-NLS-1$ 
+	
+	String ATT_OVERRIDES_FACTORY ="overridesFactoryClass"; //$NON-NLS-1$ 
 		
 
 }
