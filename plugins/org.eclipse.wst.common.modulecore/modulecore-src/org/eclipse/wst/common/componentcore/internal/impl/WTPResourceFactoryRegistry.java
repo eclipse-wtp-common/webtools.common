@@ -289,7 +289,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		
 		/**
 		 * Sort in the following manner:
-		 * First, sort by shortName
+		 * First, sort by shortName, if shortName is null, then it comes last
 		 * If shortNames are equal, then sort by isDefault
 		 * If isDefault is also equal, then the one defining a factoryClassName wins
 		 * If both have factoryClassNames, then check to see if one overrides the other via overridesFactoryClassName
@@ -301,6 +301,14 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			if(this == other){
 				return 0;
 			}
+			if(shortName == null && other.shortName == null){
+				return 0;
+			} else if(shortName == null){
+				return 1;
+			} else if(other.shortName == null){
+				return -1;
+			}
+			
 			int shortNameCompare = this.shortName.compareTo(other.shortName);
 			if(shortNameCompare != 0){
 				return shortNameCompare;
