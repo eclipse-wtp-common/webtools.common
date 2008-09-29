@@ -281,13 +281,22 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            {@see ModuleCoreNature}
 	 */
 	protected ArtifactEdit(ModuleCoreNature aNature, IVirtualComponent aModule, boolean toAccessAsReadOnly) {
-		if (toAccessAsReadOnly)
-			artifactEditModel = aNature.getArtifactEditModelForRead(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
-		else
-			artifactEditModel = aNature.getArtifactEditModelForWrite(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
+		
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
 		project = aNature.getProject();
+		IProject aProject = aModule.getProject();
+		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
+		Map editModelParams = null;
+		if (getContentTypeDescriber() != null) {
+			editModelParams = new HashMap();
+			editModelParams.put(ArtifactEditModelFactory.PARAM_ROOT_URI, getRootURI());
+			editModelParams.put(ArtifactEditModelFactory.PARAM_ROOT_CONTENT_TYPE, getContentTypeDescriber());
+		}
+		if (toAccessAsReadOnly) 
+			artifactEditModel = aNature.getArtifactEditModelForRead(componentURI, this, null, editModelParams);
+		else 
+			artifactEditModel = aNature.getArtifactEditModelForWrite(componentURI, this, null, editModelParams);
 	}
 
 	/**
