@@ -11,8 +11,8 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -39,7 +39,7 @@ public class EventManager implements IResourceChangeListener {
 	private IResourceDeltaVisitor _postAutoBuildVisitor;
 	private boolean _isActive; // has the registry been read?
 	
-	private Set<IProjectChangeListener> _listeners = new HashSet<IProjectChangeListener>(4);
+	private Set<IProjectChangeListener> _listeners = new CopyOnWriteArraySet<IProjectChangeListener>();
 
 	private EventManager() {
 	}
