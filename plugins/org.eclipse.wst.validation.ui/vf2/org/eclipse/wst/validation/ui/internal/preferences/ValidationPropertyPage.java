@@ -623,8 +623,11 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		protected void updateWidgetsForDefaults() throws InvocationTargetException {
-			updateAllWidgets();
-			updateHelp();
+			_suspend.setSelection(false);
+			_override.setSelection(false);
+			enableDisableWidgets();
+			_validatorList.setInput(_validators);
+			_validatorList.refresh();
 		}
 
 		private void updateAllWidgets() throws InvocationTargetException {
