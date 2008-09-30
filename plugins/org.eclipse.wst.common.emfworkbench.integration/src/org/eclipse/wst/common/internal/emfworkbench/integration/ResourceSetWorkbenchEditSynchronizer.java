@@ -17,6 +17,7 @@
 package org.eclipse.wst.common.internal.emfworkbench.integration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +40,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ILock;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -133,6 +136,37 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	public ResourceSetWorkbenchEditSynchronizer(ResourceSet aResourceSet, IProject aProject) {
 		super(aResourceSet, aProject);
+		aResourceSet.eAdapters().add(new AdapterImpl() {
+
+            public void notifyChanged(Notification notification) {
+                Collection removedResources = null;
+                
+                switch (notification.getEventType()) {
+                case Notification.REMOVE:
+                	Object newObj = notification.getOldValue();
+                	if (!(newObj instanceof Resource)){
+                		break;
+                	}
+                	removedResources = new ArrayList();
+                	removedResources.add((Resource)newObj);
+                	break;
+                case Notification.REMOVE_MANY:
+                    removedResources = (Collection) notification.getOldValue();
+                    break;
+                default:
+                    break;
+                }
+
+                if (removedResources != null && !removedResources.isEmpty()) {
+                    for (Iterator iter = recentlySavedFiles.iterator(); iter.hasNext();) {
+                        SavedFileKey key = (SavedFileKey) iter.next();
+                        if (key.res != null && removedResources.contains(key.res)) {
+                        	iter.remove();
+                        }
+                    }
+                }
+            }
+        });
 	}
 
 	/*
@@ -324,7 +358,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
         for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
 			Resource resource = (Resource) iterator.next();
 
-			if ((resource != null) || (recentlySavedFilesContains(resource))) {
+			if ((resource != null) && (recentlySavedFilesContains(resource))) {
 				/*
 				 * The IFile was just added to the workspace but we have a
 				 * resource in memory. Need to decide if it should be unloaded.
@@ -366,7 +400,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private synchronized boolean recentlySavedFilesContains(Resource resource) {
 		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
 			SavedFileKey key = (SavedFileKey) iterator.next();
-			if (key.res.equals(resource)) 
+			if (key.res != null && key.res.equals(resource)) 
 				return true;
 			}
 		return false;
@@ -376,7 +410,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		List resources = getResources(aFile);
         for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
 			Resource resource = (Resource) iterator.next();
-			if ((resource != null) || (recentlySavedFilesContains(resource))) {
+			if ((resource != null) && (recentlySavedFilesContains(resource))) {
 				if (resource.isModified()) {
 					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
 						ReferencedResource refRes = (ReferencedResource) resource;
@@ -427,18 +461,21 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 	
 	protected List getResources(IFile aFile) {
-		
+
 		List resources = new ArrayList();
 		List allResources = resourceSet.getResources();
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
-			IPath resURIPath;
-			if (WorkbenchResourceHelper.isPlatformResourceURI(resURI)) 
-				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
-			else 
-				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
-			String resURIString = resURIPath.toString();
+			String resURIString = "";
+			if (resURI.path() != null) {
+				IPath resURIPath;
+				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
+					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
+				else
+					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
+				resURIString = resURIPath.toString();
+			}
 			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
 				resources.add(res);
 		}
