@@ -87,7 +87,7 @@ public class TestValidator extends AbstractValidator {
 			}
 			
 			if (severity != -1){
-				ValidatorMessage message = ValidatorMessage.create(line + "(by " + SimpleName +")", resource);
+				ValidatorMessage message = ValidatorMessage.create(line + "(by " + getName() +")", resource);
 				message.setAttribute(IMarker.LINE_NUMBER, count);
 				message.setAttribute(IMarker.SEVERITY, severity);
 				vr.add(message);
