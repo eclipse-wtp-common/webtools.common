@@ -79,7 +79,12 @@ public class ValPrefManagerProject {
 	}
 	
 	/**
-	 * Answer the v2 validators that have been overridden by the global preferences.
+	 * Answer the v2 validators that have been overridden by the global
+	 * preferences.
+	 * 
+	 * @param baseValidators
+	 *            V2 validators from the extension points, and customized by any
+	 *            global preferences.
 	 */
 	public List<Validator> getValidators(Map<String, Validator> baseValidators) throws BackingStoreException {
 		List<Validator> vals = _validators;
@@ -92,7 +97,13 @@ public class ValPrefManagerProject {
 	
 	/**
 	 * Load the validators from the preference store.
-	 * @return the validators that have been overridden by the global references.
+	 * 
+	 * @param baseValidators
+	 *            V2 validators from the extension points, and customized by any
+	 *            global preferences.
+	 * @return the validators that are in the project preference file, but have
+	 *         only been configured to the global preference level. That is they have not had
+	 *         any project level customizations applied yet.
 	 */
 	private List<Validator> loadValidators(Map<String, Validator> baseValidators) throws BackingStoreException {
 		LinkedList<Validator> list = new LinkedList<Validator>();

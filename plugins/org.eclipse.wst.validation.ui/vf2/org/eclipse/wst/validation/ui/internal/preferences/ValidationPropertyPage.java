@@ -263,7 +263,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefault().getValidators(getProject()));
+			_validators = copyValidators(ValManager.getDefault().getValidatorsConfiguredForProject(getProject()));
 
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
 
