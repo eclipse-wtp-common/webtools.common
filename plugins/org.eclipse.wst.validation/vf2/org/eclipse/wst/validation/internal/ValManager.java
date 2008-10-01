@@ -116,7 +116,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * Because if you make changes to the original validators, and since we only save differences,
 	 * there won't be any differences. 
 	 * 
-	 * @return Answer an empty array if there are no validators.
+	 * @return Answer the validators in name sorted order. Answer an empty array if there are no validators.
 	 * 
 	 * @see #getValidatorsCopy()
 	 */
@@ -182,12 +182,15 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * </p>
 	 * 
 	 * @param project
-	 *            This may be null, in which case the global preferences are returned.
+	 *            This may be null, in which case the global preferences are
+	 *            returned.
+	 * 
+	 * @return The validators in name sorted order.
 	 */
 	public synchronized Validator[] getValidators(IProject project) throws ProjectUnavailableError {
 		Map<String,Validator> v2Vals = getV2Validators(project);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
-		for (Validator v : v2Vals.values())sorted.add(v);
+		sorted.addAll(v2Vals.values());
 		
 		try {
 			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
@@ -214,6 +217,43 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		
 		Validator[] vals = new Validator[sorted.size()];
 		sorted.toArray(vals);
+		return vals;
+	}
+	
+	/**
+	 * Validators can use project level settings (Project natures and facets) to
+	 * determine if they are applicable to the project or not.
+	 * 
+	 * @param project
+	 *            The project that the configuration is based on.
+	 * @return The validators that are configured to run on this project based
+	 *         on the project level settings. These are the "live" validators, they are not copies.
+	 * @throws ProjectUnavailableError
+	 */
+	public Validator[] getValidatorsConfiguredForProject(IProject project) throws ProjectUnavailableError {
+		Map<String,Validator> v2Vals = getV2Validators(project);
+		TreeSet<Validator> sorted = new TreeSet<Validator>();
+		sorted.addAll(v2Vals.values());
+		
+		try {
+			ValidationConfiguration vc = ConfigurationManager.getManager().getProjectConfiguration(project);
+			ValidatorMetaData[] vmds = vc.getValidators();
+			for (ValidatorMetaData vmd : vmds) {
+				Validator v = Validator.create(vmd, vc, project);
+				sorted.add(v);
+			}
+		}
+		catch (InvocationTargetException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+				
+		List<Validator> list = new LinkedList<Validator>();
+		for (Validator v : sorted){
+			if (v.shouldValidateProject(project, false, false))list.add(v);
+		}
+		
+		Validator[]vals = new Validator[list.size()];
+		list.toArray(vals);
 		return vals;
 	}
 	
