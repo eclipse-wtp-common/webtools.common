@@ -130,6 +130,9 @@ public interface ExtensionConstants {
 		 * </ul>
 		 */
 		String fileType = "type"; //$NON-NLS-1$
+		
+		/** version - facet version expression. See the facet framework for the exact syntax of this expression. */
+		String version = "version"; //$NON-NLS-1$
 	}
 	
 	interface FileType {
