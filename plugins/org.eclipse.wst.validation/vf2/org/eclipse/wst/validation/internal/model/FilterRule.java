@@ -404,9 +404,12 @@ public abstract class FilterRule implements IAdaptable {
 	
 	public static class Facet extends FilterRule {
 		
+		private String _versionExpression;
+		
 		public FilterRule copy() {
 			Facet rule = new Facet();
 			rule._pattern = _pattern;
+			rule._versionExpression = _versionExpression;
 			return rule;
 		}
 		
@@ -420,17 +423,34 @@ public abstract class FilterRule implements IAdaptable {
 
 		public void setData(IConfigurationElement rule) {
 			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.id);
+			_versionExpression = rule.getAttribute(ExtensionConstants.RuleAttrib.version);
 		}
 		
 		@Override
 		public Boolean matchesProject(IProject project) {
 			try {
-				return FacetedProjectFramework.hasProjectFacet(project, _pattern);
+				if (_versionExpression == null)return FacetedProjectFramework.hasProjectFacet(project, _pattern);
+				return FacetedProjectFramework.hasProjectFacet(project, _pattern, _versionExpression);
 			}
 			catch (CoreException e){
 				if (Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
 			}
 			return Boolean.FALSE;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuffer b = new StringBuffer(200);
+			b.append(getDisplayableType());
+			b.append(": "); //$NON-NLS-1$
+			b.append(_pattern);
+			
+			if (_versionExpression !=  null){
+				b.append(" ("); //$NON-NLS-1$
+				b.append(_versionExpression);
+				b.append(")"); //$NON-NLS-1$
+			}
+			return b.toString();
 		}
 		
 	}
