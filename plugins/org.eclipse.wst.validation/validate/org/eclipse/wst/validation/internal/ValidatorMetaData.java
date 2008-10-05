@@ -297,8 +297,9 @@ public class ValidatorMetaData {
 	 */
 	public boolean isApplicableTo(IResource resource, int resourceDelta) {
 		// If no filters are specified, then every type of resource should be validated/trigger a
-		// rebuild of the model cache
-		if (_filters == null)return true;
+		// rebuild of the model cache.
+		// Also make sure no content type id is specified (BUG 193816)
+		if (_filters == null  && getContentTypeIds() == null)return true;
 
 		return isApplicableTo(resource, resourceDelta, _filters);
 	}
@@ -308,15 +309,14 @@ public class ValidatorMetaData {
 	 */
 	boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
-		if (checkIfValidSourceFile(resource)) {
-			for (int i = 0; i < filters.length; i++) {
-				ValidatorFilter filter = filters[i];
+		// make sure filters is not null (BUG 193816)
+		if (filters != null && checkIfValidSourceFile(resource)) {
+			for (ValidatorFilter filter : filters) {
 				if (filter.isApplicableType(resource)
 						&& filter.isApplicableName(resource)
 						&& filter.isApplicableAction(resourceDelta)) {
 					return true;
 				}
-
 			}
 		}
 		if (getContentTypeIds() != null) {
@@ -327,10 +327,8 @@ public class ValidatorMetaData {
 			} catch (CoreException e) {
 				//Resource exceptions
 			}
-			if (description == null)
-				return false;
-			if (isApplicableContentType(description))
-				return true;
+			if (description == null)return false;
+			if (isApplicableContentType(description))return true;
 		}
 		return false;
 	}
