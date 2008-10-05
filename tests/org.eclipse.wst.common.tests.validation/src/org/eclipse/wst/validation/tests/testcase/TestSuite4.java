@@ -88,8 +88,13 @@ public class TestSuite4 extends TestCase {
 		super.tearDown();
 	}
 	
-	public void testTest1() throws CoreException, UnsupportedEncodingException, InterruptedException {
-		Tracing.log("TestSuite4-01: testTest1 starting");
+	/**
+	 * Ensure that the facet version expressions are working. We define two validators T4A and T4B. The first one operates on Java 5
+	 * and the second on Java 6. Since we have created a project that has been set to Java 5, we only expect the T4A validator
+	 * to be called. 
+	 */
+	public void testFacetVersions() throws CoreException, UnsupportedEncodingException, InterruptedException {
+		Tracing.log("TestSuite4-01: testFacetVersions starting");
 		IProgressMonitor monitor = new NullProgressMonitor();		
 		ValidationFramework vf = ValidationFramework.getDefault();
 		IProject[] projects = new IProject[1];
@@ -98,7 +103,7 @@ public class TestSuite4 extends TestCase {
 		int errors = vr.getSeverityError();
 		assertEquals("Number of errors", 1, errors);
 				
-		Tracing.log("TestSuite4-02:testTest1 finished");
+		Tracing.log("TestSuite4-02:testFacetVersions finished");
 	}
 	
 

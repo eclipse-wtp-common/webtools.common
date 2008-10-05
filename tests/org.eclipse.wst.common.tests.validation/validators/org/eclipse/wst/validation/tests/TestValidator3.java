@@ -10,18 +10,23 @@ import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.ValidatorMessage;
 import org.eclipse.wst.validation.internal.Tracing;
 
-
+/**
+ * A validator that processes *.html and *.htm files. 
+ * @author karasiuk
+ *
+ */
 public class TestValidator3 extends AbstractValidator {
 	
+	private static final String Name = "TestValidator3";
 	static final String ID = "org.eclipse.wst.validation.tests.TestValidator3";
 	
 	public String getName() {
-		return "TestValidator3";
+		return Name;
 	}
 	
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
-		Tracing.log("TestValidator3-04: validating: " + resource);
+		Tracing.log(Name+"-04: validating: " + resource);
 		checkState(state);
 		
 		if (resource.getName().equals("test.html")){
@@ -40,12 +45,12 @@ public class TestValidator3 extends AbstractValidator {
 		}
 
 		ValidationResult vr = new ValidationResult();
-		ValidatorMessage vm = ValidatorMessage.create("A sample message from Test3", resource);
+		ValidatorMessage vm = ValidatorMessage.create("A sample message from " + getName(), resource);
 		vm.setAttribute(IMarker.LINE_NUMBER, 1);
 		vm.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 		vr.add(vm);
 
-		vm = ValidatorMessage.create("A different message from Test3", resource);
+		vm = ValidatorMessage.create("A different message from " + getName(), resource);
 		vm.setAttribute(IMarker.LINE_NUMBER, 3);
 		vm.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 		vr.add(vm);
@@ -56,7 +61,7 @@ public class TestValidator3 extends AbstractValidator {
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Tracing.log("TestValidator3-05: thinks validation is starting for project: ", name);
+		Tracing.log(Name+"-05: thinks validation is starting for project: ", name);
 		if (!checkState(state)){
 			state.put(ID, "my state");
 		}
@@ -67,20 +72,20 @@ public class TestValidator3 extends AbstractValidator {
 	@Override
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Tracing.log("TestValidator3-01: thinks validation is finishing for project: ", name);
+		Tracing.log(Name+"-01: thinks validation is finishing for project: ", name);
 		checkState(state);
 	}
 	
 	@Override
 	public void clean(IProject project, ValidationState state, IProgressMonitor monitor) {
 		String name = project == null ? "NULL" : project.getName();
-		Tracing.log("TestValidator3-02: thinks a clean has been requested for project: ", name);
+		Tracing.log(Name+"-02: thinks a clean has been requested for project: ", name);
 		checkState(state);
 	}
 	
 	private boolean checkState(ValidationState state){
 		if (state.get(ID) != null){
-			Tracing.log("TestValidator3-03: has state information");
+			Tracing.log(Name+"-03: has state information");
 			return true;
 		}
 		return false;

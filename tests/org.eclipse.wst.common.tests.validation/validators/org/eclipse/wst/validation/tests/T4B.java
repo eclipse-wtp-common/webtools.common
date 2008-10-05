@@ -3,7 +3,7 @@ package org.eclipse.wst.validation.tests;
 import org.eclipse.wst.common.tests.validation.Activator;
 
 /**
- * This validator is used to test facet versions. It should be called on projects that have a version 5 java facet.
+ * This validator is used to test facet versions. It should be called on projects that have a version 6 java facet.
  * @author karasiuk
  *
  */

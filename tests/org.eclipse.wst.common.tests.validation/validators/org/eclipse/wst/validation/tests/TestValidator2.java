@@ -29,7 +29,7 @@ public class TestValidator2 extends AbstractValidator {
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
 		ValidationResult vr = new ValidationResult();
-		ValidatorMessage vm = ValidatorMessage.create("A sample message from Test2", resource);
+		ValidatorMessage vm = ValidatorMessage.create("A sample message from " + getName(), resource);
 		vm.setAttribute(IMarker.LINE_NUMBER, 1);
 		vm.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 		vr.add(vm);
@@ -38,7 +38,7 @@ public class TestValidator2 extends AbstractValidator {
 		if (sev != null){
 			Severity ms = sev.getCurrent();
 			if (ms != Severity.Ignore){
-				vm = ValidatorMessage.create("A different message from Test2", resource);
+				vm = ValidatorMessage.create("A different message from " + getName(), resource);
 				vm.setAttribute(IMarker.LINE_NUMBER, 2);
 				vm.setAttribute(IMarker.SEVERITY, ms.getMarkerSeverity());
 				vr.add(vm);
