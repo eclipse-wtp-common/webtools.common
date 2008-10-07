@@ -98,6 +98,9 @@ public interface ExtensionConstants {
 		
 		/** contentType - filter by content type. */
 		String contentType = "contentType"; //$NON-NLS-1$
+		
+		/** pattern - filter paths by regular expression. */
+		String pattern = "pattern"; //$NON-NLS-1$
 	}
 	
 	/** Rule attributes */
@@ -120,6 +123,9 @@ public interface ExtensionConstants {
 		
 		/** name - a file name. */
 		String name = "name"; //$NON-NLS-1$
+		
+		/** regex - a Java regular expression. */
+		String regex = "regex"; //$NON-NLS-1$
 		
 		/** 
 		 * type - the type of file to be matched:
