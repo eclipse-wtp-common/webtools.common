@@ -24,6 +24,8 @@ import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V1;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
+import org.eclipse.wst.validation.internal.ValManager;
+import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 
@@ -126,6 +128,26 @@ public class TestEnvironment {
 		if (project.exists())return project;
 		return null;
 	}
+	
+	/**
+	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
+	 * these tests.
+	 * 
+	 * @param validatorPrefix The start of the validator ID. For example "T5".
+	 */
+	public static void enableOnlyTheseValidators(String validatorPrefix) throws InvocationTargetException {
+		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
+		String name = "org.eclipse.wst.validation.tests." + validatorPrefix;
+		for (Validator v : vals){
+			boolean enable = v.getValidatorClassname().startsWith(name);
+			v.setBuildValidation(enable);
+			v.setManualValidation(enable);
+		}
+		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
+		gp.saveAsPrefs(vals);		
+		TestEnvironment.saveV1Preferences(vals);
+	}
+
 	
 	/**
 	 * Save the V1 preferences.
