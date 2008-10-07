@@ -20,7 +20,7 @@
       <doctitle>Faceted Project Framework</doctitle>
       <header><![CDATA[<b>Faceted Project Framework</b><br/>Version 1.3]]></header>
       <footer><![CDATA[<b>Faceted Project Framework</b><br/>Version 1.3]]></footer>
-      <bottom><![CDATA[Copyright (c) 2008 BEA Systems, Inc. and others. All rights reserved.]]></bottom>
+      <bottom><![CDATA[Copyright (c) 2008 Oracle and others. All rights reserved.]]></bottom>
       <group title="Core Packages" packages="org.eclipse.wst.common.project.facet.core:org.eclipse.wst.common.project.facet.core.*"/>
       <group title="UI Packages" packages="org.eclipse.wst.common.project.facet.ui"/>
       <packageset dir="../org.eclipse.wst.common.project.facet.core/src">

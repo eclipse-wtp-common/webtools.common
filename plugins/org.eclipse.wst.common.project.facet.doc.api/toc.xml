@@ -13,9 +13,10 @@
     <topic 
       label="Enabling UI Elements Based on Project Facets"
       href="guide/enabling-based-on-facets.html"/>
-    <topic 
-      label="Questions &amp; Answers"
-      href="guide/questions.html"/>
+    <topic label="Questions &amp; Answers">
+       <topic href="guide/answers/projectFacetPreferences.html" label="Managing Preferences">
+       </topic>
+    </topic>
     <topic 
       label="New for 1.5"
       href="guide/whatsnew150.html"/>
@@ -28,6 +29,9 @@
     <topic 
       label="New for 3.0.1"
       href="guide/whatsnew301.html"/>
+    <topic 
+      label="New for 3.1"
+      href="guide/whatsnew310.html"/>
   </topic>
     
   <topic label="Reference">

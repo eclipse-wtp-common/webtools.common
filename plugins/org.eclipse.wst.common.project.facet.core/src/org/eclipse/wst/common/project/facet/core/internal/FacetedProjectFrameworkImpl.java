@@ -22,6 +22,7 @@ import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -134,6 +135,11 @@ public final class FacetedProjectFrameworkImpl
     private final Map<String,FacetedProject> projects;
     private final ProjectListenerRegistry projectListenerRegistry;
     private final FrameworkListenerRegistry frameworkListenerRegistry;
+    
+    private WeakReference<ProjectFacetPreferencesGroup> globalPreferencesGroup = null;
+    
+    private Map<String,WeakReference<ProjectFacetPreferencesGroup>> projectPreferencesGroups 
+        = new HashMap<String,WeakReference<ProjectFacetPreferencesGroup>>();
     
     private FacetedProjectFrameworkImpl()
     {
@@ -1221,6 +1227,52 @@ public final class FacetedProjectFrameworkImpl
             
             facets.add( fv );
         }
+    }
+    
+    public synchronized Preferences getPreferences( final IProjectFacet facet )
+    
+        throws BackingStoreException
+        
+    {
+        ProjectFacetPreferencesGroup group = null;
+        
+        if( this.globalPreferencesGroup != null )
+        {
+            group = this.globalPreferencesGroup.get();
+        }
+        
+        if( group == null )
+        {
+            group = new ProjectFacetPreferencesGroup( null );
+            this.globalPreferencesGroup = new WeakReference<ProjectFacetPreferencesGroup>( group );
+        }
+        
+        return group.getPreferences( facet );
+    }
+    
+    public synchronized Preferences getPreferences( final IProjectFacet facet,
+                                                    final IFacetedProject project )
+    
+        throws BackingStoreException
+        
+    {
+        final String pjname = project.getProject().getName();
+        ProjectFacetPreferencesGroup group = null;
+        WeakReference<ProjectFacetPreferencesGroup> ref = this.projectPreferencesGroups.get( pjname );
+        
+        if( ref != null )
+        {
+            group = ref.get();
+        }
+        
+        if( group == null )
+        {
+            group = new ProjectFacetPreferencesGroup( project );
+            ref = new WeakReference<ProjectFacetPreferencesGroup>( group );
+            this.projectPreferencesGroups.put( pjname, ref );
+        }
+        
+        return group.getPreferences( facet );
     }
     
     public static void reportMissingFacet( final String fid,

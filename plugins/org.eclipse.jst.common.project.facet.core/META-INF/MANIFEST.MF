@@ -7,7 +7,10 @@ Bundle-Version: 1.3.100.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Export-Package: org.eclipse.jst.common.project.facet.core,
- org.eclipse.jst.common.project.facet.core.internal
+ org.eclipse.jst.common.project.facet.core.internal,
+ org.eclipse.jst.common.project.facet.core.libprov,
+ org.eclipse.jst.common.project.facet.core.libprov.internal;x-friends:="org.eclipse.jst.common.project.facet.ui",
+ org.eclipse.jst.common.project.facet.core.libprov.user
 Require-Bundle: org.eclipse.core.resources;bundle-version="[3.2.0,4.0)",
  org.eclipse.core.runtime;bundle-version="[3.2.0,4.0)",
  org.eclipse.jdt.core;bundle-version="[3.2.0,4.0)",

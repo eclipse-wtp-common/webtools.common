@@ -32,8 +32,7 @@ public final class FacetsSelectionDialog
     extends TitleAreaDialog
     
 {
-    private final IFacetedProjectWorkingCopy fpjwcOriginal;
-    private final IFacetedProjectWorkingCopy fpjwcLocal;
+    private final IFacetedProjectWorkingCopy fpjwc;
     private FacetsSelectionPanel panel;
 
     public FacetsSelectionDialog( final Shell parentShell,
@@ -43,8 +42,7 @@ public final class FacetsSelectionDialog
         
         setShellStyle( getShellStyle() | SWT.RESIZE );
 
-        this.fpjwcOriginal = fpjwc;
-        this.fpjwcLocal = fpjwc.clone();
+        this.fpjwc = fpjwc;
         this.panel = null;
     }
     
@@ -62,7 +60,7 @@ public final class FacetsSelectionDialog
         composite.setLayoutData( gdfill() );
         composite.setLayout( glmargins( gl( 1 ), 5, 5 ) );
         
-        this.panel = new FacetsSelectionPanel( composite, this.fpjwcLocal );
+        this.panel = new FacetsSelectionPanel( composite, this.fpjwc );
         this.panel.setLayoutData( gdfill() );
         this.panel.setFocus();
 
@@ -70,13 +68,13 @@ public final class FacetsSelectionDialog
     }
     
     @Override
-    protected void okPressed()
+    protected void cancelPressed()
     {
-        this.fpjwcOriginal.mergeChanges( this.fpjwcLocal );
-        super.okPressed();
+        super.cancelPressed();
+        
+        // TODO: revert changes.
     }
 
-    
     public static final void openDialog( final Shell parentShell,
                                          final IFacetedProjectWorkingCopy fpjwc )
     {

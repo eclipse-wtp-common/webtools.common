@@ -124,19 +124,67 @@
     <persistent value="true"/>
   </extension>
 
+  <!--
+    ******************************
+    * Library Provider Framework *
+    ******************************
+  -->
+
   <extension-point 
-   	id="librariesProviders" 
-   	name="%librariesProvidersExtensionPointName" 
-   	schema="schemas/librariesProviders.exsd"/>
+   	id="libraryProviders" 
+   	name="%libraryProvidersExtensionPointName" 
+   	schema="schemas/libraryProviders.exsd"/>
+
+  <extension-point 
+    id="legacyLibraryProviderDetectors" 
+    name="%legacyLibraryProviderDetectorsExtensionPointName" 
+    schema="schemas/legacyLibraryProviderDetectors.exsd"/>
    	
-  <extension point="org.eclipse.jst.common.project.facet.core.librariesProviders">
-    <provider id="unknown-libraries-provider" hidden="true">
-      <label>%unknownLibrariesProviderLabel</label>
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="user-library-provider" abstract="true">
+      <label>%userLibraryProviderLabel</label>
+      <priority>500</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperation"/>
+      </action>
       <action type="UNINSTALL">
-        <config class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownProviderUninstallOperationConfig"/>
-        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownProviderUninstallOperation"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderUninstallOperation"/>
       </action>
     </provider>
   </extension>
   
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="unknown-library-provider" hidden="true">
+      <label>%unknownLibraryProviderLabel</label>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="legacy-library-provider" hidden="true">
+      <label>%legacyLibraryProviderLabel</label>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyLibraryProviderInstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="legacy-runtime-library-provider" extends="legacy-library-provider" hidden="true">
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyRuntimeLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.legacyLibraryProviderDetectors">
+    <detector class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyRuntimeLibraryProviderDetector"/>
+  </extension>
+
 </plugin>

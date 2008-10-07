@@ -63,6 +63,7 @@ import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetsCh
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.MiscUtil;
 import org.eclipse.wst.common.project.facet.core.util.internal.StatusWrapper;
 
 /**
@@ -403,19 +404,41 @@ public final class FacetedProjectWorkingCopy
     
     public IProject getProject()
     {
-        if( this.project == null )
+        final IFacetedProject fproj = getFacetedProject();
+        
+        if( fproj == null )
         {
             return null;
         }
         else
         {
-            return this.project.getProject();
+            return fproj.getProject();
         }
     }
     
     public IFacetedProject getFacetedProject()
     {
-        return this.project;
+        synchronized( this.lock )
+        {
+            if( this.project == null && this.projectName != null )
+            {
+                final IProject pj = ResourcesPlugin.getWorkspace().getRoot().getProject( this.projectName );
+                
+                if( pj != null && pj.exists() )
+                {
+                    try
+                    {
+                        this.project = ProjectFacetsManager.create( pj );
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                    }
+                }
+            }
+            
+            return this.project;
+        }
     }
     
     public Set<IProjectFacet> getFixedProjectFacets()
@@ -1428,7 +1451,7 @@ public final class FacetedProjectWorkingCopy
                         config = def.createConfigObject();
                     }
                     
-                    bindProjectFacetActionConfig( fv, config );
+                    bindProjectFacetActionConfig( config, fv );
                 }
                 catch( CoreException e )
                 {
@@ -1442,8 +1465,8 @@ public final class FacetedProjectWorkingCopy
         return action;
     }
     
-    private void bindProjectFacetActionConfig( final IProjectFacetVersion fv,
-                                               final Object actionConfig )
+    private void bindProjectFacetActionConfig( final Object actionConfig,
+                                               final IProjectFacetVersion fv )
     {
         if( actionConfig != null )
         {
@@ -1467,7 +1490,11 @@ public final class FacetedProjectWorkingCopy
             if( c1 != null )
             {
                 c1.setProjectName( getProjectName() );
-                c1.setVersion( fv );
+                
+                if( fv != null )
+                {
+                    c1.setVersion( fv );
+                }
             }
             
             ActionConfig c2 = null;
@@ -1486,7 +1513,11 @@ public final class FacetedProjectWorkingCopy
             if( c2 != null )
             {
                 c2.setFacetedProjectWorkingCopy( this );
-                c2.setProjectFacetVersion( fv );
+                
+                if( fv != null )
+                {
+                    c2.setProjectFacetVersion( fv );
+                }
             }
         }
     }
@@ -1568,7 +1599,7 @@ public final class FacetedProjectWorkingCopy
                 
                 final IProjectFacetVersion fv = oldAction.getProjectFacetVersion();
                 final Action newAction = new Action( oldAction.getType(), fv, newActionConfig );
-                bindProjectFacetActionConfig( fv, newActionConfig );
+                bindProjectFacetActionConfig( newActionConfig, fv );
                 
                 this.actions.remove( oldAction );
                 this.actions.add( newAction );
@@ -1790,6 +1821,76 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
+    public boolean isDirty()
+    {
+        if( this.project == null )
+        {
+            return true;
+        }
+        else
+        {
+            return ! equal( this.project.getFixedProjectFacets(), getFixedProjectFacets() ) ||
+                   ! equal( this.project.getProjectFacets(), getProjectFacets() ) ||
+                   ! equal( this.project.getTargetedRuntimes(), getTargetedRuntimes() ) ||
+                   ! equal( this.project.getPrimaryRuntime(), getPrimaryRuntime() );
+        }
+    }
+    
+    private boolean equal( final Object obj1,
+                           final Object obj2 )
+    {
+        return MiscUtil.equal( obj1, obj2 );
+    }
+    
+    private boolean equal( final IRuntime r1,
+                           final IRuntime r2 )
+    {
+        if( r1 == null && r2 == null )
+        {
+            return true;
+        }
+        else if( r1 == null || r2 == null )
+        {
+            return false;
+        }
+        else
+        {
+            return r1.getName().equals( r2.getName() );
+        }
+    }
+    
+    private boolean equal( final Set<IRuntime> set1,
+                           final Set<IRuntime> set2 )
+    {
+        if( set1.size() != set2.size() )
+        {
+            return false;
+        }
+        else
+        {
+            for( IRuntime r1 : set1 )
+            {
+                boolean found = false;
+                
+                for( IRuntime r2 : set2 )
+                {
+                    if( r1.getName().equals( r2.getName() ) )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if( ! found )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+    }
+    
     public void commitChanges( final IProgressMonitor monitor )
     
         throws CoreException
@@ -1803,24 +1904,26 @@ public final class FacetedProjectWorkingCopy
             // the lock on this working copy while running mergeChanges(). This is important since
             // mergeChanges() can call out to third-party code.
             
-            final IFacetedProjectWorkingCopy clone;
+            final FacetedProjectWorkingCopy clone;
             
             synchronized( this.lock )
             {
-                clone = clone();
+                clone = (FacetedProjectWorkingCopy) clone();
             }
-                
-            final IFacetedProject fpj;
             
+            final IFacetedProject fpj;
+                
             if( this.project == null )
             {
                 fpj = ProjectFacetsManager.create( this.projectName,
                                                    this.projectLocation, 
                                                    pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
+                
+                this.project = fpj;
             }
             else
             {
-                fpj = this.project;
+                fpj = clone.getFacetedProject();
                 pm.worked( 10 );
             }
             
@@ -1830,7 +1933,6 @@ public final class FacetedProjectWorkingCopy
             
             synchronized( this.lock )
             {
-                this.project = fpj;
                 this.projectName = null;
                 this.projectNameValidation = Status.OK_STATUS;
                 this.projectLocation = null;
@@ -1868,6 +1970,11 @@ public final class FacetedProjectWorkingCopy
                 
                 this.actions.clear();
                 this.actions.addAll( ( (FacetedProjectWorkingCopy) fpjwc  ).actions );
+                
+                for( IFacetedProject.Action action : this.actions )
+                {
+                    bindProjectFacetActionConfig( action.getConfig(), null );
+                }
             }
         }
         finally

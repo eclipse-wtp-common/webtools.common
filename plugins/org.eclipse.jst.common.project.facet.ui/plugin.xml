@@ -3,21 +3,15 @@
 
 <plugin>
 
+  <!-- 
+    **********************************
+    * Standard JRE Runtime Component *
+    **********************************
+  -->
   <extension point="org.eclipse.wst.common.project.facet.ui.images">
     <image 
       runtime-component-type="standard.jre"
       path="images/standard-jre-component.gif"/>
-    <image 
-      facet="jst.java" 
-      path="images/java-facet.gif"/>
-  </extension>
-  
-  <extension
-    point="org.eclipse.ui.ide.markerResolution">
-	<markerResolutionGenerator
-      markerType="org.eclipse.jst.common.project.facet.core.javaVersionMismatch"
-      class="org.eclipse.jst.common.project.facet.ui.internal.JavaVersionMismatchMarkerResolutions">
-    </markerResolutionGenerator>
   </extension>
 
   <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
@@ -28,10 +22,53 @@
     </adapter>
   </extension>
 
+  <!-- 
+    **************
+    * Java Facet *
+    ************** 
+  -->
+         
+  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+    <image 
+      facet="jst.java" 
+      path="images/java-facet.gif"/>
+  </extension>
+
   <extension point="org.eclipse.wst.common.project.facet.ui.wizardPages">
     <wizard-pages action="jst.java.install">
       <page class="org.eclipse.jst.common.project.facet.ui.internal.JavaFacetInstallPage"/>
     </wizard-pages>
   </extension>
   
+  <extension
+    point="org.eclipse.ui.ide.markerResolution">
+	<markerResolutionGenerator
+      markerType="org.eclipse.jst.common.project.facet.core.javaVersionMismatch"
+      class="org.eclipse.jst.common.project.facet.ui.internal.JavaVersionMismatchMarkerResolutions">
+    </markerResolutionGenerator>
+  </extension>
+
+  <!-- 
+    ******************************
+    * Library Provider Framework *
+    ******************************
+  -->
+         
+  <extension-point 
+    id="libraryProviderActionPanels" 
+    name="%libraryProviderActionPanelsExtensionPointName" 
+    schema="schemas/libraryProviderActionPanels.exsd"/>
+
+  <extension point="org.eclipse.jst.common.project.facet.ui.libraryProviderActionPanels">
+    <panel 
+      provider="user-library-provider"
+      class="org.eclipse.jst.common.project.facet.ui.libprov.user.UserLibraryProviderInstallPanel"/>
+    <panel
+      provider="unknown-library-provider"
+      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.UnknownLibraryProviderInstallPanel"/>
+    <panel 
+      provider="legacy-library-provider"
+      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.LegacyLibraryProviderInstallPanel"/>
+  </extension>
+
 </plugin>

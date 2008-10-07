@@ -16,6 +16,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
@@ -33,18 +35,6 @@ public final class FacetedProjectPropertyTester
     {
         try
         {
-            if( ! ( receiver instanceof IResource ) )
-            {
-                return false;
-            }
-            
-            final IProject pj = ( (IResource) receiver ).getProject();
-            
-            if( pj == null )
-            {
-                return false;
-            }
-            
             final String val = (String) value;
             final int colon = val.indexOf( ':' );
             
@@ -62,7 +52,25 @@ public final class FacetedProjectPropertyTester
                 vexpr = val.substring( colon + 1 );
             }
             
-            return FacetedProjectFramework.hasProjectFacet( pj, fid, vexpr );
+            if( receiver instanceof IResource )
+            {
+                final IProject pj = ( (IResource) receiver ).getProject();
+                
+                if( pj == null )
+                {
+                    return false;
+                }
+                
+                return FacetedProjectFramework.hasProjectFacet( pj, fid, vexpr );
+            }
+            else if( receiver instanceof IProjectFacetVersion )
+            {
+                final IProjectFacetVersion fv = (IProjectFacetVersion) receiver;
+                final IProjectFacet f = fv.getProjectFacet();
+                
+                return f.getId().equals( fid ) &&
+                       ( vexpr == null || f.getVersions( vexpr ).contains( fv ) );
+            }
         }
         catch( CoreException e )
         {

@@ -19,6 +19,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * This interface is used for manipulating the set of facets installed on a
@@ -415,5 +417,19 @@ public interface IFacetedProject
      */
     
     void removeListener( org.eclipse.wst.common.project.facet.core.IFacetedProjectListener listener );
+    
+    /**
+     * Returns the project preferences store for the specified facet. These preferences are stored
+     * in project metadata and stay with the project when project is copied.
+     * 
+     * @param facet project facet
+     * @return the project preferences store for the specified facet
+     * @throws BackingStoreException if failed while reading from the backing store
+     * @since WTP 3.1
+     */
+    
+    Preferences getPreferences( IProjectFacet facet )
+    
+        throws BackingStoreException;
     
 }

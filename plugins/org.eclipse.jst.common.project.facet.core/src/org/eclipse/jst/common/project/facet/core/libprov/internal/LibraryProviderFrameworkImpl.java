@@ -13,13 +13,13 @@ package org.eclipse.jst.common.project.facet.core.libprov.internal;
 
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.PLUGIN_ID;
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.createErrorStatus;
-import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.getWorkspacePreferences;
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,18 +28,22 @@ import java.util.Set;
 
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderActionType;
-import org.eclipse.jst.common.project.facet.core.libprov.ILibrariesProvider;
+import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderActionType;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderFramework;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -48,9 +52,11 @@ import org.osgi.service.prefs.Preferences;
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
-public final class LibrariesProviderFrameworkImpl
+public final class LibraryProviderFrameworkImpl
 {
-    private static final String EXTENSION_POINT_ID = "librariesProviders"; //$NON-NLS-1$
+    private static final String UNKNOWN_LIBRARY_PROVIDER = "unknown-library-provider"; //$NON-NLS-1$
+    
+    private static final String EXTENSION_POINT_ID = "libraryProviders"; //$NON-NLS-1$
     
     private static final String EL_ACTION = "action"; //$NON-NLS-1$
     private static final String EL_CONFIG = "config"; //$NON-NLS-1$
@@ -69,114 +75,199 @@ public final class LibrariesProviderFrameworkImpl
     private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
     private static final String ATTR_VALUE = "value"; //$NON-NLS-1$
     
-    private static final String PREFS_LAST_PROVIDER_USED = "libprov/lastProviderUsed"; //$NON-NLS-1$
+    private static final String PREFS_LIBPROV = "libprov"; //$NON-NLS-1$
+    private static final String PREFS_PROVIDER_ID = "provider-id"; //$NON-NLS-1$
+    private static final String PREFS_LAST_PROVIDER_USED = PREFS_LIBPROV + "/last-provider-used"; //$NON-NLS-1$
     
-    private final Map<String,ILibrariesProvider> providers;
+    private static LibraryProviderFrameworkImpl instance = null;
     
-    public LibrariesProviderFrameworkImpl()
+    private final Set<ILibraryProvider> providers;
+    private final Set<ILibraryProvider> providersReadOnly;
+    private final Map<String,ILibraryProvider> providersLookupTable;
+    
+    public LibraryProviderFrameworkImpl()
     {
-        this.providers = new HashMap<String,ILibrariesProvider>();
+        this.providers = new HashSet<ILibraryProvider>();
+        this.providersReadOnly = Collections.unmodifiableSet( this.providers );
+        this.providersLookupTable = new HashMap<String,ILibraryProvider>();
+        
         readExtensions();
     }
     
-    public Set<ILibrariesProvider> getProviders( final IFacetedProjectWorkingCopy fpjwc,
-                                                 final IProjectFacetVersion fv )
+    public static synchronized LibraryProviderFrameworkImpl get()
     {
-        final Set<ILibrariesProvider> result = new HashSet<ILibrariesProvider>();
-        
-        for( ILibrariesProvider provider : this.providers.values() )
+        if( instance == null )
         {
-            if( ! provider.isAbstract() && ! provider.isHidden() 
-                && provider.isEnabledFor( fpjwc, fv ) )
-            {
-                result.add( provider );
-            }
+            instance = new LibraryProviderFrameworkImpl();
         }
         
-        return result;
+        return instance;
+    }
+    
+    public Set<ILibraryProvider> getProviders()
+    {
+        return this.providersReadOnly;
     }
     
     public boolean isProviderDefined( final String id )
     {
-        return this.providers.containsKey( id );
+        return this.providersLookupTable.containsKey( id );
     }
     
-    /**
-     * 
-     * @param id
-     * @return
-     * @throws IllegalArgumentException if the specified provider id is not recognized
-     */
-    
-    public ILibrariesProvider getProvider( final String id )
+    public ILibraryProvider getProvider( final String id )
     {
         if( ! isProviderDefined( id ) )
         {
-            final String msg = Resources.bind( Resources.librariesProviderNotDefined, id );
+            final String msg = Resources.bind( Resources.libraryProviderNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
-        return this.providers.get( id );
+        return this.providersLookupTable.get( id );
     }
     
-    public ILibrariesProvider getLastProviderUsed( final IProjectFacetVersion fv )
+    public ILibraryProvider getCurrentProvider( final IProject project,
+                                                final IProjectFacet facet )
     {
-        final Preferences prefs = getLastProviderUsedPreferences();
-        final String prefsKey = createStringKey( fv );
+        final IFacetedProject fproj;
         
-        final String providerId = prefs.get( prefsKey, null );
+        try
+        {
+            fproj = ProjectFacetsManager.create( project );
+        }
+        catch( CoreException e )
+        {
+            throw new RuntimeException( e );
+        }
+        
+        if( ! fproj.hasProjectFacet( facet ) )
+        {
+            return null;
+        }
+        
+        String providerId = null;
+        
+        try
+        {
+            Preferences prefs = fproj.getPreferences( facet );
+            
+            if( prefs.nodeExists( PREFS_LIBPROV ) )
+            {
+                prefs = prefs.node( PREFS_LIBPROV );
+                providerId = prefs.get( PREFS_PROVIDER_ID, null );
+            }
+        }
+        catch( BackingStoreException e )
+        {
+            throw new RuntimeException( e );
+        }
+        
+        ILibraryProvider provider = null;
         
         if( providerId != null )
         {
-            if( isProviderDefined( providerId ) )
+            if( LibraryProviderFramework.isProviderDefined( providerId ) )
             {
-                return getProvider( providerId );
+                provider = LibraryProviderFramework.getProvider( providerId );
             }
             else
             {
-                prefs.remove( prefsKey );
-                
-                try
+                provider = getProvider( UNKNOWN_LIBRARY_PROVIDER );
+            }
+        }
+        else
+        {
+            provider = LegacyLibraryProviderDetectorsExtensionPoint.detect( project, facet );
+            
+            if( provider == null )
+            {
+                provider = getProvider( UNKNOWN_LIBRARY_PROVIDER );
+            }
+        }
+        
+        return provider;
+    }
+    
+    public void setCurrentProvider( final IProject project,
+                                    final IProjectFacet facet,
+                                    final ILibraryProvider provider )
+    {
+        final IFacetedProject fproj;
+        
+        try
+        {
+            fproj = ProjectFacetsManager.create( project );
+        }
+        catch( CoreException e )
+        {
+            throw new RuntimeException( e );
+        }
+        
+        try
+        {
+            Preferences prefs = fproj.getPreferences( facet ).node( PREFS_LIBPROV );
+            
+            if( provider == null )
+            {
+                prefs.removeNode();
+            }
+            else
+            {
+                prefs.put( PREFS_PROVIDER_ID, provider.getId() );
+            }
+            
+            prefs.flush();
+        }
+        catch( BackingStoreException e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+    
+    public ILibraryProvider getLastProviderUsed( final IProjectFacetVersion fv )
+    {
+        try
+        {
+            final IProjectFacet facet = fv.getProjectFacet();
+            
+            final Preferences prefs 
+                = FacetedProjectFramework.getPreferences( facet ).node( PREFS_LAST_PROVIDER_USED );
+            
+            final String providerId = prefs.get( fv.getVersionString(), null );
+            
+            if( providerId != null )
+            {
+                if( isProviderDefined( providerId ) )
                 {
-                    prefs.flush();
-                }
-                catch( BackingStoreException e )
-                {
-                    log( e );
+                    return getProvider( providerId );
                 }
             }
+        }
+        catch( BackingStoreException e )
+        {
+            log( e );
         }
         
         return null;
     }
     
     public void setLastProviderUsed( final IProjectFacetVersion fv,
-                                     final ILibrariesProvider provider )
+                                     final ILibraryProvider provider )
     {
-        final Preferences prefs = getLastProviderUsedPreferences();
-        final String prefsKey = createStringKey( fv );
-        
-        prefs.put( prefsKey, provider.getId() );
-        
         try
         {
+            final IProjectFacet facet = fv.getProjectFacet();
+            
+            final Preferences prefs 
+                = FacetedProjectFramework.getPreferences( facet ).node( PREFS_LAST_PROVIDER_USED );
+            
+            prefs.put( fv.getVersionString(), provider.getId() );
+        
             prefs.flush();
         }
         catch( BackingStoreException e )
         {
             log( e );
         }
-    }
-    
-    private static Preferences getLastProviderUsedPreferences()
-    {
-        final IEclipsePreferences prefs = getWorkspacePreferences();
-        return prefs.node( PREFS_LAST_PROVIDER_USED );
-    }
-    
-    private static String createStringKey( final IProjectFacetVersion fv )
-    {
-        return fv.getProjectFacet().getId() + ":" + fv.getVersionString(); //$NON-NLS-1$
     }
     
     public static void reportInvalidActionType( final String type,
@@ -190,7 +281,7 @@ public final class LibrariesProviderFrameworkImpl
                                                  final String pluginId )
     {
         final String msg 
-            = Resources.bind( Resources.librariesProviderNotDefinedWithPlugin, providerId,
+            = Resources.bind( Resources.libraryProviderNotDefinedWithPlugin, providerId,
                               pluginId );
         
         log( createErrorStatus( msg ) );
@@ -218,8 +309,8 @@ public final class LibrariesProviderFrameworkImpl
             }
         }
         
-        final Map<LibrariesProvider,String> providerToBaseIdMap 
-            = new HashMap<LibrariesProvider,String>();
+        final Map<LibraryProvider,String> providerToBaseIdMap 
+            = new HashMap<LibraryProvider,String>();
 
         for( IConfigurationElement element : cfgels )
         {
@@ -230,15 +321,15 @@ public final class LibrariesProviderFrameworkImpl
             
             try
             {
-                final LibrariesProvider provider = new LibrariesProvider();
+                final LibraryProvider provider = new LibraryProvider();
                 provider.setPluginId( element.getContributor().getName() );
                 
                 provider.setId( findRequiredAttribute( element, ATTR_ID ) );
                 
-                if( this.providers.containsKey( provider.getId() ) )
+                if( this.providersLookupTable.containsKey( provider.getId() ) )
                 {
                     final String msg 
-                        = Resources.bind( Resources.librariesProviderIdAlreadyUsed, 
+                        = Resources.bind( Resources.libraryProviderIdAlreadyUsed, 
                                           provider.getId() );
                     
                     log( createErrorStatus( msg ) );
@@ -318,11 +409,11 @@ public final class LibrariesProviderFrameworkImpl
                     else if( childName.equals( EL_ACTION ) )
                     {
                         final String type = findRequiredAttribute( child, ATTR_TYPE ).toUpperCase();
-                        final LibrariesProviderActionType t;
+                        final LibraryProviderActionType t;
                         
                         try
                         {
-                            t = LibrariesProviderActionType.valueOf( type );
+                            t = LibraryProviderActionType.valueOf( type );
                         }
                         catch( IllegalArgumentException e )
                         {
@@ -356,7 +447,8 @@ public final class LibrariesProviderFrameworkImpl
                 
                 if( provider != null )
                 {
-                    this.providers.put( provider.getId(), provider );
+                    this.providers.add( provider );
+                    this.providersLookupTable.put( provider.getId(), provider );
                 }
             }
             catch( InvalidExtensionException e )
@@ -366,16 +458,17 @@ public final class LibrariesProviderFrameworkImpl
             }
         }
         
-        for( Map.Entry<LibrariesProvider,String> entry : providerToBaseIdMap.entrySet() )
+        for( Map.Entry<LibraryProvider,String> entry : providerToBaseIdMap.entrySet() )
         {
-            final LibrariesProvider provider = entry.getKey();
+            final LibraryProvider provider = entry.getKey();
             final String baseProviderId = entry.getValue();
-            final ILibrariesProvider baseProvider = this.providers.get( baseProviderId );
+            final ILibraryProvider baseProvider = this.providersLookupTable.get( baseProviderId );
             
             if( baseProvider == null )
             {
                 reportProviderNotDefined( baseProviderId, provider.getPluginId() );
                 this.providers.remove( provider );
+                this.providersLookupTable.remove( provider.getId() );
             }
             else
             {
@@ -389,14 +482,14 @@ public final class LibrariesProviderFrameworkImpl
         extends NLS
         
     {
-        public static String librariesProviderNotDefined;
-        public static String librariesProviderNotDefinedWithPlugin;
-        public static String librariesProviderIdAlreadyUsed;
+        public static String libraryProviderNotDefined;
+        public static String libraryProviderNotDefinedWithPlugin;
+        public static String libraryProviderIdAlreadyUsed;
         public static String invalidActionType;
         
         static
         {
-            initializeMessages( LibrariesProviderFrameworkImpl.class.getName(), 
+            initializeMessages( LibraryProviderFrameworkImpl.class.getName(), 
                                 Resources.class );
         }
     }

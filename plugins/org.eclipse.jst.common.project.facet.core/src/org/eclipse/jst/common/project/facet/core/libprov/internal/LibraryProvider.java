@@ -23,61 +23,70 @@ import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.EvaluationResult;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderActionType;
-import org.eclipse.jst.common.project.facet.core.libprov.ILibrariesProvider;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderOperation;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderOperationConfig;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
+import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderActionType;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
-public final class LibrariesProvider
+public final class LibraryProvider
 
-    implements ILibrariesProvider
+    implements ILibraryProvider
     
 {
     private final class ActionDef
     {
         private final String configClassName;
-        private Class<LibrariesProviderOperationConfig> configClass;
+        private Class<LibraryProviderOperationConfig> configClass;
         private final String operationClassName;
-        private Class<LibrariesProviderOperation> operationClass;
+        private Class<LibraryProviderOperation> operationClass;
         
         public ActionDef( final String configClassName,
                           final String operationClassName )
         {
-            this.configClassName = configClassName;
-            this.configClass = null;
+            if( configClassName == null )
+            {
+                this.configClassName = null;
+                this.configClass = LibraryProviderOperationConfig.class;
+            }
+            else
+            {
+                this.configClassName = configClassName;
+                this.configClass = null;
+            }
+            
             this.operationClassName = operationClassName;
             this.operationClass = null;
         }
         
         public String getPluginId()
         {
-            return LibrariesProvider.this.getPluginId();
+            return LibraryProvider.this.getPluginId();
         }
         
-        public synchronized Class<LibrariesProviderOperationConfig> getConfigClass()
+        public synchronized Class<LibraryProviderOperationConfig> getConfigClass()
         {
-            if( this.configClass == null && this.configClassName != null )
+            if( this.configClass == null )
             {
                 this.configClass = loadClass( getPluginId(), this.configClassName,
-                                              LibrariesProviderOperationConfig.class );
+                                              LibraryProviderOperationConfig.class );
             }
             
             return this.configClass;
         }
         
-        public synchronized Class<LibrariesProviderOperation> getOperationClass()
+        public synchronized Class<LibraryProviderOperation> getOperationClass()
         {
             if( this.operationClass == null )
             {
                 this.operationClass 
                     = loadClass( getPluginId(), this.operationClassName, 
-                                 LibrariesProviderOperation.class );
+                                 LibraryProviderOperation.class );
             }
             
             return this.operationClass;
@@ -96,15 +105,15 @@ public final class LibrariesProvider
     private String id;
     private String pluginId;
     private String label;
-    private ILibrariesProvider base;
+    private ILibraryProvider base;
     private boolean isAbstract;
     private boolean isHidden;
     private Expression enablementCondition;
     private Integer priority;
     private final Map<String,String> params;
-    private final Map<LibrariesProviderActionType,ActionDef> actionDefs;
+    private final Map<LibraryProviderActionType,ActionDef> actionDefs;
     
-    LibrariesProvider()
+    LibraryProvider()
     {
         this.id = null;
         this.pluginId = null;
@@ -115,7 +124,7 @@ public final class LibrariesProvider
         this.enablementCondition = null;
         this.priority = null;
         this.params = new HashMap<String,String>();
-        this.actionDefs = new EnumMap<LibrariesProviderActionType,ActionDef>( LibrariesProviderActionType.class );
+        this.actionDefs = new EnumMap<LibraryProviderActionType,ActionDef>( LibraryProviderActionType.class );
     }
     
     public String getId()
@@ -166,19 +175,19 @@ public final class LibrariesProvider
         this.label = label;
     }
     
-    public ILibrariesProvider getBaseProvider()
+    public ILibraryProvider getBaseProvider()
     {
         return this.base;
     }
     
-    void setBaseProvider( final ILibrariesProvider base )
+    void setBaseProvider( final ILibraryProvider base )
     {
         this.base = base;
     }
     
-    public ILibrariesProvider getRootProvider()
+    public ILibraryProvider getRootProvider()
     {
-        ILibrariesProvider prov = this;
+        ILibraryProvider prov = this;
         
         while( prov.getBaseProvider() != null )
         {
@@ -232,10 +241,10 @@ public final class LibrariesProvider
         this.priority = Integer.valueOf( priority );
     }
     
-    public boolean isEnabledFor( final IFacetedProjectWorkingCopy fpjwc,
+    public boolean isEnabledFor( final IFacetedProjectBase fproj,
                                  final IProjectFacetVersion fv )
     {
-        if( this.base == null || this.base.isEnabledFor( fpjwc, fv ) )
+        if( this.base == null || this.base.isEnabledFor( fproj, fv ) )
         {
             if( this.enablementCondition == null )
             {
@@ -244,8 +253,8 @@ public final class LibrariesProvider
             
             final EvaluationContext evalContext = new EvaluationContext( null, fv );
             evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, fv );
-            evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fpjwc.getProjectFacets() );
-            evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fpjwc.getTargetedRuntimes() );
+            evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fproj.getProjectFacets() );
+            evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fproj.getTargetedRuntimes() );
             evalContext.setAllowPluginActivation( true );
         
             try
@@ -269,13 +278,13 @@ public final class LibrariesProvider
         this.enablementCondition = enablementCondition;
     }
     
-    Map<String,String> getParams()
+    public Map<String,String> getParams()
     {
         final Map<String,String> result = new HashMap<String,String>();
         
         if( this.base != null )
         {
-            result.putAll( ( (LibrariesProvider) this.base ).getParams() );
+            result.putAll( ( (LibraryProvider) this.base ).getParams() );
         }
         
         result.putAll( this.params );
@@ -289,12 +298,12 @@ public final class LibrariesProvider
         this.params.put( name, value );
     }
 
-    public boolean isActionSupported( final LibrariesProviderActionType type )
+    public boolean isActionSupported( final LibraryProviderActionType type )
     {
         return ( getActionDef( type ) != null );
     }
     
-    public LibrariesProviderOperation createOperation( final LibrariesProviderActionType type )
+    public LibraryProviderOperation createOperation( final LibraryProviderActionType type )
     {
         final ActionDef actionDef = getActionDef( type );
         
@@ -303,7 +312,7 @@ public final class LibrariesProvider
             throw new IllegalArgumentException();
         }
         
-        final Class<LibrariesProviderOperation> cl = actionDef.getOperationClass();
+        final Class<LibraryProviderOperation> cl = actionDef.getOperationClass();
         
         if( cl == null )
         {
@@ -316,7 +325,9 @@ public final class LibrariesProvider
         return instantiate( actionDef.getPluginId(), cl );
     }
 
-    public LibrariesProviderOperationConfig createOperationConfig( final LibrariesProviderActionType type )
+    public LibraryProviderOperationConfig createOperationConfig( final IFacetedProjectBase fproj,
+                                                                 final IProjectFacetVersion fv,
+                                                                 final LibraryProviderActionType type )
     {
         final ActionDef actionDef = getActionDef( type );
         
@@ -325,7 +336,7 @@ public final class LibrariesProvider
             throw new IllegalArgumentException();
         }
         
-        final Class<LibrariesProviderOperationConfig> cl = actionDef.getConfigClass();
+        final Class<LibraryProviderOperationConfig> cl = actionDef.getConfigClass();
         
         if( cl == null )
         {
@@ -335,27 +346,25 @@ public final class LibrariesProvider
             return null;
         }
         
-        final LibrariesProviderOperationConfig cfg = instantiate( actionDef.getPluginId(), cl );
-        
-        cfg.setLibrariesProvider( this );
-        cfg.setParams( getParams() );
+        final LibraryProviderOperationConfig cfg = instantiate( actionDef.getPluginId(), cl );
+        cfg.init( fproj, fv, this );
         
         return cfg;
     }
     
-    ActionDef getActionDef( final LibrariesProviderActionType type )
+    ActionDef getActionDef( final LibraryProviderActionType type )
     {
         ActionDef actionDef = this.actionDefs.get( type );
         
         if( actionDef == null && this.base != null )
         {
-            actionDef = ( (LibrariesProvider) this.base ).getActionDef( type );
+            actionDef = ( (LibraryProvider) this.base ).getActionDef( type );
         }
         
         return actionDef;
     }
     
-    void addActionDef( final LibrariesProviderActionType type,
+    void addActionDef( final LibraryProviderActionType type,
                        final String configClassName,
                        final String operationClassName )
     {
@@ -363,7 +372,7 @@ public final class LibrariesProvider
         this.actionDefs.put( type, actionDef );
     }
     
-    public int compareTo( final ILibrariesProvider other )
+    public int compareTo( final ILibraryProvider other )
     {
         final int p1 = getPriority();
         final int p2 = other.getPriority();

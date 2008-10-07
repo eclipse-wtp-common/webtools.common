@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.core.util.internal;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
 /**
@@ -59,7 +60,7 @@ public final class ProgressMonitorUtil
                                            final int ticks,
                                            final int style )
     {
-        return ( parent == null ? null : new SubProgressMonitor( parent, ticks, style ) );
+        return ( parent == null ? new NullProgressMonitor() : new SubProgressMonitor( parent, ticks, style ) );
     }
     
     public static void subTask( final IProgressMonitor monitor,

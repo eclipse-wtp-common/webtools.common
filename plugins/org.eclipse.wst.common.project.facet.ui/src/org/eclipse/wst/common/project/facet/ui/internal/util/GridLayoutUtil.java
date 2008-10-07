@@ -25,6 +25,36 @@ public final class GridLayoutUtil
     {
         return new GridLayout( columns, false );
     }
+    
+    public static final GridLayout gl( final int columns,
+                                       final int marginWidth,
+                                       final int marginHeight )
+    {
+        final GridLayout layout = new GridLayout( columns, false );
+
+        layout.marginWidth = marginWidth;
+        layout.marginHeight = marginHeight;
+        
+        return layout;
+    }
+
+    public static final GridLayout gl( final int columns,
+                                       final int leftMargin,
+                                       final int rightMargin,
+                                       final int topMargin,
+                                       final int bottomMargin )
+    {
+        final GridLayout layout = new GridLayout( columns, false );
+        
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        layout.marginLeft = leftMargin;
+        layout.marginRight = rightMargin;
+        layout.marginTop = topMargin;
+        layout.marginBottom = bottomMargin;
+        
+        return layout;
+    }
 
     public static final GridLayout glmargins( final GridLayout layout,
                                               final int marginWidth,

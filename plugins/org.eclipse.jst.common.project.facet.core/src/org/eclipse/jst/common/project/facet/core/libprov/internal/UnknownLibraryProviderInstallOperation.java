@@ -9,21 +9,30 @@
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
-package org.eclipse.jst.common.project.facet.core.libprov;
+package org.eclipse.jst.common.project.facet.core.libprov.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
-public abstract class LibrariesProviderOperation
-{
-    public abstract void execute( final IFacetedProject project,
-                                  final LibrariesProviderOperationConfig config,
-                                  final IProgressMonitor monitor )
+public final class UnknownLibraryProviderInstallOperation
+
+    extends LibraryProviderOperation
     
-        throws CoreException;
+{
+    public void execute( final LibraryProviderOperationConfig config,
+                         final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        // This is never expected to be called...
+        throw new IllegalStateException();
+    }
+    
 }

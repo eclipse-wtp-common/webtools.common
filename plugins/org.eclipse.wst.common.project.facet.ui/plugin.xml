@@ -62,7 +62,7 @@
     <page
       adaptable="true"
       class="org.eclipse.wst.common.project.facet.ui.internal.FacetsPropertyPage"
-      id="org.eclipse.wst.common.project.facet.ui.internal.FacetsPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.FacetsPropertyPage"
       name="%project.facets"
       objectClass="org.eclipse.core.resources.IProject">
       <filter
@@ -73,7 +73,7 @@
     <page
       adaptable="true"
       class="org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"
-      id="org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.RuntimesPropertyPage"
       name="%runtimesPropertyPageLabel"
       objectClass="org.eclipse.core.resources.IProject">
       <filter

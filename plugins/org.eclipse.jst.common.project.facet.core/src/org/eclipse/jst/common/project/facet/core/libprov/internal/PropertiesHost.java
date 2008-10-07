@@ -30,8 +30,8 @@ public abstract class PropertiesHost
     private final Map<String,Set<IPropertyChangeListener>> propertySpecificListeners 
         = new HashMap<String,Set<IPropertyChangeListener>>();
     
-    public final void addListener( final IPropertyChangeListener listener,
-                                   final String... properties )
+    public void addListener( final IPropertyChangeListener listener,
+                             final String... properties )
     {
         if( properties.length == 0 )
         {
@@ -60,7 +60,7 @@ public abstract class PropertiesHost
         }
     }
     
-    public final void removeListener( final IPropertyChangeListener listener )
+    public void removeListener( final IPropertyChangeListener listener )
     {
         boolean globalListenerRemoveResult;
         
@@ -81,9 +81,9 @@ public abstract class PropertiesHost
         }
     }
     
-    protected final void notifyListeners( final String property,
-                                          final Object oldValue,
-                                          final Object newValue )
+    protected void notifyListeners( final String property,
+                                    final Object oldValue,
+                                    final Object newValue )
     {
         for( IPropertyChangeListener listener : this.globalListeners )
         {

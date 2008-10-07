@@ -11,6 +11,10 @@
 
 package org.eclipse.jst.common.project.facet.ui.internal;
 
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -25,9 +29,34 @@ public final class FacetedProjectFrameworkJavaExtUiPlugin
     public static final String IMG_PATH_JAVA_WIZBAN = "images/java-wizban.png"; //$NON-NLS-1$
     public static final String IMG_PATH_SOURCE_FOLDER = "images/source-folder.gif"; //$NON-NLS-1$
     
+    private static final ILog platformLog
+        = Platform.getLog( Platform.getBundle( PLUGIN_ID ) );
+
     public static ImageDescriptor getImageDescriptor( final String path )
     {
         return AbstractUIPlugin.imageDescriptorFromPlugin( PLUGIN_ID, path );
     }
 
+    public static void log( final Exception e )
+    {
+        final String message = e.getMessage() + ""; //$NON-NLS-1$
+        log( createErrorStatus( message, e ) );
+    }
+
+    public static void log( final IStatus status )
+    {
+        platformLog.log( status );
+    }
+    
+    public static IStatus createErrorStatus( final String message )
+    {
+        return createErrorStatus( message, null );
+    }
+
+    public static IStatus createErrorStatus( final String message,
+                                             final Exception e )
+    {
+        return new Status( IStatus.ERROR, PLUGIN_ID, -1, message, e )  ;      
+    }
+    
 }

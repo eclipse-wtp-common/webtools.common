@@ -11,10 +11,12 @@
 
 package org.eclipse.wst.common.project.facet.core.util.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
@@ -43,6 +45,7 @@ import org.osgi.framework.Bundle;
 
 public final class FileUtil
 {
+    public static final String UTF8_ENCODING = "UTF-8"; //$NON-NLS-1$
     public static final String FILE_DOT_PROJECT = ".project"; //$NON-NLS-1$
     
     private FileUtil() {}
@@ -266,6 +269,58 @@ public final class FileUtil
         }
     }
     
+    public static void writeFile( final IFile f,
+                                  final String contents )
+    
+        throws CoreException
+        
+    {
+        writeFile( f.getLocation().toFile(), contents );
+    }
+    
+    public static void writeFile( final IFile f,
+                                  final byte[] contents )
+    
+        throws CoreException
+        
+    {
+        writeFile( f.getLocation().toFile(), contents );
+    }
+
+    public static void writeFile( final IFile f,
+                                  final InputStream contents )
+    
+        throws CoreException
+        
+    {
+        writeFile( f.getLocation().toFile(), contents );
+    }
+
+    public static void writeFile( final File f,
+                                  final String contents )
+    
+        throws CoreException
+        
+    {
+        try
+        {
+            writeFile( f, contents.getBytes( UTF8_ENCODING ) );
+        }
+        catch( UnsupportedEncodingException e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+    
+    public static void writeFile( final File f,
+                                  final byte[] contents )
+    
+        throws CoreException
+        
+    {
+        writeFile( f, new ByteArrayInputStream( contents ) );
+    }
+    
     public static void writeFile( final File f,
                                   final InputStream contents )
     
@@ -346,6 +401,23 @@ public final class FileUtil
                     catch( IOException e ) {}
                 }
             }
+        }
+    }
+    
+    public static void deleteFile( final File file )
+    
+        throws CoreException
+        
+    {
+        final IFile wsfile = getWorkspaceFile( file );
+        
+        if( wsfile != null )
+        {
+            wsfile.delete( true, null );
+        }
+        else
+        {
+            file.delete();
         }
     }
 

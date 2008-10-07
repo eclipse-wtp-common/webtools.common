@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.jst.common.project.facet.ui" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.jst.common.project.facet.ui" id="libraryProviderActionPanels" name="Library Provider Action Panels Extension Point"/>
+      </appinfo>
+      <documentation>
+         Provides a way to associate UI with library provider actions.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            Allows registering one or more library provider action panels.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="panel" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="panel">
+      <annotation>
+         <documentation>
+            Registers a single library provider action panel.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="provider" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Library provider id.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.jst.common.project.facet.core.libraryProviders/provider/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  Implementation of the library provider action panel.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.jst.common.project.facet.ui.libprov.LibraryProviderOperationPanel:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         WTP 3.1
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;The following example registers an install action panel for a previously-declared library provider:&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.jst.common.project.facet.ui.libraryProviderActionPanels&quot;&gt;
+  &lt;panel 
+    provider=&quot;some-library-provider&quot;
+    class=&quot;com.mycompany.SomeLibraryProviderInstallPanel&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2008 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

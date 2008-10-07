@@ -79,6 +79,8 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
 import org.eclipse.wst.common.project.facet.core.util.internal.ObjectReference;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1300,6 +1302,14 @@ public final class FacetedProject
             }
         }
     }
+    
+    public Preferences getPreferences( final IProjectFacet facet )
+    
+        throws BackingStoreException
+        
+    {
+        return FacetedProjectFrameworkImpl.getInstance().getPreferences( facet, this );
+    }
 
     private void beginModification()
     
@@ -1452,6 +1462,20 @@ public final class FacetedProject
             }
             
             throw wrapper;
+        }
+        
+        if( context == Action.Type.UNINSTALL )
+        {
+            final IProjectFacet facet = fv.getProjectFacet();
+            
+            try
+            {
+                getPreferences( facet ).removeNode();
+            }
+            catch( BackingStoreException e )
+            {
+                FacetCorePlugin.log( e );
+            }
         }
         
         if( tracingDelegateCalls )

@@ -20,6 +20,8 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
@@ -201,6 +203,25 @@ public final class FacetedProjectFramework
     {
         initialize();
         impl.removeListener( listener );
+    }
+    
+    /**
+     * Returns the global preferences store for the specified facet. These preferences are stored
+     * in workspace metadata.
+     * 
+     * @param facet project facet
+     * @return the global preferences store for the specified facet
+     * @throws BackingStoreException if failed while reading from the backing store
+     * @since WTP 3.1
+     */
+    
+    public static Preferences getPreferences( final IProjectFacet facet )
+    
+        throws BackingStoreException
+        
+    {
+        initialize();
+        return impl.getPreferences( facet );
     }
     
     private static synchronized void initialize()

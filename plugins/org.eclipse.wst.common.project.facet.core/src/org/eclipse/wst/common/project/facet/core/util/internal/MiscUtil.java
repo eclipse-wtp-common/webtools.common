@@ -22,7 +22,11 @@ public final class MiscUtil
     public static boolean equal( final Object obj1,
                                  final Object obj2 )
     {
-        if( obj1 == null || obj2 == null )
+        if( obj1 == null && obj2 == null )
+        {
+            return true;
+        }
+        else if( obj1 == null || obj2 == null )
         {
             return false;
         }

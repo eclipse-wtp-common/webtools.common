@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>Managing Project Facet Preferences</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="../format.css">
+</head>
+
+<body>
+<p class="ueberschrift">Managing Project Facet Preferences</p>
+
+<p><b>Question: What is the best way for managing workspace and project preferences associated
+with a project facet?</b></p>
+
+<p>Faceted Project Framework can help you manage preferences associated with your facet. Two scopes
+are supported. You can store "global" preferences in workspace metadata and
+project-specific preferences in project metadata. Preferences stored at workspace level will never
+be deleted, while project-level preferences will be automatically removed when facet is uninstalled.</p>
+
+<p>To access workspace-level preferences, use the following API:</p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+FacetedProjectFramework.getPreferences( IProjectFacet facet );
+</pre></td></tr></table>
+
+<p>To access project-level preferences, use the following API:</p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+IFacetedProject.getPreferences( IProjectFacet facet );
+</pre></td></tr></table>
+
+<p>Regardless of the scope, make sure to call flush() after making the changes to make sure that
+changes are persisted to disk.</p>
+
+</body>
+</html>

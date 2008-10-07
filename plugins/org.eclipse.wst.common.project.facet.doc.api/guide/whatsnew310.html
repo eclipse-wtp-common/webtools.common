@@ -22,6 +22,7 @@ the WTP 3.1 release. Both Java API and extension point changes are covered.</p>
   <li><a href="#framework-exception">FacetedProjectFrameworkException</a></li>
   <li><a href="#batching-validate-edit">Batching Validate Edit Calls</a></li>
   <li><a href="#basic-wizard">Improvements to BasicFacetedProjectWizard</a></li>
+  <li><a href="#preferences">Managing Project Facet Preferences</a></li>
 </ol>
 
 
@@ -94,5 +95,27 @@ class BasicFacetedProjectWizardFirstPage extends WizardNewProjectCreationPage
 </td></tr></table>
  
 
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#preferences">4. Managing Project Facet Preferences</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>New facility for managing preferences associated with facets has been introduced. More information
+can be found in <a href="answers/projectFacetPreferences.html">FAQ</a>.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">class FacetedProjectFramework
+{</font>
+    Preferences getPreferences( IProjectFacet facet );
+<font color="#7B7B7B">}</font>
+
+<font color="#7B7B7B">interface IFacetedProject
+{</font>
+    Preferences getPreferences( IProjectFacet facet );
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
 </body>
 </html>

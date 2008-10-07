@@ -13,21 +13,19 @@ package org.eclipse.jst.common.project.facet.core.libprov.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderOperation;
-import org.eclipse.jst.common.project.facet.core.libprov.LibrariesProviderOperationConfig;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
-public final class UnknownProviderUninstallOperation
+public final class UnknownLibraryProviderUninstallOperation
 
-    extends LibrariesProviderOperation
+    extends LibraryProviderOperation
     
 {
-    public void execute( final IFacetedProject project,
-                         final LibrariesProviderOperationConfig config,
+    public void execute( final LibraryProviderOperationConfig config,
                          final IProgressMonitor monitor )
     
         throws CoreException

@@ -91,6 +91,8 @@ public interface IFacetedProjectWorkingCopy
     void setProjectFacetActionConfig( IProjectFacet facet,
                                       Object newActionConfig );    
     
+    boolean isDirty();
+    
     void commitChanges( IProgressMonitor monitor )
     
         throws CoreException;
