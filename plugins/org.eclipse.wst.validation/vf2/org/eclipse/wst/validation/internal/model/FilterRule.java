@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.model;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -39,6 +41,8 @@ public abstract class FilterRule implements IAdaptable {
 	
 	protected String _pattern;
 	
+	protected static final String PortableFileDelim = "/"; //$NON-NLS-1$
+	
 	/**
 	 * Create a rule based on an extension element.
 	 * @param name the extension element, it can be one of projectNature, facet, fileext, file or contentType
@@ -50,6 +54,7 @@ public abstract class FilterRule implements IAdaptable {
 		if (ExtensionConstants.Rule.file.equals(name))return new File();
 		if (ExtensionConstants.Rule.contentType.equals(name))return new ContentType();
 		if (ExtensionConstants.Rule.facet.equals(name))return new Facet();
+		if (ExtensionConstants.Rule.pattern.equals(name))return new FilePattern();
 		return null;
 	}
 	
@@ -152,6 +157,59 @@ public abstract class FilterRule implements IAdaptable {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 	
+	public static abstract class FilterRuleCaseSensitive extends FilterRule {
+		private boolean _caseSensitive;
+		
+		protected void copy(FilterRuleCaseSensitive rule){
+			_pattern = rule.getPattern();
+			_caseSensitive = rule.isCaseSensitive();
+		}
+		
+		@Override
+		public int hashCodeForConfig() {
+			int h =  super.hashCodeForConfig();
+			if (_caseSensitive)h += 401;
+			return h;
+		}
+		
+		@Override
+		protected void load(Deserializer des) {
+			super.load(des);
+			_caseSensitive = des.getBoolean();
+		}
+		
+		@Override
+		public void save(Serializer ser) {
+			super.save(ser);
+			ser.put(_caseSensitive);
+		}
+				
+		@Override
+		public void load(Preferences rid) {
+			super.load(rid);
+			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
+		}
+		
+		@Override
+		public void save(Preferences rid) {
+			super.save(rid);
+			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
+		}
+
+		public void setData(IConfigurationElement rule) {
+			_caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);			
+		}
+
+		public boolean isCaseSensitive() {
+			return _caseSensitive;
+		}
+		
+		public void setCaseSensitive(boolean caseSensitive) {
+			_caseSensitive = caseSensitive;
+		}
+		
+	}
+	
 	public static class ProjectNature extends FilterRule {
 
 		
@@ -185,26 +243,16 @@ public abstract class FilterRule implements IAdaptable {
 		
 	}
 	
-	public static class FileExt extends FilterRule {
-		
-		private boolean _caseSensitive;
+	public static class FileExt extends FilterRuleCaseSensitive {
 		
 		public FilterRule copy() {
 			FileExt rule = new FileExt();
-			rule._pattern = _pattern;
-			rule._caseSensitive = _caseSensitive;
+			rule.copy(this);
 			return rule;
 		}
 		
 		public String getType() {
 			return ExtensionConstants.Rule.fileext;
-		}
-		
-		@Override
-		public int hashCodeForConfig() {
-			int h =  super.hashCodeForConfig();
-			if (_caseSensitive)h += 601;
-			return h;
 		}
 		
 		public String getDisplayableType() {
@@ -217,50 +265,19 @@ public abstract class FilterRule implements IAdaptable {
 
 		public void setData(IConfigurationElement rule) {
 			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.ext);
-			_caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);			
+			super.setData(rule);		
 		}
 		
 		public String toString() {
-			if (_caseSensitive)return NLS.bind(ValMessages.FileExtWithCase, getDisplayableType(), _pattern);
+			if (isCaseSensitive())return NLS.bind(ValMessages.FileExtWithCase, getDisplayableType(), _pattern);
 			return NLS.bind(ValMessages.FileExtWithoutCase, getDisplayableType(), _pattern);
 		}
 
 		public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 			String ext = resource.getFileExtension();
-			if (_caseSensitive)return _pattern.equals(ext);
+			if (isCaseSensitive())return _pattern.equals(ext);
 			return _pattern.equalsIgnoreCase(ext);
 		}
-
-		public boolean isCaseSensitive() {
-			return _caseSensitive;
-		}
-		
-		@Override
-		public void load(Preferences rid) {
-			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
-			super.load(rid);
-		}
-		
-		@Override
-		public void save(Preferences rid) {
-			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
-			super.save(rid);
-		}
-		
-		@Override
-		protected void load(Deserializer des) {
-			super.load(des);
-			_caseSensitive = des.getBoolean();
-		}
-		@Override
-		public void save(Serializer ser) {
-			super.save(ser);
-			ser.put(_caseSensitive);
-		}
-
-		public void setCaseSensitive(boolean caseSensitive) {
-			_caseSensitive = caseSensitive;
-		}		
 	}
 	
 	/**
@@ -268,9 +285,8 @@ public abstract class FilterRule implements IAdaptable {
 	 * @author karasiuk
 	 *
 	 */
-	public static class File extends FilterRule {
+	public static class File extends FilterRuleCaseSensitive {
 		
-		private boolean _caseSensitive;
 		private String	_patternAsLowercase;
 		
 		/** One of the FileTypeXX constants. */
@@ -280,29 +296,19 @@ public abstract class FilterRule implements IAdaptable {
 		public static final int FileTypeFolder = 2;
 		public static final int FileTypeFull = 3;
 		
-		private static final String PortableFileDelim = "/"; //$NON-NLS-1$
-		
 		public File(){			
 		}
 		
 		public FilterRule copy() {
 			File rule = new File();
-			rule._pattern = _pattern;
+			rule.copy(this);
 			rule._patternAsLowercase = _patternAsLowercase;
-			rule._caseSensitive = _caseSensitive;
 			rule._type = _type;
 			return rule;
 		}
 		
 		public String getType() {
 			return ExtensionConstants.Rule.file;
-		}
-		
-		@Override
-		public int hashCodeForConfig() {
-			int h =  super.hashCodeForConfig();
-			if (_caseSensitive)h += 401;
-			return h;
 		}
 		
 		public String getDisplayableType() {
@@ -320,9 +326,9 @@ public abstract class FilterRule implements IAdaptable {
 		}
 
 		public void setData(IConfigurationElement rule) {
+			super.setData(rule);
 			setData(rule.getAttribute(ExtensionConstants.RuleAttrib.name));
 			if (_pattern == null)throw new IllegalStateException(ValMessages.ErrPatternAttrib);
-			_caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);	
 			String type = rule.getAttribute(ExtensionConstants.RuleAttrib.fileType);
 			if (type == null)throw new IllegalStateException(ValMessages.ErrTypeReq);
 			if (ExtensionConstants.FileType.file.equals(type))_type = FileTypeFile;
@@ -339,7 +345,7 @@ public abstract class FilterRule implements IAdaptable {
 		}
 		
 		public String toString() {
-			if (_caseSensitive)return NLS.bind(ValMessages.FileExtWithCase, getDisplayableType(), _pattern);
+			if (isCaseSensitive())return NLS.bind(ValMessages.FileExtWithCase, getDisplayableType(), _pattern);
 			return NLS.bind(ValMessages.FileExtWithoutCase, getDisplayableType(), _pattern);
 		}
 		
@@ -360,40 +366,32 @@ public abstract class FilterRule implements IAdaptable {
 			}
 			
 			if (name == null)return Boolean.FALSE;
-			if (_caseSensitive)return name.startsWith(_pattern);
+			if (isCaseSensitive())return name.startsWith(_pattern);
 			return name.toLowerCase().startsWith(_patternAsLowercase);
 		}
 		
 		@Override
 		public void load(Preferences rid) {
-			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
-			_type = rid.getInt(PrefConstants.fileType, -1);
 			super.load(rid);
+			_type = rid.getInt(PrefConstants.fileType, -1);
 		}
 		
 		@Override
 		public void save(Preferences rid) {
-			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
-			rid.putInt(PrefConstants.fileType, _type);
 			super.save(rid);
+			rid.putInt(PrefConstants.fileType, _type);
 		}
 		
 		@Override
 		protected void load(Deserializer des) {
 			super.load(des);
-			_caseSensitive = des.getBoolean();
 			_type = des.getInt();
 		}
 		
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
-			ser.put(_caseSensitive);
 			ser.put(_type);
-		}
-
-		public void setCaseSensitive(boolean caseSensitive) {
-			_caseSensitive = caseSensitive;
 		}
 
 		public void setType(int type) {
@@ -557,6 +555,46 @@ public abstract class FilterRule implements IAdaptable {
 			return NLS.bind(ValMessages.ContentTypeNotExact, getDisplayableType(), _pattern);
 		}
 		
+	}
+	
+	public static class FilePattern extends FilterRuleCaseSensitive {
+		
+		private transient Pattern _compiledPattern;
+
+		@Override
+		public FilterRule copy() {
+			FilePattern fp = new FilePattern();
+			fp.copy(this);
+			fp._compiledPattern = Pattern.compile(_compiledPattern.pattern(), _compiledPattern.flags());
+			return fp;
+		}
+
+		@Override
+		public String getDisplayableType() {
+			// FIXME this should be replaced as soon as we are allowed to change the UI.
+			return ValMessages.RuleFile;
+		}
+
+		@Override
+		public String getType() {
+			return ExtensionConstants.Rule.pattern;
+		}
+		
+		@Override
+		public Boolean matchesResource(IResource resource, ContentTypeWrapper wrapper) {
+			String name = PortableFileDelim + resource.getProjectRelativePath().toPortableString();
+			if (name == null)return Boolean.FALSE;
+			return _compiledPattern.matcher(name).matches();
+		}
+
+		@Override
+		public void setData(IConfigurationElement rule) {
+			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.regex);
+			super.setData(rule);
+			int flags = 0;
+			if (isCaseSensitive())flags = Pattern.CASE_INSENSITIVE;
+			_compiledPattern = Pattern.compile(_pattern, flags);
+		}		
 	}
 
 	/** Answer a deep copy of yourself. */
