@@ -1049,10 +1049,11 @@ public final class FacetedProjectWorkingCopy
                     throw new IllegalArgumentException( msg );
                 }
                 
-                if( ! equals( this.selectedPresetId, presetId ) )
+                final IPreset preset = this.availablePresets.get( presetId );
+                
+                if( ! equals( this.selectedPresetId, presetId ) || 
+                    ( preset != null && ! equals( preset.getProjectFacets(), getProjectFacets() ) ) )
                 {
-                    final IPreset preset = this.availablePresets.get( presetId );
-                    
                     if( preset != null )
                     {
                         // The following line keeps the setProjectFacets() call that comes next from 
