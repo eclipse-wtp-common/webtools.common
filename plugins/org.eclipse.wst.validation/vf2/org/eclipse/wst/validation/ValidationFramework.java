@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,18 +30,24 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.wst.validation.Validator.V1;
+import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.DisabledResourceManager;
 import org.eclipse.wst.validation.internal.DisabledValidatorManager;
+import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
+import org.eclipse.wst.validation.internal.ProjectUnavailableError;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
+import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -254,6 +261,32 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer copies of all the registered validators.
+	 * 
+	 * @return Answer an empty array if there are no validators.
+	 */
+	public Validator[] getValidators(){
+		return ValManager.getDefault().getValidatorsCopy();
+	}
+	
+	/**
+	 * Validators can use project level settings (Project natures and facets) to
+	 * determine if they are applicable to the project or not.
+	 * 
+	 * @param project
+	 *            The project that the configuration is based on.
+	 * @return The copies of the validators that are configured to run on this project based
+	 *         on the project level settings.
+	 * @throws ProjectUnavailableError
+	 */
+	public Validator[] getValidatorsConfiguredForProject(IProject project) throws ProjectUnavailableError {
+		Validator[] orig = ValManager.getDefault().getValidatorsConfiguredForProject(project);
+		Validator[] copy = new Validator[orig.length];
+		for (int i=0; i<orig.length; i++)copy[i] = orig[i].copy();
+		return copy;
+	}
+	
+	/**
 	 * Answer all the validators that are applicable for the given resource.
 	 * 
 	 * @param resource the resource that determines which validators are applicable.
@@ -349,6 +382,55 @@ public final class ValidationFramework {
 	private synchronized Set<IProject> getSuspendedProjects(){
 		if (_suspendedProjects == null)_suspendedProjects = Collections.synchronizedSet(new HashSet<IProject>(20));
 		return _suspendedProjects;
+	}
+	
+	/**
+	 * Save the validators settings into the persistent store, there by making their settings the active settings.
+	 * <p>
+	 * A common use of this method would be to change whether particular validators are enabled or not. For example
+	 * if you only wanted the JSP validator enabled, you could use code similar to this:
+	 * <pre>
+	 * ValidationFramework vf = ValidationFramework.getDefault();
+	 * Validator[] vals = vf.getValidators();
+	 * for (Validator v : vals){
+	 *   boolean enabled = false;
+	 *   if (v.getValidatorClassname().equals("org.eclipse.jst.jsp.core.internal.validation.JSPBatchValidator"))enabled = true;
+	 *     v.setBuildValidation(enabled);
+	 *     v.setManualValidation(enabled);
+	 *  }
+	 * vf.saveValidators(vals);
+	 * </pre>
+	 * </p> 
+	 * 
+	 * @param validators The validators that you are saving.
+	 * 
+	 * @throws InvocationTargetException
+	 */
+	public void saveValidators(Validator[] validators) throws InvocationTargetException{
+		
+		
+		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
+		gp.saveAsPrefs(validators);	
+		
+		GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
+		
+		List<ValidatorMetaData> manual = new LinkedList<ValidatorMetaData>();
+		List<ValidatorMetaData> build = new LinkedList<ValidatorMetaData>();
+		for (Validator v : validators){
+			V1 v1 = v.asV1Validator();
+			if (v1 == null)continue;
+			if (v1.isManualValidation())manual.add(v1.getVmd());
+			if (v1.isBuildValidation())build.add(v1.getVmd());
+		}
+		
+		ValidatorMetaData[] array = new ValidatorMetaData[manual.size()];
+		gc.setEnabledManualValidators(manual.toArray(array));
+		
+		array = new ValidatorMetaData[build.size()];
+		gc.setEnabledBuildValidators(build.toArray(array));
+
+		gc.passivate();
+		gc.store();		
 	}
 
 	/**
