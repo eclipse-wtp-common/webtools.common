@@ -21,10 +21,6 @@
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
-   <includes
-         id="org.eclipse.wst.common.fproj"
-         version="0.0.0"/>
-
    <requires>
       <import feature="org.eclipse.platform" version="3.4.0"/>
       <import feature="org.eclipse.emf.edit" version="2.4.0"/>

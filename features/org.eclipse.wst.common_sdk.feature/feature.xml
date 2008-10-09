@@ -29,10 +29,6 @@
          id="org.eclipse.wst.common_ui.feature.source"
          version="0.0.0"/>
 
-   <includes
-         id="org.eclipse.wst.common.fproj.sdk"
-         version="0.0.0"/>
-
    <plugin
          id="org.eclipse.wst.common.api.doc"
          download-size="0"
