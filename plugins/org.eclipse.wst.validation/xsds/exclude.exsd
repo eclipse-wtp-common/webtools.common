@@ -168,6 +168,7 @@
             <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="contentType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="pattern" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
       </complexType>
    </element>
@@ -202,6 +203,30 @@
             <annotation>
                <documentation>
                   Set to true if the content type needs to match exactly. Set to false if sub types are considered matches as well.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+   <element name="pattern">
+      <annotation>
+         <documentation>
+            Holds a regualr expression, that matches the resource&apos;s project relative name.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="regex" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Holds a Java regular expression. See the class java.util.regex.Pattern for more details. This regular expression is matched against a resource&apos;s project relative path, after that path has been converted into a portable path.
+&lt;p&gt;The path will always start with a forward slash (/) so that folder names can be more easily matched.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="caseSensitive" type="boolean">
+            <annotation>
+               <documentation>
+                  If the file name is not case senstitive, then this needs to be set to false.
                </documentation>
             </annotation>
          </attribute>
