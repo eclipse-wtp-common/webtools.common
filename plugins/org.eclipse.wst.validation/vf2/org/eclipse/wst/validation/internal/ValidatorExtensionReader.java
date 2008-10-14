@@ -83,7 +83,16 @@ public class ValidatorExtensionReader {
 					}
 					else {
 						for (IConfigurationElement exclude : validator.getChildren()){
-							FilterGroup fg = createFilterGroup(exclude);
+							FilterGroup fg = null;
+							try {
+								fg = createFilterGroup(exclude);
+							}
+							catch (Exception e){
+								ValidationPlugin.getPlugin().handleException(e);
+								IContributor contrib = validator.getContributor();
+								String message = NLS.bind(ValMessages.ErrConfig, contrib.getName());
+								ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);								
+							}
 							if (fg != null && fg.isExclude()){
 								mergeExcludeGroup(v2, fg);
 							}
