@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -25,6 +26,7 @@ import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -33,6 +35,7 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.datamodel.properties.IServerContextRootDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -323,9 +326,19 @@ public class ComponentUtilities {
 	 * 
 	 * @param contextRoot string
 	 */
-	public static void setServerContextRoot(IProject project, String contextRoot) {
-		IVirtualComponent comp = ComponentCore.createComponent(project);
-		comp.setMetaProperty(IModuleConstants.CONTEXTROOT, contextRoot);
+	public static void setServerContextRoot(IProject project, String newContextRoot) {
+		
+		IDataModel model = DataModelFactory.createDataModel(IServerContextRootDataModelProperties.class);
+		model.setProperty(IServerContextRootDataModelProperties.PROJECT, project);
+		model.setStringProperty(IServerContextRootDataModelProperties.CONTEXT_ROOT,
+				newContextRoot);
+		
+		try {
+			model.getDefaultOperation().execute(new NullProgressMonitor(), null);
+		}
+		catch (ExecutionException e) {
+			org.eclipse.wst.common.componentcore.internal.ModulecorePlugin.logError(e);
+		}
 	}
 
 	/**
