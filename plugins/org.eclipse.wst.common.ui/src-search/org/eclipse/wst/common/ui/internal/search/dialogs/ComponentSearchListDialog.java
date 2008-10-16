@@ -121,7 +121,6 @@ public class ComponentSearchListDialog extends Dialog {
         Composite mainComposite = (Composite) super.createDialogArea(parent);
         GridData gData = (GridData) mainComposite.getLayoutData();
         gData.heightHint = 500;
-        gData.widthHint = 400;
         
         configuration.createWidgetAboveQualifierBox(mainComposite);        
         // Subclasses may use this Composite to add desired widgets
@@ -500,12 +499,9 @@ public class ComponentSearchListDialog extends Dialog {
             try {
               // this stuff gets executed on a non-UI thread
               //
-              long time1 = System.currentTimeMillis();
               configuration.getSearchListProvider().populateComponentList(componentList, searchScope, null);              
               // Do a final update of our Input for the component tree viewer.
               fireUpdateList(componentList);
-              long time2 = System.currentTimeMillis();
-              System.out.println("time=" + (time2 - time1) + " items= " + masterComponentList.size());
             }
             catch (Exception e) {
             	e.printStackTrace();
