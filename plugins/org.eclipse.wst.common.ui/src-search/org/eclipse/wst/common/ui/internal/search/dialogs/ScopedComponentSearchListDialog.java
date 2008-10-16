@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -54,6 +54,8 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
   protected Text workingSetsText;
   
   protected static String valueForWorkingSetsText;
+  // Show (default/true) or hide (false) the current resource scope button
+  private boolean showCurrentResourceScope = true;
   
   // working sets currently chosen by the user
   private static IWorkingSet[] workingSets;
@@ -84,8 +86,6 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     bottomComposite.setLayout(layout);
     Group group = new Group(bottomComposite, SWT.NONE);
     GridLayout gridLayout = new GridLayout(3, false);
-    // gridLayout.marginWidth = 0;
-    // gridLayout.marginLeft = 2;
     group.setLayout(gridLayout);
     group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     group.setText(Messages._UI_LABEL_SEARCH_SCOPE);
@@ -98,6 +98,20 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     radioButton[2].setText(SCOPE_CURRENT_RESOURCE);
     radioButton[3] = new Button(group, SWT.RADIO);
     radioButton[3].setText(SCOPE_WORKING_SETS);
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=250815 
+    // If the current resource scope button is hidden, it no longer is the default scope.  We must select one of the remaining 
+    // visible radio buttons (Enclosing Project) and make it the default.    
+    radioButton[2].setVisible(showCurrentResourceScope);
+    if (!showCurrentResourceScope)
+    {
+      currentSearchScope = SCOPE_ENCLOSING_PROJECT;
+      if (currentResource != null)
+      {
+        // This is to ensure that once the dialog is invoked, the list is populated with the
+        // appropriate components based on this search scope.
+        populateMasterComponentList(new ProjectSearchScope(currentResource.getFullPath()));
+      } 
+    }
     for (int i = 0; i < radioButton.length; i++)
     {
       if (radioButton[i].getText().equals(currentSearchScope))
@@ -228,5 +242,15 @@ private class ScopeChangeListener extends SelectionAdapter
   public void setCurrentResource(IResource currentResource)
   {
     this.currentResource = currentResource;
+  }
+ 
+  /**
+   * This is non-API.  See https://bugs.eclipse.org/bugs/show_bug.cgi?id=250815
+   * Show (by default), or hide the current resource search scope button
+   * @param showCurrentResourceScope.  false to hide.
+   */
+  public void setShowCurrentResourceSearchScopeBug250815(boolean showCurrentResourceScope)
+  {
+    this.showCurrentResourceScope = showCurrentResourceScope;
   }
 }
