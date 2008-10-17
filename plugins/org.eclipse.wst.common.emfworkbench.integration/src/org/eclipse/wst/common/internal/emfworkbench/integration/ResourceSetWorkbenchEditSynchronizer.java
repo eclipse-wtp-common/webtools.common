@@ -16,6 +16,7 @@
  */
 package org.eclipse.wst.common.internal.emfworkbench.integration;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,18 +65,18 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private Set recentlySavedFiles = new HashSet();
 	private Map ignoredFilesCache = new HashMap();
 	private class SavedFileKey {
-		private Resource res;
+		private WeakReference res;
 		private IFile savedFile;
 		public SavedFileKey(Resource res, IFile savedFile) {
 			super();
-			this.res = res;
+			this.res = new WeakReference(res);
 			this.savedFile = savedFile;
 		}
 		public Resource getRes() {
-			return res;
+			return this.res == null ? null : (Resource)res.get();
 		}
 		public void setRes(Resource res) {
-			this.res = res;
+			this.res = new WeakReference(res);
 		}
 		public IFile getSavedFile() {
 			return savedFile;
@@ -87,7 +88,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((res == null) ? 0 : res.hashCode());
+			result = prime * result + ((getRes() == null) ? 0 : getRes().hashCode());
 			result = prime * result + ((savedFile == null) ? 0 : savedFile.hashCode());
 			return result;
 		}
@@ -101,10 +102,10 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			SavedFileKey other = (SavedFileKey) obj;
 			if (!getOuterType().equals(other.getOuterType()))
 				return false;
-			if (res == null) {
-				if (other.res != null)
+			if (getRes() == null) {
+				if (other.getRes() != null)
 					return false;
-			} else if (!res.equals(other.res))
+			} else if (!getRes().equals(other.getRes()))
 				return false;
 			if (savedFile == null) {
 				if (other.savedFile != null)
@@ -134,7 +135,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	public ResourceSetWorkbenchEditSynchronizer(ResourceSet aResourceSet, IProject aProject) {
 		super(aResourceSet, aProject);
 	}
-
+		
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -324,7 +325,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
         for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
 			Resource resource = (Resource) iterator.next();
 
-			if ((resource != null) || (recentlySavedFilesContains(resource))) {
+			if ((resource != null) && (recentlySavedFilesContains(resource))) {
 				/*
 				 * The IFile was just added to the workspace but we have a
 				 * resource in memory. Need to decide if it should be unloaded.
@@ -366,7 +367,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private synchronized boolean recentlySavedFilesContains(Resource resource) {
 		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
 			SavedFileKey key = (SavedFileKey) iterator.next();
-			if (key.res.equals(resource)) 
+			if (key.getRes() != null && (key.getRes().getURI().equals(resource.getURI()) && key.getRes().getClass().equals(resource.getClass())))
 				return true;
 			}
 		return false;
@@ -376,16 +377,17 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		List resources = getResources(aFile);
         for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
 			Resource resource = (Resource) iterator.next();
-			if ((resource != null) || (recentlySavedFilesContains(resource))) {
-				if (resource.isModified()) {
-					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
-						ReferencedResource refRes = (ReferencedResource) resource;
-						if (!refRes.shouldForceRefresh())
-							continue; // Do not do anything
-					} else
-						continue;
+			if ((resource != null)) {
+				if (recentlySavedFilesContains(resource)) {
+					if (resource.isModified()) {
+						if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+							ReferencedResource refRes = (ReferencedResource) resource;
+							if (!refRes.shouldForceRefresh())
+								continue; // Do not do anything
+						} else
+							continue;
+					}
 				}
-
 				if (isRemove)
 					deferredRemoveResources.add(resource);
 				else if (resource.isLoaded()) {
@@ -487,10 +489,9 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			SavedFileKey key = (SavedFileKey) iterator.next();
 			if (key.savedFile != null && key.savedFile.equals(file)) {
 				List resources = getResources(file);
-				if (key.res == null || resources.contains(key.res) ) {
+				if (key.getRes() == null || resources.contains(key.getRes()) ) {
 					iterator.remove();
 					removedFromList = true;
-					break;
 				}
 			}
 		}
