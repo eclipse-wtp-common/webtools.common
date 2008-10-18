@@ -22,4 +22,9 @@ org.eclipse.wst.validation/timings/useDoubles=false
 # org.eclipse.wst.xml.core.xml 
 org.eclipse.wst.validation/extraValDetail=
 
-
+# To make debugging easier, you can make it appear is if only one validator has been 
+# registered via the extension points. You do this by setting the following filter
+# to validator id of the one validator that you want registered.
+#
+# As an example, you could use this plug-in id: org.eclipse.jst.j2ee.ejb.EJBValidator
+org.eclipse.wst.validation/filter/allExcept=

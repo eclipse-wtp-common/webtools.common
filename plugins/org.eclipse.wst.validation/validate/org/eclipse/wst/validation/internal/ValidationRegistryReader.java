@@ -1319,12 +1319,14 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				// The PropertyPage, and other status messages, need to have a displayable name for
 				// the validator.
 				String pluginId = extension.getContributor().getName();
-				ValidatorMetaData vmd = initializeValidator(element, label, pluginId);
-
-				if (vmd != null) {
-					// Add this validator to the list of validators; if vmd is null, the validator
-					// couldn't be created.
-					add(vmd);
+				if (Tracing.isEnabled(extension.getUniqueIdentifier())){
+					ValidatorMetaData vmd = initializeValidator(element, label, pluginId);
+	
+					if (vmd != null) {
+						// Add this validator to the list of validators; if vmd is null, the validator
+						// couldn't be created.
+						add(vmd);
+					}
 				}
 			}
 		}

@@ -61,8 +61,11 @@ public class ValidatorExtensionReader {
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), null);
-				if (v != null)map.put(v.getId(),v);
+				String id = ext.getUniqueIdentifier();
+				if (Tracing.isEnabled(id)){
+					Validator v = processValidator(validator, id, ext.getLabel(), null);
+					if (v != null)map.put(v.getId(),v);
+				}
 			}
 		}
 		
