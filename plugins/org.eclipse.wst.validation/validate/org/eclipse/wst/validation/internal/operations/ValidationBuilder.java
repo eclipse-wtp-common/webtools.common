@@ -12,6 +12,7 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -125,6 +127,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		return referencedProjects.toArray(refProjArray);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public IProject[] build(int kind, Map parameters, IProgressMonitor monitor) {
 		IResourceDelta delta = null;
 		IProject project = getProject();
@@ -159,10 +162,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				return referenced;
 			}
 			if (doFullBuild) {
+				cleanupReferencedProjectsMarkers(prjp, referenced);
 				performFullBuild(monitor, prjp);
 			} else {
 				if (delta.getAffectedChildren().length == 0) {
 					if (isReferencedProjectInDelta(referenced))
+						cleanupReferencedProjectsMarkers(prjp, referenced);
 						performFullBuildForReferencedProjectChanged(monitor, prjp);
 					return referenced;
 				}
@@ -181,6 +186,38 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			referencedProjects = null;
 		}
 	}
+	
+	private void cleanupReferencedProjectsMarkers(final ProjectConfiguration prjp, IProject[] referenced){
+		//When a project references one or more project, performing a clean build on referenced
+		//causes delta to be invoked on referencee, aka, parent. This causes following code to
+		//be invoked.
+		//The following code is trying to fix a case where Ejb project references a utility project,
+		//and the clean build on utility project causes the code to come here, the ejb validator runs
+		//on the ejb  project due to performFullBuildForReferencedProjectChanged() below, but it also
+		//causes marker to be generated for the util project, but the markers for util project are not
+		//cleaned up.   
+		
+		if( referenced == null || referenced.length == 0 )return;
+		
+		try{
+			ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, false);
+ 
+			Set<ValidatorMetaData>  set = new HashSet<ValidatorMetaData>();
+			set.addAll( Arrays.asList( enabledValidators ) );
+			for (IProject p : referenced) {
+				ProjectConfiguration refProjectCfg = ConfigurationManager.getManager().getProjectConfiguration(p);
+		
+				ValidatorMetaData[] refEnabledValidators = refProjectCfg.getEnabledFullBuildValidators(true, false);
+				
+				//remove from the set the validators which are also in child
+				for(ValidatorMetaData vmd : refEnabledValidators)set.remove(vmd);
+				
+				for(ValidatorMetaData vmd : set)WorkbenchReporter.removeAllMessages(p, vmd.getValidator());		
+			}	
+		}catch (Exception exc) {
+			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, exc.toString());
+	}
+}
 
 	private boolean isReferencedProjectInDelta(IProject[] referenced) {
 		IProject p = null;
@@ -204,7 +241,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	private void performFullBuild(IProgressMonitor monitor, ProjectConfiguration prjp, boolean onlyDependentValidators) throws InvocationTargetException {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
-			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
+			Set<ValidatorMetaData> enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
 			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, true);
 			op.run(monitor);
 		}
