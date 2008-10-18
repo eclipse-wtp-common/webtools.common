@@ -109,8 +109,14 @@ public class MarkerManager {
 			for (IMarker marker : markers){
 				if (_markers.contains(marker.getType())){
 					long createTime = marker.getCreationTime();
-//					long diff = createTime - operationStartTime;
-					if (createTime < operationStartTime)marker.delete();
+					if (createTime < operationStartTime){
+						try {
+							marker.delete();
+						}
+						catch (CoreException e){
+							// eat it - there is nothing we can do about this.
+						}
+					}
 				}
 			}
 		}
