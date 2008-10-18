@@ -970,7 +970,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 				String disableAllValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),versionIndex);
 				setDisableAllValidation(Boolean.valueOf(disableAllValidation).booleanValue());
 		} else {
-				setDisableAllValidation(false);;
+				setDisableAllValidation(false);
 		}
 		
 	}

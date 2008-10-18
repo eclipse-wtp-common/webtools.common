@@ -478,7 +478,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 				String disableAllValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(), versionIndex);
 				setDisableAllValidation(Boolean.valueOf(disableAllValidation).booleanValue());
 			} else {
-				setDisableAllValidation(false);;
+				setDisableAllValidation(false);
 			}
 			// project doesn't override the global
 			if (disableAllValidationIndex != -1) {
