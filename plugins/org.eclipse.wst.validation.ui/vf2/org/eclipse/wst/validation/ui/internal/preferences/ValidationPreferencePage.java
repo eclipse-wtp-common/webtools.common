@@ -637,7 +637,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
 	//			gc.setCanProjectsOverride(overrideButton.getSelection());
 				
-				if (_globalPreferences.getDisableAllValidation())gc.setDisableAllValidation(true);
+				gc.setDisableAllValidation(_globalPreferences.getDisableAllValidation());
 				//pagePreferences.setEnabledValidators(getEnabledValidators());
 				
 				gc.setEnabledManualValidators(getEnabledManualValidators());				
