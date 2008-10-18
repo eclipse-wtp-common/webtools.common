@@ -76,6 +76,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 
 	public synchronized void add(String id, IResource dependent, IResource dependsOn) {
 		init();
+		if (dependsOn == null || dependent == null)return;
 		Depends d = getOrCreateDepends(dependent, dependsOn);
 		if (d.getValidators().add(id))_dirty = true;
 	}
@@ -118,8 +119,8 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			_dependents = new HashMap<IResource,Set<Depends>>(100);
 		}
 		else {
-			String errorMessage = "The following dependency could not be restored " + //$NON-NLS-1$
-				"because the following resource {0} could no longer be found."; //$NON-NLS-1$
+			String errorMessage = "The following dependency could not be restored " + 
+				"because the following resource {0} could no longer be found."; 
 			DataInputStream in = null;
 			try {
 				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -137,7 +138,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				for (int i=0; i<numDependsOn; i++){
 					String v = in.readUTF();
 					IResource dependsOn = root.findMember(v);
-					if (v == null){
+					if (dependsOn == null){
 						Tracing.log(NLS.bind(errorMessage, v));
 						continue;
 					}
