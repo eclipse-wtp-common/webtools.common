@@ -55,6 +55,8 @@ public class ValMessages extends NLS {
 	
 	public static String MigrationJobName;
 	
+	public static String RogueValidator;
+	
 	public static String RuleProjectNature;
 	public static String RuleFileExt;
 	public static String RuleFile;
