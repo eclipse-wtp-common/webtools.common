@@ -284,34 +284,32 @@ public class TaskListUtility implements ConfigurationConstants {
 
 	private static IMarker[] getValidationTasks(IResource resource, String[] messageOwners, int depth) {
 		IMarker[] markers = getValidationTasks(resource, IMessage.ALL_MESSAGES, depth);
-		if (markers.length == 0) {
-			return NO_MARKERS;
-		}
+		if (markers.length == 0)return NO_MARKERS;
 
 		IMarker[] temp = new IMarker[markers.length];
 		int validCount = 0;
-		for (int i = 0; i < markers.length; i++) {
-			IMarker marker = markers[i];
-
+		for (IMarker marker : markers) {
+			Object owner = null;
 			try {
-				Object owner = marker.getAttribute(VALIDATION_MARKER_OWNER);
-				if ((owner == null) || !(owner instanceof String)) {
-					// The ValidationMigrator will remove any "unowned" validation markers.
-					continue;
-				}
-
-				for (int j = 0; j < messageOwners.length; j++) {
-					String messageOwner = messageOwners[j];
-					if (((String) owner).equals(messageOwner)) {
-						temp[validCount++] = marker;
-						break;
-					}
-				}
+				owner = marker.getAttribute(VALIDATION_MARKER_OWNER);
 			} catch (CoreException e) {
-				ValidationPlugin.getPlugin().handleException(e);
-				return NO_MARKERS;
+				// eat it -- if it no longer exists there is nothing we can do about it
+			}
+			
+			if ((owner == null) || !(owner instanceof String)) {
+				// The ValidationMigrator will remove any "unowned" validation markers.
+				continue;
+			}
+
+			for (String messageOwner : messageOwners) {
+				if (((String) owner).equals(messageOwner)) {
+					temp[validCount++] = marker;
+					break;
+				}
 			}
 		}
+		
+		if (validCount == 0)return NO_MARKERS;
 
 		IMarker[] result = new IMarker[validCount];
 		System.arraycopy(temp, 0, result, 0, validCount);
