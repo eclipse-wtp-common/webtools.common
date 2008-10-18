@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2007 IBM Corporation and others.
+ * Copyright (c) 2006, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,15 @@
 package org.eclipse.wst.validation.internal.delegates;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
- * This class reads the plugin extension registry and registers each delegating
+ * This class reads the plug-in extension registry and registers each delegating
  * validator descriptor with the delegates registry.
  * 
  * @see ValidatorDelegatesRegistry
@@ -103,12 +106,19 @@ class ValidatorDelegatesRegistryReader
 
     if (point != null)
     {
-      IConfigurationElement[] elements = point.getConfigurationElements();
-
-      for (int index = 0; index < elements.length; index++)
-      {
-        readElement(elements[index]);
-      }
-    }
+			IConfigurationElement[] elements = point.getConfigurationElements();
+			for (IConfigurationElement configurationElement : elements) {
+				try {
+					readElement(configurationElement);
+				}
+				catch (Exception e) {
+					// we don't want all the validators to be rendered helpless by some 
+					// rogue contribution, so, we catch any exception that occurs during 
+					// initialization, log it, and continue on.
+					IContributor contributor = configurationElement.getContributor();
+					ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, "Rogue validator delegate from " + contributor);
+				}
+			}
+		}
   }
 }
