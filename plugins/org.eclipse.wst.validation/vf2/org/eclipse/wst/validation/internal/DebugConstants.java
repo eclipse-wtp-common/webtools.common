@@ -39,5 +39,11 @@ public interface DebugConstants {
 	 * For example, if you wanted more detail on the XML validator you would use org.eclipse.wst.xml.core.xml 
 	 */
 	String ExtraValDetail = ValidationPlugin.PLUGIN_ID+"/extraValDetail"; //$NON-NLS-1$
+	
+	/** 
+	 * filter/allExcept - If supplied, it is as if this is the only validator that gets defined via
+	 * the extension point. All the other validators are ignored.
+	 */
+	String FilterAllExcept = ValidationPlugin.PLUGIN_ID+"/filter/allExcept"; //$NON-NLS-1$
 
 }

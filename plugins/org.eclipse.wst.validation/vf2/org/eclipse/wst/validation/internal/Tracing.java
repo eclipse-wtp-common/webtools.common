@@ -30,6 +30,27 @@ public class Tracing {
 	private static Boolean		_traceV1;
 	private static String		_extraValDetail;
 	
+	private static String		_filter;
+	private static boolean		_noFilters;
+	
+	/**
+	 * Answer true if the filters allow this validator to be enabled. Normally this method will answer true.
+	 * It is only when filters are activated via the debugging options, that this method might return false.
+	 * This is used to aid in debugging by making it look like only one validator has been registered.
+	 * 
+	 * @param validatorId the validator id.
+	 * @return true if the validator should be registered via an extension point.
+	 */
+	public static boolean isEnabled(String validatorId){
+		if (_noFilters)return true;
+		if (_filter == null){
+			_filter = Platform.getDebugOption(DebugConstants.FilterAllExcept);
+			if (_filter == null || _filter.length() == 0)_noFilters = true;
+			return true;
+		}
+		return (_filter.equals(validatorId));		
+	}
+	
 	/**
 	 * Are we in logging/debugging mode?
 	 */
