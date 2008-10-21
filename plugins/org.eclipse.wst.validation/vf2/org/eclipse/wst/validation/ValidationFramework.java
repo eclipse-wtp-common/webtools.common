@@ -81,8 +81,13 @@ public final class ValidationFramework {
 	 * Answer the singleton, default instance of this class.
 	 */
 	public static ValidationFramework getDefault(){
-		if (_me == null)_me = new ValidationFramework();
+		if (_me == null)return getDefault2();
 		return _me;
+	}
+	
+	private synchronized static ValidationFramework getDefault2(){
+		if (_me == null)_me = new ValidationFramework();
+		return _me;		
 	}
 	
 	private ValidationFramework(){}
