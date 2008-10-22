@@ -69,25 +69,17 @@ import org.eclipse.wst.validation.internal.provisional.core.IReporter;
  */
 public final class ValidationFramework {
 	
-	private IDependencyIndex 			_dependencyIndex;
+	private volatile IDependencyIndex 	_dependencyIndex;
 	private IPerformanceMonitor			_performanceMonitor;
 	
 	private Set<IProject> 				_suspendedProjects;
 	private boolean 					_suspendAllValidation;
 
-	private static ValidationFramework 	_me;
-	
 	/** 
 	 * Answer the singleton, default instance of this class.
 	 */
 	public static ValidationFramework getDefault(){
-		if (_me == null)return getDefault2();
-		return _me;
-	}
-	
-	private synchronized static ValidationFramework getDefault2(){
-		if (_me == null)_me = new ValidationFramework();
-		return _me;		
+		return Singleton.vf;
 	}
 	
 	private ValidationFramework(){}
@@ -143,15 +135,15 @@ public final class ValidationFramework {
 	 * other resources.
 	 */
 	public IDependencyIndex getDependencyIndex(){
-		if (_dependencyIndex != null)return _dependencyIndex;
-		return getDependencyIndex2();
-	}
-
-	private synchronized IDependencyIndex getDependencyIndex2() {
-		if (_dependencyIndex == null)_dependencyIndex = new DependencyIndex();
+		// note how the _dependencyIndex is volatile so that this double checking approach can be used.
+		if (_dependencyIndex == null){
+			synchronized(this){
+				if (_dependencyIndex == null)_dependencyIndex = new DependencyIndex();
+			}
+		}
 		return _dependencyIndex;
 	}
-	
+
 	/**
 	 * Answer a performance monitor for the validators.
 	 */
@@ -547,6 +539,17 @@ public final class ValidationFramework {
 			return true;
 		}
 		
+	}
+	
+	/**
+	 * Store the singleton for the ValidationFramework. This approach is used to avoid having to synchronize the
+	 * ValidationFramework.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static ValidationFramework vf = new ValidationFramework();
 	}
 
 }

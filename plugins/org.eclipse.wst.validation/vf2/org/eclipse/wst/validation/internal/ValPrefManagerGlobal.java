@@ -44,15 +44,13 @@ public class ValPrefManagerGlobal {
 	public final static int frameworkVersion = 3;
 	
 	private List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
-	private static ValPrefManagerGlobal _me;
 	
 	private List<Validator> _validators;
 	
 	private ValPrefManagerGlobal(){}
 	
 	public static ValPrefManagerGlobal getDefault(){
-		if (_me == null)_me = new ValPrefManagerGlobal();
-		return _me;
+		return Singleton.valPrefManagerGlobal;
 	}
 	
 	public void addListener(IValChangedListener listener){
@@ -520,4 +518,16 @@ public class ValPrefManagerGlobal {
 			return map;
 		}
 	}
+	
+	/**
+	 * Store the singleton for the ValPrefManagerGlobal. This approach is used to avoid having to synchronize the
+	 * ValPrefManagerGlobal.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static ValPrefManagerGlobal valPrefManagerGlobal = new ValPrefManagerGlobal();
+	}
+
 }

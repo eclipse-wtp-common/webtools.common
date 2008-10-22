@@ -98,8 +98,6 @@ public class ValOperationManager implements IResourceChangeListener {
 	 * validation finished on null 
 	 */
 	
-	private static ValOperationManager _me;
-
 	/**
 	 * This operation is in affect for a build cycle. At the end of the build it is reinitialized.
 	 */
