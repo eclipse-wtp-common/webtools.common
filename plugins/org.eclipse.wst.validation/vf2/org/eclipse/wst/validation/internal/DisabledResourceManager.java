@@ -31,11 +31,8 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class DisabledResourceManager implements IProjectChangeListener {
 	
-	private static DisabledResourceManager _me;
-	
 	public static DisabledResourceManager getDefault(){
-		if (_me == null)_me = new DisabledResourceManager();
-		return _me;
+		return Singleton.disabledResourceManager;
 	}
 	
 	private Set<IResource> _disabled = new HashSet<IResource>(100);
@@ -153,5 +150,17 @@ public class DisabledResourceManager implements IProjectChangeListener {
 		}
 		_disabled = copy;
 	}
+	
+	/**
+	 * Store the singleton for the DisabledResourceManager. This approach is used to avoid having to synchronize the
+	 * DisabledResourceManager.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static DisabledResourceManager disabledResourceManager = new DisabledResourceManager();
+	}
+
 
 }

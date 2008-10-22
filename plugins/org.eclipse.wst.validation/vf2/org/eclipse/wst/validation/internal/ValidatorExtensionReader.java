@@ -44,7 +44,7 @@ public class ValidatorExtensionReader {
 	
 	private static ValidatorExtensionReader _me;
 	
-	public static ValidatorExtensionReader getDefault(){
+	public synchronized static ValidatorExtensionReader getDefault(){
 		if (_me == null)_me = new ValidatorExtensionReader();
 		return _me;
 	}

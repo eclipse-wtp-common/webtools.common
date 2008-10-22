@@ -61,8 +61,6 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class ValManager implements IValChangedListener, IFacetedProjectListener, IProjectChangeListener {
 	
-	private static ValManager _me;
-		
 	/**
 	 * Projects may be allowed to override the global validation settings. If that is the case then those
 	 * project specific settings are saved here. If the key exists, but the value is null, then that
@@ -86,9 +84,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	private static final QualifiedName StatusBuild = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sb"); //$NON-NLS-1$
 	private static final QualifiedName StatusManual = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sm"); //$NON-NLS-1$
 			
-	public static synchronized ValManager getDefault(){
-		if (_me == null)_me = new ValManager();
-		return _me;
+	public static ValManager getDefault(){
+		return Singleton.valManager;
 	}
 	
 	private ValManager(){
@@ -1118,7 +1115,18 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		case IProjectChangeListener.ProjectAdded:
 			projectChanged(project);
 			break;
-		}
-		
+		}		
 	}
+	
+	/**
+	 * Store the singleton for the ValManager. This approach is used to avoid having to synchronize the
+	 * ValManager.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static ValManager valManager = new ValManager();
+	}
+
 }

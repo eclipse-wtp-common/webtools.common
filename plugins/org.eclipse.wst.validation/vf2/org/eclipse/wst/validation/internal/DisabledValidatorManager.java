@@ -30,18 +30,13 @@ import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
  */
 public class DisabledValidatorManager implements IValChangedListener {
 	
-	private static DisabledValidatorManager _me;
 	private static int _counter;
 	private static final int CacheSize = 5;
 	
 	private Map<IResource, LRUSet> _map = Collections.synchronizedMap(new HashMap<IResource, LRUSet>(5));
 	
 	public static DisabledValidatorManager getDefault(){
-		DisabledValidatorManager me = _me;
-		if (me != null)return me;
-		me = new DisabledValidatorManager();
-		_me = me;
-		return me;
+		return Singleton.disabledValidatorManager;
 	}
 	
 	private DisabledValidatorManager(){
@@ -122,5 +117,18 @@ public class DisabledValidatorManager implements IValChangedListener {
 	public void validatorsForProjectChanged(IProject project, boolean configSettingChanged) {
 		_map.clear();
 	}
+	
+	
+	/**
+	 * Store the singleton for the DisabledValidatorManager. This approach is used to avoid having to synchronize the
+	 * DisabledValidatorManager.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static DisabledValidatorManager disabledValidatorManager = new DisabledValidatorManager();
+	}
+
 
 }
