@@ -277,7 +277,7 @@ public final class ValidationFramework {
 	 * @throws ProjectUnavailableError
 	 */
 	public Validator[] getValidatorsConfiguredForProject(IProject project) throws ProjectUnavailableError {
-		Validator[] orig = ValManager.getDefault().getValidatorsConfiguredForProject(project);
+		Validator[] orig = ValManager.getDefault().getValidatorsConfiguredForProject(project, false);
 		Validator[] copy = new Validator[orig.length];
 		for (int i=0; i<orig.length; i++)copy[i] = orig[i].copy();
 		return copy;

@@ -263,7 +263,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefault().getValidatorsConfiguredForProject(getProject()));
+			_validators = copyValidators(ValManager.getDefault().getValidatorsConfiguredForProject(getProject(), false));
 
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
 
@@ -511,7 +511,11 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_override.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					_override.setFocus();
-					if (ValManager.getDefault().getGlobalPreferences().getOverride()){
+					ValManager vm = ValManager.getDefault();
+					if (vm.getGlobalPreferences().getOverride()){
+						IProject project = getProject();
+						_validators = copyValidators(vm.getValidatorsConfiguredForProject(project, _override.getSelection()));
+						_validatorList.setInput(_validators);
 						enableDisableWidgets();
 						_validatorList.refresh();
 					}

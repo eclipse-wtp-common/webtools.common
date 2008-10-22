@@ -185,7 +185,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @return The validators in name sorted order.
 	 */
 	public synchronized Validator[] getValidators(IProject project) throws ProjectUnavailableError {
-		Map<String,Validator> v2Vals = getV2Validators(project);
+		Map<String,Validator> v2Vals = getV2Validators(project, false);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
 		sorted.addAll(v2Vals.values());
 		
@@ -223,12 +223,16 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * 
 	 * @param project
 	 *            The project that the configuration is based on.
+	 * @param mustUseProjectSettings
+	 *            Force the project properties to be used. There is a case where the user has toggled the
+	 *            Enable project specific settings checkbox in the dialog, but has not yet committed the
+	 *            changes. This allows that setting to be passed through.
 	 * @return The validators that are configured to run on this project based
 	 *         on the project level settings. These are the "live" validators, they are not copies.
 	 * @throws ProjectUnavailableError
 	 */
-	public Validator[] getValidatorsConfiguredForProject(IProject project) throws ProjectUnavailableError {
-		Map<String,Validator> v2Vals = getV2Validators(project);
+	public Validator[] getValidatorsConfiguredForProject(IProject project, boolean mustUseProjectSettings) throws ProjectUnavailableError {
+		Map<String,Validator> v2Vals = getV2Validators(project, mustUseProjectSettings);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
 		sorted.addAll(v2Vals.values());
 		
@@ -255,24 +259,32 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	}
 	
 	/**
-	 * Answer the V2 validators that are in effect for this project. The following approach is used:
+	 * Answer the V2 validators that are in effect for this project. The
+	 * following approach is used:
 	 * <ol>
 	 * <li>The validators that are defined by the extension point are loaded.</li>
 	 * <li>They are customized by any global preferences.</li>
-	 * <li>If project customizations are allowed, they are customized by the project preferences.
+	 * <li>If project customizations are allowed, they are customized by the
+	 * project preferences.
 	 * </ol>
 	 * 
 	 * @param project
-	 *            This may be null, in which case only the global preferences are used.
+	 *            This may be null, in which case only the global preferences
+	 *            are used.
+	 * @param mustUseProjectSettings
+	 *            Force the project properties to be used. There is a case where the used has toggled the
+	 *            Enable project specific settings checkbox in the dialog, but has not yet committed the
+	 *            changes. This allows that setting to be passed through.
+	 *            
 	 * @return
 	 */
-	private Map<String,Validator> getV2Validators(IProject project){
+	private Map<String,Validator> getV2Validators(IProject project, boolean mustUseProjectSettings){
 		Map<String,Validator> extVals = ExtensionValidators.instance().getMapV2Copy();
 		try {
 			List<Validator> vals = ValPrefManagerGlobal.getDefault().getValidators();
 			for (Validator v : vals)extVals.put(v.getId(), v);
 			
-			if (!mustUseGlobalValidators(project)){
+			if (mustUseProjectSettings || !mustUseGlobalValidators(project)){
 				//TODO should probably cache this vpm
 				ValPrefManagerProject vpm = new ValPrefManagerProject(project);
 				vals = vpm.getValidators(extVals);
