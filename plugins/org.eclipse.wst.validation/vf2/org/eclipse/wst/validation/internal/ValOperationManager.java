@@ -116,9 +116,8 @@ public class ValOperationManager implements IResourceChangeListener {
 	 */
 	private int _discardAutoPost;
 
-	public static synchronized ValOperationManager getDefault(){
-		if (_me == null)_me = new ValOperationManager();
-		return _me;
+	public static ValOperationManager getDefault(){
+		return Singleton.valOperationManager;
 	}
 	
 	private ValOperationManager(){}
@@ -263,5 +262,17 @@ public class ValOperationManager implements IResourceChangeListener {
 		if (_operation == null)return new ValOperation();
 		return _operation;
 	}
+	
+	/**
+	 * Store the singleton for the ValOperationManager. This approach is used to avoid having to synchronize the
+	 * ValOperationManager.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static ValOperationManager valOperationManager = new ValOperationManager();
+	}
+
 
 }

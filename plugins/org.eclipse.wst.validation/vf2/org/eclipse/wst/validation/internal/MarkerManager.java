@@ -31,13 +31,10 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  */
 public class MarkerManager {
 	
-	private static MarkerManager _me;
-	
 	private Set<String> _markers = new HashSet<String>(50);
 	
 	public static MarkerManager getDefault(){
-		if (_me == null)_me = new MarkerManager();
-		return _me;
+		return Singleton.markerManager;
 	}
 	
 	private MarkerManager(){
@@ -178,5 +175,17 @@ public class MarkerManager {
 	public Set<String> getMarkers() {
 		return _markers;
 	}
+	
+	/**
+	 * Store the singleton for the MarkerManager. This approach is used to avoid having to synchronize the
+	 * MarkerManager.getDefault() method.
+	 * 
+	 * @author karasiuk
+	 *
+	 */
+	private static class Singleton {
+		static MarkerManager markerManager = new MarkerManager();
+	}
+
 
 }
