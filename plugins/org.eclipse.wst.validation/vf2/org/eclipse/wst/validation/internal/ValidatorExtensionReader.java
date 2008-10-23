@@ -279,7 +279,19 @@ public class ValidatorExtensionReader {
 	 */
 	private void processRule(FilterGroup fg, IConfigurationElement rule) {
 		FilterRule fr = FilterRule.create(rule.getName());
-		if (fr == null)throw new IllegalStateException(ValMessages.ErrFilterRule);
+		if (fr == null){
+			String contributor = ""; //$NON-NLS-1$
+			String name = ""; //$NON-NLS-1$
+			try {
+				contributor = rule.getDeclaringExtension().getContributor().getName();
+				name = rule.getName();
+			}
+			catch (Exception e){
+				// eat it
+			}
+			throw new IllegalStateException(ValMessages.ErrFilterRule + " : " + //$NON-NLS-1$
+					contributor	 + " : " + name); //$NON-NLS-1$
+		}
 		fr.setData(rule);
 		fg.add(fr);
 	}
