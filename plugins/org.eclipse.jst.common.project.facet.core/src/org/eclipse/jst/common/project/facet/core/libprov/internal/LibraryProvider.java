@@ -23,6 +23,7 @@ import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.EvaluationResult;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext;
 import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderActionType;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
@@ -93,6 +94,9 @@ public final class LibraryProvider
         }
     }
     
+    private static final String EXPR_VAR_CONTEXT 
+        = "context"; //$NON-NLS-1$
+
     private static final String EXPR_VAR_REQUESTING_PROJECT_FACET 
         = "requestingProjectFacet"; //$NON-NLS-1$
     
@@ -252,6 +256,8 @@ public final class LibraryProvider
             }
             
             final EvaluationContext evalContext = new EvaluationContext( null, fv );
+            final EnablementExpressionContext context = new EnablementExpressionContext( fproj, fv );
+            evalContext.addVariable( EXPR_VAR_CONTEXT, context );
             evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, fv );
             evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fproj.getProjectFacets() );
             evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fproj.getTargetedRuntimes() );

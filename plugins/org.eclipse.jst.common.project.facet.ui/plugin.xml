@@ -64,6 +64,9 @@
       provider="user-library-provider"
       class="org.eclipse.jst.common.project.facet.ui.libprov.user.UserLibraryProviderInstallPanel"/>
     <panel
+      provider="runtime-library-provider"
+      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.RuntimeLibraryProviderInstallPanel"/>
+    <panel
       provider="unknown-library-provider"
       class="org.eclipse.jst.common.project.facet.ui.libprov.internal.UnknownLibraryProviderInstallPanel"/>
     <panel 

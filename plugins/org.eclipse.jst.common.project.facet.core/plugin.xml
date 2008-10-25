@@ -155,6 +155,34 @@
   </extension>
   
   <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="runtime-library-provider">
+      <label>%runtimeLibraryProviderLabel</label>
+      <priority>600</priority>
+      <enablement>
+        <with variable="context">
+          <test property="org.eclipse.jst.common.project.facet.core.canTargetRuntimeProvideLibrary" forcePluginActivation="true"/>
+        </with>
+      </enablement>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="org.eclipse.jst.common.project.facet.core.canTargetRuntimeProvideLibrary"
+      type="org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext"
+      namespace="org.eclipse.jst.common.project.facet.core"
+      properties="canTargetRuntimeProvideLibrary"
+      class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderPropertyTester">
+    </propertyTester>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
     <provider id="unknown-library-provider" hidden="true">
       <label>%unknownLibraryProviderLabel</label>
       <action type="INSTALL">
@@ -165,7 +193,7 @@
       </action>
     </provider>
   </extension>
-
+  
   <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
     <provider id="legacy-library-provider" hidden="true">
       <label>%legacyLibraryProviderLabel</label>
