@@ -97,8 +97,13 @@ public class ValidationRunner implements IWorkspaceRunnable {
 			IProject project = me.getKey();
 			manager.accept(startingVisitor, project, _valType, _valOperation, monitor);
 			for (IResource resource : me.getValue()){
-				manager.validate(project, resource, IResourceDelta.NO_CHANGE, _valType, 
-					IncrementalProjectBuilder.AUTO_BUILD, _valOperation, monitor);
+				try {
+					manager.validate(project, resource, IResourceDelta.NO_CHANGE, _valType, 
+							IncrementalProjectBuilder.AUTO_BUILD, _valOperation, monitor);
+				}
+				catch (ResourceUnavailableError error){
+					// if the resource is no longer available, we can't validate it, so we should just move on. 
+				}
 			}
 			manager.accept(finishedVisitor, project, _valType, _valOperation, monitor);
 		}
