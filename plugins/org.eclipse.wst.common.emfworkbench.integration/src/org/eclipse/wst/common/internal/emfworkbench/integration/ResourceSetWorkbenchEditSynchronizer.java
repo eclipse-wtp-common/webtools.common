@@ -429,18 +429,21 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 	
 	protected List getResources(IFile aFile) {
-		
+
 		List resources = new ArrayList();
 		List allResources = resourceSet.getResources();
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
-			IPath resURIPath;
-			if (WorkbenchResourceHelper.isPlatformResourceURI(resURI)) 
-				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
-			else 
-				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
-			String resURIString = resURIPath.toString();
+			String resURIString = "";
+			if (resURI.path() != null) {
+				IPath resURIPath;
+				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
+					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
+				else
+					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
+				resURIString = resURIPath.toString();
+			}
 			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
 				resources.add(res);
 		}
