@@ -1153,7 +1153,6 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		try {
 			return map.convertStringToValue(trimmedValue, emfObject);
 		} catch (FeatureValueConversionException ex) {
-			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(ex);
 			handleFeatureValueConversionException(ex);
 			return null;
 		}
