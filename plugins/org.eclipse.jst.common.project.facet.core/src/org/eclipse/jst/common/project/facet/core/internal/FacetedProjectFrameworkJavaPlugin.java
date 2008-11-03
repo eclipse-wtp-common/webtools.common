@@ -51,10 +51,15 @@ public final class FacetedProjectFrameworkJavaPlugin
         return createErrorStatus( message, null );
     }
 
+    public static IStatus createErrorStatus( final Exception e )
+    {
+        return createErrorStatus( e.getMessage(), e );
+    }
+    
     public static IStatus createErrorStatus( final String message,
                                              final Exception e )
     {
         return new Status( IStatus.ERROR, PLUGIN_ID, -1, message, e )  ;      
     }
-    
+
 }

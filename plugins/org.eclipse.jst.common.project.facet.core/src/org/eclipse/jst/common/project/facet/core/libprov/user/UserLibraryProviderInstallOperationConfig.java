@@ -12,6 +12,7 @@
 package org.eclipse.jst.common.project.facet.core.libprov.user;
 
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.createErrorStatus;
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,9 +30,12 @@ import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderFramework;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * The install operation config corresponding to the user-library-provider that uses JDT user library facility
@@ -50,6 +54,15 @@ public class UserLibraryProviderInstallOperationConfig
     private static final String CLASS_NAME 
         = UserLibraryProviderInstallOperationConfig.class.getName();
     
+    /**
+     * The preferences path (in the workspace-level facet preferences) where information about
+     * user libraries that were last used for a particular facet are stored. Beneath this path,
+     * content is organized by facet version.
+     */
+    
+    public static final String PREFS_LAST_USED_LIBRARIES
+        = "user.library.provider/last.used.libraries"; //$NON-NLS-1$
+
     /**
      * The property corresponding to the list of selected user libraries.
      */
@@ -145,14 +158,15 @@ public class UserLibraryProviderInstallOperationConfig
     public synchronized void reset()
     {
         final IProject project = getFacetedProject().getProject();
+        final IProjectFacet f = getProjectFacet();
+        final IProjectFacetVersion fv = getProjectFacetVersion();
+        
         List<String> newLibraryNames = null;
 
         if( project != null )
         {
-            final IProjectFacet facet = getProjectFacet();
-            
             final ILibraryProvider currentProvider 
-                = LibraryProviderFramework.getCurrentProvider( project, facet );
+                = LibraryProviderFramework.getCurrentProvider( project, f );
             
             if( currentProvider == getLibraryProvider() )
             {
@@ -160,7 +174,7 @@ public class UserLibraryProviderInstallOperationConfig
                 
                 try
                 {
-                    entries = ClasspathUtil.getClasspathEntries( project, facet );
+                    entries = ClasspathUtil.getClasspathEntries( project, f );
                 }
                 catch( CoreException e )
                 {
@@ -188,7 +202,31 @@ public class UserLibraryProviderInstallOperationConfig
         
         if( newLibraryNames == null )
         {
-            newLibraryNames = Collections.emptyList();
+            newLibraryNames = new ArrayList<String>();
+            
+            try
+            {
+                Preferences prefs = FacetedProjectFramework.getPreferences( f );
+                
+                if( prefs.nodeExists( PREFS_LAST_USED_LIBRARIES ) )
+                {
+                    prefs = prefs.node( PREFS_LAST_USED_LIBRARIES );
+                    
+                    if( prefs.nodeExists( fv.getVersionString() ) )
+                    {
+                        prefs = prefs.node( fv.getVersionString() );
+                        
+                        for( String libraryName : prefs.childrenNames() )
+                        {
+                            newLibraryNames.add( libraryName );
+                        }
+                    }
+                }
+            }
+            catch( BackingStoreException e )
+            {
+                log( e );
+            }
         }
         
         setLibraryNames( newLibraryNames );

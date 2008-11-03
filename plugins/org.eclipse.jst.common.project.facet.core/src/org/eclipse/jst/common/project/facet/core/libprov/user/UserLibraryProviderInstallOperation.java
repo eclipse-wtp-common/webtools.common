@@ -11,6 +11,8 @@
 
 package org.eclipse.jst.common.project.facet.core.libprov.user;
 
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
+import static org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperationConfig.PREFS_LAST_USED_LIBRARIES;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.worked;
@@ -28,6 +30,9 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.common.project.facet.core.internal.ClasspathUtil;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * The install operation corresponding to the user-library-provider that uses JDT user library facility
@@ -57,7 +62,7 @@ public class UserLibraryProviderInstallOperation
         throws CoreException
         
     {
-        beginTask( monitor, "", 1 ); //$NON-NLS-1$
+        beginTask( monitor, "", 2 ); //$NON-NLS-1$
         
         try
         {
@@ -75,6 +80,32 @@ public class UserLibraryProviderInstallOperation
             ClasspathUtil.addClasspathEntries( project, config.getProjectFacet(), entries );
             
             worked( monitor, 1 );
+            
+            try
+            {
+                Preferences prefs = FacetedProjectFramework.getPreferences( cfg.getProjectFacet() );
+                
+                prefs = prefs.node( PREFS_LAST_USED_LIBRARIES );
+                prefs = prefs.node( cfg.getProjectFacetVersion().getVersionString() );
+                
+                for( String libraryName : prefs.childrenNames() )
+                {
+                    prefs.node( libraryName ).removeNode();
+                }
+                
+                for( String libraryName : cfg.getLibraryNames() )
+                {
+                    prefs.node( libraryName );
+                }
+
+                prefs.flush();
+            }
+            catch( BackingStoreException e )
+            {
+                log( e );
+            }
+            
+            worked( monitor, 2 );
         }
         finally
         {
