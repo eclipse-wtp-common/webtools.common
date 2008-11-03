@@ -264,6 +264,81 @@ public final class LibraryInstallDelegate
     }
     
     /**
+     * Refreshes the list of available library providers and resets the current library provider
+     * if the one currently selected is not in the available list any longer.
+     */
+    
+    public synchronized void refresh()
+    {
+        final IProjectFacetVersion fv = getProjectFacetVersion();
+        final IFacetedProjectBase fproj = getFacetedProject();
+        
+        final List<ILibraryProvider> oldProviders = this.providers;
+        
+        for( ILibraryProvider provider : oldProviders )
+        {
+            final LibraryProviderOperationConfig config = this.configs.remove( provider );
+            
+            if( config != null )
+            {
+                config.removeListener( this.providerConfigListener );
+                config.dispose();
+            }
+        }
+        
+        final List<ILibraryProvider> newProviders = new ArrayList<ILibraryProvider>();
+    
+        for( ILibraryProvider provider : LibraryProviderFramework.getProviders() )
+        {
+            if( ! provider.isAbstract() && ! provider.isHidden() 
+                && provider.isEnabledFor( fproj, fv ) )
+            {
+                newProviders.add( provider );
+            }
+        }
+        
+        final Comparator<ILibraryProvider> comp = CollectionsUtil.getInvertingComparator();
+        Collections.sort( newProviders, comp );
+        
+        this.providers = newProviders;
+        this.providersReadOnly = Collections.unmodifiableList( this.providers );
+        
+        for( ILibraryProvider provider : this.providers )
+        {
+            final LibraryProvider prov = (LibraryProvider) provider;
+            
+            final LibraryProviderOperationConfig config 
+                = prov.createOperationConfig( fproj, fv, LibraryProviderActionType.INSTALL );
+            
+            config.addListener( this.providerConfigListener );
+            
+            this.configs.put( provider, config );
+        }
+        
+        notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
+        
+        if( this.providers.size() > 0 )
+        {
+            if( this.selectedProvider == null || this.isDefaultSelection || 
+                ! this.providers.contains( this.selectedProvider ) )
+            {
+                ILibraryProvider provider = LibraryProviderFrameworkImpl.get().getLastProviderUsed( fv );
+                
+                if( provider == null || ! this.providers.contains( provider ) )
+                {
+                    provider = this.providers.iterator().next();
+                }
+                    
+                setLibraryProvider( provider, true );
+            }
+        }
+        else
+        {
+            setLibraryProvider( null, true );
+        }
+    }
+
+    /**
      * Resets this install delegate to its initial state (prior to any user changes).
      */
 
@@ -428,76 +503,6 @@ public final class LibraryInstallDelegate
             {
                 log( e );
             }
-        }
-    }
-    
-    private synchronized void refresh()
-    {
-        final IProjectFacetVersion fv = getProjectFacetVersion();
-        final IFacetedProjectBase fproj = getFacetedProject();
-        
-        final List<ILibraryProvider> oldProviders = this.providers;
-        
-        for( ILibraryProvider provider : oldProviders )
-        {
-            final LibraryProviderOperationConfig config = this.configs.remove( provider );
-            
-            if( config != null )
-            {
-                config.removeListener( this.providerConfigListener );
-                config.dispose();
-            }
-        }
-        
-        final List<ILibraryProvider> newProviders = new ArrayList<ILibraryProvider>();
-    
-        for( ILibraryProvider provider : LibraryProviderFramework.getProviders() )
-        {
-            if( ! provider.isAbstract() && ! provider.isHidden() 
-                && provider.isEnabledFor( fproj, fv ) )
-            {
-                newProviders.add( provider );
-            }
-        }
-        
-        final Comparator<ILibraryProvider> comp = CollectionsUtil.getInvertingComparator();
-        Collections.sort( newProviders, comp );
-        
-        this.providers = newProviders;
-        this.providersReadOnly = Collections.unmodifiableList( this.providers );
-        
-        for( ILibraryProvider provider : this.providers )
-        {
-            final LibraryProvider prov = (LibraryProvider) provider;
-            
-            final LibraryProviderOperationConfig config 
-                = prov.createOperationConfig( fproj, fv, LibraryProviderActionType.INSTALL );
-            
-            config.addListener( this.providerConfigListener );
-            
-            this.configs.put( provider, config );
-        }
-        
-        notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
-        
-        if( this.providers.size() > 0 )
-        {
-            if( this.selectedProvider == null || this.isDefaultSelection || 
-                ! this.providers.contains( this.selectedProvider ) )
-            {
-                ILibraryProvider provider = LibraryProviderFrameworkImpl.get().getLastProviderUsed( fv );
-                
-                if( provider == null || ! this.providers.contains( provider ) )
-                {
-                    provider = this.providers.iterator().next();
-                }
-                    
-                setLibraryProvider( provider, true );
-            }
-        }
-        else
-        {
-            setLibraryProvider( null, true );
         }
     }
     
