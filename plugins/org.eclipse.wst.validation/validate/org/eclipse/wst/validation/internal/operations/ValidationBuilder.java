@@ -51,6 +51,13 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * </p>
  */
 public class ValidationBuilder extends IncrementalProjectBuilder {
+	/*
+	 * GRK - This class serves as a main entry point into the framework. There is one instance of this class for every
+	 * project that has a validation builder configured for it. Typically if you had ten projects in your workspace you would have
+	 * ten of these objects. They created early in the life cycle of the workbench, and then are reused. 
+	 * 
+	 * My observation was that they are run serially by the same thread.
+	 */
 	public static final int NO_DELTA_CHANGE = -1;
 	protected List<IProject> referencedProjects;
 	protected IWorkbenchContext workbenchContext = null;
