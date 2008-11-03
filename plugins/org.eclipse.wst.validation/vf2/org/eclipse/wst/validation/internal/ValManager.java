@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -76,7 +77,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * if information that we have cached in the ValProperty is stale or not. This starts off at zero, each time
 	 * the workbench is started.
 	 */
-	private int _configNumber;
+	private AtomicInteger _configNumber = new AtomicInteger();
+	
 	private ValidatorIdManager _idManager = new ValidatorIdManager();
 	
 	private ValidatorProjectManager _projectManager = new ValidatorProjectManager();
@@ -476,22 +478,39 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * This method needs to be called whenever the validation configuration has changed.
 	 */
 	private void configHasChanged(){
-		_configNumber++;
+		_configNumber.incrementAndGet();
 		_projectManager.reset();
 	}
 		
 	/**
 	 * Answer the global validation preferences.
 	 */
-	public synchronized GlobalPreferences getGlobalPreferences(){
+	public GlobalPreferences getGlobalPreferences(){
 		GlobalPreferences gp = _globalPreferences;
 		if (gp == null){
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
 			gp = new GlobalPreferences();
 			vpm.loadGlobalPreferences(gp);
-			_globalPreferences = gp;
+			gp = setIfNotNullGlobalPreferences(gp);
 		}
 		return gp;		
+	}
+	
+	/**
+	 * If the global preferences have not been set yet, set them now.
+	 * 
+	 * @param gp
+	 *            The global preferences to use if they have not already been
+	 *            set.
+	 * @return The current global preferences. If they were set before the
+	 *         original ones are returned. Otherwise the passed in ones are both
+	 *         saved and returned.
+	 */
+	private synchronized GlobalPreferences setIfNotNullGlobalPreferences(GlobalPreferences gp){
+		if (_globalPreferences == null){
+			_globalPreferences = gp;
+		}
+		return _globalPreferences;
 	}
 	
 	public ProjectPreferences getProjectPreferences(IProject project) {
@@ -689,7 +708,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		
 		Map<String,IValidatorGroupListener[]> groupListeners = new HashMap<String,IValidatorGroupListener[]>();
 		
-		ValProperty vp = getValProperty(resource, valType, _configNumber);
+		ValProperty vp = getValProperty(resource, valType, _configNumber.get());
 		if (vp != null){
 			BitSet bs = vp.getConfigSet();
 			for (Validator val : getValidators(project)){
@@ -713,7 +732,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		}
 		
 		vp = new ValProperty();
-		vp.setConfigNumber(_configNumber);
+		vp.setConfigNumber(_configNumber.get());
 		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (Validator val : getValidators(project)){
 			if (!monitor.isCanceled()) {
@@ -815,7 +834,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			// don't care about this one
 		}
 		if (vp == null)return null;
-		if (vp.getConfigNumber() != _configNumber)return null;
+		if (vp.getConfigNumber() != _configNumber.get())return null;
 		return vp;
 	}
 	
@@ -935,8 +954,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		/**
 		 * Map validator id's to Integers. The integers correspond to bits in the ValProperty instances.
 		 */
-		private HashMap<String, Integer> _map = new HashMap<String, Integer>(100);
-		private HashMap<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
+		private Map<String, Integer> _map = new HashMap<String, Integer>(100);
+		private Map<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
 		
 		/** Next available bit. */
 		private int _next;
@@ -946,7 +965,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * @param id validator id.
 		 * @return index into the validator bit mask.
 		 */
-		public int getIndex(String id){
+		public synchronized int getIndex(String id){
 			Integer i = _map.get(id);
 			if (i != null)return i;
 			
@@ -962,11 +981,11 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * @param index
 		 * @return null if the index number has not been set.
 		 */
-		public String getId(Integer index){
+		public synchronized String getId(Integer index){
 			return _reverseMap.get(index);
 		}
 		
-		public void reset(){
+		public synchronized void reset(){
 			_map.clear();
 			_reverseMap.clear();
 			_next = 0;
@@ -976,7 +995,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * Answer the ids for the bit in the bitset. This is used for debugging. 
 		 * @param bs
 		 */
-		public String[] getIds(BitSet bs){
+		public synchronized String[] getIds(BitSet bs){
 			List<String> list = new LinkedList<String>();
 			for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) {
 				String id = getId(i);
@@ -1011,7 +1030,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 *            The type of validation operation.
 		 * @return true if the validator should attempt to validate.
 		 */
-		public synchronized boolean shouldValidate(Validator validator, IProject project, ValType type){
+		public boolean shouldValidate(Validator validator, IProject project, ValType type){
 			if (type == ValType.Build)return _build.shouldValidate(validator, project);
 			if (type == ValType.Manual)return _manual.shouldValidate(validator, project);
 				
@@ -1031,7 +1050,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		}
 		
 		
-		public synchronized void reset(){
+		public void reset(){
 			_build.reset();
 			_manual.reset();
 		}
@@ -1053,7 +1072,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			 */
 			private Map<String, Set<IProject>> _map = new HashMap<String, Set<IProject>>(50);
 			
-			private ValType _type;
+			private final ValType _type;
 			
 			/** Have we been initialized yet? */
 			private boolean	_initialized;
@@ -1074,16 +1093,25 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			 *            
 			 * @return true if the validator should attempt to validate.
 			 */
-			public synchronized boolean shouldValidate(Validator validator, IProject project){
-				if (!_initialized)load();
-				String vid = validator.getId();
-				Set<IProject> projects = _map.get(vid);
-				if (projects == null)return false;
-				if (project == null)return projects.size() > 0;
-				return projects.contains(project);
+			public boolean shouldValidate(Validator validator, IProject project){
+				if (!_initialized){
+					Map<String, Set<IProject>> map = load();
+					synchronized (this) {
+						_map = map;
+						_initialized = true;
+					}
+				}
+				synchronized(this){
+					String vid = validator.getId();
+					Set<IProject> projects = _map.get(vid);
+					if (projects == null)return false;
+					if (project == null)return projects.size() > 0;
+					return projects.contains(project);
+				}
 			}
 			
-			private void load() {
+			private Map<String, Set<IProject>> load() {
+				Map<String, Set<IProject>> map = new HashMap<String, Set<IProject>>(50);
 				ValManager vm = ValManager.getDefault();
 				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				Tracing.log("ValManager-02: loading " + projects.length + " projects");  //$NON-NLS-1$//$NON-NLS-2$
@@ -1092,16 +1120,16 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 					Validator[] vals = vm.getValidators(project);
 					for (Validator v : vals){
 						String vid = v.getId();
-						Set<IProject> set = _map.get(vid);
+						Set<IProject> set = map.get(vid);
 						if (set == null){
 							set = new HashSet<IProject>(50);
-							_map.put(vid, set);
+							map.put(vid, set);
 						}
 						
 						if (v.shouldValidateProject(project, _type))set.add(project);
 					}					
 				}
-				_initialized = true;
+				return map;
 			}
 			
 			public synchronized void reset(){
