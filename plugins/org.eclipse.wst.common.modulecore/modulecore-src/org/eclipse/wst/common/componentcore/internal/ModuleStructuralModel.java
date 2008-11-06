@@ -78,8 +78,8 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 */ 
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
-	private static final String R0_7_MODULE_META_FILE_NAME = ".component";
-	private static final String R1_MODULE_META_FILE_NAME = ".settings/.component";
+	public static final String R0_7_MODULE_META_FILE_NAME = ".component";
+	public static final String R1_MODULE_META_FILE_NAME = ".settings/.component";
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
 	private static final String PROJECT_VERSION_1_5 = "1.5.0";
 	private boolean useOldFormat = false;
