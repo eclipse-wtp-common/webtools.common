@@ -169,6 +169,23 @@ public class ComponentImplManager  {
 		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
 	}
 
+	public IVirtualComponent createComponent(IProject project, boolean checkSettings) {
+		if  (checkSettings)
+			return createComponent(project);
+		try {
+			IComponentImplFactory factory = findFactoryForProject(project);
+			if(null != factory){
+				return factory.createComponent(project);
+			}
+		} catch (Exception e) {
+			// Just return a default component
+		}
+		if (ModuleCoreNature.getModuleCoreNature(project) == null){
+			return null;
+		}
+		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
+	}
+
 	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
 		try {
 			IComponentImplFactory factory = findFactoryForProject(aProject);

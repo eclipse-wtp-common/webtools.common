@@ -13,6 +13,7 @@ package org.eclipse.wst.common.componentcore;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
@@ -38,6 +39,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory;
+import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.internal.util.ModuleCoreMessages;
@@ -165,8 +167,33 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		}
 		return null;
 	}
+	// The existence of this Nature plus the component file on disk makes a flexible project
 	public static boolean isFlexibleProject(IProject project) {
-		return ModuleCoreNature.getModuleCoreNature(project) != null;
+		boolean foundNature = ModuleCoreNature.getModuleCoreNature(project) != null;
+		if (foundNature) {
+			return componentResourceExists(project);
+		}
+		return false;
+	}
+	public static boolean componentResourceExists(IProject project) {
+		
+		IFile compFile = project.getFile(StructureEdit.MODULE_META_FILE_NAME);
+		if (compFile.isAccessible())
+			return true;
+		else { //Need to check for legacy file locations also....
+			compFile = project.getFile(ModuleStructuralModel.R1_MODULE_META_FILE_NAME);
+			if (compFile.isAccessible())
+				return true;
+			else {
+				compFile = project.getFile(ModuleStructuralModel.R0_7_MODULE_META_FILE_NAME);
+				if (compFile.isAccessible())
+					return true;
+				else {
+					compFile = project.getFile(WTPModulesResourceFactory.FIRST_WTP_MODULES_SHORT_NAME);
+					return compFile.isAccessible();
+				}
+			}
+		}
 	}
 
 	/**

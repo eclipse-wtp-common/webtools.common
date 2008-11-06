@@ -70,6 +70,26 @@ public class ComponentCore {
 	 * 
 	 * @param aProject
 	 *            A valid, accessible project to contain the component
+	 * @param checkForComponentFile
+	 *            A flag to indicate if the presence of the component file should be checked
+	 * @return A handle to an IVirtualComponent that may or may not exist or
+	 *         null if passed project does not contain ModuleCoreNature.
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public static IVirtualComponent createComponent(IProject aProject, boolean checkForComponentFile) {
+		if (aProject == null || !aProject.isAccessible()){
+			return null;
+		}
+		return ComponentImplManager.instance().createComponent(aProject, checkForComponentFile);
+	}
+
+	/**
+	 * Return an IVirtualComponent with the given name (aComponentName)
+	 * contained by the given project (aProject). Component names should be
+	 * unique across a project.
+	 * 
+	 * @param aProject
+	 *            A valid, accessible project to contain the component
 	 * @return A handle to an IVirtualComponent that may or may not exist or
 	 *         null if passed project does not contain ModuleCoreNature.
 	 * @deprecated
