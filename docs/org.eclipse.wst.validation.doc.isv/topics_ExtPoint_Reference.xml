@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?NLS TYPE="org.eclipse.help.toc"?>
-	 	<toc label="Extension Points Reference">
-<topic href="reference/extension-points/vf/org_eclipse_wst_validation_validator.html" label="org.eclipse.wst.validation.validator"/>
-</toc>
