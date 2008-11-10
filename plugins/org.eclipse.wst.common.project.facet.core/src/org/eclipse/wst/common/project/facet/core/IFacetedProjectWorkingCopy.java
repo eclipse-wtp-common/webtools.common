@@ -68,7 +68,29 @@ public interface IFacetedProjectWorkingCopy
     
     void setSelectedPreset( String presetId );
     
+    /**
+     * Returns the default configuration preset.
+     * 
+     * <p>Note that calling this method from a dynamic preset factory implementation can result
+     * in out-of-date information being returned as this preset many not have been refreshed yet.
+     * Extenders wishing to reference default configuration when implementing a new dynamic preset
+     * should extend DefaultConfigurationPresetFactory class instead.</p>
+     * 
+     * @return the default configuration preset
+     */
+    
     IPreset getDefaultConfiguration();
+    
+    /**
+     * Returns the minimal configuration preset.
+     * 
+     * <p>Note that calling this method from a dynamic preset factory implementation can result
+     * in out-of-date information being returned as this preset many not have been refreshed yet.
+     * Extenders wishing to reference default configuration when implementing a new dynamic preset
+     * should extend MinimalConfigurationPresetFactory class instead.</p>
+     * 
+     * @return the minimal configuration preset
+     */
     
     IPreset getMinimalConfiguration();
 
