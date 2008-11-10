@@ -40,8 +40,13 @@ public class ValOperation {
 	
 	private ValidationState 	_state = new ValidationState();
 	private ValidationResult	_result = new ValidationResult();
-	private Map<IProject, Set<Validator>> _suspended = 
-		Collections.synchronizedMap(new HashMap<IProject, Set<Validator>>(40));
+	
+	/**
+	 * Each project can have a set of validators that are suspended for the duration of the validation operation.
+	 * The set contains the validator's id.
+	 */
+	private Map<IProject, Set<String>> _suspended = 
+		Collections.synchronizedMap(new HashMap<IProject, Set<String>>(40));
 	
 	/** The time that the operation started. */
 	private long	_started = System.currentTimeMillis();
@@ -109,23 +114,25 @@ public class ValOperation {
 	}
 
 	/**
-	 * Has this validator been suspended for the duration of this operation?
-	 *   
-	 * @param val
-	 * @param project can be null, in which case we return false
+	 * Has this validator been suspended for the duration of this operation on this project?
 	 * 
-	 * @return true if we already know that this validator should not run on this project.
+	 * @param val
+	 *            The validator that is being checked.
+	 * @param project
+	 *            Can be null, in which case we return false.
+	 * 
+	 * @return true if this validator should not run on this project.
 	 */
 	public boolean isSuspended(Validator val, IProject project) {
 		if (project == null)return false;
-		Set<Validator> set = getSuspended(project);		
-		return set.contains(val);
+		Set<String> set = getSuspended(project);		
+		return set.contains(val.getId());
 	}
 	
-	private Set<Validator> getSuspended(IProject project){
-		Set<Validator> set = _suspended.get(project);
+	private Set<String> getSuspended(IProject project){
+		Set<String> set = _suspended.get(project);
 		if (set == null){
-			set = new HashSet<Validator>(5);
+			set = new HashSet<String>(5);
 			_suspended.put(project, set);
 		}
 		return set;
@@ -133,7 +140,8 @@ public class ValOperation {
 
 	void suspendValidation(IProject project, Validator validator) {
 		if (project == null)return;
-		getSuspended(project).add(validator);
+		if (validator == null)return;
+		getSuspended(project).add(validator.getId());
 	}
 
 	public long getStarted() {
