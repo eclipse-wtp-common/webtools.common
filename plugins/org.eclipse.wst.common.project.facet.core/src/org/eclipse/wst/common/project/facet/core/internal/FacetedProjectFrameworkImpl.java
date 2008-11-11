@@ -124,7 +124,6 @@ public final class FacetedProjectFrameworkImpl
     private static final String DEFAULT_DESCRIPTION = ""; //$NON-NLS-1$
     
     private static FacetedProjectFrameworkImpl instance = null;
-    private static final Set<String> facetsReportedMissing = new HashSet<String>();
     
     private final IndexedSet<String,IProjectFacet> facets;
     private final IndexedSet<String,IActionDefinition> actions;
@@ -1278,39 +1277,23 @@ public final class FacetedProjectFrameworkImpl
     public static void reportMissingFacet( final String fid,
                                            final String plugin )
     {
-        synchronized( facetsReportedMissing )
-        {
-            if( ! facetsReportedMissing.contains( fid ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.facetNotDefined, fid ) +
-                      NLS.bind( Resources.usedInPlugin, plugin );
-                
-                FacetCorePlugin.log( msg );
-                
-                facetsReportedMissing.add( fid );
-            }
-        }
+        final String msg
+            = NLS.bind( Resources.facetNotDefined, fid ) +
+              NLS.bind( Resources.usedInPlugin, plugin );
+        
+        FacetCorePlugin.logError( msg, true );
     }
 
     public static void reportMissingFacet( final String fid,
                                            final IProjectFacetVersion fv )
     {
-        synchronized( facetsReportedMissing )
-        {
-            if( ! facetsReportedMissing.contains( fid ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.facetNotDefined, fid ) +
-                      NLS.bind( Resources.usedInConstraint, 
-                                fv.getProjectFacet().getId(),
-                                fv.getVersionString() );
-                
-                FacetCorePlugin.log( msg );
-                
-                facetsReportedMissing.add( fid );
-            }
-        }
+        final String msg
+            = NLS.bind( Resources.facetNotDefined, fid ) +
+              NLS.bind( Resources.usedInConstraint, 
+                        fv.getProjectFacet().getId(),
+                        fv.getVersionString() );
+        
+        FacetCorePlugin.logError( msg, true );
     }
     
     public static void reportMissingRuntimeComponentType( final String rct,
@@ -1320,7 +1303,7 @@ public final class FacetedProjectFrameworkImpl
             = NLS.bind( Resources.runtimeComponentTypeNotDefined, rct ) +
               NLS.bind( Resources.usedInPlugin, plugin );
         
-        FacetCorePlugin.log( msg );
+        FacetCorePlugin.logError( msg, true );
     }
     
     private static IProgressMonitor submon( final IProgressMonitor monitor,

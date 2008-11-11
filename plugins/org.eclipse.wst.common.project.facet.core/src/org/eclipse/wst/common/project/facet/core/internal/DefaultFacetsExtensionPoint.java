@@ -13,8 +13,8 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
-import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.reportMissingAttribute;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -214,7 +214,7 @@ public final class DefaultFacetsExtensionPoint
                     }
                     else if( contextChildName.equals( EL_FIXED_FACET ) )
                     {
-                        final String fid = contextChild.getAttribute( ATTR_ID );
+                        final String fid = findRequiredAttribute( child, ATTR_ID );
                         
                         if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
                         {
@@ -230,23 +230,17 @@ public final class DefaultFacetsExtensionPoint
             }
             else if( childName.equals( EL_FACET ) )
             {
-                final String fid = child.getAttribute( ATTR_ID );
+                final String fid = findRequiredAttribute( child, ATTR_ID );
                 
                 if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
                 {
-                    reportMissingAttribute( child, ATTR_ID );
+                    FacetedProjectFrameworkImpl.reportMissingFacet( fid, pluginId );
                     throw new InvalidExtensionException();
                 }
 
                 final IProjectFacet f = ProjectFacetsManager.getProjectFacet( fid );
                 
-                final String ver = child.getAttribute( ATTR_VERSION );
-                
-                if( ver == null )
-                {
-                    reportMissingAttribute( child, ATTR_VERSION );
-                    throw new InvalidExtensionException();
-                }
+                final String ver = findRequiredAttribute( child, ATTR_VERSION );
                 
                 if( ! f.hasVersion( ver ) )
                 {
