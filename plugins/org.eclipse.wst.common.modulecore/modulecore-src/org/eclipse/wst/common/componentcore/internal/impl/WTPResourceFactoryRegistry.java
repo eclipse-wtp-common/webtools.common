@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.util.RegistryReader;
@@ -42,6 +43,7 @@ import org.eclipse.wst.common.internal.emf.resource.FileNameResourceFactoryRegis
 import org.eclipse.wst.common.internal.emf.resource.ResourceFactoryDescriptor;
 import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceFactoryRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory;
 
 /**
  * <p>
@@ -65,26 +67,44 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		return WTPResourceFactoryRegistry.INSTANCE.getFactory(uri);	
 	}   
 
-	public synchronized Resource.Factory getFactory(URI uri, IContentDescription description) {
-		Resource.Factory resourceFactory = null;
-		if(uri != null && uri.lastSegment() != null) {
-			ResourceFactoryDescriptor descriptor = null;
-			if(null == description){
-				descriptor = getDescriptor(uri);
-			} else {
-				descriptor = getDescriptor(uri, description);
-			}
-			
-			if(descriptor != null) {
-				resourceFactory = getFactory(descriptor);	
-			}	
+	public Resource.Factory getFactory(URI uri, IContentDescription description) {
+		IProject componentProject = null;
+		try {
+			componentProject = StructureEdit.getContainingProject(uri);
+		} catch (UnresolveableURIException e) {
+			// don't do anything
 		}
-		if(resourceFactory == null)
-			resourceFactory = super.getFactory(uri);
-		return resourceFactory; 
+		ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(componentProject);
+		try{
+			if(null != lock){
+				lock.acquire();
+			}
+			synchronized(this){
+				Resource.Factory resourceFactory = null;
+				if(uri != null && uri.lastSegment() != null) {
+					ResourceFactoryDescriptor descriptor = null;
+					if(null == description){
+						descriptor = getDescriptor(uri);
+					} else {
+						descriptor = getDescriptor(uri, description);
+					}
+					
+					if(descriptor != null) {
+						resourceFactory = getFactory(descriptor);	
+					}	
+				}
+				if(resourceFactory == null)
+					resourceFactory = super.getFactory(uri);
+				return resourceFactory;
+			}
+		} finally{
+			if(null != lock){
+				lock.release();
+			}
+		} 
 	}
 	
-	public synchronized Resource.Factory getFactory(URI uri) {
+	public Resource.Factory getFactory(URI uri) {
 		return getFactory(uri, (IContentDescription)null);
 	}	
 
