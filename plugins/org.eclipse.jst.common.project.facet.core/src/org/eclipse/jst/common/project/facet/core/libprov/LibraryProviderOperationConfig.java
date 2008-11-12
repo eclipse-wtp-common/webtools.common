@@ -24,7 +24,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * necessary, this class can also be used directly.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public class LibraryProviderOperationConfig

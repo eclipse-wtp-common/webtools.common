@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Control;
  * org.eclipse.jst.common.project.facet.ui.libraryProviderActionPanels extension point.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public abstract class LibraryProviderOperationPanel

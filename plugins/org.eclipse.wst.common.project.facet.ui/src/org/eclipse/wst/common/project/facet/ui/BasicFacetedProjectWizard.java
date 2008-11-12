@@ -69,7 +69,7 @@ public class BasicFacetedProjectWizard
      * Returns the workbench that this wizard belongs to.
      * 
      * @return the workbench that this wizard belongs to
-     * @since 3.1
+     * @since 1.4
      */
     
     public IWorkbench getWorkbench()
@@ -81,7 +81,7 @@ public class BasicFacetedProjectWizard
      * Returns the selection that this wizard was launched from.
      * 
      * @return the selection that this wizard was launched from
-     * @since 3.1
+     * @since 1.4
      */
     
     public IStructuredSelection getSelection()

@@ -43,7 +43,7 @@ import org.osgi.service.prefs.Preferences;
  * supplied by the framework.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public class UserLibraryProviderInstallOperationConfig

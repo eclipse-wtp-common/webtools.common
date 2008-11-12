@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.IStatus;
  * Exception that can be thrown in various places in the framework instead of a more generic
  * {@link CoreException}. 
  * 
- * @since 3.1
+ * @since 1.4
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

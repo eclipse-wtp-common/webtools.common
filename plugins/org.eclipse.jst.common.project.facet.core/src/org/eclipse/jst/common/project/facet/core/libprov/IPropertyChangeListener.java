@@ -16,7 +16,7 @@ package org.eclipse.jst.common.project.facet.core.libprov;
  * listeners.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public interface IPropertyChangeListener

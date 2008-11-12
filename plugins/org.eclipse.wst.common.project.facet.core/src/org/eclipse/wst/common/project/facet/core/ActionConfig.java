@@ -54,7 +54,7 @@ public abstract class ActionConfig
      * user. The default implementation returns an empty (modifiable) set.
      * 
      * @return the set of files that might be modified during the execution of the action
-     * @since 3.1
+     * @since 1.4
      */
     
     public Set<IFile> getValidateEditFiles()

@@ -20,9 +20,9 @@ import org.eclipse.swt.widgets.Control;
  * The root entry point for working with the UI portion of the Library Provider Framework.
  *  
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
  * @noextend
  * @noinstantiate
+ * @since 1.4
  */
 
 public final class LibraryProviderFrameworkUi

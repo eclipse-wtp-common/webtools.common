@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.jst.common.project.facet.core" version="2">
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetValidator.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetValidator">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetValidator"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/FacetCorePlugin.java" type="org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.FacetCorePlugin"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/FacetedProjectFrameworkJavaPlugin.java" type="org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetInstallDelegate.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetRuntimeChangedListener.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetRuntimeChangedListener">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetRuntimeChangedListener"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetVersionChangeDelegate.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaRuntimeBridge.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaRuntimeBridge">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaRuntimeBridge"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/StandardJreClasspathProvider.java" type="org.eclipse.jst.common.project.facet.core.internal.StandardJreClasspathProvider">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.StandardJreClasspathProvider"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetUtil.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUtil">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUtil"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/RuntimeClasspathProvider.java" type="org.eclipse.jst.common.project.facet.core.internal.RuntimeClasspathProvider">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.RuntimeClasspathProvider"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetInstallConfigFactory.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/jst/common/project/facet/core/internal/JavaFacetDefaultVersionProvider.java" type="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDefaultVersionProvider">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDefaultVersionProvider"/>
+                <message_argument value="org.eclipse.jst.common.project.facet.core_1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

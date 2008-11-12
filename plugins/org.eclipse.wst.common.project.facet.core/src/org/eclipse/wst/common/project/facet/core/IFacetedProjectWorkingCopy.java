@@ -23,6 +23,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 
 public interface IFacetedProjectWorkingCopy
@@ -112,6 +113,10 @@ public interface IFacetedProjectWorkingCopy
     
     void setProjectFacetActionConfig( IProjectFacet facet,
                                       Object newActionConfig );    
+    
+    /**
+     * @since 1.4
+     */
     
     boolean isDirty();
     

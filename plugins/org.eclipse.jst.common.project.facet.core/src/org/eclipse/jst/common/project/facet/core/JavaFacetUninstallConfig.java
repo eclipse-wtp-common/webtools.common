@@ -20,7 +20,7 @@ import org.eclipse.jst.common.project.facet.core.internal.JavaFacetUtil;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
 
 /**
- * @since 3.1
+ * @since 1.4
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

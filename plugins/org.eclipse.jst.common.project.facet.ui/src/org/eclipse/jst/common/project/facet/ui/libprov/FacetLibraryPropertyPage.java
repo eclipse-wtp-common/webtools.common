@@ -52,7 +52,7 @@ import org.eclipse.wst.common.project.facet.ui.internal.SharedWorkingCopyManager
  * method.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public abstract class FacetLibraryPropertyPage 

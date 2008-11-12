@@ -93,7 +93,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 public final class ClasspathHelper
 {
     /**
-     * @since 3.1
+     * @since 1.4
      */
     
     public static final String LEGACY_METADATA_FILE_NAME = ClasspathUtil.LEGACY_METADATA_FILE_NAME;

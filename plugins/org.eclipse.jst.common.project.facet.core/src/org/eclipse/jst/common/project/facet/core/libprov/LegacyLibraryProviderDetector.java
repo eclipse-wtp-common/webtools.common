@@ -20,7 +20,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
  * extension point when migrating an existing facet to use the Library Provider Framework.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public abstract class LegacyLibraryProviderDetector

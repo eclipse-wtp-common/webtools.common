@@ -28,7 +28,7 @@ import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperatio
  * supplied by the framework.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  */
 
 public class UserLibraryProviderUninstallOperation

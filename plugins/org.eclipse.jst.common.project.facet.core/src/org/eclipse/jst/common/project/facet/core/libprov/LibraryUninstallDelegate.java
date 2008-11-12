@@ -34,7 +34,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * and then executed during the execution of those actions. 
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  * @noextend
  */
 

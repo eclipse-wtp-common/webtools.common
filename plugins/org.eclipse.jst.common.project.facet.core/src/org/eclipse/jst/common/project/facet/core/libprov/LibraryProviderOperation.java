@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * when a library provider action (such as install and uninstall) is triggered.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since WTP 3.1
+ * @since 1.4
  * @noinstantiate
  */
 

@@ -17,7 +17,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @since 3.1
+ * @since 1.4
  */
 
 public class BasicFacetedProjectWizardFirstPage

@@ -212,7 +212,7 @@ public final class FacetedProjectFramework
      * @param facet project facet
      * @return the global preferences store for the specified facet
      * @throws BackingStoreException if failed while reading from the backing store
-     * @since WTP 3.1
+     * @since WTP 1.4
      */
     
     public static Preferences getPreferences( final IProjectFacet facet )

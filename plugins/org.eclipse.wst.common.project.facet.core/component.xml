@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component xmlns="http://eclipse.org/wtp/releng/tools/component-model" name="org.eclipse.wst.common.project.facet">
-  <description url=""></description>
-  <component-depends unrestricted="true"></component-depends>
-  <plugin id="org.eclipse.wst.common.project.facet.core" fragment="false"/>
-  <plugin id="org.eclipse.wst.common.project.facet.ui" fragment="false"/>
-</component>

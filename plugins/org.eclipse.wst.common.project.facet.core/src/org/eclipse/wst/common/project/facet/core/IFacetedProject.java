@@ -28,6 +28,7 @@ import org.osgi.service.prefs.Preferences;
  * of this interface.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 
 public interface IFacetedProject 
@@ -425,7 +426,7 @@ public interface IFacetedProject
      * @param facet project facet
      * @return the project preferences store for the specified facet
      * @throws BackingStoreException if failed while reading from the backing store
-     * @since WTP 3.1
+     * @since 1.4
      */
     
     Preferences getPreferences( IProjectFacet facet )
