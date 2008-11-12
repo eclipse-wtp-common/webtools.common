@@ -144,11 +144,13 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
 			if ( dialog.open() == Window.OK){
 				workingSets = dialog.getSelection();
 				valueForWorkingSetsText = "";
-				for (int i = 0; i < workingSets.length; i++){
-					valueForWorkingSetsText += workingSets[i].getLabel();
-					// if not the last item, we add a comma
-					if ( i != workingSets.length - 1) 
-						valueForWorkingSetsText += ", ";
+				if (workingSets != null) {
+					for (int i = 0; i < workingSets.length; i++){
+						valueForWorkingSetsText += workingSets[i].getLabel();
+						// if not the last item, we add a comma
+						if ( i != workingSets.length - 1) 
+							valueForWorkingSetsText += ", ";
+					}
 				}
 				workingSetsText.setText(valueForWorkingSetsText);
 			}
@@ -194,9 +196,11 @@ private void scopeChangeHandler(Button b) {
 			  // Constructs the working sets scope from the working sets the user
 			  // selected
 			  WorkingSetSearchScope workingSetsScope = new WorkingSetSearchScope();
-			  for (int i = 0; i < workingSets.length; i++){
-				  workingSetsScope.addAWorkingSetToScope(workingSets[i].getElements());
-			  }			  
+			  if (workingSets != null) {
+				  for (int i = 0; i < workingSets.length; i++){
+					  workingSetsScope.addAWorkingSetToScope(workingSets[i].getElements());
+				  }
+			  }
 			  scope = workingSetsScope;
 		  }
 		  

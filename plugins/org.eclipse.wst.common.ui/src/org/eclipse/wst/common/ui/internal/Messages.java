@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2006 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.wst.common.ui.internal;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
-	private static final String BUNDLE_NAME = "plugin"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.wst.common.ui.internal.CommonUIMessages"; //$NON-NLS-1$
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class); //$NON-NLS-1$
@@ -149,6 +149,8 @@ public class Messages {
 
 	public static String _UI_ERROR;
 
+	public static String _WARN_INVALID_JAVA_PACKAGE;
+	
 	public static String _ERROR_ROOT_ELEMENT;
 	public static String _ERROR_SAVING_FILE;
 
@@ -159,18 +161,6 @@ public class Messages {
 //	 PropertyDirtyChangeListener and PropertyResourceChangeListener
 	public static String _UI_ERROR_VALIDATE_EDIT_FAIL_ONE_FILE;
 
-//	public static String ExampleProjectCreationWizard.title;
-//	public static String ExampleProjectCreationWizard.op_error.title;
-//	public static String ExampleProjectCreationWizard.op_error.message;
-//
-//	public static String ExampleProjectCreationWizard.overwritequery.title;
-//	public static String ExampleProjectCreationWizard.overwritequery.message;
-//
-//
-//	public static String ExampleProjectCreationOperation.op_desc;
-//	public static String ExampleProjectCreationOperation.op_desc_proj;
-//
-//	public static String ExampleProjectCreationWizardPage.error.alreadyexists;
 	public static String SaveFilesDialog_save_all_resources;
 	public static String SaveFilesDialog_must_save;
 }
