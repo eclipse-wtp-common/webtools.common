@@ -320,22 +320,26 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * @post Return true if a <code>Resource</code> was queued up to be reloaded.
 	 */
 	protected boolean addedResource(IFile aFile) {
-        boolean didProcess = false;
-        List resources = getResources(aFile);
-        for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
+		boolean didProcess = false;
+		List resources = getResources(aFile);
+		for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
 			Resource resource = (Resource) iterator.next();
 
-			if ((resource != null) && (recentlySavedFilesContains(resource))) {
-				/*
-				 * The IFile was just added to the workspace but we have a
-				 * resource in memory. Need to decide if it should be unloaded.
-				 */
-				if (resource.isModified()) {
-					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
-						ReferencedResource refRes = (ReferencedResource) resource;
-						if (refRes.shouldForceRefresh()) {
-							deferredUnloadResources.add(resource);
-							didProcess = true;
+			if (resource != null) {
+				if (recentlySavedFilesContains(resource)) {
+
+					/*
+					 * The IFile was just added to the workspace but we have a
+					 * changed resource in memory. Need to decide if it should
+					 * be unloaded.
+					 */
+					if (resource.isModified()) {
+						if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+							ReferencedResource refRes = (ReferencedResource) resource;
+							if (refRes.shouldForceRefresh()) {
+								deferredUnloadResources.add(resource);
+								didProcess = true;
+							}
 						}
 					}
 				} else {
@@ -350,19 +354,19 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 							deferredUnloadResources.add(resource);
 							didProcess = true;
 						}
+					} else {
+						/* Process autoload resources on added file */
+						URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
+						if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
+							deferredLoadResources.add(uri);
+							didProcess = true;
+						}
 					}
-				}
-			} else {
-				// Process resource as a refresh.
-				URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
-				if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
-					deferredLoadResources.add(uri);
-					didProcess = true;
 				}
 			}
 		}
-        return didProcess;
-}
+		return didProcess;
+	}
 
 	private synchronized boolean recentlySavedFilesContains(Resource resource) {
 		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
