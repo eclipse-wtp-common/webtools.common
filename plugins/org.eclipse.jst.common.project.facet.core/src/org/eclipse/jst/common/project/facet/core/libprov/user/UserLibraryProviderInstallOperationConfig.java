@@ -13,10 +13,13 @@ package org.eclipse.jst.common.project.facet.core.libprov.user;
 
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.createErrorStatus;
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -25,6 +28,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.jdt.internal.core.UserLibrary;
+import org.eclipse.jdt.internal.core.UserLibraryManager;
 import org.eclipse.jst.common.project.facet.core.internal.ClasspathUtil;
 import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderFramework;
@@ -69,9 +75,13 @@ public class UserLibraryProviderInstallOperationConfig
     
     public static final String PROP_LIBRARY_NAMES 
         = CLASS_NAME + ".LIBRARY_NAMES"; //$NON-NLS-1$
+    
+    private static final String PARAM_VALIDATOR = "validator"; //$NON-NLS-1$
+    private static final String PARAM_VALIDATOR_PARAM = "validator.param"; //$NON-NLS-1$
 
     private List<String> libraryNames;
     private List<String> libraryNamesReadOnly;
+    private UserLibraryValidator validator;
     
     /**
      * Constructs the user library provider install operation config.
@@ -81,6 +91,7 @@ public class UserLibraryProviderInstallOperationConfig
     {
         this.libraryNames = Collections.emptyList();
         this.libraryNamesReadOnly = Collections.emptyList();
+        this.validator = null;
     }
 
     /**
@@ -100,6 +111,43 @@ public class UserLibraryProviderInstallOperationConfig
                                    final ILibraryProvider provider )
     {
         super.init( fproj, fv, provider );
+        
+        final Map<String,String> params = provider.getParams();
+        final String validatorClassName = params.get( PARAM_VALIDATOR );
+        
+        if( validatorClassName != null )
+        {
+            this.validator = instantiate( provider.getPluginId(), validatorClassName, UserLibraryValidator.class );
+            
+            if( this.validator != null )
+            {
+                final List<String> keyClassNames = new ArrayList<String>();
+                
+                int i = 0; 
+                String paramName = PARAM_VALIDATOR_PARAM + "." + String.valueOf( i ); //$NON-NLS-1$
+                String paramValue = params.get( paramName );
+                
+                while( paramValue != null )
+                {
+                    keyClassNames.add( paramValue );
+    
+                    i++; 
+                    paramName = PARAM_VALIDATOR_PARAM + "." + String.valueOf( i ); //$NON-NLS-1$
+                    paramValue = params.get( paramName );
+                }
+                
+                try
+                {
+                    this.validator.init( keyClassNames );
+                }
+                catch( Exception e )
+                {
+                    log( e );
+                    this.validator = null;
+                }
+            }
+        }
+        
         reset();
     }
     
@@ -130,6 +178,36 @@ public class UserLibraryProviderInstallOperationConfig
     }
     
     /**
+     * Resolve the referenced user libraries into a collection of classpath entries that reference
+     * physical libraries. 
+     * 
+     * @return the classpath entries contributed by the referenced user libraries
+     */
+    
+    @SuppressWarnings( "restriction" )
+    
+    public synchronized Collection<IClasspathEntry> resolve()
+    {
+        final List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
+        final UserLibraryManager userLibraryManager = JavaModelManager.getUserLibraryManager();
+        
+        for( String libraryName : this.libraryNames )
+        {
+            final UserLibrary userLibrary = userLibraryManager.getUserLibrary( libraryName );
+            
+            if( userLibrary != null )
+            {
+                for( IClasspathEntry cpe : userLibrary.getEntries() )
+                {
+                    entries.add( cpe );
+                }
+            }
+        }
+        
+        return Collections.unmodifiableCollection( entries );
+    }
+    
+    /**
      * Validates the state of this operation config object and returns a status object
      * describing any problems. If no problems are detected, this should return OK
      * status.
@@ -145,6 +223,21 @@ public class UserLibraryProviderInstallOperationConfig
         if( this.libraryNames.size() == 0 )
         {
             st = createErrorStatus( Resources.libraryNeedsToBeSelected );
+        }
+        else
+        {
+            if( this.validator != null )
+            {
+                try
+                {
+                    st = this.validator.validate( this );
+                }
+                catch( Exception e )
+                {
+                    log( e );
+                    this.validator = null;
+                }
+            }
         }
         
         return st;
