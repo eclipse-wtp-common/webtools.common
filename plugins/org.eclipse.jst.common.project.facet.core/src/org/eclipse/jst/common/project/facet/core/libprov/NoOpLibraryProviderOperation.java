@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
-package org.eclipse.jst.common.project.facet.core.libprov.internal;
+package org.eclipse.jst.common.project.facet.core.libprov;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,10 +17,14 @@ import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperatio
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 
 /**
+ * This operation implementation can be used in situations when an install or an uninstall 
+ * operation doesn't actually have do do anything.
+ * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ * @since 1.4
  */
 
-public final class UnknownLibraryProviderUninstallOperation
+public final class NoOpLibraryProviderOperation
 
     extends LibraryProviderOperation
     

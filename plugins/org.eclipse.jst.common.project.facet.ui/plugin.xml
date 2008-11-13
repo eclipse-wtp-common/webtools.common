@@ -65,13 +65,16 @@
       class="org.eclipse.jst.common.project.facet.ui.libprov.user.UserLibraryProviderInstallPanel"/>
     <panel
       provider="runtime-library-provider"
-      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.RuntimeLibraryProviderInstallPanel"/>
+      class="org.eclipse.jst.common.project.facet.ui.libprov.SimpleMessageLibraryProviderInstallPanel"/>
     <panel
       provider="unknown-library-provider"
-      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.UnknownLibraryProviderInstallPanel"/>
+      class="org.eclipse.jst.common.project.facet.ui.libprov.SimpleMessageLibraryProviderInstallPanel"/>
     <panel 
       provider="legacy-library-provider"
-      class="org.eclipse.jst.common.project.facet.ui.libprov.internal.LegacyLibraryProviderInstallPanel"/>
+      class="org.eclipse.jst.common.project.facet.ui.libprov.SimpleMessageLibraryProviderInstallPanel"/>
+    <panel 
+      provider="no-op-library-provider"
+      class="org.eclipse.jst.common.project.facet.ui.libprov.SimpleMessageLibraryProviderInstallPanel"/>
   </extension>
 
 </plugin>

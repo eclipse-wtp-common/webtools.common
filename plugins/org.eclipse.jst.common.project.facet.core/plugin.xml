@@ -158,6 +158,7 @@
     <provider id="runtime-library-provider">
       <label>%runtimeLibraryProviderLabel</label>
       <priority>600</priority>
+      <param name="message" value="%runtimeLibraryProviderMessage"/>
       <enablement>
         <with variable="context">
           <test property="org.eclipse.jst.common.project.facet.core.canTargetRuntimeProvideLibrary" forcePluginActivation="true"/>
@@ -185,11 +186,12 @@
   <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
     <provider id="unknown-library-provider" hidden="true">
       <label>%unknownLibraryProviderLabel</label>
+      <param name="message" value="%unknownLibraryProviderMessage"/>
       <action type="INSTALL">
         <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownLibraryProviderInstallOperation"/>
       </action>
       <action type="UNINSTALL">
-        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownLibraryProviderUninstallOperation"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
       </action>
     </provider>
   </extension>
@@ -197,6 +199,7 @@
   <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
     <provider id="legacy-library-provider" hidden="true">
       <label>%legacyLibraryProviderLabel</label>
+      <param name="message" value="%legacyLibraryProviderMessage"/>
       <action type="INSTALL">
         <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyLibraryProviderInstallOperation"/>
       </action>
@@ -213,6 +216,20 @@
 
   <extension point="org.eclipse.jst.common.project.facet.core.legacyLibraryProviderDetectors">
     <detector class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyRuntimeLibraryProviderDetector"/>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="no-op-library-provider" abstract="true">
+      <label>%noOpLibraryProviderLabel</label>
+      <priority>-1000</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
+      </action>
+    </provider>
   </extension>
 
 </plugin>
