@@ -68,7 +68,7 @@ Used to filter on project natures.</p>
 <li><b>caseSensitive</b> - If the file name is not case senstitive, then this needs to be set to false.</li>
 <li><b>type</b> - Type of name, there are three choices. <ul><li>folder - specifies a project relative folder name.</li><li>file - a simple file name (i.e. no path information).</li><li>full - a fully qualified (project relative) file name.</li></ul></li>
 </ul>
-<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.rules">rules</a> (<a href="#e.fileext">fileext</a>* , <a href="#e.file">file</a>* , <a href="#e.projectNature">projectNature</a>* , <a href="#e.facet">facet</a>* , <a href="#e.contentType">contentType</a>*)&gt;</p>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.rules">rules</a> (<a href="#e.fileext">fileext</a>* , <a href="#e.file">file</a>* , <a href="#e.projectNature">projectNature</a>* , <a href="#e.facet">facet</a>* , <a href="#e.contentType">contentType</a>* , <a href="#e.pattern">pattern</a>*)&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 A set of rules for determining if a resource is passed to this validator or not. The rules are OR'ed together.</p>
@@ -90,6 +90,18 @@ Used to filter based on content types.</p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>id</b> - The content type id.</li>
 <li><b>exactMatch</b> - Set to true if the content type needs to match exactly. Set to false if sub types are considered matches as well.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.pattern">pattern</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST pattern</p>
+<p class="code SchemaDtdAttlist">regex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">caseSensitive&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Holds a regualr expression, that matches the resource's project relative name.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>regex</b> - Holds a Java regular expression. See the class java.util.regex.Pattern for more details. This regular expression is matched against a resource's project relative path, after that path has been converted into a portable path.
+<p>The path will always start with a forward slash (/) so that folder names can be more easily matched.</li>
+<li><b>caseSensitive</b> - If the file name is not case senstitive, then this needs to be set to false.</li>
 </ul>
 <br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><!-- A plug-in is turning off the T1A validator for projects that have the ModuleCoreNature -->
  <extension

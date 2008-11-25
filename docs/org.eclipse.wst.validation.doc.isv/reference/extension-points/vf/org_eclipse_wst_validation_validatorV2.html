@@ -9,7 +9,7 @@
 <H1 style="text-align:center">Validator V2</H1>
 <p></p>
 <h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.wst.validation.validator-v2<p></p>
-<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.4.
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>WebTools 3.0.
 <p></p>
 
 <h6 class="CaptionFigColumn SchemaHeader">Description: </h6>This is used to register a validator to the validation framework (version 2). In addition to specifying the validator to invoke, it registers a set of default filter rules, to control which resources are passsed to the validator.<p></p>
@@ -79,17 +79,18 @@ Used to filter on project natures.</p>
 <li><b>caseSensitive</b> - If the file name is not case senstitive, then this needs to be set to false.</li>
 <li><b>type</b> - Type of name, there are three choices. <ul><li>folder - specifies a project relative folder name.</li><li>file - a simple file name (i.e. no path information).</li><li>full - a fully qualified (project relative) file name.</li></ul></li>
 </ul>
-<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.rules">rules</a> (<a href="#e.fileext">fileext</a>* , <a href="#e.file">file</a>* , <a href="#e.projectNature">projectNature</a>* , <a href="#e.facet">facet</a>* , <a href="#e.contentType">contentType</a>*)&gt;</p>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.rules">rules</a> (<a href="#e.fileext">fileext</a>* , <a href="#e.file">file</a>* , <a href="#e.projectNature">projectNature</a>* , <a href="#e.facet">facet</a>* , <a href="#e.contentType">contentType</a>* , <a href="#e.pattern">pattern</a>*)&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 A set of rules for determining if a resource is passed to this validator or not. The rules are OR'ed together.</p>
 <br><br>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.facet">facet</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST facet</p>
-<p class="code SchemaDtdAttlist">id&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">version&nbsp;CDATA #IMPLIED&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>id</b> - The facet id.</li>
+<li><b>version</b> - A version expression that can be used to futher qualify the match. If not specifed, then versions are not used as a criteria for selecting the facet. The syntax of this expression, is the same syntax that is used by the facet framework.</li>
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.group">group</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST group</p>
@@ -123,6 +124,18 @@ Used to group together a set of messages, where the user can change the message 
 <li><b>id</b> - A simple id that is unique within the scope of this validator.</li>
 <li><b>label</b> - A short, one line label that is displayed to the end user, that describes the message category.</li>
 <li><b>severity</b> - The default severity for this category.</li>
+</ul>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.pattern">pattern</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST pattern</p>
+<p class="code SchemaDtdAttlist">regex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">caseSensitive&nbsp;(true | false) &gt;</p>
+<p></p>
+<p class="ConfigMarkupElementDesc">
+Holds a regualr expression, that matches the resource's project relative name.</p>
+<br>
+<ul class="ConfigMarkupAttlistDesc">
+<li><b>regex</b> - Holds a Java regular expression. See the class java.util.regex.Pattern for more details. This regular expression is matched against a resource's project relative path, after that path has been converted into a portable path.
+<p>The path will always start with a forward slash (/) so that folder names can be more easily matched.</li>
+<li><b>caseSensitive</b> - If the file name is not case senstitive, then this needs to be set to false.</li>
 </ul>
 <br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6>An example of a validator that will be called on resources that have html or htm file extensions.
 <pre class="Example"><span class="code SchemaTag">
