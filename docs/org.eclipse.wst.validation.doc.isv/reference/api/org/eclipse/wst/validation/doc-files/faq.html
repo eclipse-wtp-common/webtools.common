@@ -21,8 +21,11 @@ the <a href="../ValidationResult.html#add(org.eclipse.wst.validation.ValidatorMe
 
 <h4>2. Manage your own markers</h4>
 
-<p>Create and remove your own markers. So that summary information can still be displayed, the counts of any newly
-created markers in the <a href="../ValidationResult.html">ValidationResult</a> by using the setSeverityXXX() methods.</p>
+<p>Create and remove your own markers. So that summary information can still be displayed, set the counts of any newly
+created markers in the <a href="../ValidationResult.html">ValidationResult</a> by using the setSeverityXXX() methods.
+For example, if this validation pass generated two error markers, you would call 
+<a href="../ValidationResult.html#setSeverityError(int)">setSeverityError(2)</a>. 
+</p>
 
 <h4>3. Use the support in the previous version of the validation framework</h4>
 
