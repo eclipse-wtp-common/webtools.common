@@ -225,44 +225,43 @@ public class TaskListUtility implements ConfigurationConstants {
 	private static IMarker[] getValidationTasks(IResource resource, int severity, int depth) {
 		IMarker[] tempMarkers = null;
 		int validCount = 0;
+		IMarker[] allMarkers = null;
 		try {
-			IMarker[] allMarkers = null;
-			try {
-				allMarkers = resource.findMarkers(VALIDATION_MARKER, true, depth); // false means
-				// only consider PROBLEM_MARKER, not variants of PROBLEM_MARKER.
-				// Since addTask only adds PROBLEM_MARKER, we don't need
-				// to consider its subtypes.
-			} catch (CoreException e) {
-				if (Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
-				return NO_MARKERS;
-			}
+			allMarkers = resource.findMarkers(VALIDATION_MARKER, true, depth);
+		} catch (CoreException e) {
+			if (Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
+			return NO_MARKERS;
+		}
 
-			// Now filter in the markers, based on severity type.
-			if (allMarkers.length != 0) {
-				tempMarkers = new IMarker[allMarkers.length];
-				for (int i = 0; i < allMarkers.length; i++) {
-					IMarker marker = allMarkers[i];
-					Integer filterSeverity = (Integer) marker.getAttribute(VALIDATION_MARKER_SEVERITY);
-					if (filterSeverity == null) {
-						// odd...marker wasn't created correctly. How could this happen?
-						// Default to the current severity and add it to the list.
-						try {
-							// 226541 - I was seeing markers with valid severities being reset, so I added this
-							// additional test.
-							if (marker.getAttribute(IMarker.SEVERITY, -1) == -1)
-								marker.setAttribute(IMarker.SEVERITY, getSeverity(severity));
-						} catch (Exception e) {
-							ValidationPlugin.getPlugin().handleException(e);
-							continue;
-						}
-					} else if ((severity & filterSeverity.intValue()) == 0) {
+		// Now filter in the markers, based on severity type.
+		if (allMarkers.length != 0) {
+			tempMarkers = new IMarker[allMarkers.length];
+			for (IMarker marker : allMarkers) {
+				Integer filterSeverity = null;
+				try {
+					filterSeverity = (Integer) marker.getAttribute(VALIDATION_MARKER_SEVERITY);
+				}
+				catch (CoreException e){
+					// Someone may have deleted the marker on us. All we can do is skip it.
+					continue;
+				}
+				if (filterSeverity == null) {
+					// odd...marker wasn't created correctly. How could this happen?
+					// Default to the current severity and add it to the list.
+					try {
+						// 226541 - I was seeing markers with valid severities being reset, so I added this
+						// additional test.
+						if (marker.getAttribute(IMarker.SEVERITY, -1) == -1)
+							marker.setAttribute(IMarker.SEVERITY, getSeverity(severity));
+					} catch (Exception e) {
+						ValidationPlugin.getPlugin().handleException(e);
 						continue;
 					}
-					tempMarkers[validCount++] = marker;
+				} else if ((severity & filterSeverity.intValue()) == 0) {
+					continue;
 				}
+				tempMarkers[validCount++] = marker;
 			}
-		} catch (CoreException e) {
-			ValidationPlugin.getPlugin().handleException(e);
 		}
 
 		if (validCount == 0) {
