@@ -57,7 +57,12 @@ public class MarkerManager {
 		
 		String id = validator.getMarkerId();
 		if (id != null){
-			resource.deleteMarkers(id, true, IResource.DEPTH_ZERO);
+			try {
+				resource.deleteMarkers(id, true, IResource.DEPTH_ZERO);
+			}
+			catch (CoreException e){
+				// Nothing that we can do. This is not worth logging.
+			}
 			return;
 		}
 				

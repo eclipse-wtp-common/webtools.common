@@ -212,6 +212,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			Set<ValidatorMetaData>  set = new HashSet<ValidatorMetaData>();
 			set.addAll( Arrays.asList( enabledValidators ) );
 			for (IProject p : referenced) {
+				if (!p.exists())continue;
 				ProjectConfiguration refProjectCfg = ConfigurationManager.getManager().getProjectConfiguration(p);
 		
 				ValidatorMetaData[] refEnabledValidators = refProjectCfg.getEnabledFullBuildValidators(true, false);
