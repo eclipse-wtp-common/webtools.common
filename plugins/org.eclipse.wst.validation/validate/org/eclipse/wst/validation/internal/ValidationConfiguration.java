@@ -50,7 +50,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * Map of all validators configured on the project or installed globally. The value of true
 	 * means that the VMD is enabled, and a value of false means that the VMD is disabled.
 	 */
-	private Map<ValidatorMetaData, Boolean>		_validators;
+	private Map<ValidatorMetaData, Boolean>		_validators = new HashMap<ValidatorMetaData, Boolean>();
 	protected Map<ValidatorMetaData, Boolean> 	manualValidators;
 	protected Map<ValidatorMetaData, Boolean> 	buildValidators;
 	
@@ -63,7 +63,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * The key is the target id, that is the id of the place holder validator. The value is the id 
 	 * of the real validator. 
 	 */
-	private Map<String, String> _delegatesByTarget;
+	private Map<String, String> _delegatesByTarget = new HashMap<String, String>();
 	
 	private static final String DefaultValue = "default_value"; //$NON-NLS-1$
 
@@ -130,13 +130,9 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 
 	protected ValidationConfiguration() throws InvocationTargetException {
-		_validators = new HashMap<ValidatorMetaData, Boolean>();
-		_delegatesByTarget = new HashMap<String, String>();
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
-		this();
-
 		if (resource == null) {
 			throw new InvocationTargetException(null, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_NULLCREATE));
 		}
@@ -183,8 +179,9 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		ValidatorMetaData[] result = null;
 		 
 		if( !isDisableAllValidation() ){
-			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-			for (ValidatorMetaData vmd : getBuildEnabledValidatorsMap().keySet()) {
+			Set<ValidatorMetaData> set = getBuildEnabledValidatorsMap().keySet();
+			ValidatorMetaData[] temp = new ValidatorMetaData[set.size()];
+			for (ValidatorMetaData vmd : set) {
 				Boolean bvalue = getBuildEnabledValidatorsMap().get(vmd);
 				if (bvalue) {
 					// If the validator is enabled
