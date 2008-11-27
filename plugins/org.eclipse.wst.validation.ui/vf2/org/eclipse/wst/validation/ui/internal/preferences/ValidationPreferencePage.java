@@ -15,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.PreferencePage;
@@ -66,7 +64,6 @@ import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 import org.eclipse.wst.validation.ui.internal.HelpContextIds;
@@ -619,12 +616,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RebuildMsg)){
 				
 				FullBuildJob fbj = new FullBuildJob();
-				try {
-					fbj.runInWorkspace(new NullProgressMonitor());
-				}
-				catch (CoreException e){
-					ValidationPlugin.getPlugin().handleException(e);
-				}
+				fbj.schedule();
 			}
 			return true;
 		}
