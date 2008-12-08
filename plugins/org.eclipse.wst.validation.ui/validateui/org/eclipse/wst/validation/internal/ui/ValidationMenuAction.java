@@ -212,6 +212,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 					if (DisabledResourceManager.getDefault().isDisabled(res))return false;
 					if (res instanceof IFile)addSelected(res);
 					else if (res instanceof IFolder)addSelected(res);
+					else if (res instanceof IProject)addSelected(res);
 					
 					return true;
 				}
