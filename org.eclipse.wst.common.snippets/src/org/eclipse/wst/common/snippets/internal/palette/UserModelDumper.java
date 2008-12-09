@@ -220,7 +220,7 @@ public class UserModelDumper {
 		String name = null;
 		try {
 			Bundle bundle = Platform.getBundle(SnippetsPlugin.BUNDLE_ID);
-			name = Platform.getStateLocation(bundle).toString() + "/user.xml"; //$NON-NLS-1$
+			name = Platform.getStateLocation(bundle).toOSString() + "/user.xml"; //$NON-NLS-1$
 		}
 		catch (Exception e) {
 			name = "/user.xml"; //$NON-NLS-1$
