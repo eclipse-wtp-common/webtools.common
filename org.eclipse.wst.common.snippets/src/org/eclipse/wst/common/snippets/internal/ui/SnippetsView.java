@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,10 +42,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -146,6 +148,7 @@ public class SnippetsView extends ViewPart {
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_INSERT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_INSERT));
 			setToolTipText(getText());
+			setAccelerator(SWT.CTRL | SWT.CR);
 		}
 
 		public void run() {
@@ -488,7 +491,18 @@ public class SnippetsView extends ViewPart {
 
 		fViewer.createControl(parent);
 
-		fViewer.setKeyHandler(new PaletteViewerKeyHandler(fViewer));
+		fViewer.setKeyHandler(new PaletteViewerKeyHandler(fViewer) {
+			/* (non-Javadoc)
+			 * @see org.eclipse.gef.KeyHandler#keyReleased(org.eclipse.swt.events.KeyEvent)
+			 */
+			public boolean keyPressed(KeyEvent event) {
+				if (event.keyCode == SWT.CR && (event.stateMask & SWT.CTRL) > 0) {
+					if (insertAction.isEnabled())
+						insertAction.run();
+				}
+				return super.keyPressed(event);
+			}
+		});
 
 		DefaultEditDomain domain = new DefaultEditDomain(null);
 		fViewer.setEditDomain(domain);
@@ -516,7 +530,6 @@ public class SnippetsView extends ViewPart {
 
 		getViewer().addSelectionChangedListener(getSelectionChangedListener());
 
-		// drawers initially collapsed through model setup
 		fViewer.getControl().addMouseListener(insertListener);
 
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(getViewer().getControl(), IHelpContextIds.MAIN_VIEW_GENERAL);
@@ -739,6 +752,8 @@ public class SnippetsView extends ViewPart {
 
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+		if (fViewer != null)
+			fViewer.restoreState(memento);
 	}
 
 	public void insert() {
@@ -757,7 +772,7 @@ public class SnippetsView extends ViewPart {
 	}
 
 	public void saveState(IMemento memento) {
-		// not done when view is closed so hooked dispose instead
+		fViewer.saveState(memento);
 	}
 
 	public void setFocus() {
