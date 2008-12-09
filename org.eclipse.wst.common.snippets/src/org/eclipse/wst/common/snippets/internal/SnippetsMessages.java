@@ -67,6 +67,8 @@ public class SnippetsMessages extends NLS {
 	public static String SnippetDrawerEntryPage_5;
 	public static String SnippetDrawerEntryPage_6;
 	public static String Paste_as_Snippet;
+	public static String Import_Snippets;
+	public static String Export_Snippets;
 
 	static {
 		// load message values from bundle file
