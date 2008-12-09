@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.editors;
 
-import com.ibm.icu.text.Collator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +63,8 @@ import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.common.snippets.internal.util.Sorter;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
+
+import com.ibm.icu.text.Collator;
 
 /**
  * A snippet item editor that can define snippet variables
@@ -285,8 +286,9 @@ public class VariableItemEditor implements ISnippetEditor {
 
 			public void widgetSelected(SelectionEvent e) {
 				int i = 1;
-				String newId = "name_" + i++; //$NON-NLS-1$
-				while (fTableViewer.getColumnData()[0].keySet().contains(newId)) {
+				String newId = "name_" + i; //$NON-NLS-1$
+				// https://bugs.eclipse.org/bugs/show_bug.cgi?id=183699 - check both ID and visible name
+				while (fTableViewer.getColumnData()[0].containsKey(newId)||fTableViewer.getColumnData()[0].containsValue(newId)) {
 					newId = "name_" + i++; //$NON-NLS-1$
 				}
 				fTableViewer.getColumnData()[0].put(newId, newId);
