@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@ package org.eclipse.wst.common.snippets.internal.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -83,7 +85,7 @@ public class StringPropertyTableViewer {
 		}
 	}
 
-	protected HashMap[] columnData = null;
+	protected Map[] columnData = null;
 
 	protected String[] fColumnNames = null;
 
@@ -144,9 +146,10 @@ public class StringPropertyTableViewer {
 
 		TableLayout tlayout = new TableLayout();
 		CellEditor[] cellEditors = new CellEditor[getColumnNames().length];
-		columnData = new HashMap[getColumnNames().length];
+		columnData = new Map[getColumnNames().length];
 		for (int i = 0; i < getColumnNames().length; i++) {
-			getColumnData()[i] = new HashMap();
+			// ensure that keys are ordered
+			getColumnData()[i] = new LinkedHashMap();
 			tlayout.addColumnData(new ColumnWeightData(40, true));
 			TableColumn tc = new TableColumn(fTableViewer.getTable(), SWT.NONE);
 			tc.setText(getColumnNames()[i]);
@@ -233,7 +236,7 @@ public class StringPropertyTableViewer {
 	 * 
 	 * @return Returns a HashMap[]
 	 */
-	public HashMap[] getColumnData() {
+	public Map[] getColumnData() {
 		return columnData;
 	}
 
