@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -55,7 +56,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		protected void handleExport() {
 			PaletteDrawer exportCategory = (PaletteDrawer) getSelectedPaletteEntry();
 
-			final FileDialog fileDialog = new FileDialog(getShell());
+			final FileDialog fileDialog = new FileDialog(getShell(), SWT.SAVE);
+			fileDialog.setText(SnippetsMessages.Export_Snippets);
 			fileDialog.setFileName("snippets.xml"); //$NON-NLS-1$
 			String[] filterExtensions = new String[2];
 			filterExtensions[0] = "*.xml"; //$NON-NLS-1$
@@ -135,7 +137,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		}
 
 		protected void handleImport() {
-			final FileDialog fileDialog = new FileDialog(getShell());
+			final FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
+			fileDialog.setText(SnippetsMessages.Import_Snippets);
 			fileDialog.setFileName("snippets.xml"); //$NON-NLS-1$
 			String[] filterExtensions = new String[2];
 			filterExtensions[0] = "*.xml"; //$NON-NLS-1$
