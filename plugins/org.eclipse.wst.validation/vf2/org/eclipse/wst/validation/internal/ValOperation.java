@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,50 +35,61 @@ import org.eclipse.wst.validation.Validator;
  * @author karasiuk
  *
  */
-public class ValOperation {
+public final class ValOperation {
 	
-	private ValidationState 	_state = new ValidationState();
-	private ValidationResult	_result = new ValidationResult();
+	private final ValidationState 	_state = new ValidationState();
+	private final ValidationResult	_result = new ValidationResult();
 	
 	/**
 	 * Each project can have a set of validators that are suspended for the duration of the validation operation.
 	 * The set contains the validator's id.
 	 */
-	private Map<IProject, Set<String>> _suspended = 
-		Collections.synchronizedMap(new HashMap<IProject, Set<String>>(40));
+	private final Map<IProject, Set<String>> _suspended = new HashMap<IProject, Set<String>>(40);
 	
 	/** The time that the operation started. */
-	private long	_started = System.currentTimeMillis();
+	private final long	_started = System.currentTimeMillis();
 	
 	/** 
-	 * Are we in a multi project validation? This can be triggered by either clean all or 
+	 * Are we in a multi project validation? That is, could we be validating several
+	 * projects at the same time? This can be triggered by either clean all or 
 	 * if auto build is turned off, a build all. 
 	 */
-	private boolean	_multiProject;
+	private final boolean	_multiProject;
 	
 	/** 
 	 * Holds all the resources that have been validated as a side-effect of running other validations.
 	 * The key is the validator id and the value is a Set of IResources.
 	 */
-	private Map<String, Set<IResource>> 	_validated = new HashMap<String, Set<IResource>>(20);
+	private final Map<String, Set<IResource>> 	_validated = new HashMap<String, Set<IResource>>(20);
 	
 	public ValOperation(){
+		_multiProject = false;
+	}
+	
+	/**
+	 * 
+	 * @param multiProject Set to true if we could be validating several projects at the same time.
+	 */
+	public ValOperation(boolean multiProject){
+		_multiProject = multiProject;
 	}
 	
 	public ValidationState getState() {
 		return _state;
 	}
-	public void setState(ValidationState state) {
-		_state = state;
-	}
-	public ValidationResult getResult() {
-		return _result;
-	}
 	
-	public void setResult(ValidationResult result) {
-		_result = result;
+	/**
+	 * Answer a summary of the validation results.
+	 * @return
+	 */
+	public ValidationResultSummary getResult() {
+		synchronized(_result){
+			ValidationResultSummary vrs = new ValidationResultSummary(_result.getSeverityError(), 
+				_result.getSeverityWarning(), _result.getSeverityInfo());
+			return vrs;
+		}
 	}
-	
+		
 	public ValidationResults getResults(){
 		return new ValidationResults(_result);
 	}
@@ -91,12 +101,14 @@ public class ValOperation {
 	 * @param resource resource that has been validated.
 	 */
 	public void addValidated(String id, IResource resource){
-		Set<IResource> set = _validated.get(id);
-		if (set == null){
-			set = new HashSet<IResource>(20);
-			_validated.put(id, set);
+		synchronized(_validated){
+			Set<IResource> set = _validated.get(id);
+			if (set == null){
+				set = new HashSet<IResource>(20);
+				_validated.put(id, set);
+			}
+			set.add(resource);
 		}
-		set.add(resource);
 	}
 	
 	/**
@@ -107,10 +119,12 @@ public class ValOperation {
 	 * @param resource
 	 */
 	public boolean isValidated(String id, IResource resource){
-		Set<IResource> set = _validated.get(id);
-		if (set == null)return false;
-		
-		return set.contains(resource);
+		synchronized(_validated){
+			Set<IResource> set = _validated.get(id);
+			if (set == null)return false;
+			
+			return set.contains(resource);
+		}
 	}
 
 	/**
@@ -125,8 +139,10 @@ public class ValOperation {
 	 */
 	public boolean isSuspended(Validator val, IProject project) {
 		if (project == null)return false;
-		Set<String> set = getSuspended(project);		
-		return set.contains(val.getId());
+		synchronized(_suspended){
+			Set<String> set = getSuspended(project);		
+			return set.contains(val.getId());
+		}
 	}
 	
 	private Set<String> getSuspended(IProject project){
@@ -152,12 +168,34 @@ public class ValOperation {
 		return _multiProject;
 	}
 
-	/** 
-	 * Are we in a multi project validation? That is, could we be validating several
-	 * projects at the same time? This can be triggered by either clean all or 
-	 * if auto build is turned off, a build all. 
+	/**
+	 * Indicate if the operation was canceled.
+	 * 
+	 * @param canceled
+	 * 		Set to true if it was canceled and false if it was not canceled.
 	 */
-	public void setMultiProject(boolean multiProject) {
-		_multiProject = multiProject;
-	}	
+	public void setCanceled(boolean canceled) {
+		synchronized (_result) {
+			_result.setCanceled(canceled);
+		}
+		
+	}
+
+	/**
+	 * Was the operation canceled before it completed? For example if the validation is being run through the
+	 * user interface, the end user can cancel the operation through the progress monitor.
+	 * 
+	 * @return true if the operation was canceled
+	 */
+	public boolean isCanceled() {
+		synchronized (_result) {
+			return _result.isCanceled();
+		}
+	}
+
+	public void mergeResults(ValidationResult vr) {
+		synchronized (_result) {
+			_result.mergeResults(vr);
+		}
+	}
 }

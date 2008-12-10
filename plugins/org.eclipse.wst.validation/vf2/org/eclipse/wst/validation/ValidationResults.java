@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation;
 
+
 /**
  * The combined results of validating multiple resources.
  * <p>
@@ -22,10 +23,24 @@ package org.eclipse.wst.validation;
  *
  */
 public class ValidationResults {
-	private ValidationResult _result;
+	
+	private ValidatorMessage[] _messages;
+	private int _error;
+	private int	_warn;
+	private int _info;
 	
 	public ValidationResults(ValidationResult result){
-		_result = result;
+		if (result == null){
+			_messages = new ValidatorMessage[0];			
+		}
+		else {
+			ValidatorMessage[] messages = result.getMessages();
+			_messages = new ValidatorMessage[messages.length];
+			System.arraycopy(messages, 0, _messages, 0, messages.length);
+			_error = result.getSeverityError();
+			_warn = result.getSeverityWarning();
+			_info = result.getSeverityInfo();
+		}
 	}
 	
 	/**
@@ -33,32 +48,28 @@ public class ValidationResults {
 	 * @return an array is returned even if there are no messages.
 	 */
 	public ValidatorMessage[] getMessages(){
-		if (_result == null)return new ValidatorMessage[0];
-		return _result.getMessages();
+		return _messages;
 	}
 
 	/**
 	 * Answer the number of error messages that were generated as part of this validation operation.
 	 */
 	public int getSeverityError() {
-		if (_result == null)return 0;
-		return _result.getSeverityError();
+		return _error;
 	}
 
 	/**
 	 * Answer the number of informational messages that were generated as part of this validation operation.
 	 */
 	public int getSeverityInfo() {
-		if (_result == null)return 0;
-		return _result.getSeverityInfo();
+		return _info;
 	}
 	
 	/**
 	 * Answer the number of warning messages that were generated as part of this validation operation.
 	 */
 	public int getSeverityWarning() {
-		if (_result == null)return 0;
-		return _result.getSeverityWarning();
+		return _warn;
 	}
 
 }
