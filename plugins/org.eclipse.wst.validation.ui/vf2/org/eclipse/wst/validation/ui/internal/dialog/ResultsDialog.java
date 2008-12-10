@@ -24,10 +24,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.internal.ValidationResultSummary;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.ui.ValidationUIMessages;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
@@ -39,7 +39,7 @@ import org.eclipse.wst.validation.ui.internal.ValUIMessages;
  */
 public class ResultsDialog extends IconAndMessageDialog {
 	
-	private ValidationResult 	_result;
+	private ValidationResultSummary 	_result;
 	private long				_time;
 	private int					_resourceCount;
 	private Button _hideButton;
@@ -52,7 +52,7 @@ public class ResultsDialog extends IconAndMessageDialog {
 	 * @param time the time that the validation took in milliseconds
 	 * @param resourceCount the number of resources that were validated
 	 */
-	public ResultsDialog(Shell parentShell, ValidationResult results, long time, int resourceCount) {
+	public ResultsDialog(Shell parentShell, ValidationResultSummary results, long time, int resourceCount) {
 		super(parentShell);
 		_result = results;
 		_time = time;

@@ -27,10 +27,15 @@ import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
 
 /**
  * Run the validators on a selected set of resources.
+ * <p>
+ * This is used to run manual validations (i.e. the user selects the Validate menu item), 
+ * or it is invoked programmatically by a third party through the ValidationFramework API.
+ * It is not used for the build based invocation.
+ * </p> 
  * @author karasiuk
  *
  */
-public class ValidationRunner implements IWorkspaceRunnable {
+public final class ValidationRunner implements IWorkspaceRunnable {
 	
 	private Map<IProject, Set<IResource>>		_projects;
 	private	ValType			_valType;
@@ -91,7 +96,7 @@ public class ValidationRunner implements IWorkspaceRunnable {
 				
 		for (Map.Entry<IProject, Set<IResource>> me : _projects.entrySet()){
 			if (monitor.isCanceled()){
-				_valOperation.getResult().setCanceled(true);
+				_valOperation.setCanceled(true);
 				return _valOperation;
 			}
 			IProject project = me.getKey();

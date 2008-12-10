@@ -22,9 +22,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValType;
+import org.eclipse.wst.validation.internal.ValidationResultSummary;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
 
@@ -85,14 +85,14 @@ public class ManualValidationRunner extends WorkspaceJob {
 		int resourceCount = 0;
 		for (Set s : _projects.values())resourceCount += s.size();
 		final int finalResourceCount = resourceCount;
-		if (vo.getResult().isCanceled())return Status.CANCEL_STATUS;
+		if (vo.isCanceled())return Status.CANCEL_STATUS;
 		
 		if (_showResults){
 			Display display = Display.getDefault();
 			Runnable run = new Runnable(){
 
 				public void run() {
-					ValidationResult vr = vo.getResult();
+					ValidationResultSummary vr = vo.getResult();
 					ResultsDialog rd = new ResultsDialog(null, vr, time, finalResourceCount);
 					rd.open();
 				}

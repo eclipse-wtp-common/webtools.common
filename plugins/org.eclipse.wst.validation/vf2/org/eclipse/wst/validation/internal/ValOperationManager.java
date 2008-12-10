@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -112,7 +114,7 @@ public class ValOperationManager implements IResourceChangeListener {
 	 * If we are doing a clean all, with auto build turned on, we increment this by one, 
 	 * so that we know to throw away the first workspace, auto build, post event.
 	 */
-	private int _discardAutoPost;
+	private AtomicInteger _discardAutoPost = new AtomicInteger();
 
 	public static ValOperationManager getDefault(){
 		return Singleton.valOperationManager;
@@ -129,8 +131,9 @@ public class ValOperationManager implements IResourceChangeListener {
 		}
 		
 		if (isBuildStarting(event)){
-			_operation = new ValOperation();
-			_operation.setMultiProject(true);
+			synchronized(this){
+				_operation = new ValOperation(true);
+			}
 			IValidatorVisitor visitor = new IValidatorVisitor(){
 
 				public void visit(Validator validator, IProject project, ValType valType, 
@@ -146,7 +149,9 @@ public class ValOperationManager implements IResourceChangeListener {
 		if (isBuildFinished(event)){
 			ValOperationJob finished = new ValOperationJob(getOperation());
 			finished.schedule();
-			_operation = null;
+			synchronized(this){
+				_operation = null;
+			}
 		}
 		
 		
@@ -195,7 +200,7 @@ public class ValOperationManager implements IResourceChangeListener {
 		
 		if (ResourcesPlugin.getWorkspace().isAutoBuilding()){
 			if (isWorkspace && preBuild && kind == IncrementalProjectBuilder.CLEAN_BUILD){
-				_discardAutoPost = 1;
+				_discardAutoPost.set(1);
 				return true;
 			}
 			
@@ -215,8 +220,9 @@ public class ValOperationManager implements IResourceChangeListener {
 	 * @return return true if we are just finishing a build.
 	 */
 	private boolean isBuildFinished(IResourceChangeEvent event) {
-		
-		if (_operation == null)return false;
+		synchronized(this){
+			if (_operation == null)return false;
+		}
 		
 		int type = event.getType();
 		int kind = event.getBuildKind();
@@ -226,8 +232,7 @@ public class ValOperationManager implements IResourceChangeListener {
 		
 		if (ResourcesPlugin.getWorkspace().isAutoBuilding()){
 			if (isWorkspace && postBuild && kind == IncrementalProjectBuilder.AUTO_BUILD){
-				if (_discardAutoPost == 1)_discardAutoPost = 0;
-				else return true;
+				if (!_discardAutoPost.compareAndSet(1, 0))return true;
 			}
 		}
 		else {
@@ -252,7 +257,7 @@ public class ValOperationManager implements IResourceChangeListener {
 	 * Answer the current validation operation. If we are not in a multiple project validation
 	 * we will return a new one. 
 	 */
-	public ValOperation getOperation() {
+	public synchronized ValOperation getOperation() {
 		/*
 		 * If we don't have a current operation, we create a new one. The only time we save
 		 * the operation is when we are sure that we are in a multi project validation.

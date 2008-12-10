@@ -662,7 +662,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			Tracing.log("ValManager-01: " + msg); //$NON-NLS-1$
 		}
 		if (vr != null){
-			operation.getResult().mergeResults(vr);
+			operation.mergeResults(vr);
 			if (vr.getSuspendValidation() != null)operation.suspendValidation(vr.getSuspendValidation(), validator);
 		}
 	}

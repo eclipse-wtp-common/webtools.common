@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -48,7 +48,10 @@ public class ValidationState {
 	 */
 	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
-	private Map<String, Object> _map = new HashMap<String, Object>(50);
+	private Map<String, Object> _map = new ConcurrentHashMap<String, Object>(50);
+	
+	public ValidationState(){
+	}
 	
 	/**
 	 * Save some state information.
