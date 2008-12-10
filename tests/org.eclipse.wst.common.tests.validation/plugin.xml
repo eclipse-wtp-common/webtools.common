@@ -376,6 +376,15 @@
     </validator>
 	</extension>
    
+    <extension point="org.eclipse.wst.validation.validatorV2" id="T6A" name="T6A">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T6A">
+         <include>
+            <rules>
+               <fileext ext="t6a"></fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
    
  
  

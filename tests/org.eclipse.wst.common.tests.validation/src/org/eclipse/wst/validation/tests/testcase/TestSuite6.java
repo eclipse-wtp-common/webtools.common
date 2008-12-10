@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.validation.internal.Tracing;
+import org.eclipse.wst.validation.tests.T6A;
 
 /** Test what happens when a dependent resource is deleted. */
 public class TestSuite6 extends TestCase {
@@ -38,10 +39,10 @@ public class TestSuite6 extends TestCase {
 		_project = _env.createProject("TestSuite6");
 		
 		IPath first = _env.addFolder(_project.getFullPath(), "first");
-		_sample = _env.addFile(first, "sample.test1",	"include master.test1");		
-		_master = _env.addFile(first, "master.test1", "# a dummy file");
+		_sample = _env.addFile(first, "sample.t6a",	"include master.t6a");		
+		_master = _env.addFile(first, "master.t6a", "# a dummy file");
 		
-		TestEnvironment.enableOnlyThisValidator("org.eclipse.wst.validation.tests.TestValidator");
+		TestEnvironment.enableOnlyThisValidator("org.eclipse.wst.validation.tests.T6A");
 	}
 	
 	protected void tearDown() throws Exception {
@@ -55,7 +56,8 @@ public class TestSuite6 extends TestCase {
 	 */
 	public void testDelete() throws CoreException, UnsupportedEncodingException, InterruptedException {
 		Tracing.log("TestSuite6-01: testDelete starting");
-		IProgressMonitor monitor = new NullProgressMonitor();		
+		IProgressMonitor monitor = new NullProgressMonitor();	
+		T6A.resetCounters();
 		
 		_env.incrementalBuildAndWait(monitor);
 		assertEquals("We do not expect any errors by this point", 0, _env.getErrors(_sample));
@@ -63,6 +65,8 @@ public class TestSuite6 extends TestCase {
 		_master.delete(true, monitor);
 		_env.incrementalBuildAndWait(monitor);
 		assertEquals("The missing depenency should have been reported.", 1, _env.getErrors(_sample));
+		assertEquals("The simple version of the validate method should never be called", 0, T6A.getCountSimple());
+		assertTrue("The complex method must be called at least once", T6A.getCountComplex() > 0);
 					
 		Tracing.log("TestSuite6-02:testDelete finished");
 	}
