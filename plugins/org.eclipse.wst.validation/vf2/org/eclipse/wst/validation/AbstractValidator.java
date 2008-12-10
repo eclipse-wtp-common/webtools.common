@@ -32,8 +32,10 @@ public abstract class AbstractValidator {
 	
 	/**
 	 * Validate the resource. The validator is called from a WorkspaceJob, so
-	 * the validator itself does not need to establish it's own
-	 * IWorkspaceRunnable.
+	 * the validator itself does not need to establish it's own IWorkspaceRunnable.
+	 * <p>
+	 * If you override this method then you should not override the other validate method.
+	 * </p>
 	 * 
 	 * @param resource
 	 * 		The resource to be validated.
@@ -56,7 +58,43 @@ public abstract class AbstractValidator {
 	 * 
 	 * @return the result of the validation. This may be, but usually isn't, null.
 	 */
-	public abstract ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor);
+	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
+		return null;
+	}
+	
+	/**
+	 * Validate the resource. The validator is called from a WorkspaceJob, so
+	 * the validator itself does not need to establish it's own
+	 * IWorkspaceRunnable.
+	 * <p>
+	 * If you override this method then you should not override the other
+	 * validate method.
+	 * </p>
+	 * 
+	 * @param event
+	 *            An object that describes the resource to be validated and why
+	 *            it should be validated.
+	 * 
+	 * @param state
+	 *            A way to pass arbitrary, validator specific, data from one
+	 *            invocation of a validator to the next, during the validation
+	 *            phase. At the end of the validation phase, this object will be
+	 *            cleared, thereby allowing any of this state information to be
+	 *            garbaged collected.
+	 * 
+	 * @param monitor
+	 *            A monitor that you can use to report your progress. To be a
+	 *            well behaved validator you need to check the isCancelled()
+	 *            method at appropriate times.
+	 * 
+	 * @return the result of the validation. Null should never be returned. If
+	 *         null is returned then the other validate method will be called as
+	 *         well.
+	 */
+	public ValidationResult validate(ValidationEvent event, ValidationState state, IProgressMonitor monitor){
+		return null;
+	}
+	
 	
 	/**
 	 * A call back method that lets the validator know that the project is being

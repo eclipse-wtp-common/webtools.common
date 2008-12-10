@@ -44,6 +44,7 @@ import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IPerformanceMonitor;
 import org.eclipse.wst.validation.IValidatorGroupListener;
 import org.eclipse.wst.validation.PerformanceCounters;
+import org.eclipse.wst.validation.ValidationEvent;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.ValidationState;
@@ -606,7 +607,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				SubMonitor subMonitor = SubMonitor.convert(monitor);
 				String task = NLS.bind(ValMessages.LogValStart, validator.getName(), resource.getName());
 				subMonitor.beginTask(task, 1);
-				validate(validator, operation, resource, kind, subMonitor.newChild(1));
+				validate(validator, operation, resource, kind, subMonitor.newChild(1), null);
 			}			
 		};
 		SubMonitor sm = SubMonitor.convert(monitor, getValidators(project).length);
@@ -627,7 +628,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @param monitor
 	 */
 	public void validate(Validator validator, ValOperation operation, IResource resource, int kind, 
-			IProgressMonitor monitor){
+			IProgressMonitor monitor, ValidationEvent event){
 		if (operation.isValidated(validator.getId(), resource))return;
 		long time = 0;
 		long cpuTime = -1;
@@ -642,7 +643,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		if (Tracing.matchesExtraDetail(validator.getId())){
 			Tracing.log("ValManager-03: validating ", resource); //$NON-NLS-1$
 		}
-		ValidationResult vr = validator.validate(resource, kind, operation, monitor);
+		ValidationResult vr = validator.validate(resource, kind, operation, monitor, event);
 		if (pm.isCollecting()){
 			if (cpuTime != -1){
 				cpuTime = Misc.getCPUTime() - cpuTime;

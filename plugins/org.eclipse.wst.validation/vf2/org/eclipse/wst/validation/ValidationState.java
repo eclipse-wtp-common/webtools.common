@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,8 @@ public class ValidationState {
 	 * resource that actually changed, is placed into the ValidationState using
 	 * this id.
 	 * </p>
+	 * @deprecated This approach is not thread safe, the longer form of the AbstractValidator validate method should be used instead.
+	 * @see AbstractValidator#validate(org.eclipse.core.resources.IResource, int, ValidationState, org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.resources.IResource, int)
 	 */
 	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
