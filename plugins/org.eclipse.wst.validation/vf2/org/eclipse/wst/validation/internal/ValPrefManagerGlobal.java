@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
@@ -290,10 +291,11 @@ public class ValPrefManagerGlobal {
 			return;
 		}
 		if (!validator.isChanged())return;
-		if (validator.getChangeCountGlobal() > 0){
+		if (validator.hasGlobalChanges()){
 			Global g = new Global(validator.isManualValidation(), validator.isBuildValidation(), validator.getVersion(),
 				validator.getDelegatingId());
 			vp.put(PrefConstants.global, g.serialize());
+			Friend.setMigrated(validator, false);
 		}
 		
 		if (validator.getChangeCountMessages() > 0){

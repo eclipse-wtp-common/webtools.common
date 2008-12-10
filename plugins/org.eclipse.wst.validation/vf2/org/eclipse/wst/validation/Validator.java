@@ -114,6 +114,13 @@ public abstract class Validator implements Comparable<Validator> {
 	/** How many times has a message field in this validator been changed since it was created (or copied)? */
 	protected transient int _changeCountMessages;
 	
+	/** Has the validator been migrated from an earlier version in this session, but not yet saved? */
+	private boolean _migrated;
+		
+	void setMigrated(boolean migrated){
+		_migrated = migrated;
+	}
+	
 	/**
 	 * Create a new validator based on a abstract validator.
 	 * 
@@ -170,7 +177,7 @@ public abstract class Validator implements Comparable<Validator> {
 	 * Compare yourself based on Validator name.
 	 */
 	public int compareTo(Validator validator) {
-			return getName().compareTo(validator.getName());			
+		return getName().compareTo(validator.getName());			
 	}
 	
 	/** Answer a deep copy of yourself. */
@@ -192,6 +199,7 @@ public abstract class Validator implements Comparable<Validator> {
 		_project = v._project;
 		_sourceId = v._sourceId;
 		_version = v._version;
+		_migrated = v._migrated;
 		
 		if (includeChangeCounts){
 			_changeCountGlobal = v._changeCountGlobal;
@@ -491,10 +499,10 @@ public abstract class Validator implements Comparable<Validator> {
 	}
 	
 	/**
-	 * Has the validator changed since it was last created or copied?
+	 * Has the validator changed since it was last created or copied? Or was it migrated from an earlier version. 
 	 */
 	public boolean isChanged(){
-		if (_changeCountGlobal > 0 || _changeCountMessages > 0)return true;
+		if (_changeCountGlobal > 0 || _changeCountMessages > 0 || _migrated)return true;
 		return false;
 	}
 	
@@ -1227,6 +1235,7 @@ public void become(Validator validator) {
 	_version = validator._version;
 	_changeCountGlobal = validator._changeCountGlobal;
 	_changeCountMessages = validator._changeCountMessages;
+	_migrated = validator._migrated;
 }
 
 void setMessages(Map<String, MessageSeveritySetting> map) {
@@ -1236,6 +1245,10 @@ void setMessages(Map<String, MessageSeveritySetting> map) {
 
 public int getChangeCountGlobal() {
 	return _changeCountGlobal;
+}
+
+public boolean hasGlobalChanges(){
+	return _migrated || _changeCountGlobal > 0;
 }
 
 public int getChangeCountMessages() {

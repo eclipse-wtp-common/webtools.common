@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V2;
@@ -39,6 +41,11 @@ public class ValPrefManagerProject {
 	private IProject	_project;
 	private static List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
 	
+	/**
+	 * The validators that are in the project preference file, but have
+	 * only been configured to the global preference level. That is they have not had
+	 * any project level customizations applied yet.
+	 */
 	private List<Validator> _validators;
 	
 	public ValPrefManagerProject(IProject project){
@@ -66,15 +73,12 @@ public class ValPrefManagerProject {
 	 * @return true if it has settings. This does not mean that the settings are enabled, only that it
 	 * has settings.
 	 * 
-	 * @see ValManager#hasEnabledProjectPreferences(IProject)
+	 * @deprecated
 	 */
 	public boolean hasProjectSpecificSettings(){
 		IEclipsePreferences pref = getPreferences();
 		
 		if (pref == null)return false;
-		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
-		if (version == 0)return false;
-
 		return true;
 	}
 	
@@ -106,7 +110,7 @@ public class ValPrefManagerProject {
 	 *         any project level customizations applied yet.
 	 */
 	private List<Validator> loadValidators(Map<String, Validator> baseValidators) throws BackingStoreException {
-		LinkedList<Validator> list = new LinkedList<Validator>();
+		List<Validator> list = new LinkedList<Validator>();
 		IEclipsePreferences pref = getPreferences();
 		if (pref.nodeExists(PrefConstants.vals)){
 			Preferences vals = pref.node(PrefConstants.vals);
@@ -126,23 +130,81 @@ public class ValPrefManagerProject {
 	/**
 	 * Update the project preferences from the preference store.
 	 * @return false if the project does not have any specific preferences.
+	 * 
+	 * @deprecated
 	 */
 	public boolean loadProjectPreferencesShallow(ProjectPreferences pp) {
 		IEclipsePreferences pref = getPreferences();
 		
 		if (pref == null)return false;
-		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
-		if (version == 0)return false;
 		
-		if (version != ValPrefManagerGlobal.frameworkVersion)ValPrefManagerGlobal.migrate(version, pref);
-
 		pp.setOverride(pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride));
 		pp.setSuspend(pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend));
 		return true;
 	}
 	
+	/**
+	 * Answer the setting of the getOverride field.
+	 */
+	public boolean getOverride(){
+		IEclipsePreferences pref = getPreferences();
+		
+		if (pref == null)return ProjectPreferences.DefaultOverride;
+		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
+		if (version == 0){
+			try {
+				ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(_project);
+				return pc.getDoesProjectOverride();
+			}
+			catch (InvocationTargetException e){
+				// eat it, if it fails we just go with the defaults
+			}
+		}
+		return pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride);
+	}
+
+	private void migrateFromBeforeWTP30(ProjectPreferences pp, Map<String, Validator> baseValidators) {
+		try {
+			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(pp.getProject());
+			pp.setSuspend(pc.isDisableAllValidation());
+			pp.setOverride(pc.getDoesProjectOverride());
+			
+			List<Validator> list = migrateFromBeforeWTP30(baseValidators, pc);
+			Validator[] vals = new Validator[list.size()];
+			list.toArray(vals);
+			pp.setValidators(vals);			
+		}
+		catch (InvocationTargetException e){
+			// eat it, if it fails we just go with the defaults
+		}
+	}
+
+	private List<Validator> migrateFromBeforeWTP30(Map<String, Validator> baseValidators, ProjectConfiguration pc)
+			throws InvocationTargetException {
+				
+		Set<String> build = pc.getEnabledBuildlValidators();
+		Set<String> manual = pc.getEnabledManualValidators();
+		
+		List<Validator> list = new LinkedList<Validator>();
+		for (Validator v : baseValidators.values()){
+			V2 v2 = v.asV2Validator();
+			if (v2 != null){
+				boolean isBuild = build == null || build.contains(v2.getValidatorClassname());
+				boolean isManual = manual == null || manual.contains(v2.getValidatorClassname());
+				if ((v.isBuildValidation() != isBuild) || (v.isManualValidation() != isManual)){
+					V2 copy = v2.copy().asV2Validator();
+					copy.setBuildValidation(isBuild);
+					copy.setManualValidation(isManual);
+					copy.setLevel(Validator.Level.Project);
+					Friend.setMigrated(copy, true);
+					list.add(copy);
+				}
+			}
+		}
+		return list;
+	}
 	
-	//FIXME I suspect that this method should be removed	
+	
 	/**
 	 * Update the project preferences from the preference store.
 	 * @return false if the project does not have any specific preferences.
@@ -150,9 +212,21 @@ public class ValPrefManagerProject {
 	public boolean loadProjectPreferences(ProjectPreferences pp, Map<String, Validator> baseValidators) 
 		throws BackingStoreException {
 		
-		if (!loadProjectPreferencesShallow(pp))return false;
-		
 		IEclipsePreferences pref = getPreferences();
+
+		if (pref == null)return false;
+		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
+		if (version == 0){
+			// This means that we have a project that is before WTP 3.0
+			migrateFromBeforeWTP30(pp, baseValidators);
+			return true;
+		}
+		
+		if (version != ValPrefManagerGlobal.frameworkVersion)ValPrefManagerGlobal.migrate(version, pref);
+
+		pp.setOverride(pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride));
+		pp.setSuspend(pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend));
+		
 		if (!pref.nodeExists(PrefConstants.vals))return true;
 		
 		Preferences vp = pref.node(PrefConstants.vals);
@@ -187,6 +261,7 @@ public class ValPrefManagerProject {
 		try {
 			Validator[] workspaceVals = ValManager.getDefault().getValidators();
 			Map<String, Validator> base = new HashMap<String, Validator>(workspaceVals.length);
+			for (Validator v : workspaceVals)base.put(v.getId(), v);
 			for (Validator v : validators)ValPrefManagerGlobal.save(v, vals, base);
 			pref.flush();
 			ProjectConfiguration pc = ConfigurationManager.getManager()

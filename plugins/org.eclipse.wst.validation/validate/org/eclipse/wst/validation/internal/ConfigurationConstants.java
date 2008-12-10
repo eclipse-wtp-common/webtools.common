@@ -35,8 +35,7 @@ public interface ConfigurationConstants {
 	String ELEMENT_SEPARATOR = ";"; //$NON-NLS-1$ // separates the name of one IValidator from the next in the list of enabled validators for a project or preference
 	String DELEGATES_SEPARATOR = "="; //$NON-NLS-1$ // Separates the delegating validator id from the delegate validator id in the list of delegates
 
-	// The following values must match the attributes in the preference marker as shown in
-	// plugin.xml
+	// The following values must match the attributes in the preference marker as shown in plugin.xml
 	// Even though the plugin.xml values are not used to create new Preference or Project markers,
 	// maintaining one local name ensures that there's no confusion writing the migration code.
 	// These are the QualifiedNames used to persist the user's settings.

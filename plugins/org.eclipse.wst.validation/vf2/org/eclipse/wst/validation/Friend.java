@@ -47,8 +47,11 @@ public class Friend {
 	public static boolean shouldValidate(Validator validator, IResource resource, ValType valType, 
 		ContentTypeWrapper contentTypeWrapper){
 		
-		return validator.shouldValidate(resource, valType, contentTypeWrapper);
-		
+		return validator.shouldValidate(resource, valType, contentTypeWrapper);		
+	}
+	
+	public static void setMigrated(Validator validator, boolean migrated){
+		validator.setMigrated(migrated);
 	}
 
 }
