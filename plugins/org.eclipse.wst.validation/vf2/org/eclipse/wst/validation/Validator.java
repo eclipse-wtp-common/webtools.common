@@ -339,17 +339,49 @@ public abstract class Validator implements Comparable<Validator> {
 		}
 		return result;
 	}
+	
 	/**
 	 * Validate the resource.
 	 * 
-	 * @param resource the resource to be validated
-	 * @param kind the kind of resource change, see IResourceDelta for values.
-	 * @param operation the operation that this validation is running under. This can be null.
-	 * @param monitor a way to report progress. This can be null.
+	 * @param resource
+	 *            The resource to be validated.
+	 * @param kind
+	 *            The kind of resource change, see IResourceDelta for values.
+	 * @param operation
+	 *            The operation that this validation is running under. This can
+	 *            be null.
+	 * @param monitor
+	 *            A way to report progress. This can be null.
 	 * 
-	 * @return the result of doing the validation, it can be, but usually isn't null.
+	 * @return the result of doing the validation, it can be, but usually isn't
+	 *         null.
 	 */
-	public abstract ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor);	
+	public abstract ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor);
+	
+	/**
+	 * Validate the resource.
+	 * 
+	 * @param resource
+	 *            The resource to be validated.
+	 * @param kind
+	 *            The kind of resource change, see IResourceDelta for values.
+	 * @param operation
+	 *            The operation that this validation is running under. This can
+	 *            be null.
+	 * @param monitor
+	 *            A way to report progress. This can be null.
+	 * @param event
+	 *            An event that describes in more detail what should be
+	 *            validated and why it should be validated. This can be null.
+	 * 
+	 * @return the result of doing the validation, it can be, but usually isn't
+	 *         null.
+	 */
+	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor, ValidationEvent event){
+		// The reason that the resource and kind are still specified, is that I didn't want to remove a public method in the service
+		// stream. 
+		return validate(resource, kind, operation, monitor);		
+	}
 
 	/**
 	 * This method will be called before any validation takes place. It allows validators to perform any
@@ -1025,12 +1057,19 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	@Override
-	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor) {
+	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor){
+		return validate(resource, kind, operation, monitor, null);
+	}
+	
+	@Override
+	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor, ValidationEvent event) {
 		ValidationResult vr = null;
 		if (operation == null)operation = new ValOperation();
 		if (monitor == null)monitor = new NullProgressMonitor();
 		try {
-			vr = getDelegatedValidator().validate(resource, kind, operation.getState(), monitor);
+			if (event == null)event = new ValidationEvent(resource, kind, null);
+			vr = getDelegatedValidator().validate(event, operation.getState(), monitor);
+			if (vr == null)vr = getDelegatedValidator().validate(resource, kind, operation.getState(), monitor);
 		}
 		catch (Exception e){
 			try {

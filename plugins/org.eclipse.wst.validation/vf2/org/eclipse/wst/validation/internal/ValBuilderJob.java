@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.wst.validation.DependentResource;
 import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.IDependencyIndex;
+import org.eclipse.wst.validation.ValidationEvent;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.Validator;
@@ -210,8 +211,9 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 				if (Friend.shouldValidate(dr.getValidator(), dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 					mm.clearMarker(dr.getResource(), dr.getValidator()); 
 					_request.getOperation().getState().put(ValidationState.TriggerResource, resource);
+					ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
 					ValManager.getDefault().validate(dr.getValidator(), _request.getOperation(), dr.getResource(), 
-						IResourceDelta.NO_CHANGE, _monitor);
+						IResourceDelta.NO_CHANGE, _monitor, event);
 				}
 			}
 		}
