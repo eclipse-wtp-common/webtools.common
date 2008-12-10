@@ -10,7 +10,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -24,6 +26,7 @@ import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V1;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
+import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
@@ -51,6 +54,17 @@ public class TestEnvironment {
 	
 	public void incrementalBuild() throws CoreException{
 		getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
+	}
+	
+	/**
+	 * Run an incremental build and wait for it to finish.
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public void incrementalBuildAndWait(IProgressMonitor monitor) throws CoreException, InterruptedException {
+		getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+		Thread.sleep(2000);
+		ValidationFramework.getDefault().join(monitor);
 	}
 	
 	/**
@@ -133,7 +147,7 @@ public class TestEnvironment {
 	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
 	 * these tests.
 	 * 
-	 * @param validatorPrefix The start of the validator ID. For example "T5".
+	 * @param validatorPrefix The start of the validator class name, but without the package name. For example "T5".
 	 */
 	public static void enableOnlyTheseValidators(String validatorPrefix) throws InvocationTargetException {
 		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
@@ -148,6 +162,23 @@ public class TestEnvironment {
 		TestEnvironment.saveV1Preferences(vals);
 	}
 
+	/**
+	 * Since other plug-ins can add and remove validators, turn off all the validators except this one.
+	 * 
+	 * @param name Fully qualified class name of the validator to turn on. For example
+	 * org.eclipse.wst.validation.tests.TestValidator
+	 */
+	public static void enableOnlyThisValidator(String name) throws InvocationTargetException {
+		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
+		for (Validator v : vals){
+			boolean enable = v.getValidatorClassname().equals(name);
+			v.setBuildValidation(enable);
+			v.setManualValidation(enable);
+		}
+		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
+		gp.saveAsPrefs(vals);		
+		TestEnvironment.saveV1Preferences(vals);
+	}
 	
 	/**
 	 * Save the V1 preferences.
@@ -191,4 +222,25 @@ public class TestEnvironment {
 		}		
 	}
 
+	/**
+	 * Answer the number of validation errors on this resource.
+	 * 
+	 * @param resource
+	 *            The resource being checked.
+	 * @return the number of problem markers that have the error severity.
+	 */
+	public int getErrors(IResource resource) {
+		int errors = 0;
+		try {
+			IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+			for (IMarker marker : markers){
+				int severity = marker.getAttribute(IMarker.SEVERITY, -1);
+				if (severity == IMarker.SEVERITY_ERROR)errors++;
+			}
+		}
+		catch (CoreException e){
+			//eat it
+		}
+		return errors;
+	}
 }
