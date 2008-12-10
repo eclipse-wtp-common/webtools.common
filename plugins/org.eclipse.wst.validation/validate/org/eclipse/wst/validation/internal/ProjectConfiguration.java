@@ -11,7 +11,10 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -86,6 +89,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			ValidationPlugin.getPlugin().handleException(e);
 			return false;
 		}
+	}
+	
+	public boolean getDoesProjectOverride(){
+		return _doesProjectOverride;
 	}
 
 	public boolean doesProjectOverride() {
@@ -586,10 +593,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		final IEclipsePreferences pref = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
 		if (pref != null) {
 			try {
-				pref.put(USER_PREFERENCE, serialize());
-				pref.put(USER_MANUAL_PREFERENCE, serializeManualSetting());
-				pref.put(USER_BUILD_PREFERENCE, serializeBuildSetting());
-				pref.put(DELEGATES_PREFERENCE, serializeDelegatesSetting());
+				pref.put(ValidationConfiguration.UserPreference, serialize());
+				pref.put(ValidationConfiguration.UserManualPreference, serializeManualSetting());
+				pref.put(ValidationConfiguration.UserBuildPreference, serializeBuildSetting());
+				pref.put(ValidationConfiguration.DelegatesPreference, serializeDelegatesSetting());
 				pref.flush();
 			} catch (BackingStoreException e) {
 				ValidationPlugin.getPlugin().handleException(e);
@@ -602,14 +609,56 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		IScopeContext projectContext = new ProjectScope(project);
 		final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
 		if (prefs != null) {
-			String storedConfig = prefs.get(USER_PREFERENCE, DefaultValue);
+			String storedConfig = prefs.get(ValidationConfiguration.UserPreference, DefaultValue);
 			deserialize(storedConfig);
-			String storedManualConfig = prefs.get(USER_MANUAL_PREFERENCE, DefaultValue);
+			String storedManualConfig = prefs.get(ValidationConfiguration.UserManualPreference, DefaultValue);
 			deserializeManual(storedManualConfig);
-			String storedBuildConfig = prefs.get(USER_BUILD_PREFERENCE, DefaultValue);
+			String storedBuildConfig = prefs.get(ValidationConfiguration.UserBuildPreference, DefaultValue);
 			deserializeBuild(storedBuildConfig);
-			String storedDelegatesConfiguration = prefs.get(DELEGATES_PREFERENCE, DefaultValue);
+			String storedDelegatesConfiguration = prefs.get(ValidationConfiguration.DelegatesPreference, DefaultValue);
 			deserializeDelegates(storedDelegatesConfiguration);
 		}
 	}
+  
+  /**
+   * Answer the validator id's that have been enabled for manual validation.
+   * @return null if they are all enabled
+   */
+  Set<String> getEnabledManualValidators(){
+	  return getIds(ValidationConfiguration.UserManualPreference, ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
+  }
+  
+  /**
+   * Answer the validator id's that have been enabled for build validation.
+   * @return null if they are all enabled
+   */
+  Set<String> getEnabledBuildlValidators(){
+	  return getIds(ValidationConfiguration.UserBuildPreference, ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
+  }
+  
+  /**
+   * A helper method to extract some validator id's from a preference store field.
+   * 
+   * @return null if all the validators are enabled.
+   */
+  private Set<String> getIds(String prefKey, String enabledPhrase){
+	IProject project = (IProject) getResource();
+	IScopeContext projectContext = new ProjectScope(project);
+	final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
+	if (prefs == null)return null;
+	
+	String storedConfig = prefs.get(prefKey, DefaultValue);
+	if (storedConfig == null || storedConfig.length() == 0 || storedConfig.equals(DefaultValue))return null;
+	int validationIndex = storedConfig.indexOf(enabledPhrase);
+
+	String ids = storedConfig.substring(validationIndex + enabledPhrase.length(),storedConfig.length());
+
+	StringTokenizer tokenizer = new StringTokenizer(ids, ConfigurationConstants.ELEMENT_SEPARATOR);
+	Set<String> set = new HashSet<String>(20);
+	while (tokenizer.hasMoreTokens())set.add(tokenizer.nextToken());
+	if (set.size() == 0)return null;
+	  
+	return set;
+	  
+  }
 }

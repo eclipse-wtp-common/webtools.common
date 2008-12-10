@@ -54,10 +54,16 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	protected Map<ValidatorMetaData, Boolean> 	manualValidators;
 	protected Map<ValidatorMetaData, Boolean> 	buildValidators;
 	
-	protected String USER_PREFERENCE 		= "USER_PREFERENCE"; //$NON-NLS-1$
-	protected String USER_MANUAL_PREFERENCE = "USER_MANUAL_PREFERENCE"; //$NON-NLS-1$
-	protected String USER_BUILD_PREFERENCE 	= "USER_BUILD_PREFERENCE"; //$NON-NLS-1$
-	protected String DELEGATES_PREFERENCE 	= "DELEGATES_PREFERENCE"; //$NON-NLS-1$
+	protected static final String UserPreference = "USER_PREFERENCE"; //$NON-NLS-1$
+	protected static final String UserBuildPreference = "USER_BUILD_PREFERENCE"; //$NON-NLS-1$
+	protected static final String UserManualPreference = "USER_MANUAL_PREFERENCE"; //$NON-NLS-1$
+	protected static final String DelegatesPreference = "DELEGATES_PREFERENCE"; //$NON-NLS-1$
+	
+	// GRK - I am keeping these "constants" in the off chance that they were used somewhere outside the framework
+	protected String USER_PREFERENCE 		= UserPreference;
+	protected String USER_MANUAL_PREFERENCE = UserManualPreference;
+	protected String USER_BUILD_PREFERENCE 	= UserBuildPreference;
+	protected String DELEGATES_PREFERENCE 	= DelegatesPreference;
 	
 	/**
 	 * The key is the target id, that is the id of the place holder validator. The value is the id 
@@ -123,6 +129,33 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Answer the validators
+	 * @return
+	 */
+	public static Set<String> getValidatorIdsManual(){
+		String config = null;
+		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
+		if (prefs != null)config = prefs.getString(UserManualPreference);
+		return getValidatorIds(config);
+	}
+	
+	public static Set<String> getValidatorIdsBuild(){
+		String config = null;
+		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
+		if (prefs != null)config = prefs.getString(UserBuildPreference);
+		return getValidatorIds(config);
+	}
+	
+	private static Set<String> getValidatorIds(String elements){
+		Set<String> set = new HashSet<String>(50);
+		if (elements != null){
+			StringTokenizer tokenizer = new StringTokenizer(elements, ConfigurationConstants.ELEMENT_SEPARATOR);
+			while (tokenizer.hasMoreTokens())set.add(tokenizer.nextToken());
+		}
+		return set;
 	}
 
 	public static IWorkspaceRoot getRoot() {
@@ -542,14 +575,14 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		if (pref != null) {
 			try {
 				OutputStream os = new ByteArrayOutputStream();
-				pref.setValue(USER_PREFERENCE, serialize());
-				pref.store(os, USER_PREFERENCE);
-				pref.setValue(USER_MANUAL_PREFERENCE, serializeManualSetting());
-				pref.store(os, USER_MANUAL_PREFERENCE);
-				pref.setValue(USER_BUILD_PREFERENCE, serializeBuildSetting());
-				pref.store(os, USER_BUILD_PREFERENCE);
-				pref.setValue(DELEGATES_PREFERENCE, serializeDelegatesSetting());
-				pref.store(os, DELEGATES_PREFERENCE);
+				pref.setValue(ValidationConfiguration.UserPreference, serialize());
+				pref.store(os, ValidationConfiguration.UserPreference);
+				pref.setValue(ValidationConfiguration.UserManualPreference, serializeManualSetting());
+				pref.store(os, ValidationConfiguration.UserManualPreference);
+				pref.setValue(ValidationConfiguration.UserBuildPreference, serializeBuildSetting());
+				pref.store(os, ValidationConfiguration.UserBuildPreference);
+				pref.setValue(ValidationConfiguration.DelegatesPreference, serializeDelegatesSetting());
+				pref.store(os, ValidationConfiguration.DelegatesPreference);
 			} catch (IOException e) {
 				ValidationPlugin.getPlugin().handleException(e);
 			}
@@ -696,13 +729,13 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * @throws InvocationTargetException
 	 */
 	private void deserializeAllPrefs(Preferences prefs) throws InvocationTargetException {
-		String storedConfig = prefs.getString(USER_PREFERENCE);
+		String storedConfig = prefs.getString(ValidationConfiguration.UserPreference);
 		deserialize(storedConfig);
-		String storedManualConfig = prefs.getString(USER_MANUAL_PREFERENCE);
+		String storedManualConfig = prefs.getString(ValidationConfiguration.UserManualPreference);
 		deserializeManual(storedManualConfig);
-		String storedBuildConfig = prefs.getString(USER_BUILD_PREFERENCE);
+		String storedBuildConfig = prefs.getString(ValidationConfiguration.UserBuildPreference);
 		deserializeBuild(storedBuildConfig);
-		String storedDelegatesConfiguration = prefs.getString(DELEGATES_PREFERENCE);
+		String storedDelegatesConfiguration = prefs.getString(ValidationConfiguration.DelegatesPreference);
 		deserializeDelegates(storedDelegatesConfiguration);
 	}
 	
@@ -720,13 +753,13 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	private void deserializeAllPrefs(PropertyChangeEvent event) throws InvocationTargetException {
 		String storedConfig = (String)event.getNewValue();
-		if( event.getProperty().equals(USER_PREFERENCE) ){
+		if( event.getProperty().equals(ValidationConfiguration.UserPreference) ){
 			deserialize(storedConfig);
-		}else if(event.getProperty().equals(USER_MANUAL_PREFERENCE)){
+		}else if(event.getProperty().equals(ValidationConfiguration.UserManualPreference)){
 			deserializeManual(storedConfig);
-		}else if(event.getProperty().equals(USER_BUILD_PREFERENCE)){
+		}else if(event.getProperty().equals(ValidationConfiguration.UserBuildPreference)){
 			deserializeBuild(storedConfig);
-		}else if(event.getProperty().equals(DELEGATES_PREFERENCE)){
+		}else if(event.getProperty().equals(ValidationConfiguration.DelegatesPreference)){
 			deserializeDelegates(storedConfig);
 		}
 	}

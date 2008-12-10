@@ -274,7 +274,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 *            This may be null, in which case only the global preferences
 	 *            are used.
 	 * @param mustUseProjectSettings
-	 *            Force the project properties to be used. There is a case where the used has toggled the
+	 *            Force the project properties to be used. There is a case where the user has toggled the
 	 *            Enable project specific settings checkbox in the dialog, but has not yet committed the
 	 *            changes. This allows that setting to be passed through.
 	 *            
@@ -291,6 +291,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				ValPrefManagerProject vpm = new ValPrefManagerProject(project);
 				vals = vpm.getValidators(extVals);
 				for (Validator v : vals)extVals.put(v.getId(), v);
+				
+				for (Validator v : getProjectPreferences(project).getValidators())extVals.put(v.getId(), v);
 			}		
 		}
 		catch (BackingStoreException e){
@@ -311,13 +313,10 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		if (project == null)return true;
 		if (!getGlobalPreferences().getOverride())return true;
 		ProjectPreferences pp = getProjectPreferences2(project);
-		if (pp == null){
-			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-			pp = new ProjectPreferences(project); 
-			vpm.loadProjectPreferencesShallow(pp);
-		}
+		if (pp != null)return !pp.getOverride();
 		
-		return !pp.getOverride();
+		ValPrefManagerProject vpm = new ValPrefManagerProject(project);
+		return !vpm.getOverride();
 	}
 	
 	/**
@@ -844,7 +843,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @param project The project that has been opened, created, or had it's description change.
 	 */
 	public void projectChanged(IProject project){
-		_projectManager.change(project);		
+		_projectManager.change(project);
+		_projectPreferences.remove(project);
 	}
 	
 	/**
@@ -855,6 +855,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 */
 	public void projectRemoved(IProject project){
 		_projectManager.remove(project);
+		_projectPreferences.remove(project);
 	}
 	
 	private void putValProperty(ValProperty vp, IResource resource, ValType valType) {
@@ -1058,6 +1059,10 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		/**
 		 * This is used to keep track of which validators are enabled for which projects. We want to ensure
 		 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace.
+		 * <p>
+		 * There are two reasons why a validator may not be enabled. It's current project level filters may not match
+		 * the project. Or the entire validator may have been turned off for the project. 
+		 * </p>
 		 * @author karasiuk
 		 *
 		 */
@@ -1067,8 +1072,10 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			 * <p>
 			 * I've gone back and forth on whether the key should
 			 * be a Validator or the validator id. I'm back to it being the id because I was
-			 * running into cases where because of copying I wasn't getting the matches that I expected. If I run into
+			 * running into cases where because of copying I wasn't getting the matches that I expected and I
+			 * want to ensure that I don't leak validators. If I run into
 			 * false matches, it is probably because reset isn't being called when it should be.
+			 * </p>
 			 */
 			private Map<String, Set<IProject>> _map = new HashMap<String, Set<IProject>>(50);
 			
@@ -1110,6 +1117,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				}
 			}
 			
+			/**
+			 * For each of the projects in the workspace, load which validators are currently prepared to validate things.
+			 */
 			private Map<String, Set<IProject>> load() {
 				Map<String, Set<IProject>> map = new HashMap<String, Set<IProject>>(50);
 				ValManager vm = ValManager.getDefault();
