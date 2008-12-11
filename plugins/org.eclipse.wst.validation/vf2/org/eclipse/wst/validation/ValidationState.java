@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -50,7 +50,8 @@ public class ValidationState {
 	 */
 	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
-	private Map<String, Object> _map = new ConcurrentHashMap<String, Object>(50);
+	// I can't use a ConncurrentHashMap because some of the clients store nulls.
+	private Map<String, Object> _map = new HashMap<String, Object>(50);
 	
 	public ValidationState(){
 	}
@@ -67,7 +68,7 @@ public class ValidationState {
 	 * 		validation framework doesn't do anything with this object except
 	 * 		pass it along during the validation process.
 	 */
-	public void put(String id, Object value){
+	public synchronized void put(String id, Object value){
 		_map.put(id, value);
 	}
 	
@@ -81,7 +82,7 @@ public class ValidationState {
 	 * @return any arbitrary data that the validator might find useful,
 	 * 	including null.
 	 */
-	public Object get(String id){
+	public synchronized Object get(String id){
 		return _map.get(id);
 	}
 
