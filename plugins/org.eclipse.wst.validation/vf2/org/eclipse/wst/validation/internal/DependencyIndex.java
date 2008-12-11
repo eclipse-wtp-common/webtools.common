@@ -140,7 +140,6 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 					IResource dependsOn = root.findMember(v);
 					if (dependsOn == null){
 						Tracing.log(NLS.bind(errorMessage, v));
-						continue;
 					}
 					int numDependents = in.readInt();
 					for (int j=0; j<numDependents; j++){
@@ -148,12 +147,11 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 						IResource dependent = root.findMember(v);
 						if (dependent == null){
 							Tracing.log(NLS.bind(errorMessage, v));
-							continue;
 						}
 						int numVal = in.readInt();
 						for (int k=0; k<numVal; k++){
 							String id = in.readUTF();
-							add(id, dependent, dependsOn);
+							if (dependent != null && dependsOn != null)add(id, dependent, dependsOn);
 						}
 					}					
 				}				
