@@ -208,6 +208,23 @@ public abstract class Validator implements Comparable<Validator> {
 	}
 	
 	/**
+	 * Should the validation framework first clear the markers that this
+	 * validator has placed on this resource? This method can be overridden by
+	 * validator implementors to provide a validator specific behavior.
+	 * 
+	 * @param event
+	 *            The validation event that triggered the validation.
+	 * @return true if the validation framework should first clear all the
+	 *         markers that this validator produced. This is the default
+	 *         behavior. Return false to leave the markers unchanged. It then
+	 *         becomes the responsibility of the validator to manage it's own
+	 *         markers for this resource, for this validation event.
+	 */
+	public boolean shouldClearMarkers(ValidationEvent event){
+		return true;
+	}
+	
+	/**
 	 * Answer true if this validator, based on it's filters, should validate
 	 * this resource. This method does not check to see if global validation or
 	 * project validation has been suspended or not.
@@ -1013,6 +1030,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	@Override
 	boolean isLoaded() {
 		return _validator != null;
+	}
+	
+	@Override
+	public boolean shouldClearMarkers(ValidationEvent event) {
+		return getValidator().shouldClearMarkers(event);
 	}
 		
 	/**
