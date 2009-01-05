@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -205,6 +206,23 @@ public abstract class Validator implements Comparable<Validator> {
 			_changeCountGlobal = v._changeCountGlobal;
 			_changeCountMessages = v._changeCountMessages;
 		}
+	}
+	
+	/**
+	 * Should the validation framework first clear the markers that this
+	 * validator has placed on this resource? This method can be overridden by
+	 * validator implementors to provide a validator specific behavior.
+	 * 
+	 * @param event
+	 *            The validation event that triggered the validation.
+	 * @return true if the validation framework should first clear all the
+	 *         markers that this validator produced. This is the default
+	 *         behavior. Return false to leave the markers unchanged. It then
+	 *         becomes the responsibility of the validator to manage it's own
+	 *         markers for this resource, for this validation event.
+	 */
+	public boolean shouldClearMarkers(ValidationEvent event){
+		return true;
 	}
 	
 	/**
@@ -816,6 +834,17 @@ public final static class V2 extends Validator implements IAdaptable {
 		
 	private Level _level;
 	
+	/**
+	 * Do we still need to invoke the validateStarting method for this validator, for the null project?
+	 * 
+	 * Because we do not want to activate a validator's plug-in too soon, we do not activate the validator
+	 * as a reaction to the global validation starting event. Instead we mark it pending, and wait until
+	 * we are sure that we have something to validate.
+	 * 
+	 * If this flag is true, it means that the validateStarting method still needs to be called for this validator.
+	 */
+	private AtomicBoolean _pendingValidationStarted = new AtomicBoolean();
+	
 	V2(IConfigurationElement configElement, IProject project){
 		assert configElement != null;
 		_validatorConfigElement = configElement;
@@ -900,6 +929,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		v._id = _id;
 		v._name = _name;
 		v._validatorGroupIds = _validatorGroupIds;
+		v._pendingValidationStarted = _pendingValidationStarted;
 				
 		return v;
 	}
@@ -1013,6 +1043,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	@Override
 	boolean isLoaded() {
 		return _validator != null;
+	}
+	
+	@Override
+	public boolean shouldClearMarkers(ValidationEvent event) {
+		return getValidator().shouldClearMarkers(event);
 	}
 		
 	/**
@@ -1194,12 +1229,22 @@ public final static class V2 extends Validator implements IAdaptable {
 	
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
-		getDelegatedValidator().validationStarting(project, state, monitor);
+		if (project == null)_pendingValidationStarted.set(true);
+		else {
+			AbstractValidator val = getDelegatedValidator();
+			if (_pendingValidationStarted.getAndSet(false)){
+				val.validationStarting(null, state, monitor);
+			}
+			val.validationStarting(project, state, monitor);
+		}
 	}
 	
 	@Override
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor) {
-		getDelegatedValidator().validationFinishing(project, state, monitor);
+		if (project == null){
+			if (!_pendingValidationStarted.getAndSet(false))getDelegatedValidator().validationFinishing(null, state, monitor);
+		}
+		else getDelegatedValidator().validationFinishing(project, state, monitor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1240,6 +1285,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		_groupsArray = v2._groupsArray;
 		_id = v2._id;
 		_name = v2._name;
+		_pendingValidationStarted = v2._pendingValidationStarted;
 		_validator = v2._validator;
 		_validatorConfigElement = v2._validatorConfigElement;
 		_validatorClassName = v2._validatorClassName;

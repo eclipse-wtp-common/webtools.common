@@ -189,6 +189,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		IResource resource = delta.getResource();
 		if (DisabledResourceManager.getDefault().isDisabled(resource)){
@@ -208,11 +209,12 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		if (index.isDependedOn(resource)){
 			MarkerManager mm = MarkerManager.getDefault();
 			for (DependentResource dr : index.get(resource)){
-				if (Friend.shouldValidate(dr.getValidator(), dr.getResource(), ValType.Build, new ContentTypeWrapper())){
-					mm.clearMarker(dr.getResource(), dr.getValidator()); 
+				Validator val = dr.getValidator();
+				if (Friend.shouldValidate(val, dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 					_request.getOperation().getState().put(ValidationState.TriggerResource, resource);
 					ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
-					ValManager.getDefault().validate(dr.getValidator(), _request.getOperation(), dr.getResource(), 
+					if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val); 
+					ValManager.getDefault().validate(val, _request.getOperation(), dr.getResource(), 
 						IResourceDelta.NO_CHANGE, _monitor, event);
 				}
 			}

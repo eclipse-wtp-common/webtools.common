@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -79,19 +80,46 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	
 	protected static final boolean DEFAULT_FORCE = true;
 	
-	class ValidationLauncherJob extends Job {
-	    private Job validationJob;
-	    public ValidationLauncherJob(Job validationJob) {
+	private static ValidationLauncherJob launcherJob = new ValidationLauncherJob();
+	
+	private static final int jobsPerProcessor = 3;
+	
+	private static class ValidationLauncherJob extends Job {
+	    private Queue<Job> validationJobs = new LinkedList<Job>();
+	    public ValidationLauncherJob() {
             super(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_VALIDATION_JOB_MSG));
-            
             setSystem(true);
             setRule(ResourcesPlugin.getWorkspace().getRoot());
-            this.validationJob= validationJob;
 	    }
 	    
 	    protected IStatus run(IProgressMonitor monitor) {
-    		validationJob.schedule();
+			int processors = Runtime.getRuntime().availableProcessors();
+			int totalInitialJobs = processors * jobsPerProcessor;
+    		synchronized (validationJobs) {
+    			// never schedule more than 3 validation jobs per processor at a time
+    			for (int i=0; i< totalInitialJobs; i++) {
+    				Job validationJob = validationJobs.poll();
+    				if (validationJob == null) break;
+    				addJobChangeAdapter(validationJob);
+    				validationJob.schedule();
+    			}
+    		}
             return Status.OK_STATUS;
+	    }
+	    
+	    private void addJobChangeAdapter(Job job) {
+	    	job.addJobChangeListener(new JobChangeAdapter(){
+	    		// when done, see if there is another validation job to schedule
+				public void done(IJobChangeEvent event) {
+					synchronized (validationJobs) {
+						Job validationJob = validationJobs.poll();
+						if (validationJob != null) {
+							addJobChangeAdapter(validationJob);
+							validationJob.schedule();
+						}
+					}
+				}
+			});
 	    }
 	    
 	    @Override
@@ -101,6 +129,16 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				return true;
 			}
 			return super.belongsTo(family);
+	    }
+	    
+	    public void addValidationJob(Job validationJob) {
+	    	synchronized (validationJobs) {
+	    		validationJobs.add(validationJob);
+	    		// schedule the job if we were empty
+	    		if (validationJobs.size() == 1) {
+	    			this.schedule();
+	    		}
+	    	}
 	    }
 	}
 	
@@ -1402,9 +1440,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 		);
 		validatorjob.setPriority(Job.DECORATE);
-
-		ValidationLauncherJob validationLauncherJob = new ValidationLauncherJob(validatorjob);
-		validationLauncherJob.schedule();
+		launcherJob.addValidationJob(validatorjob);
 	}
 		
 }
