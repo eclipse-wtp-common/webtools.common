@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2005, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,8 @@
  */
 package org.eclipse.wst.common.internal.emf;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ILock;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -44,13 +44,13 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	 * The delay is default to 5 minutes. This is the upward threshhold. The
 	 * lock will wait up to DELAY milliseconds to acquire the lock, and bail
 	 * if not. It does not mean that it will wait DELAY milliseconds always.
-	 * In general, the wait should be almost instanteous -- just as long as
+	 * In general, the wait should be almost instantaneous -- just as long as
 	 * document loading remains speedy.
 	 */
 	private static final long DELAY = 300000;
 
 	public ResourceSynchronizedIsLoadingAdapter() {
-		loadingLock = Platform.getJobManager().newLock();
+		loadingLock = Job.getJobManager().newLock();
 		if (loadingLock != null)
 			loadingLock.acquire();
 	}
