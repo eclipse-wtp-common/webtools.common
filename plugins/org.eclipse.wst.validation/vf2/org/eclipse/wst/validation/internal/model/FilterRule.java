@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -565,7 +565,6 @@ public abstract class FilterRule implements IAdaptable {
 		public FilterRule copy() {
 			FilePattern fp = new FilePattern();
 			fp.copy(this);
-			fp._compiledPattern = Pattern.compile(_compiledPattern.pattern(), _compiledPattern.flags());
 			return fp;
 		}
 
@@ -584,17 +583,26 @@ public abstract class FilterRule implements IAdaptable {
 		public Boolean matchesResource(IResource resource, ContentTypeWrapper wrapper) {
 			String name = PortableFileDelim + resource.getProjectRelativePath().toPortableString();
 			if (name == null)return Boolean.FALSE;
-			return _compiledPattern.matcher(name).matches();
+			Pattern pattern = getCompiledPattern();
+			if (pattern == null)return Boolean.FALSE;
+			return pattern.matcher(name).matches();
 		}
 
 		@Override
 		public void setData(IConfigurationElement rule) {
 			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.regex);
 			super.setData(rule);
-			int flags = 0;
-			if (isCaseSensitive())flags = Pattern.CASE_INSENSITIVE;
-			_compiledPattern = Pattern.compile(_pattern, flags);
 		}		
+		
+		private synchronized Pattern getCompiledPattern(){
+			if (_pattern == null)return null;
+			if (_compiledPattern == null){
+				int flags = 0;
+				if (isCaseSensitive())flags = Pattern.CASE_INSENSITIVE;
+				_compiledPattern = Pattern.compile(_pattern, flags);				
+			}
+			return _compiledPattern;
+		}
 	}
 
 	/** Answer a deep copy of yourself. */
