@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2005, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,7 +60,7 @@ import org.eclipse.wst.validation.ui.internal.ValUIMessages;
  * @author karasiuk
  *
  */
-public class FilterDialog extends Dialog {
+public final class FilterDialog extends Dialog {
 	
 	/** 
 	 * If we are doing project level filters this will point to the project. This is null if we are doing
@@ -86,7 +86,10 @@ public class FilterDialog extends Dialog {
 	private Button		_remove;
 	private ISelectionChangedListener	_nodeChangedListener;
 	
+	/** The currently selected group. If a rule is selected instead, then this will be null. */
 	private FilterGroup	_selectedGroup;
+	
+	/** The currently selected rule. If a group is selected instead, then this will be null. */
 	private FilterRule	_selectedRule;
 	
 	private Combo[]		_messageSev;
@@ -233,8 +236,9 @@ public class FilterDialog extends Dialog {
 				
 				FilterRule rule = nfr.getRule();
 				if (rule != null){
-					_selectedGroup.add(rule);
-					_v2.bumpChangeCountGroups();
+					FilterGroup newGroup = FilterGroup.addRule(_selectedGroup, rule);
+					_v2.replaceFilterGroup(_selectedGroup, newGroup);
+					_selectedGroup = newGroup;
 					refresh();
 				}
 			}
@@ -392,7 +396,8 @@ public class FilterDialog extends Dialog {
 	 */
 	private void addGroup(boolean exclude){
 		if (_v2 == null)return;
-		_v2.add(FilterGroup.create(exclude));
+		FilterRule[] rules = new FilterRule[0];
+		_v2.add(FilterGroup.create(exclude, rules));
 		refresh();
 		
 	}
@@ -407,13 +412,11 @@ public class FilterDialog extends Dialog {
 	 */
 	private void remove(){
 		if (_selectedRule != null){
-			FilterGroup[] groups = _v2.getGroups();
-			for (int i=0; i<groups.length; i++){
-				if (groups[i].remove(_selectedRule)){
-					_v2.bumpChangeCountGroups();
-					refresh();
-					return;
-				}
+			FilterGroup group = findGroup(_selectedRule);
+			if (group != null){
+				FilterGroup newGroup = FilterGroup.removeRule(group, _selectedRule);
+				_v2.replaceFilterGroup(group, newGroup);
+				refresh();
 			}
 		}
 		
@@ -424,6 +427,20 @@ public class FilterDialog extends Dialog {
 		}
 	}
 	
+	/**
+	 * Find the group in the current validator that has this rule.
+	 * @param rule The rule that we are searching for.
+	 * @return null if we can not find the group.
+	 */
+	private FilterGroup findGroup(FilterRule rule) {
+		for (FilterGroup group : _v2.getGroups()){
+			for (FilterRule fr : group.getRules()){
+				if (fr.equals(rule))return group;
+			}
+		}
+		return null;
+	}
+
 	private void updateButtons() {
 		if (_v2 != null){
 			_addGroupExclude.setEnabled(!ValidatorHelper.hasExcludeGroup(_v2));

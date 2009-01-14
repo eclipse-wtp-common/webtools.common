@@ -20,7 +20,7 @@ import org.eclipse.wst.validation.internal.model.FilterRule;
 public class AdapterFactory implements IAdapterFactory {
 
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IWorkbenchAdapter.class&& adaptableObject instanceof Validator.V2)return _valAdaptor;
+		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof Validator.V2)return _valAdaptor;
 		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof FilterGroup)return _fgAdaptor;
 		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof FilterRule)return _ruleAdaptor;
 

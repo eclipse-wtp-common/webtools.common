@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -125,10 +125,16 @@ public class ValidatorExtensionReader {
 		}
 		if (existing == null)v2.add(fg);
 		else {
-			for (FilterRule rule : fg.getRules()){
-				existing.add(rule);
-			}
-			v2.bumpChangeCountGroups();
+			List<FilterRule> rules = new LinkedList<FilterRule>();
+			for (FilterRule rule : existing.getRules())rules.add(rule);
+			
+			for (FilterRule rule : fg.getRules())rules.add(rule);
+			
+			FilterRule[] filterRules = new FilterRule[rules.size()];
+			rules.toArray(filterRules);
+			FilterGroup merged = FilterGroup.create(existing.isExclude(), filterRules);
+			
+			v2.replaceFilterGroup(existing, merged);
 		}
 	}
 	
@@ -205,7 +211,8 @@ public class ValidatorExtensionReader {
 	}
 
 	/**
-	 * Answer the extension point for adding exclusion filters.
+	 * Answer the extension point for adding exclusion filters. This is where another validator can
+	 * further restrict an existing validator.
 	 * 
 	 * @return null if there is a problem or no extensions.
 	 */
@@ -214,9 +221,6 @@ public class ValidatorExtensionReader {
 		return registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.excludeExtension);
 	}
 	
-	
-	
-
 	/**
 	 * Process a message element for the validator, by creating a MessageCategory for it.
 	 * 
@@ -257,28 +261,31 @@ public class ValidatorExtensionReader {
 	 *         element.
 	 */
 	private FilterGroup createFilterGroup(IConfigurationElement group){
-		FilterGroup fg = FilterGroup.create(group.getName());
-		if (fg == null)return null;			
+		String name = group.getName();
+		if (!FilterGroup.isKnownName(name))return null; 
+		
 		
 		IConfigurationElement[] rules = group.getChildren(ExtensionConstants.rules);
 		// there should only be one
+		List<FilterRule> list = new LinkedList<FilterRule>();
 		for (int i=0; i<rules.length; i++){
 			IConfigurationElement[] r = rules[i].getChildren();
 			for(int j=0; j<r.length; j++){
-				processRule(fg, r[j]);
+				list.add(processRule(r[j]));
 			}
 		}
-		return fg;
+		FilterRule[] filterRules = new FilterRule[list.size()];
+		list.toArray(filterRules);
+		return FilterGroup.create(name, filterRules);
 	}
 
 	/**
 	 * Process a rule in one of the rule groups.
 	 * 
-	 * @param fg the filter group that we are building up 
 	 * @param rule a rule in the group, like fileext.
 	 */
-	private void processRule(FilterGroup fg, IConfigurationElement rule) {
-		FilterRule fr = FilterRule.create(rule.getName());
+	private FilterRule processRule(IConfigurationElement rule) {
+		FilterRule fr = FilterRule.create(rule);
 		if (fr == null){
 			String contributor = ""; //$NON-NLS-1$
 			String name = ""; //$NON-NLS-1$
@@ -292,8 +299,7 @@ public class ValidatorExtensionReader {
 			throw new IllegalStateException(ValMessages.ErrFilterRule + " : " + //$NON-NLS-1$
 					contributor	 + " : " + name); //$NON-NLS-1$
 		}
-		fr.setData(rule);
-		fg.add(fr);
+		return fr;
 	}
 	
 	/**

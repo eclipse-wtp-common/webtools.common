@@ -25,82 +25,105 @@ import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
-import org.eclipse.wst.validation.internal.PrefConstants;
 import org.eclipse.wst.validation.internal.Serializer;
 import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * A rule that is used to filter out (or in) validation on a resource.
+ * The concrete classes are all immutable.
  * @author karasiuk
  *
  */
 public abstract class FilterRule implements IAdaptable {
 	
-	protected String _pattern;
+	protected final String _pattern;
 	
 	protected static final String PortableFileDelim = "/"; //$NON-NLS-1$
 	
 	/**
-	 * Create a rule based on an extension element.
-	 * @param name the extension element, it can be one of projectNature, facet, fileext, file or contentType
+	 * Create a rule based on a configuration element.
+	 * 
+	 * @param rule
+	 *            The configuration element, see the extension point for details.
 	 * @return null if there is a problem.
 	 */
-	public static FilterRule create(String name){
-		if (ExtensionConstants.Rule.fileext.equals(name))return new FileExt();
-		if (ExtensionConstants.Rule.projectNature.equals(name))return new ProjectNature();
-		if (ExtensionConstants.Rule.file.equals(name))return new File();
-		if (ExtensionConstants.Rule.contentType.equals(name))return new ContentType();
-		if (ExtensionConstants.Rule.facet.equals(name))return new Facet();
-		if (ExtensionConstants.Rule.pattern.equals(name))return new FilePattern();
+	public static FilterRule create(IConfigurationElement rule){
+		String name = rule.getName();
+		if (ExtensionConstants.Rule.fileext.equals(name))return new FileExt(rule);
+		if (ExtensionConstants.Rule.projectNature.equals(name))return new ProjectNature(rule);
+		if (ExtensionConstants.Rule.file.equals(name))return File.createFile(rule);
+		if (ExtensionConstants.Rule.contentType.equals(name))return ContentType.createContentType(rule);
+		if (ExtensionConstants.Rule.facet.equals(name))return new Facet(rule);
+		if (ExtensionConstants.Rule.pattern.equals(name))return FilePattern.createFilePattern(rule);
 		return null;
 	}
 	
-	public static FilterRule create(Deserializer des) {
+	static FilterRule create(Deserializer des) {
 		String type = des.getString();
-		FilterRule fr = create(type);
-		if (fr != null)fr.load(des);
-		return fr;
+		if (ExtensionConstants.Rule.fileext.equals(type)){
+			String pattern = des.getString();
+			boolean caseSensitive = des.getBoolean();
+			return new FileExt(pattern, caseSensitive);
+		}
+		
+		if (ExtensionConstants.Rule.projectNature.equals(type)){
+			String pattern = des.getString();
+			return new ProjectNature(pattern);
+		}
+		
+		if (ExtensionConstants.Rule.file.equals(type)){
+			String pattern = des.getString();
+			boolean caseSensitive = des.getBoolean();
+			int fileType = des.getInt();
+			return new File(pattern, caseSensitive, fileType);
+		}
+		
+		if (ExtensionConstants.Rule.contentType.equals(type)){
+			String pattern = des.getString();
+			boolean exactMatch = des.getBoolean();
+			return new ContentType(pattern, exactMatch);
+		}
+		
+		if (ExtensionConstants.Rule.facet.equals(type)){
+			String pattern = des.getString();
+			return new Facet(pattern, null);
+		}
+		
+		if (ExtensionConstants.Rule.pattern.equals(type)){
+			String pattern = des.getString();
+			boolean caseSensitive = des.getBoolean();
+			return new FilePattern(pattern, caseSensitive);
+		}
+		return null;
 	}
 
 	
 	public static FilterRule createFile(String pattern, boolean caseSensitive, int type){
-		File ext = new File();
-		ext.setData(pattern);
-		ext.setCaseSensitive(caseSensitive);
-		ext.setType(type);
-		return ext;
+		return new File(pattern, caseSensitive, type);
 	}
 	
 	public static FilterRule createFileExt(String pattern, boolean caseSensitive){
-		FileExt ext = new FileExt();
-		ext.setData(pattern);
-		ext.setCaseSensitive(caseSensitive);
+		FileExt ext = new FileExt(pattern, caseSensitive);
 		return ext;
 	}
 	
 	public static FilterRule createFacet(String facetId){
-		Facet facet = new Facet();
-		facet.setData(facetId);
-		return facet;
+		return new Facet(facetId, null);
 	}
 	
 	public static FilterRule createProject(String projectNature){
-		ProjectNature pn = new ProjectNature();
-		pn.setData(projectNature);
-		return pn;
+		return new ProjectNature(projectNature);
 	}
 	
 	public static FilterRule createContentType(String contentType, boolean exactMatch){
-		ContentType ct = new ContentType();
-		ct.setData(contentType);
-		ct.setExactMatch(exactMatch);
-		return ct;
+		return new ContentType(contentType, exactMatch);
 	}
-	
-	public abstract void setData(IConfigurationElement rule);
+		
+	protected FilterRule(String pattern){
+		_pattern = pattern;
+	}
 
 	/** 
 	 * Answer true if the rule matches the resource, false if it doesn't, and
@@ -121,11 +144,7 @@ public abstract class FilterRule implements IAdaptable {
 	public Boolean matchesProject(IProject project){
 		return null;
 	}
-	
-	public void setData(String data){
-		_pattern = data;
-	}
-	
+		
 	public String toString() {
 		return getDisplayableType() + ": " + _pattern; //$NON-NLS-1$
 	}
@@ -145,7 +164,7 @@ public abstract class FilterRule implements IAdaptable {
 	/** Answer a type that can be displayed to an end user. */
 	public abstract String getDisplayableType();
 	
-	public boolean asBoolean(String value, boolean aDefault){
+	public static boolean asBoolean(String value, boolean aDefault){
 		if (value == null)return aDefault;
 		if (value.equals(ExtensionConstants.True))return true;
 		if (value.equals(ExtensionConstants.False))return false;
@@ -158,72 +177,44 @@ public abstract class FilterRule implements IAdaptable {
 	}
 	
 	public static abstract class FilterRuleCaseSensitive extends FilterRule {
-		private boolean _caseSensitive;
-		
-		protected void copy(FilterRuleCaseSensitive rule){
-			_pattern = rule.getPattern();
-			_caseSensitive = rule.isCaseSensitive();
+				
+		public FilterRuleCaseSensitive(String pattern, boolean caseSensitive) {
+			super(pattern);
+			_caseSensitive = caseSensitive;
 		}
 		
+		private final boolean _caseSensitive;
+				
 		@Override
 		public int hashCodeForConfig() {
 			int h =  super.hashCodeForConfig();
 			if (_caseSensitive)h += 401;
 			return h;
 		}
-		
-		@Override
-		protected void load(Deserializer des) {
-			super.load(des);
-			_caseSensitive = des.getBoolean();
-		}
-		
+				
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
 			ser.put(_caseSensitive);
 		}
-				
-		@Override
-		public void load(Preferences rid) {
-			super.load(rid);
-			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
-		}
-		
-		@Override
-		public void save(Preferences rid) {
-			super.save(rid);
-			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
-		}
-
-		public void setData(IConfigurationElement rule) {
-			_caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);			
-		}
-
+						
 		public boolean isCaseSensitive() {
 			return _caseSensitive;
 		}
-		
-		public void setCaseSensitive(boolean caseSensitive) {
-			_caseSensitive = caseSensitive;
-		}
-		
+				
 	}
 	
-	public static class ProjectNature extends FilterRule {
-
+	public static final class ProjectNature extends FilterRule {
 		
-		public FilterRule copy() {
-			ProjectNature rule = new ProjectNature();
-			rule._pattern = _pattern;
-			return rule;
-		}
-		
-		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.id);
+		private ProjectNature(IConfigurationElement rule) {
+			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
 			
 		}
 		
+		public ProjectNature(String projectNature) {
+			super(projectNature);
+		}
+
 		public String getDisplayableType() {
 			return ValMessages.RuleProjectNature;
 		}
@@ -243,14 +234,17 @@ public abstract class FilterRule implements IAdaptable {
 		
 	}
 	
-	public static class FileExt extends FilterRuleCaseSensitive {
+	public static final class FileExt extends FilterRuleCaseSensitive {
 		
-		public FilterRule copy() {
-			FileExt rule = new FileExt();
-			rule.copy(this);
-			return rule;
+		private FileExt(IConfigurationElement rule){
+			super(rule.getAttribute(ExtensionConstants.RuleAttrib.ext), 
+				asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false));
 		}
-		
+				
+		private FileExt(String pattern, boolean caseSensitive) {
+			super(pattern, caseSensitive);
+		}
+
 		public String getType() {
 			return ExtensionConstants.Rule.fileext;
 		}
@@ -261,11 +255,6 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public String getName() {
 			return toString();
-		}
-
-		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.ext);
-			super.setData(rule);		
 		}
 		
 		public String toString() {
@@ -285,28 +274,45 @@ public abstract class FilterRule implements IAdaptable {
 	 * @author karasiuk
 	 *
 	 */
-	public static class File extends FilterRuleCaseSensitive {
+	public static final class File extends FilterRuleCaseSensitive {
 		
-		private String	_patternAsLowercase;
+		private final String	_patternAsLowercase;
 		
 		/** One of the FileTypeXX constants. */
-		private int		_type;
+		private final int		_type;
 		
 		public static final int FileTypeFile = 1;
 		public static final int FileTypeFolder = 2;
 		public static final int FileTypeFull = 3;
 		
-		public File(){			
+		private static File createFile(IConfigurationElement rule){
+			String pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.name);
+			if (pattern == null)throw new IllegalStateException(ValMessages.ErrPatternAttrib);
+			String type = rule.getAttribute(ExtensionConstants.RuleAttrib.fileType);
+			if (type == null)throw new IllegalStateException(ValMessages.ErrTypeReq);
+			
+			int myType = -1;
+			if (ExtensionConstants.FileType.file.equals(type))myType = FileTypeFile;
+			else if (ExtensionConstants.FileType.folder.equals(type)){
+				myType = FileTypeFolder;
+				if (!pattern.endsWith(PortableFileDelim))pattern += PortableFileDelim;
+			}
+			else if (ExtensionConstants.FileType.full.equals(type))myType = FileTypeFull;
+			else {
+				Object[] parms = {type, ExtensionConstants.FileType.file, ExtensionConstants.FileType.folder, 
+					ExtensionConstants.FileType.full};
+				throw new IllegalStateException(NLS.bind(ValMessages.ErrType, parms));
+			}
+			boolean caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);
+			return new File(pattern, caseSensitive, myType);
 		}
 		
-		public FilterRule copy() {
-			File rule = new File();
-			rule.copy(this);
-			rule._patternAsLowercase = _patternAsLowercase;
-			rule._type = _type;
-			return rule;
+		private  File(String pattern, boolean caseSensitive, int type){			
+			super(pattern, caseSensitive);
+			_type = type;
+			_patternAsLowercase = pattern == null ? null : pattern.toLowerCase();
 		}
-		
+				
 		public String getType() {
 			return ExtensionConstants.Rule.file;
 		}
@@ -317,31 +323,7 @@ public abstract class FilterRule implements IAdaptable {
 			return ValMessages.RuleFile;
 		}
 		
-		@Override
-		public void setData(String pattern) {
-			if (pattern != null)_patternAsLowercase = pattern.toLowerCase();
-			else _patternAsLowercase = null;
-			
-			_pattern = pattern;
-		}
-
 		public void setData(IConfigurationElement rule) {
-			super.setData(rule);
-			setData(rule.getAttribute(ExtensionConstants.RuleAttrib.name));
-			if (_pattern == null)throw new IllegalStateException(ValMessages.ErrPatternAttrib);
-			String type = rule.getAttribute(ExtensionConstants.RuleAttrib.fileType);
-			if (type == null)throw new IllegalStateException(ValMessages.ErrTypeReq);
-			if (ExtensionConstants.FileType.file.equals(type))_type = FileTypeFile;
-			else if (ExtensionConstants.FileType.folder.equals(type)){
-				_type = FileTypeFolder;
-				if (!_pattern.endsWith(PortableFileDelim))setData(_pattern + PortableFileDelim);
-			}
-			else if (ExtensionConstants.FileType.full.equals(type))_type = FileTypeFull;
-			else {
-				Object[] parms = {type, ExtensionConstants.FileType.file, ExtensionConstants.FileType.folder, 
-					ExtensionConstants.FileType.full};
-				throw new IllegalStateException(NLS.bind(ValMessages.ErrType, parms));
-			}
 		}
 		
 		public String toString() {
@@ -369,59 +351,36 @@ public abstract class FilterRule implements IAdaptable {
 			if (isCaseSensitive())return name.startsWith(_pattern);
 			return name.toLowerCase().startsWith(_patternAsLowercase);
 		}
-		
-		@Override
-		public void load(Preferences rid) {
-			super.load(rid);
-			_type = rid.getInt(PrefConstants.fileType, -1);
-		}
-		
-		@Override
-		public void save(Preferences rid) {
-			super.save(rid);
-			rid.putInt(PrefConstants.fileType, _type);
-		}
-		
-		@Override
-		protected void load(Deserializer des) {
-			super.load(des);
-			_type = des.getInt();
-		}
-		
+								
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
 			ser.put(_type);
 		}
-
-		public void setType(int type) {
-			_type = type;
-		}
 		
 	}
 	
-	public static class Facet extends FilterRule {
+	public static final class Facet extends FilterRule {
 		
-		private String _versionExpression;
+		private final String _versionExpression;
 		
-		public FilterRule copy() {
-			Facet rule = new Facet();
-			rule._pattern = _pattern;
-			rule._versionExpression = _versionExpression;
-			return rule;
+		private Facet(IConfigurationElement rule){
+			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
+			_versionExpression = rule.getAttribute(ExtensionConstants.RuleAttrib.version);
+			
 		}
-		
+				
+		public Facet(String facetId, String versionExpression) {
+			super(facetId);
+			_versionExpression = versionExpression;
+		}
+
 		public String getType() {
 			return ExtensionConstants.Rule.facet;
 		}
 		
 		public String getDisplayableType() {
 			return ValMessages.RuleFacet;
-		}
-
-		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.id);
-			_versionExpression = rule.getAttribute(ExtensionConstants.RuleAttrib.version);
 		}
 		
 		@Override
@@ -453,19 +412,26 @@ public abstract class FilterRule implements IAdaptable {
 		
 	}
 	
-	public static class ContentType extends FilterRule {
+	public static final class ContentType extends FilterRule {
 		
-		private transient IContentType 	_type;
-		private boolean			_exactMatch = true;
+		private final IContentType 	_type;
+		private final boolean		_exactMatch;
 		
-		public FilterRule copy() {
-			ContentType rule = new ContentType();
-			rule._pattern = _pattern;
-			rule._type = _type;
-			rule._exactMatch = _exactMatch;
-			return rule;
+		private ContentType(String pattern, boolean exactMatch){
+			super(pattern);
+			_type = Platform.getContentTypeManager().getContentType(pattern);
+			_exactMatch = exactMatch;
 		}
 		
+		private static ContentType createContentType(IConfigurationElement rule){
+			String pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.id);
+			boolean exactMatch = true;
+			String exact = rule.getAttribute(ExtensionConstants.RuleAttrib.exactMatch);
+			if (ExtensionConstants.False.equals(exact)) exactMatch = false;
+			
+			return new ContentType(pattern, exactMatch);
+		}
+				
 		public String getType() {
 			return ExtensionConstants.Rule.contentType;
 		}
@@ -480,25 +446,7 @@ public abstract class FilterRule implements IAdaptable {
 		public String getDisplayableType() {
 			return ValMessages.RuleContentType;
 		}
-		
-		@Override
-		public void load(Preferences rid) {
-			_exactMatch = rid.getBoolean(PrefConstants.exactMatch, true);
-			super.load(rid);
-		}
-		
-		@Override
-		public void save(Preferences rid) {
-			rid.putBoolean(PrefConstants.exactMatch, _exactMatch);
-			super.save(rid);
-		}
-		
-		@Override
-		protected void load(Deserializer des) {
-			super.load(des);
-			_exactMatch = des.getBoolean();
-		}
-		
+								
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
@@ -506,19 +454,8 @@ public abstract class FilterRule implements IAdaptable {
 		}
 
 		public void setData(IConfigurationElement rule) {
-			setData(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
-			boolean exactMatch = true;
-			String exact = rule.getAttribute(ExtensionConstants.RuleAttrib.exactMatch);
-			if (ExtensionConstants.False.equals(exact)) exactMatch = false;
-			setExactMatch(exactMatch);
 		}
-		
-		@Override
-		public void setData(String pattern) {
-			_pattern = pattern;
-			_type = Platform.getContentTypeManager().getContentType(pattern);
-		}
-		
+				
 		public Boolean matchesResource(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 			if (_type == null)return Boolean.FALSE;
 			if (resource instanceof IFile) {
@@ -535,19 +472,6 @@ public abstract class FilterRule implements IAdaptable {
 			}
 			return Boolean.FALSE;
 		}
-
-		/**
-		 * Should the content type match exactly, or should sub types be
-		 * included as well?
-		 * 
-		 * @param exactMatch
-		 *            If true this rule will only match this specific content
-		 *            type. If false this rule will match this content type and
-		 *            any of it's sub types.
-		 */
-		public void setExactMatch(boolean exactMatch) {
-			_exactMatch = exactMatch;
-		}
 		
 		@Override
 		public String toString() {
@@ -557,15 +481,22 @@ public abstract class FilterRule implements IAdaptable {
 		
 	}
 	
-	public static class FilePattern extends FilterRuleCaseSensitive {
+	public static final class FilePattern extends FilterRuleCaseSensitive {
 		
-		private transient Pattern _compiledPattern;
-
-		@Override
-		public FilterRule copy() {
-			FilePattern fp = new FilePattern();
-			fp.copy(this);
-			return fp;
+		private final Pattern _compiledPattern;
+		
+		private static FilePattern createFilePattern(IConfigurationElement rule){
+			String pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.regex);
+			boolean caseSensitive = asBoolean(rule.getAttribute(ExtensionConstants.RuleAttrib.caseSensitive), false);
+			return new FilePattern(pattern, caseSensitive);
+		}
+		
+		private FilePattern(String pattern, boolean caseSensitive){
+			super(pattern, caseSensitive);
+			int flags = 0;
+			if (caseSensitive)flags = Pattern.CASE_INSENSITIVE;
+			Pattern compiledPattern = Pattern.compile(pattern, flags);				
+			_compiledPattern = compiledPattern;
 		}
 
 		@Override
@@ -583,51 +514,10 @@ public abstract class FilterRule implements IAdaptable {
 		public Boolean matchesResource(IResource resource, ContentTypeWrapper wrapper) {
 			String name = PortableFileDelim + resource.getProjectRelativePath().toPortableString();
 			if (name == null)return Boolean.FALSE;
-			Pattern pattern = getCompiledPattern();
-			if (pattern == null)return Boolean.FALSE;
-			return pattern.matcher(name).matches();
-		}
-
-		@Override
-		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.regex);
-			super.setData(rule);
+			return _compiledPattern.matcher(name).matches();
 		}		
-		
-		private synchronized Pattern getCompiledPattern(){
-			if (_pattern == null)return null;
-			if (_compiledPattern == null){
-				int flags = 0;
-				if (isCaseSensitive())flags = Pattern.CASE_INSENSITIVE;
-				_compiledPattern = Pattern.compile(_pattern, flags);				
-			}
-			return _compiledPattern;
-		}
-	}
-
-	/** Answer a deep copy of yourself. */
-	public abstract FilterRule copy();
-
-	/**
-	 * Save yourself in the preference file.
-	 * @param rid
-	 */
-	public void save(Preferences rid) {
-		rid.put(PrefConstants.ruleType, getType());
-		rid.put(PrefConstants.pattern, getPattern());		
-	}
-
-	/**
-	 * @param rule
-	 */
-	public void load(Preferences rule) {
-		setData(rule.get(PrefConstants.pattern, null));		
 	}
 	
-	protected void load(Deserializer des){
-		setData(des.getString());
-	}
-
 	/**
 	 * Save your settings into the serializer.
 	 * @param ser

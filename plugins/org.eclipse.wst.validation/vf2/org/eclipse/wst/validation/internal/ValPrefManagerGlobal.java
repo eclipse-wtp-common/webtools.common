@@ -24,6 +24,7 @@ import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V2;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -181,16 +182,18 @@ public class ValPrefManagerGlobal {
 	 * 
 	 * @see ValManager#getGlobalPreferences()
 	 */
-	public void loadGlobalPreferences(GlobalPreferences gp) {
+	public GlobalPreferences loadGlobalPreferences() {
 		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
-		gp.setSaveAutomatically(pref.getBoolean(PrefConstants.saveAuto, GlobalPreferences.DefaultAutoSave));
-		gp.setDisableAllValidation(pref.getBoolean(PrefConstants.suspend, GlobalPreferences.DefaultSuspend));
-		gp.setConfirmDialog(pref.getBoolean(PrefConstants.confirmDialog, GlobalPreferences.DefaultConfirm));
-		gp.setOverride(pref.getBoolean(PrefConstants.override, GlobalPreferences.DefaultOverride));
-		gp.setVersion(pref.getInt(PrefConstants.frameworkVersion, GlobalPreferences.DefaultFrameworkVersion));
-		gp.setStateTimeStamp(pref.getLong(PrefConstants.stateTS, 0));
+		GlobalPreferencesValues gp = new GlobalPreferencesValues();
+		gp.saveAutomatically = pref.getBoolean(PrefConstants.saveAuto, GlobalPreferences.DefaultAutoSave);
+		gp.disableAllValidation = pref.getBoolean(PrefConstants.suspend, GlobalPreferences.DefaultSuspend);
+		gp.confirmDialog = pref.getBoolean(PrefConstants.confirmDialog, GlobalPreferences.DefaultConfirm);
+		gp.override = pref.getBoolean(PrefConstants.override, GlobalPreferences.DefaultOverride);
+		gp.version = pref.getInt(PrefConstants.frameworkVersion, GlobalPreferences.DefaultFrameworkVersion);
+		gp.stateTimeStamp = pref.getLong(PrefConstants.stateTS, 0);
 		
-		if (gp.getVersion() != frameworkVersion)migrate(gp.getVersion(), pref);
+		if (gp.version != frameworkVersion)migrate(gp.version, pref);
+		return new GlobalPreferences(gp);
 	}
 	
 	/**
@@ -354,13 +357,13 @@ public class ValPrefManagerGlobal {
 	/**
 	 * Save the global preferences and the validators.
 	 */
-	public synchronized void savePreferences(GlobalPreferences gp){
+	public synchronized void savePreferences(){
 		try {
+			GlobalPreferences gp = ValManager.getDefault().getGlobalPreferences();
 			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
-			boolean isConfigChange = gp.isConfigChange();
 			savePreferences(prefs, gp);
 			prefs.flush();
-			updateListeners(isConfigChange);
+			updateListeners(true);
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);

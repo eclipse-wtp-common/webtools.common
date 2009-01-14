@@ -922,8 +922,8 @@ public final static class V2 extends Validator implements IAdaptable {
 		FilterGroup[] groups = getGroups();
 		v._groupsArray = new FilterGroup[groups.length];
 		for (int i=0; i<groups.length; i++){
-			v._groupsArray[i] = groups[i].copy();
-			v._groups.add(v._groupsArray[i]);
+			v._groupsArray[i] = groups[i];
+			v._groups.add(groups[i]);
 		}
 
 		v._id = _id;
@@ -1290,6 +1290,11 @@ public final static class V2 extends Validator implements IAdaptable {
 		_validatorConfigElement = v2._validatorConfigElement;
 		_validatorClassName = v2._validatorClassName;
 		_validatorGroupIds = v2._validatorGroupIds;
+	}
+
+	public synchronized void replaceFilterGroup(FilterGroup existing, FilterGroup merged) {
+		remove(existing);
+		add(merged);
 	}
 
 }
