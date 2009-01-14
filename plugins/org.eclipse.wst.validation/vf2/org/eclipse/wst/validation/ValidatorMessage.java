@@ -267,7 +267,8 @@ public class ValidatorMessage {
 	 * table. The values must be an instance of one of the following classes:
 	 * <code>String</code>, <code>Integer</code>, or <code>Boolean</code>.
 	 * Attributes previously set on the marker but not included in the given map
-	 * are considered to be removals. Setting the given map to be
+	 * are considered to be removals. This includes the text of the message.
+	 * Setting the given map to be
 	 * <code>null</code> is equivalent to removing all marker attributes.
 	 * 
 	 * @param attributes
