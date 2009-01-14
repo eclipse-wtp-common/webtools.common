@@ -222,8 +222,8 @@ public abstract class FilterGroup implements IAdaptable {
 		FilterRule[] rules = getRules();
 		fg._rulesArray = new FilterRule[rules.length];
 		for (int i=0; i<rules.length; i++){
-			fg._rulesArray[i] = rules[i].copy();
-			fg._rules.add(fg._rulesArray[i]);
+			fg._rulesArray[i] = rules[i];
+			fg._rules.add(rules[i]);
 		}
 		return fg;
 	}

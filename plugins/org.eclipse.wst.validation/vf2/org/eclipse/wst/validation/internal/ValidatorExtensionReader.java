@@ -278,7 +278,7 @@ public class ValidatorExtensionReader {
 	 * @param rule a rule in the group, like fileext.
 	 */
 	private void processRule(FilterGroup fg, IConfigurationElement rule) {
-		FilterRule fr = FilterRule.create(rule.getName());
+		FilterRule fr = FilterRule.create(rule);
 		if (fr == null){
 			String contributor = ""; //$NON-NLS-1$
 			String name = ""; //$NON-NLS-1$
@@ -291,7 +291,6 @@ public class ValidatorExtensionReader {
 			}
 			throw new IllegalStateException(NLS.bind(ValMessages.ErrFilterRule, contributor, name));
 		}
-		fr.setData(rule);
 		fg.add(fr);
 	}
 	
