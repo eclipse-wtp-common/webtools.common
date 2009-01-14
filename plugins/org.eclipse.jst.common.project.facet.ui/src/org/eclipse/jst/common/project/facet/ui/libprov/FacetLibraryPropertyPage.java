@@ -48,7 +48,7 @@ import org.eclipse.wst.common.project.facet.ui.internal.SharedWorkingCopyManager
 /**
  * Base implementation that can be used by those wishing to create a property page for
  * a facet where the associated libraries can be changed after the facet has been installed.
- * Other content can be added to the page by overriding the createOtherSettingsControl
+ * Other content can be added to the page by overriding the createPageContents
  * method.
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
@@ -92,7 +92,7 @@ public abstract class FacetLibraryPropertyPage
     }
     
     @Override
-    public void createControl( final Composite parent )
+    public final void createControl( final Composite parent )
     {
         super.createControl( parent );
         getDefaultsButton().setText( Resources.revertButton );
@@ -143,6 +143,34 @@ public abstract class FacetLibraryPropertyPage
         return this.rootComposite;
     }
     
+    /**
+     * The method that creates the actual interesting page content. It can be overridden
+     * as necessary to expand the scope of information managed by the page. 
+     * 
+     * @param parent the parent composite
+     * @return the create control with all the page contents
+     */
+    
+    protected Control createPageContents( final Composite parent )
+    {
+        final IPropertyChangeListener delegateListener = new IPropertyChangeListener()
+        {
+            public void propertyChanged( final String property,
+                                         final Object oldValue,
+                                         final Object newValue )
+            {
+                updateValidation();
+            }
+        };
+
+        final IProjectFacetVersion fv = getProjectFacetVersion();
+        
+        this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
+        this.libraryInstallDelegate.addListener( delegateListener );
+        
+        return createInstallLibraryPanel( this.rootComposite, this.libraryInstallDelegate );
+    }
+    
     private void updateContents()
     {
         if( this.rootComposite.getDisplay().getThread() != Thread.currentThread() )
@@ -186,30 +214,8 @@ public abstract class FacetLibraryPropertyPage
         
             this.rootComposite.setLayout( gl( 1, 0, 0 ) );
             
-            final IPropertyChangeListener delegateListener = new IPropertyChangeListener()
-            {
-                public void propertyChanged( final String property,
-                                             final Object oldValue,
-                                             final Object newValue )
-                {
-                    updateValidation();
-                }
-            };
-            
-            this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
-            this.libraryInstallDelegate.addListener( delegateListener );
-            
-            final Control installLibraryPanel 
-                = createInstallLibraryPanel( this.rootComposite, this.libraryInstallDelegate );
-            
-            installLibraryPanel.setLayoutData( gdhfill() );
-            
-            final Control otherSettingsControl = createOtherSettingsControl( this.rootComposite );
-            
-            if( otherSettingsControl != null )
-            {
-                otherSettingsControl.setLayoutData( gdhfill() );
-            }
+            final Control contents = createPageContents( this.rootComposite );
+            contents.setLayoutData( gdhfill() );
         }
         
         if( errorMessage != null )
@@ -300,11 +306,6 @@ public abstract class FacetLibraryPropertyPage
             setMessage( message, ERROR );
             setValid( false );
         }
-    }
-
-    protected Control createOtherSettingsControl( final Composite parent )
-    {
-        return null;
     }
 
     @Override
