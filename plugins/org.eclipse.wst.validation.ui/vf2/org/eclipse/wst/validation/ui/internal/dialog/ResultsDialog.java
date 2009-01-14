@@ -29,6 +29,7 @@ import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidationResultSummary;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.ui.ValidationUIMessages;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
@@ -62,9 +63,12 @@ public class ResultsDialog extends IconAndMessageDialog {
 	@Override
 	protected void okPressed() {
 		if(_hideButton!=null) {
-			GlobalPreferences gp = ValManager.getDefault().getGlobalPreferences();
-			gp.setConfirmDialog(!_hideButton.getSelection());
-			ValPrefManagerGlobal.getDefault().savePreferences(gp);
+			ValManager vm = ValManager.getDefault();
+			GlobalPreferences gp = vm.getGlobalPreferences();
+			GlobalPreferencesValues gpv = gp.asValues();
+			gpv.confirmDialog = !_hideButton.getSelection();
+			int changes = vm.replace(gpv);
+			if (changes != 0)ValPrefManagerGlobal.getDefault().savePreferences();
 		}
 		super.okPressed();
 	}

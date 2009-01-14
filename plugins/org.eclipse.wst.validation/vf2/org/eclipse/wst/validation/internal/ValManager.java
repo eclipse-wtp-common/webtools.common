@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -50,6 +51,7 @@ import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
@@ -71,7 +73,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	private Map<IProject, ProjectPreferences> _projectPreferences = 
 		Collections.synchronizedMap(new HashMap<IProject, ProjectPreferences>(50));
 	
-	private GlobalPreferences _globalPreferences;
+	private AtomicReference<GlobalPreferences> _globalPreferences = new AtomicReference<GlobalPreferences>();
 		
 	/**
 	 * This number increases each time any of the validation configurations change. It is used to determine
@@ -486,33 +488,31 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * Answer the global validation preferences.
 	 */
 	public GlobalPreferences getGlobalPreferences(){
-		GlobalPreferences gp = _globalPreferences;
+		GlobalPreferences gp = _globalPreferences.get();
 		if (gp == null){
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-			gp = new GlobalPreferences();
-			vpm.loadGlobalPreferences(gp);
-			gp = setIfNotNullGlobalPreferences(gp);
+			gp = vpm.loadGlobalPreferences();
+			if (!_globalPreferences.compareAndSet(null, gp))gp = _globalPreferences.get();
 		}
-		return gp;		
+		return gp;
 	}
 	
 	/**
-	 * If the global preferences have not been set yet, set them now.
-	 * 
-	 * @param gp
-	 *            The global preferences to use if they have not already been
-	 *            set.
-	 * @return The current global preferences. If they were set before the
-	 *         original ones are returned. Otherwise the passed in ones are both
-	 *         saved and returned.
+	 * Update the global preferences, but only if something has actually changed.
+	 * @param values The global settings.
+	 * @return a bit mask of the changes between the old values and the new values. See the GlobalPreferences
+	 * constants for the bit mask values. If a zero is return there were no changes.
 	 */
-	private synchronized GlobalPreferences setIfNotNullGlobalPreferences(GlobalPreferences gp){
-		if (_globalPreferences == null){
-			_globalPreferences = gp;
+	public int replace(GlobalPreferencesValues values){
+		GlobalPreferences gp = new GlobalPreferences(values);
+		GlobalPreferences old = getGlobalPreferences();
+		int changes = old.compare(gp);
+		if (changes != 0){
+			_globalPreferences.set(gp);
 		}
-		return _globalPreferences;
+		return changes;
 	}
-	
+		
 	public ProjectPreferences getProjectPreferences(IProject project) {
 		ProjectPreferences pp = getProjectPreferences2(project);
 		if (pp != null)return pp;

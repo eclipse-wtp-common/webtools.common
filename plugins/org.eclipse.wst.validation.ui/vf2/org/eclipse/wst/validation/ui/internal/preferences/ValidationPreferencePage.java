@@ -64,6 +64,7 @@ import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 import org.eclipse.wst.validation.ui.internal.HelpContextIds;
@@ -179,7 +180,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		private Button _confirmButton;
 		private Label _listLabel;
 		private Table _validatorsTable;
-		private GlobalPreferences 	_globalPreferences = ValManager.getDefault().getGlobalPreferences();
+		private GlobalPreferencesValues 	_globalPreferences = ValManager.getDefault().getGlobalPreferences().asValues();
 		private GlobalConfiguration _globalConfig;
 		private Validator[] _validators;
 		
@@ -417,11 +418,11 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_confirmButton = new Button(validatorGroup, SWT.CHECK);
 			_confirmButton.setLayoutData(gd);
 			_confirmButton.setText(ValUIMessages.PrefPageConfirmDialog);
-			_confirmButton.setSelection(_globalPreferences.getConfirmDialog());
+			_confirmButton.setSelection(_globalPreferences.confirmDialog);
 			_confirmButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					// do not increment the _changeCount as this by itself should not trigger a build prompt
-					_globalPreferences.setConfirmDialog(_confirmButton.getSelection());
+					_globalPreferences.confirmDialog = _confirmButton.getSelection();
 					_confirmButton.setFocus();
 				}
 			});
@@ -434,11 +435,11 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_autoSave = new Button(validatorGroup, SWT.CHECK);
 			_autoSave.setLayoutData(gd);
 			_autoSave.setText(ValUIMessages.PrefPage_always_save);
-			_autoSave.setSelection(_globalPreferences.getSaveAutomatically());
+			_autoSave.setSelection(_globalPreferences.saveAutomatically);
 			_autoSave.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					// do not increment the _changeCount as this by itself should not trigger a build prompt
-					_globalPreferences.setSaveAutomatically(_autoSave.getSelection());
+					_globalPreferences.saveAutomatically = _autoSave.getSelection();
 					_autoSave.setFocus();
 				}
 			});
@@ -452,10 +453,9 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_suspend = new Button(validatorGroup, SWT.CHECK);
 			_suspend.setLayoutData(gd);
 			_suspend.setText(ValUIMessages.DISABLE_VALIDATION);
-			_suspend.setSelection(_globalPreferences.getDisableAllValidation());
+			_suspend.setSelection(_globalPreferences.disableAllValidation);
 			_suspend.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					_changeCount++;
 					_suspend.setFocus();
 					_validatorsTable.setEnabled(!_suspend.getSelection());
 					_enableAllButton.setEnabled(!_suspend.getSelection());
@@ -473,11 +473,10 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_override.setLayoutData(gd);
 			_override.setText(ValUIMessages.PREF_BUTTON_OVERRIDE);
 			_override.setEnabled(true);
-			_override.setSelection(_globalPreferences.getOverride());
+			_override.setSelection(_globalPreferences.override);
 			_override.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					_changeCount++;
-					_globalPreferences.setOverride(_override.getSelection());
+					_globalPreferences.override = _override.getSelection();
 					_override.setFocus();
 					
 				}
@@ -594,10 +593,10 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 
 		private void updateAllWidgets() throws InvocationTargetException {
-			_suspend.setSelection(_globalPreferences.getDisableAllValidation());
-			_autoSave.setSelection(_globalPreferences.getSaveAutomatically());
-			_confirmButton.setSelection(_globalPreferences.getConfirmDialog());
-			_override.setSelection(_globalPreferences.getOverride());
+			_suspend.setSelection(_globalPreferences.disableAllValidation);
+			_autoSave.setSelection(_globalPreferences.saveAutomatically);
+			_confirmButton.setSelection(_globalPreferences.confirmDialog);
+			_override.setSelection(_globalPreferences.override);
 			_validatorsTable.setEnabled(!_suspend.getSelection());
 			_enableAllButton.setEnabled(!_suspend.getSelection());
 			_disableAllButton.setEnabled(!_suspend.getSelection());
@@ -606,10 +605,14 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 
 		public boolean performOk() throws InvocationTargetException {
-			_globalPreferences.setDisableAllValidation(_suspend.getSelection());
-			_globalPreferences.setSaveAutomatically(_autoSave.getSelection());
+			_globalPreferences.disableAllValidation = _suspend.getSelection();
+			_globalPreferences.saveAutomatically = _autoSave.getSelection();
+			ValManager vm = ValManager.getDefault();
+			int changes = vm.replace(_globalPreferences);
+			if ((changes & GlobalPreferences.BuildChangeMask) != 0)_changeCount++;
+			
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-			vpm.savePreferences(_globalPreferences, _validators);
+			vpm.savePreferences(vm.getGlobalPreferences(), _validators);
 			saveV1Preferences();
 			
 			if (_changeCount > 0 && 
@@ -629,7 +632,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
 	//			gc.setCanProjectsOverride(overrideButton.getSelection());
 				
-				gc.setDisableAllValidation(_globalPreferences.getDisableAllValidation());
+				gc.setDisableAllValidation(_globalPreferences.disableAllValidation);
 				//pagePreferences.setEnabledValidators(getEnabledValidators());
 				
 				gc.setEnabledManualValidators(getEnabledManualValidators());				
