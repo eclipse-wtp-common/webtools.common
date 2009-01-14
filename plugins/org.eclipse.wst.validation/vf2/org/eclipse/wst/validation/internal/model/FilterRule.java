@@ -25,16 +25,14 @@ import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
-import org.eclipse.wst.validation.internal.PrefConstants;
 import org.eclipse.wst.validation.internal.Serializer;
 import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * A rule that is used to filter out (or in) validation on a resource.
- * The concrete class are all immutable.
+ * The concrete classes are all immutable.
  * @author karasiuk
  *
  */
@@ -45,8 +43,10 @@ public abstract class FilterRule implements IAdaptable {
 	protected static final String PortableFileDelim = "/"; //$NON-NLS-1$
 	
 	/**
-	 * Create a rule based on an extension element.
-	 * @param name the extension element, it can be one of projectNature, facet, fileext, file or contentType
+	 * Create a rule based on a configuration element.
+	 * 
+	 * @param rule
+	 *            The configuration element, see the extension point for details.
 	 * @return null if there is a problem.
 	 */
 	public static FilterRule create(IConfigurationElement rule){
@@ -60,7 +60,7 @@ public abstract class FilterRule implements IAdaptable {
 		return null;
 	}
 	
-	public static FilterRule create(Deserializer des) {
+	static FilterRule create(Deserializer des) {
 		String type = des.getString();
 		if (ExtensionConstants.Rule.fileext.equals(type)){
 			String pattern = des.getString();
@@ -198,12 +198,6 @@ public abstract class FilterRule implements IAdaptable {
 			ser.put(_caseSensitive);
 		}
 						
-		@Override
-		public void save(Preferences rid) {
-			super.save(rid);
-			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
-		}
-
 		public boolean isCaseSensitive() {
 			return _caseSensitive;
 		}
@@ -357,13 +351,7 @@ public abstract class FilterRule implements IAdaptable {
 			if (isCaseSensitive())return name.startsWith(_pattern);
 			return name.toLowerCase().startsWith(_patternAsLowercase);
 		}
-				
-		@Override
-		public void save(Preferences rid) {
-			super.save(rid);
-			rid.putInt(PrefConstants.fileType, _type);
-		}
-				
+								
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
@@ -458,13 +446,7 @@ public abstract class FilterRule implements IAdaptable {
 		public String getDisplayableType() {
 			return ValMessages.RuleContentType;
 		}
-				
-		@Override
-		public void save(Preferences rid) {
-			rid.putBoolean(PrefConstants.exactMatch, _exactMatch);
-			super.save(rid);
-		}
-				
+								
 		@Override
 		public void save(Serializer ser) {
 			super.save(ser);
@@ -534,15 +516,6 @@ public abstract class FilterRule implements IAdaptable {
 			if (name == null)return Boolean.FALSE;
 			return _compiledPattern.matcher(name).matches();
 		}		
-	}
-
-	/**
-	 * Save yourself in the preference file.
-	 * @param rid
-	 */
-	public void save(Preferences rid) {
-		rid.put(PrefConstants.ruleType, getType());
-		rid.put(PrefConstants.pattern, getPattern());		
 	}
 	
 	/**
