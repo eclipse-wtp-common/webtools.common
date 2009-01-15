@@ -26,5 +26,6 @@ org.eclipse.wst.validation/extraValDetail=
 # registered via the extension points. You do this by setting the following filter
 # to validator id of the one validator that you want registered.
 #
-# As an example, you could use this plug-in id: org.eclipse.jst.j2ee.ejb.EJBValidator
+# As an example, you could use this plug-in id for a v1 validator: org.eclipse.jst.j2ee.ejb.EJBValidator
+# and org.eclipse.wst.html.ui.HTMLValidator for a v2 validator
 org.eclipse.wst.validation/filter/allExcept=
