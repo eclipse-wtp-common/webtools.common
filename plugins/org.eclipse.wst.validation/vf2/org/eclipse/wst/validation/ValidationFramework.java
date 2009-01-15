@@ -49,6 +49,7 @@ import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
+import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
@@ -83,6 +84,17 @@ public final class ValidationFramework {
 	}
 	
 	private ValidationFramework(){}
+	
+	/**
+	 * Add the validation builder to the project, so that the project can support
+	 * build time validation. It is safe to call this method, if the builder was
+	 * previously added to the project. It will not be added more than once.
+	 * 
+	 * @param project The project that the builder is added to.
+	 */
+	public void addValidationBuilder(IProject project){
+		ValidatorManager.addProjectBuildValidationSupport(project);
+	}
 	
 	/**
 	 * Clear any validation markers that may have been set by this validator.
