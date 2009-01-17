@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -64,6 +67,31 @@ public final class ValidationRunner implements IWorkspaceRunnable {
 		if (atomic)ResourcesPlugin.getWorkspace().run(me, null, IWorkspace.AVOID_UPDATE, monitor);
 		else me.execute(monitor);
 		return me._valOperation;
+	}
+	
+	/**
+	 * Validate the selected file. This is a convenience method, it simply calls the more flexible 
+	 * validate with Map method. 
+	 * 
+	 * @param file
+	 *            The file to be validated.
+	 * 
+	 * @param valType
+	 *            The type of validation that has been requested.
+	 * 
+	 * @param monitor
+	 *            Progress monitor.
+	 * 
+	 * @param atomic
+	 *            Run as an atomic workspace operation?
+	 */
+	public static ValOperation validate(IFile file, ValType valType, IProgressMonitor monitor, boolean atomic) throws CoreException{
+	    final Map<IProject, Set<IResource>> map = new HashMap<IProject, Set<IResource>>(1);
+	      
+	    Set<IResource> set = new HashSet<IResource>(1);
+	    set.add(file);
+	    map.put(file.getProject(), set);
+	    return validate(map, valType, monitor, atomic);		
 	}
 	
 	private ValidationRunner(Map<IProject, Set<IResource>> projects, ValType valType){
