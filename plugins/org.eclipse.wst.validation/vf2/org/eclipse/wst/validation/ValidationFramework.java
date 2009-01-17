@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -515,7 +516,21 @@ public final class ValidationFramework {
 		ValOperation vo = ValidationRunner.validate(createMap(projects), type, monitor, true);
 		return vo.getResults();
 	}
-	
+
+	/**
+	 * Validate a specific file resource.
+	 * 
+	 * @param file
+	 *            The file to be validated.
+	 * @param monitor
+	 *            Progress monitor.
+	 * @return the result of validating the file.
+	 */
+  public ValidationResults validate(IFile file, IProgressMonitor monitor) throws CoreException{
+      ValOperation vo = ValidationRunner.validate(file, ValType.Manual, monitor, true);
+      return vo.getResults();
+    }
+	  
 	/**
 	 * Answer all the resources in the projects as a map.
 	 * @param projects
