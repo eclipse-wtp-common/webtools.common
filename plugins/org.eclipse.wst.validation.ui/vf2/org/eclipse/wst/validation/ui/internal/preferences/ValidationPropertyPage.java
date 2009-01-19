@@ -68,6 +68,7 @@ import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.ValManager.UseProjectPreferences;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -180,6 +181,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 		private Button			_addValidationBuilder;
 		private Table 			_validatorsTable;
 		private Validator[]		_validators;
+		
+		/** Number of things that may have changed. */
+		private int				_changes;
 
 		/**
 		 * This class is provided for the CheckboxTableViewer in the
@@ -263,7 +267,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefault().getValidatorsConfiguredForProject(getProject(), false));
+			_validators = copyValidators(ValManager.getDefault()
+				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustUse));
 
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
 
@@ -399,6 +404,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_suspend.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					_suspend.setFocus();
+					_changes++;
 					enableDisableWidgets();
 					_validatorList.refresh();
 				}
@@ -511,11 +517,14 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_override.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					_override.setFocus();
+					_changes++;
 					ValManager vm = ValManager.getDefault();
 					if (vm.getGlobalPreferences().getOverride()){
-						IProject project = getProject();
-						_validators = copyValidators(vm.getValidatorsConfiguredForProject(project, _override.getSelection()));
-						_validatorList.setInput(_validators);
+//						IProject project = getProject();
+//						UseProjectPreferences useProject = UseProjectPreferences.Normal;
+//						if (_override.getSelection())useProject = UseProjectPreferences.MustUse;
+//						_validators = copyValidators(vm.getValidatorsConfiguredForProject(project, useProject));
+//						_validatorList.setInput(_validators);
 						enableDisableWidgets();
 						_validatorList.refresh();
 					}
@@ -568,16 +577,17 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 			switch (columnToEdit) {
 			case 1:
-				val.setManualValidation(!val.isManualValidation());
+				if (val.setManualValidation(!val.isManualValidation()))_changes++;
 				break;
 			case 2:
-				val.setBuildValidation(!val.isBuildValidation());
+				if (val.setBuildValidation(!val.isBuildValidation()))_changes++;
 				break;
 			case 3:
 				Validator.V2 v2 = val.asV2Validator();
 				if (v2 != null){
 					FilterDialog fd = new FilterDialog(_shell, val, getProject());
 					if (Window.OK == fd.open()){
+						_changes++;
 						val.become(fd.getValidator());
 					}
 				}
@@ -610,7 +620,10 @@ public class ValidationPropertyPage extends PropertyPage  {
 			    dialog.create();
 			
 			    int result = dialog.open();
-		        if (result == Window.OK)gc.setDelegateUniqueName(vmd, dialog.getDelegateID());
+		        if (result == Window.OK){
+		        	_changes++;
+		        	gc.setDelegateUniqueName(vmd, dialog.getDelegateID());
+		        }
 			}
 			catch (InvocationTargetException e){
 				
@@ -645,19 +658,18 @@ public class ValidationPropertyPage extends PropertyPage  {
 		public boolean performOk() throws InvocationTargetException {
 			
 			addBuilder();
+			if (_changes == 0)return true;
 			// [213631] this warning should only be shown if the user actually tried to override
 			// the validators
 			if (!ValManager.getDefault().getGlobalPreferences().getOverride() && _override.getSelection()){
-				MessageDialog.openWarning(_shell, ValUIMessages.Validation, 
-					ValUIMessages.ProjectOverridesNotAllowed);
+				MessageDialog.openWarning(_shell, ValUIMessages.Validation, ValUIMessages.ProjectOverridesNotAllowed);
 				return false;
 			}
 			updateV1ProjectSettings();
-			getProjectPreferences().setSuspend(_suspend.getSelection());
-			getProjectPreferences().setOverride(_override.getSelection());
 			IProject project = getProject();
+			ProjectPreferences pp = new ProjectPreferences(project, _override.getSelection(), _suspend.getSelection(), _validators);
 			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-			vpm.savePreferences(getProjectPreferences(), _validators);
+			vpm.savePreferences(pp);
 			return true;
 		}
 		
@@ -685,7 +697,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefaultValidators(getProject()));
+			_validators = copyValidators(ValManager.getDefault()
+				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustNotUse));
+			_changes++;
 			updateWidgetsForDefaults();
 			getDefaultsButton().setFocus();
 			return true;
@@ -701,8 +715,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 		private void setAllValidators(boolean bool) {
 			for (TableItem item : _validatorsTable.getItems()) {
 				Validator val = (Validator) item.getData();
-				val.setManualValidation(bool);
-				val.setBuildValidation(bool);
+				if (val.setManualValidation(bool))_changes++;
+				if (val.setBuildValidation(bool))_changes++;
 			}
 		}
 

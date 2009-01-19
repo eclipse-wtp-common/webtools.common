@@ -36,10 +36,10 @@ import org.osgi.service.prefs.Preferences;
  * @author karasiuk
  *
  */
-public class ValPrefManagerProject {
+public final class ValPrefManagerProject {
 	
-	private IProject	_project;
-	private static List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
+	private final IProject	_project;
+	private final static List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
 	
 	/**
 	 * The validators that are in the project preference file, but have
@@ -83,8 +83,10 @@ public class ValPrefManagerProject {
 	}
 	
 	/**
-	 * Answer the v2 validators that have been overridden by the global
-	 * preferences.
+	 * Answer the v2 validators that have been overridden by the project
+	 * preferences. The validators will not have the preference store's
+	 * customizations applied yet. The purpose of this method, is to identify the subset of validators 
+	 * that may later be configured.
 	 * 
 	 * @param baseValidators
 	 *            V2 validators from the extension points, and customized by any
@@ -100,7 +102,9 @@ public class ValPrefManagerProject {
 	}
 	
 	/**
-	 * Load the validators from the preference store.
+	 * Load the validators from the preference store. The validators will not have the preference store's
+	 * customizations applied yet. The purpose of this method, is to identify the subset of validators 
+	 * that may later be configured.
 	 * 
 	 * @param baseValidators
 	 *            V2 validators from the extension points, and customized by any
@@ -126,23 +130,7 @@ public class ValPrefManagerProject {
 		}
 		return list;
 	}
-	
-	/**
-	 * Update the project preferences from the preference store.
-	 * @return false if the project does not have any specific preferences.
-	 * 
-	 * @deprecated
-	 */
-	public boolean loadProjectPreferencesShallow(ProjectPreferences pp) {
-		IEclipsePreferences pref = getPreferences();
 		
-		if (pref == null)return false;
-		
-		pp.setOverride(pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride));
-		pp.setSuspend(pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend));
-		return true;
-	}
-	
 	/**
 	 * Answer the setting of the getOverride field.
 	 */
@@ -163,20 +151,19 @@ public class ValPrefManagerProject {
 		return pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride);
 	}
 
-	private void migrateFromBeforeWTP30(ProjectPreferences pp, Map<String, Validator> baseValidators) {
+	private ProjectPreferences migrateFromBeforeWTP30(IProject project, Map<String, Validator> baseValidators) {
 		try {
-			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(pp.getProject());
-			pp.setSuspend(pc.isDisableAllValidation());
-			pp.setOverride(pc.getDoesProjectOverride());
+			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(project);
 			
 			List<Validator> list = migrateFromBeforeWTP30(baseValidators, pc);
 			Validator[] vals = new Validator[list.size()];
 			list.toArray(vals);
-			pp.setValidators(vals);			
+			return new ProjectPreferences(project, pc.getDoesProjectOverride(), pc.isDisableAllValidation(), vals);
 		}
 		catch (InvocationTargetException e){
 			// eat it, if it fails we just go with the defaults
 		}
+		return new ProjectPreferences(project);
 	}
 
 	private List<Validator> migrateFromBeforeWTP30(Map<String, Validator> baseValidators, ProjectConfiguration pc)
@@ -206,28 +193,27 @@ public class ValPrefManagerProject {
 	
 	
 	/**
-	 * Update the project preferences from the preference store.
-	 * @return false if the project does not have any specific preferences.
+	 * Answer the project preferences from the preference store.
+	 * @return null if the project does not have any specific preferences.
 	 */
-	public boolean loadProjectPreferences(ProjectPreferences pp, Map<String, Validator> baseValidators) 
+	public ProjectPreferences loadProjectPreferences(IProject project, Map<String, Validator> baseValidators) 
 		throws BackingStoreException {
 		
 		IEclipsePreferences pref = getPreferences();
 
-		if (pref == null)return false;
+		if (pref == null)return null;
 		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
 		if (version == 0){
 			// This means that we have a project that is before WTP 3.0
-			migrateFromBeforeWTP30(pp, baseValidators);
-			return true;
+			return migrateFromBeforeWTP30(project, baseValidators);
 		}
 		
 		if (version != ValPrefManagerGlobal.frameworkVersion)ValPrefManagerGlobal.migrate(version, pref);
 
-		pp.setOverride(pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride));
-		pp.setSuspend(pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend));
-		
-		if (!pref.nodeExists(PrefConstants.vals))return true;
+		if (!pref.nodeExists(PrefConstants.vals)){
+			return new ProjectPreferences(project, pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride),
+				pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend), new Validator[0]);
+		}
 		
 		Preferences vp = pref.node(PrefConstants.vals);
 		List<Validator> list = new LinkedList<Validator>();
@@ -242,8 +228,8 @@ public class ValPrefManagerProject {
 		}
 		Validator[] vals = new Validator[list.size()];
 		list.toArray(vals);
-		pp.setValidators(vals);
-		return true;
+		return new ProjectPreferences(project, pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride),
+			pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend), vals);
 	}
 
 	private IEclipsePreferences getPreferences() {
@@ -252,7 +238,8 @@ public class ValPrefManagerProject {
 		return pref;
 	}
 
-	public void savePreferences(ProjectPreferences projectPreferences, Validator[] validators) {
+	public void savePreferences(ProjectPreferences projectPreferences) {
+		Validator[] validators = projectPreferences.getValidators();
 		IEclipsePreferences pref = getPreferences();
 		pref.putBoolean(PrefConstants.suspend, projectPreferences.getSuspend());
 		pref.putBoolean(PrefConstants.override, projectPreferences.getOverride());

@@ -22,16 +22,9 @@ public final class ValidatorHelper {
 	
 	/**
 	 * Answer true if this validator already has an exclude filter.
-	 * 
-	 * @param v
-	 * @return
 	 */
 	public static boolean hasExcludeGroup(Validator.V2 v){
-		FilterGroup[] groups = v.getGroups();
-		for (int i=0; i<groups.length; i++){
-			if (groups[i].isExclude())return true;
-		}
-		return false;
-		
+		for (FilterGroup group : v.getGroups())if (group.isExclude())return true;
+		return false;		
 	}
 }

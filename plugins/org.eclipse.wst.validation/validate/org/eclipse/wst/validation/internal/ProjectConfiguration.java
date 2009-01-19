@@ -48,22 +48,21 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		// global list.
 		super(project, extractProjectValidators(convertToArray(ValidationRegistryReader.getReader().getAllValidators()), project));
 
-		// Can't put the call to load() and passivate() in the ValidationConfiguration constructor
-		// due
+		// Can't put the call to load() and passivate() in the ValidationConfiguration constructor due
 		// to the order of initialization.
-		//    1. First the ValidationConfiguration constructor is called, and that loads the stored
-		// values.
+		//    1. First the ValidationConfiguration constructor is called, and that loads the stored values.
 		//    2. Then this class's <init> method is called, and that initializes the "override" field
-		// to the default,
-		//       which may be different than the stored value.
+		//       to the default, which may be different than the stored value.
 	}
 
 	/**
 	 * This constructor is provided only for the Properties page, so that the page can store values
 	 * without persisting them (i.e., if the user presses Cancel then nothing needs to be done.)
+	 * 
+	 * @deprecated
 	 */
 	public ProjectConfiguration(ProjectConfiguration original) throws InvocationTargetException {
-		super();
+		super(original.getResource());
 		original.copyTo(this);
 	}
 

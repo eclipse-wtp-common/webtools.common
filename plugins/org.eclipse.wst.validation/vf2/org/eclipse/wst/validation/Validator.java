@@ -529,16 +529,20 @@ public abstract class Validator implements Comparable<Validator> {
 	 * Set whether this validator should be triggered as part of a manual validation.
 	 * 
 	 * @param manualValidation
+	 * @return true if the setting changed.
 	 */
-	public void setManualValidation(boolean manualValidation) {
-		setManualValidation2(manualValidation);
+	public boolean setManualValidation(boolean manualValidation) {
+		return setManualValidation2(manualValidation);
 	}
 	
-	protected final void setManualValidation2(boolean manualValidation) {
+	protected final boolean setManualValidation2(boolean manualValidation) {
+		boolean changed = false;
 		if (_manualValidation != manualValidation){
 			bumpChangeCountGlobal();
+			changed = true;
 			_manualValidation = manualValidation;
 		}
+		return changed;
 	}
 
 	/**
@@ -567,16 +571,20 @@ public abstract class Validator implements Comparable<Validator> {
 	 * Set whether this validator should be triggered by the build process.
 	 * 
 	 * @param buildValidation
+	 * @return true if the setting changed.
 	 */
-	public void setBuildValidation(boolean buildValidation) {
-		setBuildValidation2(buildValidation);
+	public boolean setBuildValidation(boolean buildValidation) {
+		return setBuildValidation2(buildValidation);
 	}
 	
-	protected final void setBuildValidation2(boolean buildValidation) {
+	protected final boolean setBuildValidation2(boolean buildValidation) {
+		boolean changed = false;
 		if (_buildValidation != buildValidation){
 			bumpChangeCountGlobal();
+			changed = true;
 			_buildValidation = buildValidation;
 		}
+		return changed;
 	}
 
 	/**
@@ -700,15 +708,17 @@ public static class V1 extends Validator {
 	}
 	
 	@Override
-	public void setBuildValidation(boolean buildValidation) {
-		super.setBuildValidation(buildValidation);
+	public boolean setBuildValidation(boolean buildValidation) {
+		boolean changed = super.setBuildValidation(buildValidation);
 		_vmd.setBuildValidation(buildValidation);
+		return changed;
 	}
 	
 	@Override
-	public void setManualValidation(boolean manualValidation) {
-		super.setManualValidation(manualValidation);
+	public boolean setManualValidation(boolean manualValidation) {
+		boolean changed = super.setManualValidation(manualValidation);
 		_vmd.setManualValidation(manualValidation);
+		return changed;
 	}
 
 	@Override
@@ -773,13 +783,13 @@ public static class V1 extends Validator {
 		}
 		
 		@Override
-		public void setManualValidation(boolean bool) {
-			setManualValidation2(bool);
+		public boolean setManualValidation(boolean bool) {
+			return setManualValidation2(bool);
 		}
 		
 		@Override
-		public void setBuildValidation(boolean bool) {
-			setBuildValidation2(bool);
+		public boolean setBuildValidation(boolean bool) {
+			return setBuildValidation2(bool);
 		}
 		
 		@Override

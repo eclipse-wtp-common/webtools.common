@@ -19,34 +19,41 @@ import org.eclipse.wst.validation.Validator;
  *
  */
 public final class ProjectPreferences {
+	/*
+	 * Before this object can be considered immutable, the mutable validators need to be addressed.
+	 */
 	/** false - Default setting for the "should all the validation be suspended" setting. */ 
 	public static final boolean DefaultSuspend = false;
 	
 	/** false - Default setting for letting projects override the global settings. */
 	public static final boolean DefaultOverride = false;
 	
-	private IProject	_project;
+	private final IProject	_project;
 
-	private boolean 	_override = DefaultOverride;
-	private boolean		_suspend = DefaultSuspend;
+	private final boolean 	_override;
+	private final boolean	_suspend;
 	
-	private Validator[]	_validators = new Validator[0];
+	private final Validator[]	_validators;
 	
 	public ProjectPreferences(IProject project){
 		_project = project;
+		_override = DefaultOverride;
+		_suspend  = DefaultSuspend;
+		_validators = new Validator[0];
+	}
+	
+	public ProjectPreferences(IProject project, boolean override, boolean suspend, Validator[] validtors){
+		_project = project;
+		_override = override;
+		_suspend = suspend;
+		_validators = validtors;
 	}
 	
 	public boolean getOverride() {
 		return _override;
 	}
-	public void setOverride(boolean override) {
-		_override = override;
-	}
 	public boolean getSuspend() {
 		return _suspend;
-	}
-	public void setSuspend(boolean suspend) {
-		_suspend = suspend;
 	}
 	
 	/**
@@ -55,10 +62,6 @@ public final class ProjectPreferences {
 	 */
 	public Validator[] getValidators() {
 		return _validators;
-	}
-	
-	public void setValidators(Validator[] validators){
-		_validators = validators;
 	}
 	
 	public IProject getProject() {

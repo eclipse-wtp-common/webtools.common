@@ -55,21 +55,12 @@ public final class GlobalPreferences {
 	
 	/** The incoming version of the framework. This is used to determine if a migration is needed.*/
 	private final int		_version;
-		
+			
 	/**
 	 * The only valid way to get the global preferences is through the ValManager.
 	 * 
 	 * @see org.eclipse.wst.validation.internal.ValManager#getGlobalPreferences()
 	 */
-	public GlobalPreferences(){
-		_confirmDialog = DefaultConfirm;
-		_disableAllValidation = DefaultSuspend;
-		_override  = DefaultOverride;
-		_saveAutomatically = DefaultAutoSave;
-		_stateTimeStamp = -1;
-		_version = -1;
-	}
-	
 	public GlobalPreferences(GlobalPreferencesValues gp) {
 		_confirmDialog = gp.confirmDialog;
 		_disableAllValidation = gp.disableAllValidation;

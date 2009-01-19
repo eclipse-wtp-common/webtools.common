@@ -49,6 +49,7 @@ import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.ValManager.UseProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
@@ -290,7 +291,7 @@ public final class ValidationFramework {
 	 * @throws ProjectUnavailableError
 	 */
 	public Validator[] getValidatorsConfiguredForProject(IProject project) throws ProjectUnavailableError {
-		Validator[] orig = ValManager.getDefault().getValidatorsConfiguredForProject(project, false);
+		Validator[] orig = ValManager.getDefault().getValidatorsConfiguredForProject(project, UseProjectPreferences.Normal);
 		Validator[] copy = new Validator[orig.length];
 		for (int i=0; i<orig.length; i++)copy[i] = orig[i].copy();
 		return copy;

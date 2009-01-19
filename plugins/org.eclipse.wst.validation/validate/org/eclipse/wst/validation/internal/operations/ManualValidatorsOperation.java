@@ -20,11 +20,13 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
  * ValidationOperation, because some initialization of the validator, and handling of error
  * conditions, is done in the operation. The initialization is separated because some of the
  * information needed to initialize the validator (i.e., the project) isn't known until runtime.
- * 
+ * <p>
  * Instances of this operation run every enabled validator (both full and incremental) on the
  * project.
- * 
+ * </p>
+ * <p>
  * This operation is not intended to be subclassed outside of the validation framework.
+ * </p>
  */
 public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 

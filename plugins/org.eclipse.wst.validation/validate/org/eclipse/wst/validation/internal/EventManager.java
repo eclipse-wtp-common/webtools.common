@@ -80,7 +80,7 @@ public class EventManager implements IResourceChangeListener {
 		signal(project, IProjectChangeListener.ProjectOpened);
 
 		// When the project is opened, check for any orphaned tasks or tasks whose owners need to be updated.
-		ConfigurationManager.getManager().opening(project);
+//		ConfigurationManager.getManager().opening(project);
 	}
 
 	public void closing(IProject project) {
@@ -163,7 +163,7 @@ public class EventManager implements IResourceChangeListener {
 					}
 				}
 
-				ConfigurationManager.getManager().deleting(project);
+//				ConfigurationManager.getManager().deleting(project);
 			}
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);

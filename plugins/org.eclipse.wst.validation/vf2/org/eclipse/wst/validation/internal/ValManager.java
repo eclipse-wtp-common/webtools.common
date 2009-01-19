@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -63,32 +65,32 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author karasiuk
  *
  */
-public class ValManager implements IValChangedListener, IFacetedProjectListener, IProjectChangeListener {
+public final class ValManager implements IValChangedListener, IFacetedProjectListener, IProjectChangeListener {
 	
 	/**
 	 * Projects may be allowed to override the global validation settings. If that is the case then those
 	 * project specific settings are saved here. If the key exists, but the value is null, then that
 	 * means that the project has been checked and it does not have any specific settings.
 	 */
-	private Map<IProject, ProjectPreferences> _projectPreferences = 
+	private final Map<IProject, ProjectPreferences> _projectPreferences = 
 		Collections.synchronizedMap(new HashMap<IProject, ProjectPreferences>(50));
 	
-	private AtomicReference<GlobalPreferences> _globalPreferences = new AtomicReference<GlobalPreferences>();
+	private final AtomicReference<GlobalPreferences> _globalPreferences = new AtomicReference<GlobalPreferences>();
 		
 	/**
 	 * This number increases each time any of the validation configurations change. It is used to determine
 	 * if information that we have cached in the ValProperty is stale or not. This starts off at zero, each time
 	 * the workbench is started.
 	 */
-	private AtomicInteger _configNumber = new AtomicInteger();
+	private final AtomicInteger _configNumber = new AtomicInteger();
 	
-	private ValidatorIdManager _idManager = new ValidatorIdManager();
-	
-	private ValidatorProjectManager _projectManager = new ValidatorProjectManager();
-	
+	private final ValidatorIdManager _idManager = new ValidatorIdManager();
+	private final ValidatorCache 	_cache = new ValidatorCache();
+		
 	private static final QualifiedName StatusBuild = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sb"); //$NON-NLS-1$
 	private static final QualifiedName StatusManual = new QualifiedName(ValidationPlugin.PLUGIN_ID, "sm"); //$NON-NLS-1$
-			
+
+	
 	public static ValManager getDefault(){
 		return Singleton.valManager;
 	}
@@ -163,10 +165,35 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 *            project settings are used. Normal validation would set this to true.
 	 *            The properties page would set this to false.
 	 *            
-	 * @deprecated Use {@link #getValidators(IProject)} instead            
+	 * @deprecated Use {@link #getValidatorsNotCached(IProject)} instead            
 	 */
-	public synchronized Validator[] getValidators(IProject project, boolean respectOverrideSettings) throws ProjectUnavailableError {
+	public Validator[] getValidators(IProject project, boolean respectOverrideSettings) throws ProjectUnavailableError {
 		return getValidators(project);
+	}
+	
+	/**
+	 * Answer a cached copy of the the validators for a given project. This is a front end method, 
+	 * for the getValidatorsNotCached() method.
+	 * <p>
+	 * Individual projects may override the global validation preference
+	 * settings. If the project has it's own settings, then those validators are
+	 * returned via this method.
+	 * </p>
+	 * <p>
+	 * The following approach is used. For version 1 validators, the validator
+	 * is only returned if it is defined to operate on this project type. This
+	 * is the way that the previous version of the framework did it. For version
+	 * 2 validators, they are all returned.
+	 * </p>
+	 * 
+	 * @param project
+	 *            This may be null, in which case the global preferences are
+	 *            returned.
+	 * 
+	 * @return The validators in name sorted order.
+	 */
+	public Validator[] getValidators(IProject project) throws ProjectUnavailableError {
+		return _cache.getValidatorsCached(project);
 	}
 	
 	/**
@@ -189,8 +216,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * 
 	 * @return The validators in name sorted order.
 	 */
-	public synchronized Validator[] getValidators(IProject project) throws ProjectUnavailableError {
-		Map<String,Validator> v2Vals = getV2Validators(project, false);
+	private Validator[] getValidatorsNotCached(IProject project) throws ProjectUnavailableError {
+		Map<String,Validator> v2Vals = getV2Validators(project, UseProjectPreferences.Normal);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
 		sorted.addAll(v2Vals.values());
 		
@@ -221,7 +248,6 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		sorted.toArray(vals);
 		return vals;
 	}
-	
 	/**
 	 * Validators can use project level settings (Project natures and facets) to
 	 * determine if they are applicable to the project or not.
@@ -235,22 +261,51 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @return The validators that are configured to run on this project based
 	 *         on the project level settings. These are the "live" validators, they are not copies.
 	 * @throws ProjectUnavailableError
+	 * 
+	 * @deprecated Use getValidatorsConfiguredForProject(IProject project, UseProjectPreferences useProject)
 	 */
 	public Validator[] getValidatorsConfiguredForProject(IProject project, boolean mustUseProjectSettings) throws ProjectUnavailableError {
-		Map<String,Validator> v2Vals = getV2Validators(project, mustUseProjectSettings);
+		UseProjectPreferences useProject = UseProjectPreferences.Normal;
+		return getValidatorsConfiguredForProject(project, useProject);
+	}
+	
+	/**
+	 * Validators can use project level settings (Project natures and facets) to
+	 * determine if they are applicable to the project or not.
+	 * 
+	 * @param project
+	 *            The project that the configuration is based on.
+	 * @param useProject
+	 *            Specifies how to use the project preferences. This can be used
+	 *            to force the project properties to be used. There is a case
+	 *            where the user has toggled the Enable project specific
+	 *            settings checkbox in the dialog, but has not yet committed the
+	 *            changes. This allows that setting to be passed through.
+	 * @return The validators that are configured to run on this project based
+	 *         on the project level settings. These are the "live" validators,
+	 *         they are not copies.
+	 * @throws ProjectUnavailableError
+	 */
+	public Validator[] getValidatorsConfiguredForProject(IProject project, UseProjectPreferences useProject) throws ProjectUnavailableError {
+		Map<String,Validator> v2Vals = getV2Validators(project, useProject);
 		TreeSet<Validator> sorted = new TreeSet<Validator>();
 		sorted.addAll(v2Vals.values());
 		
-		try {
-			ValidationConfiguration vc = ConfigurationManager.getManager().getProjectConfiguration(project);
-			ValidatorMetaData[] vmds = vc.getValidators();
-			for (ValidatorMetaData vmd : vmds) {
-				Validator v = Validator.create(vmd, vc, project);
-				sorted.add(v);
-			}
+		if (useProject == UseProjectPreferences.MustNotUse){
+			sorted.addAll(ExtensionValidators.instance().getV1Validators(project));
 		}
-		catch (InvocationTargetException e){
-			ValidationPlugin.getPlugin().handleException(e);
+		else {
+			try {
+				ValidationConfiguration vc = ConfigurationManager.getManager().getProjectConfiguration(project);
+				ValidatorMetaData[] vmds = vc.getValidators();
+				for (ValidatorMetaData vmd : vmds) {
+					Validator v = Validator.create(vmd, vc, project);
+					sorted.add(v);
+				}
+			}
+			catch (InvocationTargetException e){
+				ValidationPlugin.getPlugin().handleException(e);
+			}
 		}
 				
 		List<Validator> list = new LinkedList<Validator>();
@@ -276,27 +331,31 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @param project
 	 *            This may be null, in which case only the global preferences
 	 *            are used.
-	 * @param mustUseProjectSettings
-	 *            Force the project properties to be used. There is a case where the user has toggled the
-	 *            Enable project specific settings checkbox in the dialog, but has not yet committed the
+	 * @param useProject
+	 *            Specifies how to use the project preferences. This can be used
+	 *            to force the project properties to be used. There is a case
+	 *            where the user has toggled the Enable project specific
+	 *            settings checkbox in the dialog, but has not yet committed the
 	 *            changes. This allows that setting to be passed through.
 	 *            
 	 * @return
 	 */
-	private Map<String,Validator> getV2Validators(IProject project, boolean mustUseProjectSettings){
+	private Map<String,Validator> getV2Validators(IProject project, UseProjectPreferences useProject){
 		Map<String,Validator> extVals = ExtensionValidators.instance().getMapV2Copy();
 		try {
 			List<Validator> vals = ValPrefManagerGlobal.getDefault().getValidators();
 			for (Validator v : vals)extVals.put(v.getId(), v);
 			
-			if (mustUseProjectSettings || !mustUseGlobalValidators(project)){
-				//TODO should probably cache this vpm
-				ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-				vals = vpm.getValidators(extVals);
-				for (Validator v : vals)extVals.put(v.getId(), v);
-				
-				for (Validator v : getProjectPreferences(project).getValidators())extVals.put(v.getId(), v);
-			}		
+			if (useProject != UseProjectPreferences.MustNotUse){
+				if (useProject == UseProjectPreferences.MustUse || !mustUseGlobalValidators(project)){
+					//TODO should probably cache this vpm
+					ValPrefManagerProject vpm = new ValPrefManagerProject(project);
+					vals = vpm.getValidators(extVals);
+					for (Validator v : vals)extVals.put(v.getId(), v);
+					
+					for (Validator v : getProjectPreferences(project).getValidators())extVals.put(v.getId(), v);
+				}	
+			}
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
@@ -315,7 +374,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	public boolean mustUseGlobalValidators(IProject project){
 		if (project == null)return true;
 		if (!getGlobalPreferences().getOverride())return true;
-		ProjectPreferences pp = getProjectPreferences2(project);
+		ProjectPreferences pp = _projectPreferences.get(project);
 		if (pp != null)return !pp.getOverride();
 		
 		ValPrefManagerProject vpm = new ValPrefManagerProject(project);
@@ -389,7 +448,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		GlobalPreferences gp = getGlobalPreferences();
 		if (!gp.getOverride() || project == null)return gp.getDisableAllValidation();
 		
-		ProjectPreferences pp = getProjectPreferences2(project);
+		ProjectPreferences pp = _projectPreferences.get(project);
 		if (pp == null)return gp.getDisableAllValidation();
 		return pp.getSuspend();		
 	}
@@ -481,7 +540,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 */
 	private void configHasChanged(){
 		_configNumber.incrementAndGet();
-		_projectManager.reset();
+		ValidatorProjectManager.reset();
+		_cache.reset();
 	}
 		
 	/**
@@ -513,8 +573,12 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		return changes;
 	}
 		
+	/**
+	 * Answer the project preferences for this project.
+	 * @param project The project, this may be null.
+	 */
 	public ProjectPreferences getProjectPreferences(IProject project) {
-		ProjectPreferences pp = getProjectPreferences2(project);
+		ProjectPreferences pp = _projectPreferences.get(project);
 		if (pp != null)return pp;
 		
 		/* hopefully we rarely get this far */
@@ -532,34 +596,22 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		return pp;
 	}
 
-	
+	/**
+	 * 
+	 * @param project The project, this may be null.
+	 * @param baseValidators
+	 */
 	private ProjectPreferences getProjectPreferences(IProject project, Map<String, Validator> baseValidators) 
 		throws BackingStoreException {
-		if (_projectPreferences.containsKey(project)){
-			return _projectPreferences.get(project);
-		}
+		ProjectPreferences pp = _projectPreferences.get(project);
+		if (pp != null)return pp;
 		
 		ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-		ProjectPreferences pp = new ProjectPreferences(project); 
-		vpm.loadProjectPreferences(pp, baseValidators);
+		pp = vpm.loadProjectPreferences(project, baseValidators);
 		_projectPreferences.put(project, pp);
 		return pp;		
 	}
-	
-	/**
-	 * Answer the project specific validation preferences from the cache
-	 * 
-	 * @param project
-	 * 
-	 * @return null if the project is not in the cache.
-	 */
-	private ProjectPreferences getProjectPreferences2(IProject project){
-		if (_projectPreferences.containsKey(project)){
-			return _projectPreferences.get(project);
-		}
-		return null;
-	}
-	
+		
 	/**
 	 * Restore all the validation defaults, as defined by the individual validators via the
 	 * validation extension point.
@@ -684,7 +736,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
-			if (!_projectManager.shouldValidate(val, project, valType))continue;
+			if (!ValidatorProjectManager.get().shouldValidate(val, project, valType))continue;
 			if (operation.isSuspended(val, project))continue;
 			try {
 				visitor.visit(val, project, valType, operation, monitor);
@@ -736,7 +788,7 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		ContentTypeWrapper ctw = new ContentTypeWrapper();
 		for (Validator val : getValidators(project)){
 			if (!monitor.isCanceled()) {
-				if (!_projectManager.shouldValidate(val, project, valType))continue;
+				if (!ValidatorProjectManager.get().shouldValidate(val, project, valType))continue;
 				if (Friend.shouldValidate(val, resource, valType, ctw)){
 					vp.getConfigSet().set(_idManager.getIndex(val.getId()));
 					// we do the suspend check after figuring out if it needs to be validated, because we save
@@ -844,8 +896,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @param project The project that has been opened, created, or had it's description change.
 	 */
 	public void projectChanged(IProject project){
-		_projectManager.change(project);
+		ValidatorProjectManager.reset();
 		_projectPreferences.remove(project);
+		_cache.reset(project);
 	}
 	
 	/**
@@ -855,8 +908,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * 
 	 */
 	public void projectRemoved(IProject project){
-		_projectManager.remove(project);
+		ValidatorProjectManager.reset();
 		_projectPreferences.remove(project);
+		_cache.reset(project);
 	}
 	
 	private void putValProperty(ValProperty vp, IResource resource, ValType valType) {
@@ -914,11 +968,11 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		}
 	}
 	
-	private class HasValidatorVisitor implements IResourceVisitor {
+	private final class HasValidatorVisitor implements IResourceVisitor {
 		
-		private boolean 	_hasValidator;
-		private boolean		_isManual;
-		private boolean		_isBuild;
+		private boolean 			_hasValidator;
+		private final boolean		_isManual;
+		private final boolean		_isBuild;
 		
 		public HasValidatorVisitor(boolean isManual, boolean isBuild){
 			_isManual = isManual;
@@ -951,13 +1005,13 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	 * @author karasiuk
 	 *
 	 */
-	private static class ValidatorIdManager {
+	private final static class ValidatorIdManager {
 		
 		/**
 		 * Map validator id's to Integers. The integers correspond to bits in the ValProperty instances.
 		 */
-		private Map<String, Integer> _map = new HashMap<String, Integer>(100);
-		private Map<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
+		private final Map<String, Integer> _map = new HashMap<String, Integer>(100);
+		private final Map<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
 		
 		/** Next available bit. */
 		private int _next;
@@ -1011,14 +1065,59 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	/**
 	 * This is used to keep track of which validators are enabled with which projects. We want to ensure
 	 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace.
-	 * The ValManager keeps a single instance of this class. 
+	 * This is an immutable object.
 	 * @author karasiuk
 	 *
 	 */
-	private static class ValidatorProjectManager {
+	private final static class ValidatorProjectManager {
 		
-		private ValProjectMap _manual = new ValProjectMap(ValType.Manual);
-		private ValProjectMap _build = new ValProjectMap(ValType.Build);
+		private final static AtomicReference<ValidatorProjectManager> _me = new AtomicReference<ValidatorProjectManager>();
+		private final static AtomicInteger _counter = new AtomicInteger();
+		
+		private final ValProjectMap _manual = new ValProjectMap(ValType.Manual);
+		private final ValProjectMap _build = new ValProjectMap(ValType.Build);
+		private final int _sequence;
+		
+		/**
+		 * Answer the most current ValidatorProjectManager creating a new one if you have to.
+		 * @return
+		 */
+		public static ValidatorProjectManager get(){
+			ValidatorProjectManager vpm = _me.get();
+			if (vpm != null)return vpm;
+			
+			int next = _counter.incrementAndGet();
+			ValidatorProjectManager newVpm = null;
+			boolean looking = true;
+			while(looking){
+				vpm = _me.get();
+				if (vpm == null || next > vpm.getSequence()){
+					if (newVpm == null)newVpm = new ValidatorProjectManager(next);
+					if (_me.compareAndSet(vpm, newVpm))return newVpm;
+				}
+				else looking = false;
+			}
+			return vpm;
+		}
+		
+		/**
+		 * Reset the ValidatorProjectManager to null, which will force a newer one to be created the next time
+		 * that it is requested.
+		 */
+		public static void reset(){
+			int next = _counter.incrementAndGet();
+			ValidatorProjectManager vpm = _me.get();
+			if ( vpm == null)return;
+			if (next > vpm.getSequence())_me.compareAndSet(vpm, null);
+		}
+		
+		private ValidatorProjectManager(int sequence){
+			_sequence = sequence;
+		}
+		
+		int getSequence(){
+			return _sequence;
+		}
 		
 		/**
 		 * Should this validator attempt to validate any resources in this project?
@@ -1037,26 +1136,8 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			if (type == ValType.Manual)return _manual.shouldValidate(validator, project);
 				
 			return false;
-		}
-		
-		/**
-		 * A project has been created, opened, or had it's description changed.
-		 * @param project
-		 */
-		public void change(IProject project) {
-			reset();
-		}
-		
-		public void remove(IProject project) {
-			reset();
-		}
-		
-		
-		public void reset(){
-			_build.reset();
-			_manual.reset();
-		}
-		
+		}		
+				
 		/**
 		 * This is used to keep track of which validators are enabled for which projects. We want to ensure
 		 * that we don't activate a validator (and it's plug-in) if it has nothing to validate in the workspace.
@@ -1067,9 +1148,9 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 		 * @author karasiuk
 		 *
 		 */
-		private static class ValProjectMap {
+		private final static class ValProjectMap {
 			/**
-			 * Map a validator to the projects that it validates. 
+			 * Map a validator to the projects that it validates. This is an immutable object.
 			 * <p>
 			 * I've gone back and forth on whether the key should
 			 * be a Validator or the validator id. I'm back to it being the id because I was
@@ -1078,15 +1159,13 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			 * false matches, it is probably because reset isn't being called when it should be.
 			 * </p>
 			 */
-			private Map<String, Set<IProject>> _map = new HashMap<String, Set<IProject>>(50);
+			private final Map<String, Set<IProject>> _map;
 			
 			private final ValType _type;
-			
-			/** Have we been initialized yet? */
-			private boolean	_initialized;
-			
+						
 			public ValProjectMap(ValType type){
 				_type = type;
+				_map = load();
 			}
 			
 			/**
@@ -1102,20 +1181,11 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 			 * @return true if the validator should attempt to validate.
 			 */
 			public boolean shouldValidate(Validator validator, IProject project){
-				if (!_initialized){
-					Map<String, Set<IProject>> map = load();
-					synchronized (this) {
-						_map = map;
-						_initialized = true;
-					}
-				}
-				synchronized(this){
-					String vid = validator.getId();
-					Set<IProject> projects = _map.get(vid);
-					if (projects == null)return false;
-					if (project == null)return projects.size() > 0;
-					return projects.contains(project);
-				}
+				String vid = validator.getId();
+				Set<IProject> projects = _map.get(vid);
+				if (projects == null)return false;
+				if (project == null)return projects.size() > 0;
+				return projects.contains(project);
 			}
 			
 			/**
@@ -1143,10 +1213,6 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 				return map;
 			}
 			
-			public synchronized void reset(){
-				_initialized = false;
-				_map.clear();
-			}
 		}
 		
 	}
@@ -1179,5 +1245,41 @@ public class ValManager implements IValChangedListener, IFacetedProjectListener,
 	private static class Singleton {
 		static ValManager valManager = new ValManager();
 	}
+	
+	private final class ValidatorCache {
+		private final ConcurrentMap<IProject, Validator[]> _cache = new ConcurrentHashMap<IProject, Validator[]>(50);
+		private final AtomicReference<Validator[]> _global = new AtomicReference<Validator[]>();
+		
+		public Validator[] getValidatorsCached(IProject project) throws ProjectUnavailableError {
+			Validator[] vals = null;
+			if (project == null){
+				vals = _global.get();
+				if (vals == null){				
+					vals = getValidatorsNotCached(project);
+					_global.set(vals);
+				}
+			}
+			else {
+				vals = _cache.get(project);
+				if (vals == null){
+					vals = getValidatorsNotCached(project);
+					_cache.put(project, vals);
+				}
+			}
+			return vals;
+		}
+		
+		public void reset(){
+			_cache.clear();
+			_global.set(null);
+		}
+		
+		public void reset(IProject project){
+			if (project != null)_cache.remove(project);
+		}
+
+	}
+	
+	public enum UseProjectPreferences {Normal, MustUse, MustNotUse}
 
 }

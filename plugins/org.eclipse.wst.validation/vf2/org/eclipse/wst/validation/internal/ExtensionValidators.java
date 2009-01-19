@@ -12,6 +12,8 @@ package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
@@ -23,29 +25,26 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * @author karasiuk
  *
  */
-public class ExtensionValidators {
+public final class ExtensionValidators {
 	private static ExtensionValidators _me;
 	
 	/** All the registered validators. The key is the validator id and the value is the validator. */
-	private Map<String, Validator> _map;
+	private final Map<String, Validator> _map;
 	
 	public synchronized static ExtensionValidators instance(){
 		if (_me == null){
 			_me = new ExtensionValidators();
-			_me.load();
 		}
 		return _me;
 	}
 
-	private ExtensionValidators(){};
-	
-	private void load() {
+	private ExtensionValidators(){
 		_map = new HashMap<String, Validator>(100);
 		for (Validator v : ValidatorExtensionReader.getDefault().process()){
 			_map.put(v.getId(), v);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Answer all the v2 validators that have been defined by the extension point. This is the real
 	 * map (not a copy).
@@ -81,19 +80,31 @@ public class ExtensionValidators {
 		Map<String, Validator> map = new HashMap<String, Validator>();
 		map.putAll(_map);
 		
+		for (Validator v : getV1Validators(project))map.put(v.getId(), v);
+		
+		return map;
+	}
+	
+	/**
+	 * Answer the v1 validators that have been defined just on this project.
+	 * @param project
+	 * @return
+	 */
+	List<Validator> getV1Validators(IProject project){
+		List<Validator> list = new LinkedList<Validator>();
 		try {
 			ProjectConfiguration pc = new ProjectConfiguration(project);
 			pc.resetToDefault();
 			for (ValidatorMetaData vmd : pc.getValidators()){
 				Validator v = Validator.create(vmd, pc, project);
-				map.put(v.getId(), v);
+				list.add(v);
 			}
 		}
 		catch (InvocationTargetException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 
-		return map;
+		return list;
 	}
 
 }
