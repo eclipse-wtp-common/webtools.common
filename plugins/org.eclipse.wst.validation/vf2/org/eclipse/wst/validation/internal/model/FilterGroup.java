@@ -92,14 +92,16 @@ public abstract class FilterGroup implements IAdaptable {
 	private FilterGroup(FilterRule[] rules){
 		_rules = rules;
 	}
-	
+		
 	/**
-	 * The rules in the group. Callers of this method must not change this array in any way.
+	 * The rules in the group.
 	 */
-	public FilterRule[] getRules(){
-		return _rules;
+	public final FilterRule[] getRules(){
+		FilterRule[] rules = new FilterRule[_rules.length];
+		System.arraycopy(_rules, 0, rules, 0, _rules.length);
+		return rules;
 	}
-	
+		
 	/**
 	 * Answer the internal type of group, e.g. "include" or "exclude".
 	 */
@@ -171,11 +173,10 @@ public abstract class FilterGroup implements IAdaptable {
 	 * only the project level checks are performed.
 	 */
 	public boolean shouldValidate(IProject project, IResource resource, ContentTypeWrapper contentTypeWrapper) {
-		FilterRule[] rules = getRules();
 		boolean exclude = isExclude();
 		boolean include = isInclude();
 		int count = 0;
-		for (FilterRule rule : rules){
+		for (FilterRule rule : _rules){
 			if (resource != null){
 				Boolean match = rule.matchesResource(resource, contentTypeWrapper);
 				if (match != null)count++;
@@ -224,7 +225,7 @@ public abstract class FilterGroup implements IAdaptable {
 	 */
 	public static FilterGroup addRule(FilterGroup baseGroup, FilterRule rule) {
 		List<FilterRule> list = new LinkedList<FilterRule>();
-		for (FilterRule r : baseGroup.getRules())list.add(r);
+		for (FilterRule r : baseGroup._rules)list.add(r);
 		list.add(rule);
 		
 		FilterRule[] rules = new FilterRule[list.size()];
@@ -240,7 +241,7 @@ public abstract class FilterGroup implements IAdaptable {
 	 */
 	public static FilterGroup removeRule(FilterGroup baseGroup,	FilterRule rule) {
 		List<FilterRule> list = new LinkedList<FilterRule>();
-		for (FilterRule r : baseGroup.getRules()){
+		for (FilterRule r : baseGroup._rules){
 			if (!r.equals(rule))list.add(r);
 		}
 		

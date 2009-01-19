@@ -121,15 +121,10 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			prjp.setDoesProjectOverride(true);
-			ValidatorMetaData vmd = ValidationRegistryReader.getReader()
-					.getValidatorMetaData(validatorId);
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validatorId);
 			
-			if(manualValidation){
-				prjp.disableSingleManualValidator(vmd);
-			} 
-			if (buildValidation){
-				prjp.disableSingleBuildValidator(vmd);
-			}
+			if(manualValidation)prjp.disableSingleManualValidator(vmd);
+			if (buildValidation)prjp.disableSingleBuildValidator(vmd);
 			prjp.store();
 			
 		} catch (InvocationTargetException e) {

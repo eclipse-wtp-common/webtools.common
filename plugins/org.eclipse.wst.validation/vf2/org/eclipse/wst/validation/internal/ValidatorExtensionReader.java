@@ -42,17 +42,16 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValidatorExtensionReader {
 	
-	private static ValidatorExtensionReader _me;
+	private static ValidatorExtensionReader _me = new ValidatorExtensionReader();
 	
-	public synchronized static ValidatorExtensionReader getDefault(){
-		if (_me == null)_me = new ValidatorExtensionReader();
+	public  static ValidatorExtensionReader getDefault(){
 		return _me;
 	}
 	
 	private ValidatorExtensionReader(){}
 	
 	/**
-	 * Read the extensions.
+	 * Process the v2 extensions, returning all the v2 validators.
 	 */
 	Collection<Validator> process() {
 		Map<String,Validator> map = new HashMap<String, Validator>(100);
@@ -201,7 +200,7 @@ public class ValidatorExtensionReader {
 	}
 
 	/**
-	 * Answer the extension point for the validators.
+	 * Answer the extension point for the v2 validators.
 	 * 
 	 * @return null if there is a problem or no extensions.
 	 */

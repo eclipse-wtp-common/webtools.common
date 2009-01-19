@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -47,10 +48,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 			if (!marker.getType().equals(VALIDATION_MARKER))return null;
 
 			Object attrib = marker.getAttribute(VALIDATION_MARKER_OWNER);
-			if (attrib == null) {
-				// owner not set
-				return null;
-			}
+			if (attrib == null)return null;
 			return attrib.toString();
 		} catch (CoreException e) {
 			ValidationPlugin.getPlugin().handleException(e);
@@ -93,7 +91,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 * This method returns the global preferences for the workspace.
 	 */
 	public GlobalConfiguration getGlobalConfiguration() throws InvocationTargetException {
-		IWorkspaceRoot root = ValidationConfiguration.getRoot();
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		GlobalConfiguration gp = null;
 		try {
 			gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
@@ -170,8 +168,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 		try {
 			if (isMigrated(project)) {
 				ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-				if(!prjp.useGlobalPreference())
-					prjp.store();
+				if(!prjp.useGlobalPreference())prjp.store();
 			}
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
@@ -180,9 +177,17 @@ public final class ConfigurationManager implements ConfigurationConstants {
 		}
 	}
 
+	/**
+	 * @deprecated this method does not do anything.
+	 * @param project
+	 */
 	public void deleting(IProject project) {
 	}
 
+	/**
+	 * @deprecated this method does not do anything.
+	 * @param project
+	 */
 	public void opening(IProject project) {
 		// Do not load or migrate the project in this method; let the getConfiguration(IProject)
 		// method do that. Do not load the project before it's necessary.
@@ -193,9 +198,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 */
 	public boolean isGlobalMigrated() throws InvocationTargetException {
 		IWorkspaceRoot root = ValidationConfiguration.getRoot();
-		if (root == null) {
-			return false;
-		}
+		if (root == null)return false;
 
 		try {
 			GlobalConfiguration gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
@@ -220,20 +223,17 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 * Return true if the given project has the current level of metadata, false otherwise.
 	 */
 	public boolean isMigrated(IProject project) throws InvocationTargetException {
-		if (project == null) {
-			return false;
-		}
+		if (project == null)return false;
+		
 		try {
 			if (project.isAccessible()) {
 				ProjectConfiguration prjp = (ProjectConfiguration) project.getSessionProperty(USER_PREFERENCE);
-				if (prjp != null) {
-					return prjp.isVersionCurrent();
-				}
+				if (prjp != null)return prjp.isVersionCurrent();
+				
 				String serializedPrjp = project.getPersistentProperty(USER_PREFERENCE);
 				if (serializedPrjp != null) {
 					prjp = new ProjectConfiguration(project);
-					prjp.getVersion(); // initialize the configuration's
-					// version attribute
+					prjp.getVersion(); 
 					return prjp.isVersionCurrent();
 				}
 			}

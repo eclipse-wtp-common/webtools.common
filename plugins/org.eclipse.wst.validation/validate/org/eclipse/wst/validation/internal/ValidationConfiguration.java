@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,7 +42,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * property while the resource is open.
  */
 public abstract class ValidationConfiguration implements IPropertyChangeListener {
-	private IResource 	_resource;
+	private final IResource 	_resource;
 	private boolean 	disableAllValidation = getDisableAllValidation();
 	private String 		_version;
 	
@@ -161,8 +161,9 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	public static IWorkspaceRoot getRoot() {
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
-
-	protected ValidationConfiguration() throws InvocationTargetException {
+	
+	protected ValidationConfiguration(IResource resource){
+		_resource = resource;
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
@@ -170,12 +171,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			throw new InvocationTargetException(null, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_NULLCREATE));
 		}
 
-		setResource(resource);
-		setValidators(validators);
-	}
-
-	private void setResource(IResource resource) {
 		_resource = resource;
+		setValidators(validators);
 	}
 	
 	public boolean isDisableAllValidation() throws InvocationTargetException {
@@ -467,6 +464,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	/**
 	 * This preference has been migrated; change the version to the current version.
+	 * @deprecated dead code.
 	 */
 	public void markVersionCurrent() {
 		// The version should not be marked current until the migration is complete
@@ -817,7 +815,6 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	protected void copyTo(ValidationConfiguration up) throws InvocationTargetException {
 		up.setVersion(getVersion());
-		up.setResource(getResource());
 		up.setValidators(getValidators());
 		up.setDisableAllValidation(isDisableAllValidation());
 		up.setEnabledValidators(getEnabledValidators());

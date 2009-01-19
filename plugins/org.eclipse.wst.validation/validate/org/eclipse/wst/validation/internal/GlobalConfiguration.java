@@ -47,7 +47,7 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	 * without persisting them (i.e., if the user presses Cancel then nothing needs to be done.)
 	 */
 	public GlobalConfiguration(GlobalConfiguration original) throws InvocationTargetException {
-		super();
+		super(original.getResource());
 		original.copyTo(this);
 	}
 

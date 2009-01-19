@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,11 +63,12 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
- * Implemented Validators methods must not be called directly by anyone other than this class, since
+ * Validators must not be called directly by anyone other than this class, since
  * some initialization of the validator is done here (via the getProject() method). The
  * initialization is separated because the IProject isn't known until runtime.
  * <p>
  * This operation is not intended to be subclassed outside of the validation framework.
+ * </p>
  */
 public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadlessRunnableWithProgress {
 	// Since IResourceConstants don't have a "no delta" flag, let this constant be the flag.
