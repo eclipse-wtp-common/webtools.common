@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -173,9 +173,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				performFullBuild(monitor, prjp);
 			} else {
 				if (delta.getAffectedChildren().length == 0) {
-					if (isReferencedProjectInDelta(referenced))
+					if (isReferencedProjectInDelta(referenced)){
 						cleanupReferencedProjectsMarkers(prjp, referenced);
 						performFullBuildForReferencedProjectChanged(monitor, prjp);
+					}
 					return referenced;
 				}
 				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, true);
@@ -212,7 +213,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			Set<ValidatorMetaData>  set = new HashSet<ValidatorMetaData>();
 			set.addAll( Arrays.asList( enabledValidators ) );
 			for (IProject p : referenced) {
-				if (!p.exists())continue;
+				if (!p.isAccessible())continue;
 				ProjectConfiguration refProjectCfg = ConfigurationManager.getManager().getProjectConfiguration(p);
 		
 				ValidatorMetaData[] refEnabledValidators = refProjectCfg.getEnabledFullBuildValidators(true, false);
