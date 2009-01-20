@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -598,7 +598,9 @@ public class ProjectConfiguration extends ValidationConfiguration {
 				pref.put(ValidationConfiguration.DelegatesPreference, serializeDelegatesSetting());
 				pref.flush();
 			} catch (BackingStoreException e) {
-				ValidationPlugin.getPlugin().handleException(e);
+				// A common error is that the project has been closed, in which case there
+				// is nothing that we can do.
+				if (project.isAccessible())ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 	}
