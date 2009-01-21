@@ -613,7 +613,7 @@ public final class FilterUtil {
 
 					IResource resource = subdelta.getResource();
 
-					if (Tracing.isLogging()) {
+					if (Tracing.isLogging(2)) {
 						StringBuffer buffer = new StringBuffer("FilterUtil-01: subdelta of "); //$NON-NLS-1$
 						buffer.append(resource.getName());
 						buffer.append(" has resource delta kind: "); //$NON-NLS-1$

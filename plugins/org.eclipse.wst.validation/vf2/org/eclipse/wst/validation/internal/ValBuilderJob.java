@@ -44,27 +44,23 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * <p>
  * This is the main class for supporting build based validation. When triggered it looks at all of the
  * resource changes and determines what needs to be validated. 
+ * </p>
  * @author karasiuk
  *
  */
-public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor, IResourceVisitor {
+public final class ValBuilderJob extends WorkspaceJob {
 	
 	private static ValBuilderJob _job;
 	private static Queue<ValidationRequest> _work = new LinkedList<ValidationRequest>();
 	
-	/** The monitor to use while running the build. */
-	private IProgressMonitor	_monitor;
-	
-	private SubMonitor			_subMonitor;
-	
-	private ValidationRequest	_request;
-	
+	private final ValOperation _operation = new ValOperation();
+		
 	/** The types of changes we are interested in. */
 	private final static int	InterestedFlags = IResourceDelta.CONTENT | IResourceDelta.ENCODING |
 		IResourceDelta.MOVED_FROM | IResourceDelta.MOVED_TO;
 	
-	public static synchronized void validateProject(IProject project, IResourceDelta delta, int buildKind, ValOperation operation){
-		ValidationRequest request = new ValidationRequest(project, delta, buildKind, operation);
+	public static synchronized void validateProject(IProject project, IResourceDelta delta, int buildKind){
+		ValidationRequest request = new ValidationRequest(project, delta, buildKind);
 		if (_job == null){
 			_job = new ValBuilderJob();
 			_job.add(request);
@@ -116,24 +112,55 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		return super.belongsTo(family);
 	}
 
+	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) {
 		Tracing.log("ValBuilderJob-01: Starting"); //$NON-NLS-1$
-		_monitor = monitor;
 		
-		ValidationRequest request = getRequest();
-		while(request != null){
-			_request = request;
-			run();
-			request = getRequest();
+		try {
+			startingValidation(monitor);
+			
+			ValidationRequest request = getRequest();
+			while(request != null){
+				run(request, monitor);
+				request = getRequest();
+			}
 		}
-		_request = null;
+		finally {
+			finishingValidation(monitor);
+		}
 		
 		Tracing.log("ValBuilderJob-02: Finished"); //$NON-NLS-1$
 		return Status.OK_STATUS;
 	}
+
+	private void startingValidation(IProgressMonitor monitor) {
+        IValidatorVisitor startingVisitor = new IValidatorVisitor(){
+
+            public void visit(Validator validator, IProject project, ValType valType, 
+                ValOperation operation, IProgressMonitor monitor) {
+                
+                validator.validationStarting(project, operation.getState(), monitor);                   
+            }               
+        };
+
+        ValManager.getDefault().accept(startingVisitor, null, ValType.Build, getOperation(), monitor);
+	}
 	
-	private void run(){
-		setName(ValMessages.JobName + " " + _request.getProject().getName()); //$NON-NLS-1$
+	private void finishingValidation(IProgressMonitor monitor) {
+		
+		IValidatorVisitor finishedVisitor = new IValidatorVisitor(){
+
+		    public void visit(Validator validator, IProject project, ValType valType,
+		      ValOperation operation, IProgressMonitor monitor) {
+
+		      validator.validationFinishing(project, operation.getState(), monitor);              
+		    }           
+		  };
+		  ValManager.getDefault().accept(finishedVisitor, null, ValType.Build, getOperation(), monitor);
+	}
+
+	private void run(ValidationRequest request, IProgressMonitor monitor){
+		setName(ValMessages.JobName + " " + request.getProject().getName()); //$NON-NLS-1$
 		try {		
 	        IValidatorVisitor startingVisitor = new IValidatorVisitor(){
 
@@ -144,10 +171,10 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	            }               
 	        };
 
-	        ValManager.getDefault().accept(startingVisitor, _request.getProject(), ValType.Build, _request.getOperation(), _monitor);
+	        ValManager.getDefault().accept(startingVisitor, request.getProject(), ValType.Build, getOperation(), monitor);
 		  
-			if (_request.getDelta() == null)fullBuild();
-			else deltaBuild();
+			if (request.getDelta() == null)fullBuild(request, monitor);
+			else deltaBuild(request, monitor);
 
 			
 		}
@@ -169,77 +196,33 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		      validator.validationFinishing(project, operation.getState(), monitor);              
 		    }           
 		  };
-          ValManager.getDefault().accept(finishedVisitor, _request.getProject(), ValType.Build, _request.getOperation(), _monitor);
+          ValManager.getDefault().accept(finishedVisitor, request.getProject(), ValType.Build, getOperation(), monitor);
 		}
 		
 	}
 
-	private void deltaBuild() throws CoreException {
+	private void deltaBuild(ValidationRequest request, IProgressMonitor monitor) throws CoreException {
 		ResourceCounter counter = new ResourceCounter();
-		_request.getDelta().accept(counter);
-		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
-		_request.getDelta().accept(this);		
+		request.getDelta().accept(counter);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, counter.getCount());
+		Visitor vistitor = new Visitor(request, subMonitor, monitor, getOperation());
+		request.getDelta().accept(vistitor);		
 	}
 
-	private void fullBuild() throws CoreException {
+	private void fullBuild(ValidationRequest request, IProgressMonitor monitor) throws CoreException {
 		ResourceCounter counter = new ResourceCounter();
-		_request.getProject().accept(counter, 0);
-		_subMonitor = SubMonitor.convert(_monitor, counter.getCount());
-		_request.getProject().accept(this);
+		request.getProject().accept(counter, 0);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, counter.getCount());
+		Visitor vistitor = new Visitor(request, subMonitor, monitor, getOperation());
+		request.getProject().accept(vistitor);
 		
-	}
-
-	@SuppressWarnings("deprecation")
-	public boolean visit(IResourceDelta delta) throws CoreException {
-		IResource resource = delta.getResource();
-		if (DisabledResourceManager.getDefault().isDisabled(resource)){
-			MarkerManager.getDefault().deleteMarkers(resource, _request.getOperation().getStarted(), IResource.DEPTH_INFINITE);
-			return false;
-		}
-		int kind = delta.getKind();
-		boolean isChanged = (kind & IResourceDelta.CHANGED) != 0;
-		if (isChanged &&  (delta.getFlags() & InterestedFlags) == 0)return true;
-		
-		if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
-			ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build, 
-				_request.getBuildKind(), _request.getOperation(), _subMonitor.newChild(1));
-		}
-				
-		IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
-		if (index.isDependedOn(resource)){
-			MarkerManager mm = MarkerManager.getDefault();
-			for (DependentResource dr : index.get(resource)){
-				Validator val = dr.getValidator();
-				if (Friend.shouldValidate(val, dr.getResource(), ValType.Build, new ContentTypeWrapper())){
-					_request.getOperation().getState().put(ValidationState.TriggerResource, resource);
-					ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
-					if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val); 
-					ValManager.getDefault().validate(val, _request.getOperation(), dr.getResource(), 
-						IResourceDelta.NO_CHANGE, _monitor, event);
-				}
-			}
-		}
-				
-		return true;
-	}
-
-	public boolean visit(IResource resource) throws CoreException {
-		try {
-			if (DisabledResourceManager.getDefault().isDisabled(resource)){
-				MarkerManager.getDefault().deleteMarkers(resource, _request.getOperation().getStarted(), IResource.DEPTH_INFINITE);
-				return false;
-			}
-			ValManager.getDefault().validate(_request.getProject(), resource, IResourceDelta.NO_CHANGE, ValType.Build, 
-				_request.getBuildKind(), _request.getOperation(), _subMonitor.newChild(1));
-		}
-		catch (ResourceUnavailableError e){
-			if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
-			return false;
-		}
-		return true;
 	}
 	
-	static class ResourceCounter implements IResourceProxyVisitor, IResourceDeltaVisitor {
+	private ValOperation getOperation(){
+		return _operation;
+	}
+
+	static final class ResourceCounter implements IResourceProxyVisitor, IResourceDeltaVisitor {
 		
 		private int _count;
 
@@ -258,27 +241,24 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		}		
 	}
 	
-	static class ValidationRequest {
+	static final class ValidationRequest {
 		/** The project that is being built. */
-		private IProject 			_project;
+		private final IProject 			_project;
 		
 		/** The resource delta that triggered the build, it will be null for a full build. */
-		private IResourceDelta		_delta;
-		
-		private ValOperation		_operation;
+		private final IResourceDelta	_delta;
 		
 		/** 
 		 * The kind of build.
 		 * 
 		 *  @see org.eclipse.core.resources.IncrementalProjectBuilder
 		 */
-		private int					_buildKind;
+		private final int					_buildKind;
 		
-		public ValidationRequest(IProject project, IResourceDelta delta, int buildKind, ValOperation operation){
+		public ValidationRequest(IProject project, IResourceDelta delta, int buildKind){
 			_project = project;
 			_delta = delta;
 			_buildKind = buildKind;
-			_operation = operation;
 		}
 
 		public IProject getProject() {
@@ -289,13 +269,76 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			return _delta;
 		}
 
-		public ValOperation getOperation() {
-			return _operation;
-		}
-
 		public int getBuildKind() {
 			return _buildKind;
 		}
+	}
+	
+	private final static class Visitor implements IResourceDeltaVisitor, IResourceVisitor{
+		
+		private final ValidationRequest 	_request;
+		private final SubMonitor 			_subMonitor;
+		private final IProgressMonitor 		_monitor;
+		private final ValOperation			_operation;
+		
+		public Visitor(ValidationRequest request, SubMonitor subMonitor, IProgressMonitor monitor, ValOperation operation){
+			_request = request;
+			_subMonitor = subMonitor;
+			_monitor = monitor;
+			_operation = operation;
+		}
+		
+		public boolean visit(IResource resource) throws CoreException {
+			try {
+				if (DisabledResourceManager.getDefault().isDisabled(resource)){
+					MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+					return false;
+				}
+				ValManager.getDefault().validate(_request.getProject(), resource, IResourceDelta.NO_CHANGE, ValType.Build, 
+					_request.getBuildKind(), _operation, _subMonitor.newChild(1));
+			}
+			catch (ResourceUnavailableError e){
+				if (Tracing.isLogging())Tracing.log("ValBuilderJob-02: " + e.toString()); //$NON-NLS-1$
+				return false;
+			}
+			return true;
+		}
+		
+		@SuppressWarnings("deprecation")
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			IResource resource = delta.getResource();
+			if (DisabledResourceManager.getDefault().isDisabled(resource)){
+				MarkerManager.getDefault().deleteMarkers(resource, _operation.getStarted(), IResource.DEPTH_INFINITE);
+				return false;
+			}
+			int kind = delta.getKind();
+			boolean isChanged = (kind & IResourceDelta.CHANGED) != 0;
+			if (isChanged &&  (delta.getFlags() & InterestedFlags) == 0)return true;
+			
+			if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
+				ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build, 
+					_request.getBuildKind(), _operation, _subMonitor.newChild(1));
+			}
+					
+			IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
+			if (index.isDependedOn(resource)){
+				MarkerManager mm = MarkerManager.getDefault();
+				for (DependentResource dr : index.get(resource)){
+					Validator val = dr.getValidator();
+					if (Friend.shouldValidate(val, dr.getResource(), ValType.Build, new ContentTypeWrapper())){
+						_operation.getState().put(ValidationState.TriggerResource, resource);
+						ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
+						if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val); 
+						ValManager.getDefault().validate(val, _operation, dr.getResource(), 
+							IResourceDelta.NO_CHANGE, _monitor, event);
+					}
+				}
+			}
+					
+			return true;
+		}
+
+		
 	}
 
 }

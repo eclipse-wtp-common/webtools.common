@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,9 +34,9 @@ import org.eclipse.wst.validation.internal.provisional.core.IReporter;
  */
 public final class ValidationResult {
 	
-	private List<ValidatorMessage> _messages;
+	private final List<ValidatorMessage> _messages = new LinkedList<ValidatorMessage>();
 	
-	private static ValidatorMessage[] _noMessages = new ValidatorMessage[0];
+	private final static ValidatorMessage[] _noMessages = new ValidatorMessage[0];
 	
 	private boolean		_canceled;
 	
@@ -78,12 +78,14 @@ public final class ValidationResult {
 	 * one type of message, and those messages can be either be directly used by
 	 * the caller, or automatically converted into IMarkers by the validation
 	 * framework.
+	 * </p>
 	 * <p>
 	 * To make matters even more complicated there is a third way to return
 	 * messages. To make it easier for old validators to port to the new
 	 * framework, they can continue to use an IReporter. If a validator calls
 	 * the getReporter() method then it is assumed by the framework that that is
 	 * the approach that they have chosen.
+	 * </p>
 	 * 
 	 * @see #getReporter(IProgressMonitor)
 	 * 
@@ -91,7 +93,7 @@ public final class ValidationResult {
 	 * 		A validation message.
 	 */
 	public void add(ValidatorMessage message){
-		getMessageList().add(message);
+		_messages.add(message);
 	}
 	
 	/**
@@ -163,6 +165,19 @@ public final class ValidationResult {
 		_messages.toArray(msgs);
 		return msgs;
 	}
+		
+	/**
+	 * Answer a copy of any validation messages that were added by the validator. The array is a new
+	 * array, and each message is a copy. 
+	 * @return an array is returned even if there are no messages.
+	 */
+	public synchronized ValidatorMessage[] getMessagesAsCopy(){
+		if (_messages == null)return _noMessages;
+		ValidatorMessage[] msgs = new ValidatorMessage[_messages.size()];
+		int i = 0;
+		for (ValidatorMessage msg : _messages)msgs[i++] = msg.asCopy();
+		return msgs;
+	}
 
 	/**
 	 * Update the resources that the validated resource depends on. This can be
@@ -179,11 +194,6 @@ public final class ValidationResult {
 		_dependsOn = dependsOn;
 	}
 	
-	private List<ValidatorMessage> getMessageList(){
-		if (_messages == null)_messages = new LinkedList<ValidatorMessage>();
-		return _messages;
-	}
-
 	/**
 	 * @return All the resources that were validated as a side-effect of
 	 * 	validating the main resource, or null if none were.

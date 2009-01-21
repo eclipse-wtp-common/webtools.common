@@ -85,8 +85,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	
 	private static final int jobsPerProcessor = 3;
 	
-	private static class ValidationLauncherJob extends Job {
-	    private Queue<Job> validationJobs = new LinkedList<Job>();
+	private final static class ValidationLauncherJob extends Job {
+	    private Queue<Job> _validationJobs = new LinkedList<Job>();
+	    
 	    public ValidationLauncherJob() {
             super(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_VALIDATION_JOB_MSG));
             setSystem(true);
@@ -96,10 +97,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	    protected IStatus run(IProgressMonitor monitor) {
 			int processors = Runtime.getRuntime().availableProcessors();
 			int totalInitialJobs = processors * jobsPerProcessor;
-    		synchronized (validationJobs) {
+    		synchronized (_validationJobs) {
     			// never schedule more than 3 validation jobs per processor at a time
     			for (int i=0; i< totalInitialJobs; i++) {
-    				Job validationJob = validationJobs.poll();
+    				Job validationJob = _validationJobs.poll();
     				if (validationJob == null) break;
     				addJobChangeAdapter(validationJob);
     				validationJob.schedule();
@@ -112,8 +113,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	    	job.addJobChangeListener(new JobChangeAdapter(){
 	    		// when done, see if there is another validation job to schedule
 				public void done(IJobChangeEvent event) {
-					synchronized (validationJobs) {
-						Job validationJob = validationJobs.poll();
+					synchronized (_validationJobs) {
+						Job validationJob = _validationJobs.poll();
 						if (validationJob != null) {
 							addJobChangeAdapter(validationJob);
 							validationJob.schedule();
@@ -133,10 +134,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	    }
 	    
 	    public void addValidationJob(Job validationJob) {
-	    	synchronized (validationJobs) {
-	    		validationJobs.add(validationJob);
+	    	synchronized (_validationJobs) {
+	    		_validationJobs.add(validationJob);
 	    		// schedule the job if we were empty
-	    		if (validationJobs.size() == 1) {
+	    		if (_validationJobs.size() == 1) {
 	    			this.schedule();
 	    		}
 	    	}
@@ -1263,12 +1264,17 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * (hProject.getName().indexOf("fork") > -1)) { Thread.dumpStack(); } System.err.println(prefix +
 	 * "End ValidationOperation"); }
 	 */
+	
+	/**
+	 * @deprecated This class is no longer used by the framework.
+	 */
 	public class ProjectRunnable implements Runnable {
 		private WorkbenchReporter _reporter;
 		private IValidator _validator;
 		private ValidatorMetaData _vmd;
 		private IFileDelta[] _delta;
 
+		@SuppressWarnings("unchecked")
 		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, 
 			ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta, Iterator iterator) {
 			_reporter = reporter;

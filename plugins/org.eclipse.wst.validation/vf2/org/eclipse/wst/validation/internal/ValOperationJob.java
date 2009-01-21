@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
+import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 
 /**
  * This is used to signal when the entire validation operation is complete. This needs to be done in a job
@@ -25,13 +26,22 @@ import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
  * @author karasiuk
  *
  */
-public class ValOperationJob extends Job {
+public final class ValOperationJob extends Job {
 	
-	private ValOperation _operation;
+	private final ValOperation _operation;
 	
 	public ValOperationJob(ValOperation operation){
 		super(ValMessages.JobNameMonitor);
 		_operation = operation;
+	}
+	
+	@Override
+	public boolean belongsTo(Object family) {
+		if (family == ValidationBuilder.FamilyValidationFinishedJob){
+			return true;
+		}
+
+		return super.belongsTo(family);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2005, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -22,16 +25,29 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * @author karasiuk
  *
  */
-public class Tracing {
+public final class Tracing {
 	
-	private static DateFormat 	_df = new SimpleDateFormat("HH:mm:ss.SSSS"); //$NON-NLS-1$
-	private static boolean		_forceLogging;
-	private static Boolean		_traceMatches;
-	private static Boolean		_traceV1;
-	private static String		_extraValDetail;
+	private final static DateFormat _df = new SimpleDateFormat("HH:mm:ss.SSSS"); //$NON-NLS-1$
+	private final static boolean	_isLogging = ValidationPlugin.getPlugin().isDebugging();
+	private final static boolean	_traceMatches = Misc.debugOptionAsBoolean(DebugConstants.TraceMatches);
+	private final static boolean	_traceV1 = Misc.debugOptionAsBoolean(DebugConstants.TraceV1);
+	private final static String		_extraValDetail = Platform.getDebugOption(DebugConstants.ExtraValDetail);
+	private final static int 		_tracingLevel;
 	
-	private static String		_filter;
-	private static boolean		_noFilters;
+	private final static String		_filter = Platform.getDebugOption(DebugConstants.FilterAllExcept);
+	
+	static {
+		String traceLevel = Platform.getDebugOption(DebugConstants.TraceLevel);
+		int level = 0;
+		if (traceLevel != null){
+			try {
+				level = Integer.parseInt(traceLevel);
+			}
+			catch (Exception e){
+			}
+		}
+		_tracingLevel = level;
+	}
 	
 	/**
 	 * Answer true if the filters allow this validator to be enabled. Normally this method will answer true.
@@ -42,12 +58,7 @@ public class Tracing {
 	 * @return true if the validator should be registered via an extension point.
 	 */
 	public static boolean isEnabled(String validatorId){
-		if (_noFilters)return true;
-		if (_filter == null){
-			_filter = Platform.getDebugOption(DebugConstants.FilterAllExcept);
-			if (_filter == null || _filter.length() == 0)_noFilters = true;
-			return true;
-		}
+		if (_filter == null || _filter.length() == 0)return true;
 		return (_filter.equals(validatorId));		
 	}
 	
@@ -55,29 +66,32 @@ public class Tracing {
 	 * Are we in logging/debugging mode?
 	 */
 	public static boolean isLogging(){
-		return _forceLogging || ValidationPlugin.getPlugin().isDebugging();
+		return _isLogging;
+	}
+	
+	/**
+	 * Answer true if we are in logging mode, and if the current logging level is greater than or
+	 * equal to level.
+	 * @param level The logging level that we are testing. The higher the level the more verbose
+	 * the tracing.
+	 */
+	public static boolean isLogging(int level){
+		if (_isLogging){
+			return _tracingLevel >= level;
+		}
+		return false;
 	}
 	
 	public static boolean isTraceMatches(){
-		if (_traceMatches == null){
-			_traceMatches = Misc.debugOptionAsBoolean(DebugConstants.TraceMatches);
-		}
 		return _traceMatches;
 	}
 	
 	public static boolean isTraceV1(){
-		if (_traceV1 == null){
-			_traceV1 = Misc.debugOptionAsBoolean(DebugConstants.TraceV1);
-		}
 		return _traceV1;
 	}
 	
 	public static boolean matchesExtraDetail(String validatorId){
-		if (_extraValDetail == null){
-			_extraValDetail = Platform.getDebugOption(DebugConstants.ExtraValDetail);
-			if (_extraValDetail == null)_extraValDetail = ""; //$NON-NLS-1$
-		}
-		if (_extraValDetail.length() == 0)return false;
+		if (_extraValDetail == null)return false;
 		return _extraValDetail.equals(validatorId);
 	}
 
@@ -107,7 +121,7 @@ public class Tracing {
 
 	public static String timestampIt(String line){
 		Date date = new Date();
-		long thread = Thread.currentThread().getId();
+		String thread = Thread.currentThread().getName();
 		return _df.format(date) + " " + thread + " " + line;  //$NON-NLS-1$//$NON-NLS-2$		
 	}
 
@@ -120,14 +134,75 @@ public class Tracing {
 	}
 
 	/**
-	 * Force the logging to be turned on. Normally logging is turned on via -debug options. However
-	 * the logging can be forced to be on by setting this to true. (Setting this to false doesn't force
-	 * the logging to be turned off).
+	 * This method doesn't do anything, and will be removed.
 	 * 
-	 * @param forceLogging
+	 * @deprecated
 	 */
 	public static void setForceLogging(boolean forceLogging) {
-		_forceLogging = forceLogging;
+	}
+	
+	/**
+	 * Log up to maxNumber deltas to the log.
+	 * @param delta The deltas to log.
+	 * @param maxNumber The maximum number of deltas to log.
+	 */
+	public static void logResourceDeltas(IResourceDelta delta, int maxNumber){
+		if (!isLogging())return;
+		if (delta == null)Tracing.log("  ResourceDelta: null"); //$NON-NLS-1$
+		else {
+			DeltaLogger logger = new DeltaLogger(maxNumber);
+			try {
+				delta.accept(logger);
+				if (logger.getCount() == 0)Tracing.log("  ResourceDelta: no deltas"); //$NON-NLS-1$
+			}
+			catch (CoreException e){
+				// eat it
+			}
+		}
+	}
+	
+	/**
+	 * A debugging class that prints out some resource delta's.
+	 * @author karasiuk
+	 *
+	 */
+	private final static class DeltaLogger implements IResourceDeltaVisitor {
+		
+		private final int 	_max;
+		private int 		_count;
+		public int getCount() {
+			return _count;
+		}
+
+		private StringBuffer _b = new StringBuffer(200);
+		
+		public DeltaLogger(int max){
+			_max = max;
+		}
+
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			if (_count++ > _max)return false;
+			int kind = delta.getKind();
+			String type = "unknown"; //$NON-NLS-1$
+			switch (kind){
+			case IResourceDelta.ADDED:
+				type = "Added"; //$NON-NLS-1$
+				break;
+			case IResourceDelta.CHANGED:
+				type = "Changed"; //$NON-NLS-1$
+				break;
+			case IResourceDelta.REMOVED:
+				type = "Removed"; //$NON-NLS-1$
+				break;				
+			}
+			_b.append("  ResourceDelta "); //$NON-NLS-1$
+			_b.append(type);
+			_b.append(' ');
+			_b.append(delta.getResource());
+			Tracing.log(_b);
+			return true;
+		}
+		
 	}
 
 }

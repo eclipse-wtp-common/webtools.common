@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,5 +45,11 @@ public interface DebugConstants {
 	 * the extension point. All the other validators are ignored.
 	 */
 	String FilterAllExcept = ValidationPlugin.PLUGIN_ID+"/filter/allExcept"; //$NON-NLS-1$
+	
+	/**
+	 * trace/level - The tracing level. If not supplied a default of zero is used. The higher the number the
+	 * more verbose the tracing.
+	 */
+	String TraceLevel = ValidationPlugin.PLUGIN_ID+"/trace/level"; //$NON-NLS-1$
 
 }

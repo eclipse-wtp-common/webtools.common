@@ -23,7 +23,6 @@ import org.eclipse.wst.validation.internal.EventManager;
 import org.eclipse.wst.validation.internal.ProjectUnavailableError;
 import org.eclipse.wst.validation.internal.ResourceUnavailableError;
 import org.eclipse.wst.validation.internal.Tracing;
-import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.osgi.framework.Bundle;
@@ -100,15 +99,15 @@ public class ValidationPlugin extends Plugin {
 		DependencyIndex di = (DependencyIndex)ValidationFramework.getDefault().getDependencyIndex();
 		IWorkspace ws = ResourcesPlugin.getWorkspace();
 		ws.addSaveParticipant(this, di);
-		ws.addResourceChangeListener(ValOperationManager.getDefault(), 
-			IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD);
+//		ws.addResourceChangeListener(ValOperationManager.getDefault(), 
+//			IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD);
 
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener( EventManager.getManager() );		
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener( ValOperationManager.getDefault() );		
+//		ResourcesPlugin.getWorkspace().removeResourceChangeListener( ValOperationManager.getDefault() );		
 		EventManager.getManager().shutdown();
 	}
 

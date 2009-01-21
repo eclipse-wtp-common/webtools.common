@@ -35,7 +35,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * @author karasiuk
  *
  */
-public class ValidationState {
+public final class ValidationState {
 	
 	/**
 	 * This is a special id.
@@ -51,7 +51,7 @@ public class ValidationState {
 	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
 	// I can't use a ConncurrentHashMap because some of the clients store nulls.
-	private Map<String, Object> _map = new HashMap<String, Object>(50);
+	private final Map<String, Object> _map = new HashMap<String, Object>(50);
 	
 	public ValidationState(){
 	}

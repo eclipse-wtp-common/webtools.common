@@ -934,7 +934,7 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 
 			public void visit(Validator validator, IProject project, ValType valType,
 				ValOperation operation, IProgressMonitor monitor) {
-				validator.clean(project, monitor);					
+				validator.clean(project, operation, monitor);					
 			}
 			
 		};
@@ -952,7 +952,7 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 
 			public void visit(Validator validator, IProject project, ValType valType,
 				ValOperation operation, IProgressMonitor monitor) {
-				validator.clean(project, monitor);					
+				validator.clean(project, operation, monitor);					
 			}
 			
 		};

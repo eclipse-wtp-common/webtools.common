@@ -30,9 +30,9 @@ import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValBuilderJob;
 import org.eclipse.wst.validation.internal.ValManager;
-import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -62,8 +62,14 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	protected List<IProject> referencedProjects;
 	protected IWorkbenchContext workbenchContext = null;
 	
-	/** All the jobs that the validation framework spawns will belong to this family. */
+	/** 
+	 * All the jobs that the validation framework spawns (except for the FamilyValidationFinishedJob) 
+	 * will belong to this family. 
+	 */
 	public static final Object FAMILY_VALIDATION_JOB = new Object();
+	
+	/** The job that waits to issue the final clean up. */
+	public static final Object FamilyValidationFinishedJob = new Object();
 
 	public ValidationBuilder() {
 	}
@@ -109,8 +115,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	}
 
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		newClean(monitor);
 		IProject currentProject = getProject();
+		Tracing.log("ValidationBuilder-02 clean ", currentProject); //$NON-NLS-1$
+
+		newClean(monitor);
 		if (currentProject == null || !currentProject.isAccessible())return;
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(currentProject);
@@ -138,6 +146,11 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	public IProject[] build(int kind, Map parameters, IProgressMonitor monitor) {
 		IResourceDelta delta = null;
 		IProject project = getProject();
+		Tracing.log("ValidationBuilder-01 build ", kind, project);  //$NON-NLS-1$
+		if (Tracing.isLogging(1)){
+			Tracing.logResourceDeltas(getDelta(project), 50);
+		}
+		
 		// GRK I wonder why this builder needs to know about all the other referenced projects?
 		// won't they have builders of their own.
 		IProject[] referenced = getAllReferencedProjects(project, null);
@@ -279,7 +292,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				break;
 		}
 		
-		ValBuilderJob.validateProject(project, delta, kind, ValOperationManager.getDefault().getOperation());		
+		ValBuilderJob.validateProject(project, delta, kind);		
 	}
 	
 	
