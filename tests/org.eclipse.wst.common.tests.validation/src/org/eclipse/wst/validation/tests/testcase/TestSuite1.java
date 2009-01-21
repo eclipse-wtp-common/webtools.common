@@ -272,7 +272,7 @@ public class TestSuite1 extends TestCase {
 		t7.reset();
 		
 		long start = System.currentTimeMillis();
-		_env.fullBuild();
+		_env.fullBuild2(null);
 		Thread.sleep(1000);
 		vf.join(null);
 		long first = System.currentTimeMillis();
@@ -285,7 +285,7 @@ public class TestSuite1 extends TestCase {
 		assertEquals("We expected the validation to be suspended after the first call", 1, t7.getSet().size());
 		
 		vf.suspendAllValidation(true);
-		_env.fullBuild();
+		_env.fullBuild2(null);
 		Thread.sleep(1000);
 		vf.join(null);
 		long second = System.currentTimeMillis();

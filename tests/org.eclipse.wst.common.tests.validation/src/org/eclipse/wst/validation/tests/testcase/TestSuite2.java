@@ -105,8 +105,8 @@ public class TestSuite2 extends TestCase {
 //		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
 //			workspace.addResourceChangeListener(listener);
-			_env.fullBuild();
 			IProgressMonitor monitor = new NullProgressMonitor();
+			_env.fullBuild2(monitor);
 			
 			vf.join(monitor);
 			Thread.sleep(1000);

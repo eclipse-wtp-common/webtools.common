@@ -70,8 +70,8 @@ public class TestEnvironment {
 	/**
 	 * Start a full build.
 	 */
-	public void fullBuild() throws CoreException{
-		getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, null);
+	public void fullBuild2(IProgressMonitor monitor) throws CoreException{
+		getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 	}
 	
 	/**
@@ -79,10 +79,20 @@ public class TestEnvironment {
 	 * @param monitor
 	 */
 	public void fullBuild(IProgressMonitor monitor) throws CoreException, InterruptedException {
-		fullBuild();
+		fullBuild2(monitor);
 		Thread.sleep(1000);
 		ValidationFramework.getDefault().join(monitor);
 		Thread.sleep(2000);  // we need to sleep here to give the "finished" job a chance to run.		
+	}
+	
+	/**
+	 * Do a clean build, and wait until all the validation has finished.
+	 * @param monitor
+	 */
+	public void cleanBuild(IProgressMonitor monitor) throws CoreException, InterruptedException {
+		getWorkspace().build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+		Thread.sleep(1000);
+		ValidationFramework.getDefault().join(monitor);
 	}
 	
 	private IFolder createFolder(IPath path) throws CoreException {
