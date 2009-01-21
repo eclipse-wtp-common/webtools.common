@@ -168,7 +168,7 @@ public abstract class FacetLibraryPropertyPage
         this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
         this.libraryInstallDelegate.addListener( delegateListener );
         
-        return createInstallLibraryPanel( this.rootComposite, this.libraryInstallDelegate );
+        return createInstallLibraryPanel( parent, this.libraryInstallDelegate );
     }
     
     private void updateContents()
