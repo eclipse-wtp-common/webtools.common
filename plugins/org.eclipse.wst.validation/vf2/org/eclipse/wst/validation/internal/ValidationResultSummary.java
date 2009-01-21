@@ -11,7 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 /**
- * An immutable object that holds a summari of the validation.
+ * An immutable object that holds a summary of the validation.
  * @author karasiuk
  *
  */
