@@ -90,6 +90,10 @@ public final class ValOperation {
 		}
 	}
 		
+	/**
+	 * Answer a copy of the ValidationResult.
+	 * @return
+	 */
 	public ValidationResults getResults(){
 		return new ValidationResults(_result);
 	}

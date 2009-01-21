@@ -29,7 +29,7 @@ import org.eclipse.osgi.util.NLS;
  * @author karasiuk
  *
  */
-public class Misc {
+public final class Misc {
 	
 	public static void close(InputStream in){
 		if (in == null)return;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,21 +22,22 @@ package org.eclipse.wst.validation;
  * @author karasiuk
  *
  */
-public class ValidationResults {
+public final class ValidationResults {
 	
-	private ValidatorMessage[] _messages;
-	private int _error;
-	private int	_warn;
-	private int _info;
+	private final ValidatorMessage[] _messages;
+	private final int 	_error;
+	private final int	_warn;
+	private final int	_info;
 	
 	public ValidationResults(ValidationResult result){
 		if (result == null){
-			_messages = new ValidatorMessage[0];			
+			_messages = new ValidatorMessage[0];
+			_error = 0;
+			_warn = 0;
+			_info = 0;
 		}
 		else {
-			ValidatorMessage[] messages = result.getMessages();
-			_messages = new ValidatorMessage[messages.length];
-			System.arraycopy(messages, 0, _messages, 0, messages.length);
+			_messages = result.getMessagesAsCopy();
 			_error = result.getSeverityError();
 			_warn = result.getSeverityWarning();
 			_info = result.getSeverityInfo();

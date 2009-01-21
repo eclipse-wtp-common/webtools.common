@@ -28,7 +28,7 @@ to open, read and/or parse the same file, will improve the performance of the
 product.
 <p>In particular when the validate method returns, a
 <a href="ValidationResult.html">ValidationResult</a> must be returned, inside of 
-this result, all your dependencies need to be specified with the&nbsp;
+this result, all your dependencies need to be specified with the
 <a href="ValidationResult.html#setDependsOn(org.eclipse.core.resources.IResource[])">
 setDependsOn</a> method.<p>In addition to keeping the dependency information 
 up-to-date through the normal course of validation, direct access is also 
@@ -36,5 +36,16 @@ provided to the dependency support through the
 <a href="ValidationFramework.html#getDependencyIndex()">getDependencyIndex</a> 
 method. The <a href="IDependencyIndex.html">IDependencyIndex</a> allows you to 
 directly manipulate the dependency information for a validator.
+<h3>Entry Points into the Validation Framework</h3>
+<p>Here are some of the points where the platform calls into the framework:</p>
+<ul>
+<li><b>Builder</b> - ValidationBuilder</li>
+<li><b>IFacetedProjectListener</b> - ValManager</li>
+<li><b>IJobChangeListener</b> - ValidationOperation, ValidationOperation.ValidationLauncherJob</li>
+<li><b>IProjectChangeListener</b> - ValManager</li>
+<li><b>IPropertyChangeListener</b> - ValidationConfiguration, DisabledResourceManager</li>
+<li><b>IResourceChangeListener</b> - ValOperationManager, EventManger</li>
+<li><b>IValChangedListener</b> - ValManager, DisabledValidatorManager</li>
+</ul>
 </body>
 </html>

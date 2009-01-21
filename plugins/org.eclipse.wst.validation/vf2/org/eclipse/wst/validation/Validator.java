@@ -42,7 +42,6 @@ import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.ValOperation;
-import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 import org.eclipse.wst.validation.internal.ValType;
@@ -171,7 +170,7 @@ public abstract class Validator implements Comparable<Validator> {
 	 * @param project the project being built.
 	 * @param monitor the monitor that should be used for reporting progress if the clean takes a long time.
 	 */
-	public void clean(IProject project, IProgressMonitor monitor){
+	public void clean(IProject project, ValOperation operation, IProgressMonitor monitor){
 	}	
 	
 	/**
@@ -907,6 +906,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		return super.asIValidator();
 	}
 	
+	@Override
 	public V2 asV2Validator() {
 		return this;
 	}
@@ -916,11 +916,14 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * 
 	 * @param project the project that is being cleaned. This can be null which means that the workspace
 	 * is being cleaned (in which case a separate call will be made for each open project).
+	 * 
 	 */
-	public void clean(IProject project, IProgressMonitor monitor) {
-		getDelegatedValidator().clean(project, ValOperationManager.getDefault().getOperation().getState(), monitor);
+	@Override
+	public void clean(IProject project, ValOperation operation, IProgressMonitor monitor) {
+		getDelegatedValidator().clean(project, operation.getState(), monitor);
 	}
 	
+	@Override
 	public Validator copy(boolean includeChangeCounts) {
 		V2 v = null;
 		if (_validatorConfigElement != null)v = new V2(_validatorConfigElement, _project);
@@ -985,6 +988,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		return delegated;
 	}
 		
+	@Override
 	public String getId() {
 		return _id;
 	}
@@ -1003,6 +1007,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		return groups;
 	}
 	
+	@Override
 	public String getName() {
 		return _name;
 	}
@@ -1026,6 +1031,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		return _validator;
 	}
 	
+	@Override
 	public String getValidatorClassname(){
 		return _validatorClassName;
 	}
@@ -1065,6 +1071,7 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * 
 	 * @return true if the resource should be validated.
 	 */
+	@Override
 	protected boolean shouldValidate(IResource resource, ContentTypeWrapper contentTypeWrapper) {
 		FilterGroup[] groups = getGroups();
 		IProject project = resource.getProject();

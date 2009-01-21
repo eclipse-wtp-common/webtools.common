@@ -45,7 +45,7 @@ public class ValidatorMessage {
 	public static final String ValidationId = "ValidationId"; //$NON-NLS-1$
 	
 	/** Associate some arbitrary attributes with a message. */
-	private Map<String, Object>	_map = new HashMap<String, Object>(5);
+	private final Map<String, Object>	_map = new HashMap<String, Object>(5);
 	
 	private IResource	_resource;
 	
@@ -71,6 +71,17 @@ public class ValidatorMessage {
 	}
 	
 	private ValidatorMessage(){}
+	
+	/**
+	 * Answer a copy of yourself.
+	 */
+	public ValidatorMessage asCopy(){
+		ValidatorMessage msg = new ValidatorMessage();
+		msg._resource = _resource;
+		msg._type = _type;
+		msg._map.putAll(_map);
+		return msg;
+	}
 	
 	/**
 	 * Returns the attribute with the given name. The result is an instance of
