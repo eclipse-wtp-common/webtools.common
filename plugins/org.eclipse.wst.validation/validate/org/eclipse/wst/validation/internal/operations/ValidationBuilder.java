@@ -68,9 +68,6 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 */
 	public static final Object FAMILY_VALIDATION_JOB = new Object();
 	
-	/** The job that waits to issue the final clean up. */
-	public static final Object FamilyValidationFinishedJob = new Object();
-
 	public ValidationBuilder() {
 	}
 
