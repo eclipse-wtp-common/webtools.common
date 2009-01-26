@@ -38,13 +38,11 @@ public interface IMutableValidator {
 	
 	/**
 	 * Answer the validator's id.
-	 * @return
 	 */
 	String getId();
 	
 	/**
 	 * Answer the validator's name.
-	 * @return
 	 */
 	String getName();
 	
