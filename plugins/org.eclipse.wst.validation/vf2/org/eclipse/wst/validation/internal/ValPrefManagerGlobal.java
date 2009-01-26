@@ -10,16 +10,18 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.wst.validation.Friend;
 import org.eclipse.wst.validation.MessageSeveritySetting;
-import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V2;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
@@ -27,13 +29,12 @@ import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * A class that knows how to manage the global persisted validation settings.
  * @author karasiuk
  */
-public class ValPrefManagerGlobal {
+public final class ValPrefManagerGlobal {
 	
 	/** 
 	 * Version of the framework properties.
@@ -45,9 +46,9 @@ public class ValPrefManagerGlobal {
 	 */
 	public final static int frameworkVersion = 3;
 	
-	private List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
+	private final Set<IValChangedListener> _listeners = new CopyOnWriteArraySet<IValChangedListener>();
 	
-	private List<Validator> _validators;
+	private final AtomicReference<List<Validator>> _validators = new AtomicReference<List<Validator>>();
 	
 	private ValPrefManagerGlobal(){}
 	
@@ -56,7 +57,6 @@ public class ValPrefManagerGlobal {
 	}
 	
 	public void addListener(IValChangedListener listener){
-		if (_listeners.contains(listener))return;
 		_listeners.add(listener);
 	}
 	
@@ -106,10 +106,10 @@ public class ValPrefManagerGlobal {
 	 * Answer the v2 validators that have been overridden by the global preferences.
 	 */
 	public List<Validator> getValidators() throws BackingStoreException {
-		List<Validator> vals = _validators;
-		if (vals == null){
+		List<Validator> vals = _validators.get();
+		while (vals == null){
 			vals = loadValidators();
-			_validators = vals;
+			if (!_validators.compareAndSet(null, vals))vals = _validators.get();
 		}
 		return vals;
 	}
@@ -120,9 +120,9 @@ public class ValPrefManagerGlobal {
 	 */
 	private List<Validator> loadValidators() throws BackingStoreException {
 		LinkedList<Validator> list = new LinkedList<Validator>();
-		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
+		PreferencesWrapper pref = PreferencesWrapper.getPreferences(null, null);
 		if (pref.nodeExists(PrefConstants.vals)){
-			Preferences vals = pref.node(PrefConstants.vals);
+			PreferencesWrapper vals = pref.node(PrefConstants.vals);
 			for (String id : vals.childrenNames()){
 				Validator base = ExtensionValidators.instance().getMapV2().get(id);
 				Validator v = loadValidator(id, vals, base);
@@ -150,10 +150,10 @@ public class ValPrefManagerGlobal {
 	 * @return A new validator that is a copy of the extension point validator
 	 *         with the updates from the preference store.
 	 */
-	static Validator loadValidator(String id, Preferences valsNode, Validator base) {
+	static Validator loadValidator(String id, PreferencesWrapper valsNode, Validator base) {
 		if (base == null)return null;
 		
-		Preferences vp = valsNode.node(id);
+		PreferencesWrapper vp = valsNode.node(id);
 		base = base.copy();
 		V2 v2 = base.asV2Validator();
 
@@ -183,7 +183,7 @@ public class ValPrefManagerGlobal {
 	 * @see ValManager#getGlobalPreferences()
 	 */
 	public GlobalPreferences loadGlobalPreferences() {
-		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
+		PreferencesWrapper pref = PreferencesWrapper.getPreferences(null, null);
 		GlobalPreferencesValues gp = new GlobalPreferencesValues();
 		gp.saveAutomatically = pref.getBoolean(PrefConstants.saveAuto, GlobalPreferences.DefaultAutoSave);
 		gp.disableAllValidation = pref.getBoolean(PrefConstants.suspend, GlobalPreferences.DefaultSuspend);
@@ -201,7 +201,7 @@ public class ValPrefManagerGlobal {
 	 * @param version The incoming version of the preferences.
 	 * @param pref the root of the preference store
 	 */
-	static void migrate(int version, IEclipsePreferences pref) {
+	static void migrate(int version, PreferencesWrapper pref) {
 		try {
 			boolean update = false;
 			if (version == 2){
@@ -284,16 +284,22 @@ public class ValPrefManagerGlobal {
 	 *            validators. If we are updating a project's validators, then
 	 *            this map would be the preference page validators.
 	 */
-	static void save(Validator validator, Preferences root, Map<String, Validator> baseValidators) throws BackingStoreException {
+	static void save(Validator validator, PreferencesWrapper root, Map<String, Validator> baseValidators) throws BackingStoreException {
 		Validator.V2 v2 = validator.asV2Validator();
 		if (v2 == null)return;
 		
-		Preferences vp = root.node(validator.getId());
-		if (validator.sameConfig(baseValidators.get(validator.getId()))){
-			vp.removeNode();
+		final String id = validator.getId();
+		boolean hasNode = root.nodeExists(id);
+		
+		if (validator.sameConfig(baseValidators.get(id))){
+			if (hasNode){
+				PreferencesWrapper vp = root.node(id);
+				vp.removeNode();
+			}
 			return;
 		}
 		if (!validator.isChanged())return;
+		PreferencesWrapper vp = root.node(id);
 		if (validator.hasGlobalChanges()){
 			Global g = new Global(validator.isManualValidation(), validator.isBuildValidation(), validator.getVersion(),
 				validator.getDelegatingId());
@@ -317,15 +323,58 @@ public class ValPrefManagerGlobal {
 			}
 		}
 	}
+	/**
+	 * Save the validator into the preference store.
+	 * 
+	 * @param validator
+	 *            The validator being saved.
+	 * 
+	 * @param root
+	 *            The top of the preference tree for validators, i.e.
+	 *            /instance/validator-framework-id/vals for workspace validators
+	 *            and /vals for project validators.
+	 *            
+	 * @param baseValidators
+	 *            A map of the validators that are one level higher in the
+	 *            storage hierarchy. So if we are updating the preference page
+	 *            validators, then this map would be the extension point
+	 *            validators. If we are updating a project's validators, then
+	 *            this map would be the preference page validators.
+	 */
+	static void save(ValidatorMutable validator, PreferencesWrapper root, Map<String, Validator> baseValidators) throws BackingStoreException {
+		if (!validator.isV2Validator())return;
+		
+		PreferencesWrapper vp = root.node(validator.getId());
+		if (validator.sameConfig(baseValidators.get(validator.getId()))){
+			vp.removeNode();
+			return;
+		}
+		if (!validator.isChanged())return;
+		if (validator.hasGlobalChanges()){
+			Global g = new Global(validator.isManualValidation(), validator.isBuildValidation(), validator.getVersion(),
+				validator.getDelegatingId());
+			vp.put(PrefConstants.global, g.serialize());
+//			Friend.setMigrated(validator, false);
+		}
+				
+		if (validator.getChangeCountGroups() > 0){
+			FilterGroup[] groups = validator.getGroups();
+			if (groups.length > 0){
+				Serializer ser = new Serializer(500);
+				for (FilterGroup group : groups)group.save(ser);
+				vp.put(PrefConstants.groups, ser.toString());
+			}
+		}
+	}
 	
 	public void saveAsPrefs(Validator[] val) {
 		try {
-			IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
-			Preferences vals = pref.node(PrefConstants.vals);
+			PreferencesWrapper pref = PreferencesWrapper.getPreferences(null, null);
+			PreferencesWrapper vals = pref.node(PrefConstants.vals);
 			Map<String, Validator> base = ExtensionValidators.instance().getMapV2();
 			for (Validator v : val)save(v, vals, base);
 			pref.flush();
-			_validators = null;
+			_validators.set(null);
 			updateListeners(true);
 		}
 		catch (BackingStoreException e){
@@ -339,20 +388,86 @@ public class ValPrefManagerGlobal {
 	 */
 	public synchronized void savePreferences(GlobalPreferences gp, Validator[] validators){
 		try {
-			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
+			PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
 			savePreferences(prefs, gp);
-			Preferences vals = prefs.node(PrefConstants.vals);
+			PreferencesWrapper vals = prefs.node(PrefConstants.vals);
 
 			Map<String, Validator> base = ExtensionValidators.instance().getMapV2();
 			for (Validator v : validators)save(v, vals, base);
 			prefs.flush();
-			_validators = null;
+			_validators.set(null);
 			updateListeners(true);
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
+	
+	/**
+	 * Save the global preferences and the validators.
+	 */
+	public synchronized void savePreferences(GlobalPreferences gp, ValidatorMutable[] validators, Boolean persist){
+		try {
+			PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, persist);
+			savePreferences(prefs, gp);
+			PreferencesWrapper vals = prefs.node(PrefConstants.vals);
+			Map<String, Validator> base = ExtensionValidators.instance().getMapV2();
+			for (ValidatorMutable v : validators)save(v, vals, base);
+
+			prefs.flush();
+			_validators.set(null);
+			updateListeners(true);
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+	}
+		
+	/**
+	 * Save the V1 preferences, so that the old validators continue to work.
+	 */
+	public static void saveV1Preferences(ValidatorMutable[] validators, Boolean persistent){
+		try {
+			GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
+			gc.setEnabledManualValidators(getEnabledManualValidators(validators));				
+			gc.setEnabledBuildValidators(getEnabledBuildValidators(validators));
+
+			gc.passivate();
+			gc.store(persistent);
+		}
+		catch (InvocationTargetException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}			
+	}
+
+	/**
+	 * Answer all the V1 validators that are manually enabled.
+	 * @return
+	 */
+	private static ValidatorMetaData[] getEnabledManualValidators(ValidatorMutable[] validators) {
+		List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
+		for (ValidatorMutable v : validators){
+			if (v.isManualValidation() && v.isV1Validator())list.add(v.getVmd());
+		}
+		ValidatorMetaData[] result = new ValidatorMetaData[list.size()];
+		list.toArray(result);
+		return result;
+	}
+
+	/**
+	 * Answer all the V1 validators that are enabled for build.
+	 * @return
+	 */
+	private static ValidatorMetaData[] getEnabledBuildValidators(ValidatorMutable[] validators) {
+		List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
+		for (ValidatorMutable v : validators){
+			if (v.isBuildValidation() && v.isV1Validator())list.add(v.getVmd());
+		}
+		ValidatorMetaData[] result = new ValidatorMetaData[list.size()];
+		list.toArray(result);
+		return result;
+	}
+
 	
 	/**
 	 * Save the global preferences and the validators.
@@ -360,7 +475,7 @@ public class ValPrefManagerGlobal {
 	public synchronized void savePreferences(){
 		try {
 			GlobalPreferences gp = ValManager.getDefault().getGlobalPreferences();
-			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
+			PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
 			savePreferences(prefs, gp);
 			prefs.flush();
 			updateListeners(true);
@@ -373,7 +488,7 @@ public class ValPrefManagerGlobal {
 	/**
 	 * Save the global preferences and the validators.
 	 */
-	private void savePreferences(IEclipsePreferences prefs, GlobalPreferences gp){
+	private void savePreferences(PreferencesWrapper prefs, GlobalPreferences gp){
 		prefs.putBoolean(PrefConstants.saveAuto, gp.getSaveAutomatically());
 		prefs.putBoolean(PrefConstants.suspend, gp.getDisableAllValidation());
 		prefs.putLong(PrefConstants.stateTS, gp.getStateTimeStamp());
@@ -388,7 +503,7 @@ public class ValPrefManagerGlobal {
 	 * @param settings
 	 */
 	public void loadMessages(Validator validator, Map<String, MessageSeveritySetting> settings) {
-		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
+		PreferencesWrapper pref = PreferencesWrapper.getPreferences(null, null);
 		try {
 			loadMessageSettings(validator, settings, pref);
 		}
@@ -404,14 +519,14 @@ public class ValPrefManagerGlobal {
 	 * @param settings
 	 * @param root the root of the preference store
 	 */
-	static void loadMessageSettings(Validator val, Map<String, MessageSeveritySetting> settings, Preferences root) 
+	static void loadMessageSettings(Validator val, Map<String, MessageSeveritySetting> settings, PreferencesWrapper root) 
 		throws BackingStoreException {
 		if (!root.nodeExists(PrefConstants.vals))return;
 		
-		Preferences vals = root.node(PrefConstants.vals); 
+		PreferencesWrapper vals = root.node(PrefConstants.vals); 
 		if (!vals.nodeExists(val.getId()))return;
 		
-		Preferences valPrefs = vals.node(val.getId());
+		PreferencesWrapper valPrefs = vals.node(val.getId());
 		String msgs = valPrefs.get(PrefConstants.msgs, ""); //$NON-NLS-1$
 		if (msgs.length() == 0)return;
 		
@@ -449,18 +564,18 @@ public class ValPrefManagerGlobal {
 //		}
 //	}
 	
-	private static class Global {
-		private boolean _manual;
-		private boolean _build;
-		private int		_version;
-		private String	_delegating;
+	private final static class Global {
+		private final boolean 	_manual;
+		private final boolean 	_build;
+		private final int		_version;
+		private final String	_delegating;
 		
 		public Global(String value){
 			Deserializer d = new Deserializer(value);
 			_manual = d.getBoolean();
 			_build = d.getBoolean();
 			_version = d.getInt();
-			if (d.hasNext())_delegating = d.getString();
+			_delegating = d.hasNext() ? d.getString() : null;
 		}
 		
 		public Global(boolean manual, boolean build, int version, String delegating){
@@ -496,7 +611,7 @@ public class ValPrefManagerGlobal {
 		}
 	}
 	
-	private static class Msgs {
+	private final static class Msgs {
 		public static String serialize(Collection<MessageSeveritySetting> messages){
 			Serializer s = new Serializer(100);
 			for (MessageSeveritySetting ms : messages){
@@ -531,8 +646,8 @@ public class ValPrefManagerGlobal {
 	 * @author karasiuk
 	 *
 	 */
-	private static class Singleton {
-		static ValPrefManagerGlobal valPrefManagerGlobal = new ValPrefManagerGlobal();
+	private final static class Singleton {
+		final static ValPrefManagerGlobal valPrefManagerGlobal = new ValPrefManagerGlobal();
 	}
 
 }

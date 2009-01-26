@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -18,12 +19,12 @@ import org.eclipse.wst.validation.internal.model.IValidatorVisitor;
  * @author karasiuk
  *
  */
-public class DisabledValidatorManager implements IValChangedListener {
+public final class DisabledValidatorManager implements IValChangedListener {
 	
-	private static int _counter;
+	private static final AtomicInteger _counter = new AtomicInteger();
 	private static final int CacheSize = 5;
 	
-	private Map<IResource, LRUSet> _map = Collections.synchronizedMap(new HashMap<IResource, LRUSet>(5));
+	private final Map<IResource, LRUSet> _map = Collections.synchronizedMap(new HashMap<IResource, LRUSet>(5));
 	
 	public static DisabledValidatorManager getDefault(){
 		return Singleton.disabledValidatorManager;
@@ -43,7 +44,7 @@ public class DisabledValidatorManager implements IValChangedListener {
 	public Set<Validator> getDisabledValidatorsFor(IResource resource) {
 		LRUSet set = _map.get(resource);
 		if (set != null){
-			set.counter = _counter++;
+			set.counter = _counter.getAndIncrement();
 			return set.validators;
 		}
 		
@@ -66,18 +67,18 @@ public class DisabledValidatorManager implements IValChangedListener {
 			_map.remove(oldest);
 		}
 		LRUSet set = new LRUSet();
-		set.counter = _counter++;
+		set.counter = _counter.getAndIncrement();
 		set.validators = vset;
 		_map.put(resource, set);		
 	}
 
 
-	private static class LRUSet {
+	private final static class LRUSet {
 		int counter;
 		Set<Validator> validators;
 	}
 	
-	private static class DisabledValidationFinder implements IValidatorVisitor {
+	private final static class DisabledValidationFinder implements IValidatorVisitor {
 		
 		private Map<String, Validator> _validators;
 
@@ -116,8 +117,8 @@ public class DisabledValidatorManager implements IValChangedListener {
 	 * @author karasiuk
 	 *
 	 */
-	private static class Singleton {
-		static DisabledValidatorManager disabledValidatorManager = new DisabledValidatorManager();
+	private final static class Singleton {
+		final static DisabledValidatorManager disabledValidatorManager = new DisabledValidatorManager();
 	}
 
 

@@ -15,11 +15,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -63,12 +60,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 		save(copy, resource.getProject());
 		_disabled = copy;		
 	}
-	
-	private IEclipsePreferences getPreferences(IProject project){
-		IScopeContext projectContext = new ProjectScope(project);
-		return projectContext.getNode(ValidationPlugin.PLUGIN_ID);
-	}
-	
+		
 	private void save(Set<IResource> disabled, IProject project) {
 		Serializer ser = new Serializer(200);
 		for (IResource resource : disabled){
@@ -76,7 +68,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 				ser.put(resource.getProjectRelativePath().toPortableString());
 			}
 		}
-		IEclipsePreferences prefs = getPreferences(project);
+		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
 		prefs.put(PrefConstants.disabled, ser.toString());
 		try {
 			prefs.flush();
@@ -89,7 +81,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 	private void load(IProject project){
 		Set<IResource> copy = new HashSet<IResource>(_disabled.size()+10);
 		copy.addAll(_disabled);
-		IEclipsePreferences prefs = getPreferences(project);
+		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
 		String disabled = prefs.get(PrefConstants.disabled, ""); //$NON-NLS-1$
 		if (disabled.length() > 0){
 			Deserializer des = new Deserializer(disabled);

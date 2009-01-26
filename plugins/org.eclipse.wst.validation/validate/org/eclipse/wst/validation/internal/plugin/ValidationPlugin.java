@@ -10,13 +10,17 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.plugin;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.EventManager;
@@ -118,6 +122,11 @@ public class ValidationPlugin extends Plugin {
 	 */
 	public String getPluginID() {
 		return PLUGIN_ID;
+	}
+	
+	public static IEclipsePreferences getPreferences(IProject project){
+		IScopeContext projectContext = new ProjectScope(project);
+		return projectContext.getNode(PLUGIN_ID);
 	}
 	
 	/**

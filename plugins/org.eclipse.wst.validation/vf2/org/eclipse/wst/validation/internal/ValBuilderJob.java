@@ -103,6 +103,7 @@ public final class ValBuilderJob extends WorkspaceJob {
 		_work.add(request);
 	}
 	
+	@Override
 	public boolean belongsTo(Object family) {
 		if (family == ResourcesPlugin.FAMILY_MANUAL_BUILD)return true;
 		if (family == ValidationBuilder.FAMILY_VALIDATION_JOB){

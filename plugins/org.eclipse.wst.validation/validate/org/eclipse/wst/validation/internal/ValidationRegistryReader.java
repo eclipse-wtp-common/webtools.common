@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -54,36 +54,40 @@ import org.osgi.framework.Bundle;
  * ValidatorManager's loadValidatorMetaData(IProject) method. ValidatorManager delegates the load
  * call to this class, and if this class is null, the singleton is new'ed up, and the registry is
  * read.
- * 
+ * <p>
  * No Validator should need to know about this class. The only class which should call
  * ValidationRegistryReader is ValidatorManager.
- * 
+ * </p>
+ * <p>
  * The Validator itself is initialized in the "initializeValidator" method.
- * 
- * <extension point="org.eclipse.wst.validation.internal.provisional.core.core.validator" id="EJBValidator" name="EJB
- * Validator"> <validator><projectNature id="com.ibm.etools.j2ee.EJBNature" include="false"/>
- * <filter objectClass="org.eclipse.core.resources.IFile" nameFilter = "ejb-jar.xml"/> <filter
- * objectClass="org.eclipse.core.resources.IFile" nameFilter = "*.java"/> <helper
- * class="org.eclipse.wst.validation.internal.provisional.core.core.ejb.workbenchimpl.EJBHelper"/> <run
- * class="org.eclipse.wst.validation.internal.provisional.core.core.ejb.EJBValidator" incremental="false" enabled="false"
- * pass="fast,full" async="false"/> <aggregateValidator class="my.aggregate.ValidatorClass"/>
- * <migrate><validator from="old.class.name" to="new.class.name"/> </migrate> </validator>
- * </extension>
+ * </p>
  */
 public final class ValidationRegistryReader implements RegistryConstants {
-	private static ValidationRegistryReader inst;
+	
+	 /* <extension point="org.eclipse.wst.validation.internal.provisional.core.core.validator" id="EJBValidator" name="EJB
+		 * Validator"> <validator><projectNature id="com.ibm.etools.j2ee.EJBNature" include="false"/>
+		 * <filter objectClass="org.eclipse.core.resources.IFile" nameFilter = "ejb-jar.xml"/> <filter
+		 * objectClass="org.eclipse.core.resources.IFile" nameFilter = "*.java"/> <helper
+		 * class="org.eclipse.wst.validation.internal.provisional.core.core.ejb.workbenchimpl.EJBHelper"/> <run
+		 * class="org.eclipse.wst.validation.internal.provisional.core.core.ejb.EJBValidator" incremental="false" enabled="false"
+		 * pass="fast,full" async="false"/> <aggregateValidator class="my.aggregate.ValidatorClass"/>
+		 * <migrate><validator from="old.class.name" to="new.class.name"/> </migrate> </validator>
+		 * </extension>
+		 */
+	
+	private static ValidationRegistryReader _inst = new ValidationRegistryReader();
 	
 	/** list of all validators registered, with their associated ValidatorMetaData, indexed by project nature id */
-	private Map<String,Set<ValidatorMetaData>> _validators;
+	private final Map<String,Set<ValidatorMetaData>> _validators;
 	
 	// list of all validators, indexed by validator class name,
 	// with the validator's ValidatorMetaData as the value.
 	// Needed by the WorkbenchReporter, because sometimes the
 	// IValidator is not enough to remove all messages from the
 	// task list.
-	private Map<String, ValidatorMetaData> _indexedValidators; 
+	private final Map<String, ValidatorMetaData> _indexedValidators; 
 	
-	private Set<ValidatorMetaData> _defaultEnabledValidators;
+	private final Set<ValidatorMetaData> _defaultEnabledValidators;
 	
 	// Since IProject's contents are all instances of IResource, every type filter for a validator
 	// must be an instance of IResource. This applies to both the rebuildCache pass and to the
@@ -100,12 +104,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * The registry is read once - when this class is instantiated.
 	 */
 	private ValidationRegistryReader() {
-		super();
 
+		_validators = new HashMap<String,Set<ValidatorMetaData>>();
+		_indexedValidators = new HashMap<String, ValidatorMetaData>();
+		_defaultEnabledValidators = new HashSet<ValidatorMetaData>();
 		try {
-			_validators = new HashMap<String,Set<ValidatorMetaData>>();
-			_indexedValidators = new HashMap<String, ValidatorMetaData>();
-			_defaultEnabledValidators = new HashSet<ValidatorMetaData>();
 
 			// Read the registry and build a map of validators. The key into
 			// the map is the IValidator instance and the value is the ValidatorMetaData
@@ -644,7 +647,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		return result;
 	}
 
-	private ValidatorMetaData.MigrationMetaData getMigrationMetaData(IConfigurationElement element, ValidatorMetaData vmd) {
+	private ValidatorMetaData.MigrationMetaData getMigrationMetaData(IConfigurationElement element) {
 		IConfigurationElement[] runChildren = element.getChildren(TAG_MIGRATE);
 		if ((runChildren == null) || (runChildren.length == 0)) {
 			return null;
@@ -659,7 +662,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return null;
 		}
 
-		ValidatorMetaData.MigrationMetaData mmd = vmd.new MigrationMetaData();
+		ValidatorMetaData.MigrationMetaData mmd = new ValidatorMetaData.MigrationMetaData();
 		for (int i = 0; i < migrateChildren.length; i++) {
 			IConfigurationElement migrateChild = migrateChildren[i];
 			String from = migrateChild.getAttribute(ATT_FROM);
@@ -718,12 +721,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * Returns the singleton ValidationRegistryReader.
 	 */
 	public static ValidationRegistryReader getReader() {
-		if (inst == null) {
-			inst = new ValidationRegistryReader();
-
-			EventManager.getManager().setActive(true);
-		}
-		return inst;
+		return _inst;
 	}
 
 	public static boolean isActivated() {
@@ -739,7 +737,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 */
 	private IExtensionPoint getValidatorExtensionPoint() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = registry.getExtensionPoint(PLUGIN_ID, VALIDATOR_EXT_PT_ID);
+		IExtensionPoint extensionPoint = registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, VALIDATOR_EXT_PT_ID);
 		if (extensionPoint == null) {
 			// If this happens it means that someone removed the "validator" extension point
 			// declaration from our plugin.xml file.
@@ -1216,28 +1214,15 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		//
 		// To load a String into the constants space, call intern() on the String.
 		//
-		ValidatorMetaData vmd = new ValidatorMetaData();
-		vmd.addFilters(getFilters(element)); // validator may, or may not, have filters
-		vmd.addProjectNatureFilters(getProjectNatureFilters(element)); // validator may, or may not, specify a project nature
-		vmd.addFacetFilters(getFacetIds(element));//validator may or may not specify the facet
-		vmd.setEnablementElement(getEnablementElement(element));
-		vmd.addAggregatedValidatorNames(getAggregateValidatorsNames(element)); // if a validator
-		// aggregated another validator, it should identify
-		// the sub-validator(s)' class name
-		vmd.setValidatorDisplayName(validatorName.intern()); // validator must have a display name.
-		vmd.setValidatorUniqueName(validatorImplName.intern());
-		vmd.setPluginId(pluginId);
-		vmd.setIncremental(getIncremental(element));
-		vmd.setFullBuild(getFullBuild(element));
-		vmd.setAsync(getAsync(element));
-		vmd.setRuleGroup(getRuleGroup(element));
-		vmd.setEnabledByDefault(getEnabledByDefault(element));
-		vmd.setMigrationMetaData(getMigrationMetaData(element, vmd));
-		vmd.setHelperClass(element, helperImplName);
-		vmd.setValidatorClass(runChildren[0]); // associate the above attributes with the validator
-		vmd.addDependentValidator(getDependentValidatorValue(element));
-		vmd.setContentTypeIds(getContentTypeBindings(element));
-		initializeValidatorCustomMarkers(element, pluginId, vmd);
+		
+		boolean async = getAsync(element);
+		String[] markerIds = initializeValidatorCustomMarkers(element, pluginId);
+		ValidatorMetaData vmd = new ValidatorMetaData(async, getAggregateValidatorsNames(element), getEnabledByDefault(element),
+				getIncremental(element), getFullBuild(element), element, helperImplName, getMigrationMetaData(element),
+				pluginId, getRuleGroup(element), runChildren[0], validatorName.intern(), validatorImplName.intern(),
+				getContentTypeBindings(element), getDependentValidatorValue(element), getEnablementElement(element),
+				getFacetIds(element), getFilters(element), getProjectNatureFilters(element), markerIds);
+		
 		
 		if (Tracing.isTraceV1()) {
 			Tracing.log("ValidationRegistryReader-10: validator loaded: " + validatorImplName); //$NON-NLS-1$
@@ -1251,10 +1236,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * @param pluginId
 	 * @param vmd
 	 */
-	private void initializeValidatorCustomMarkers(IConfigurationElement element, String pluginId, ValidatorMetaData vmd) {
+	private String[] initializeValidatorCustomMarkers(IConfigurationElement element, String pluginId) {
+		String[] qualifiedMarkerIds = null;
 		String[] customMarkerIds = getMarkerIdsValue(element);
 		if (customMarkerIds != null && customMarkerIds.length > 0) {
-			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
+			qualifiedMarkerIds = new String[customMarkerIds.length];
 			for (int i = 0; i < customMarkerIds.length; i++) {
 				String markerid = customMarkerIds[i];
 				if (markerid.lastIndexOf(".") != -1) { //$NON-NLS-1$
@@ -1267,8 +1253,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				} else
 					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i]; //$NON-NLS-1$
 			}
-			vmd.setMarkerIds(qualifiedMarkerIds);
 		}
+		return qualifiedMarkerIds;
 	}
 
 	private Expression getEnablementElement(IConfigurationElement element) {

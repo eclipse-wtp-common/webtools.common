@@ -1,5 +1,3 @@
-package org.eclipse.wst.validation.ui.internal.preferences;
-
 /*******************************************************************************
  * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,7 @@ package org.eclipse.wst.validation.ui.internal.preferences;
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.wst.validation.ui.internal.preferences;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
@@ -63,6 +62,7 @@ import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
@@ -85,22 +85,17 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 	private Shell _shell;
 
 	public interface IValidationPage {
+		
 		Composite createPage(Composite parent) throws InvocationTargetException;
-
 		boolean performOk() throws InvocationTargetException;
-
 		boolean performDefaults() throws InvocationTargetException;
-
 		Composite getControl();
-
 		void dispose();
-
 		void loseFocus();
-
 		void gainFocus();
 	}
 
-	public class InvalidPage implements IValidationPage {
+	public final class InvalidPage implements IValidationPage {
 		private Composite page = null;
 
 		private Composite composite = null;
@@ -169,7 +164,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 	}
 
-	private class ValidatorListPage implements IValidationPage {
+	private final class ValidatorListPage implements IValidationPage {
 		private Composite _page;
 		private TableViewer _validatorList;
 		private Button _enableAllButton;
@@ -182,7 +177,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		private Table _validatorsTable;
 		private GlobalPreferencesValues 	_globalPreferences = ValManager.getDefault().getGlobalPreferences().asValues();
 		private GlobalConfiguration _globalConfig;
-		private Validator[] _validators;
+		private ValidatorMutable[] _validators;
 		
 		private int _changeCount;
 
@@ -195,8 +190,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			}
 
 			public Object[] getElements(Object inputElement) {
-				if (inputElement instanceof Validator[]) {
-					return (Validator[]) inputElement;
+				if (inputElement instanceof ValidatorMutable[]) {
+					return (ValidatorMutable[]) inputElement;
 				}
 				return new Object[0];
 			}
@@ -212,8 +207,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		public class ValidationLabelProvider extends LabelProvider implements ITableLabelProvider {
 			public String getText(Object element) {
 				if (element == null)return ""; //$NON-NLS-1$
-				else if (element instanceof Validator)
-					return ((Validator) element).getName();
+				else if (element instanceof ValidatorMutable)
+					return ((ValidatorMutable) element).getName();
 				else
 					return super.getText(element);
 			}
@@ -226,7 +221,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			}
 
 			public Image getColumnImage(Object element, int columnIndex) {
-				Validator v = (Validator) element;
+				ValidatorMutable v = (ValidatorMutable) element;
 				if (columnIndex == 1) {
 					return getImage(v.isManualValidation() ? ImageNames.okTable : ImageNames.failTable);
 				} else if (columnIndex == 2) {
@@ -240,7 +235,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				if (columnIndex == 0)return ((Validator) element).getName();
+				if (columnIndex == 0)return ((ValidatorMutable) element).getName();
 				return null;
 			}
 		}
@@ -274,10 +269,17 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			settingsColumn.setText(ValUIMessages.SETTINGS);
 			settingsColumn.pack();
 		}
+		
+		private ValidatorMutable[] getDefaultValidators(){
+			Validator[] vals = ValManager.getDefault().getValidators();
+			ValidatorMutable[] vms = new ValidatorMutable[vals.length];
+			for (int i=0; i<vals.length; i++)vms[i] = new ValidatorMutable(vals[i]);
+			return vms;
+		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
 			_globalConfig = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration());
-			_validators = copyValidators(ValManager.getDefault().getValidators());
+			_validators = getDefaultValidators();
 			
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
 
@@ -402,15 +404,6 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			});
 		}
 		
-		/**
-		 * Make a copy of the current validators and store the results.
-		 */
-		private Validator[] copyValidators(Validator[] vals){
-			Validator[] copy = new Validator[vals.length];
-			for (int i=0; i<vals.length; i++)copy[i] = vals[i].copy();
-			return copy;
-		}
-
 		private void addConfirm(Composite validatorGroup) {
 			GridData gd;
 			gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -507,7 +500,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			menu.addMenuListener(new MenuAdapter() {
 				public void menuShown(MenuEvent e) {
 					IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-					Validator vw = (Validator) selection.getFirstElement();
+					ValidatorMutable vw = (ValidatorMutable) selection.getFirstElement();
 					manualItem.setSelection(vw.isManualValidation());
 					buildItem.setSelection(vw.isBuildValidation());
 					settingsItem.setEnabled(hasSettings(vw));
@@ -519,7 +512,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 		protected void columnClicked(int columnToEdit) {
 			IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-			Validator val = (Validator) selection.getFirstElement();
+			ValidatorMutable val = (ValidatorMutable) selection.getFirstElement();
 
 			switch (columnToEdit) {
 			case 1:
@@ -531,12 +524,14 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 				val.setBuildValidation(!val.isBuildValidation());
 				break;
 			case 3:
-				Validator.V2 v2 = val.asV2Validator();
-				if (v2 != null){
-					FilterDialog fd = new FilterDialog(_shell, val, null);
+				if (val.isV2Validator()){
+					ValidatorMutable newVal = new ValidatorMutable(val);
+					FilterDialog fd = new FilterDialog(_shell, newVal, null);
 					if (Window.OK == fd.open()){
 						_changeCount++;
-						val.become(fd.getValidator());
+						newVal = fd.getValidator();
+						int i = findit(val);
+						if (i != -1)_validators[i] = newVal;
 					}
 				}
 				else {
@@ -550,11 +545,15 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			_validatorList.refresh();
 		}
 
-		private void handleOldDelegate(Validator val) {
-			Validator.V1 v1 = val.asV1Validator();
-			if (v1 == null)return;
+		private int findit(ValidatorMutable val) {
+			for (int i=0; i<_validators.length; i++)if (_validators[i] == val)return i;
+			return -1;
+		}
+
+		private void handleOldDelegate(ValidatorMutable val) {
+			if (!val.isV1Validator())return;
 			
-			ValidatorMetaData vmd = v1.getVmd();
+			ValidatorMetaData vmd = val.getVmd();
 		    if (!vmd.isDelegating())return;
 		    
 		    String delegateID = _globalConfig.getDelegateUniqueName(vmd);
@@ -577,8 +576,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		 * @param v
 		 * @return true if it does
 		 */
-		boolean hasSettings(Validator v){
-			if (v.asV2Validator() != null)return true;
+		boolean hasSettings(ValidatorMutable v){
+			if (v.isV2Validator())return true;
 			if (v.getDelegatingId() != null)return true;
 			return false;
 		}
@@ -612,7 +611,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			if ((changes & GlobalPreferences.BuildChangeMask) != 0)_changeCount++;
 			
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-			vpm.savePreferences(vm.getGlobalPreferences(), _validators);
+			vpm.savePreferences(vm.getGlobalPreferences(), _validators, null);
 			saveV1Preferences();
 			
 			if (_changeCount > 0 && 
@@ -630,11 +629,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		private void saveV1Preferences(){
 			try {
 				GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
-	//			gc.setCanProjectsOverride(overrideButton.getSelection());
-				
 				gc.setDisableAllValidation(_globalPreferences.disableAllValidation);
-				//pagePreferences.setEnabledValidators(getEnabledValidators());
-				
 				gc.setEnabledManualValidators(getEnabledManualValidators());				
 				gc.setEnabledBuildValidators(getEnabledBuildValidators());
 	
@@ -643,8 +638,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			}
 			catch (InvocationTargetException e){
 				ValidationUIPlugin.getPlugin().handleException(e);
-			}
-			
+			}			
 		}
 
 		/**
@@ -653,13 +647,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		 */
 		private ValidatorMetaData[] getEnabledManualValidators() {
 			List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
-			for (Validator v : _validators){
-				if (v.isManualValidation()){
-					Validator.V1 v1 = v.asV1Validator();
-					if (v1 != null){
-						list.add(v1.getVmd());
-					}
-				}
+			for (ValidatorMutable v : _validators){
+				if (v.isManualValidation() && v.isV1Validator())list.add(v.getVmd());
 			}
 			ValidatorMetaData[] result = new ValidatorMetaData[list.size()];
 			list.toArray(result);
@@ -672,11 +661,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		 */
 		private ValidatorMetaData[] getEnabledBuildValidators() {
 			List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
-			for (Validator v : _validators){
-				if (v.isBuildValidation()){
-					Validator.V1 v1 = v.asV1Validator();
-					if (v1 != null)list.add(v1.getVmd());
-				}
+			for (ValidatorMutable v : _validators){
+				if (v.isBuildValidation() && v.isV1Validator())list.add(v.getVmd());
 			}
 			ValidatorMetaData[] result = new ValidatorMetaData[list.size()];
 			list.toArray(result);
@@ -685,7 +671,9 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 		public boolean performDefaults() throws InvocationTargetException {
 			_changeCount++;
-			_validators = copyValidators(ValManager.getDefaultValidators());
+			Validator[] vals = ValManager.getDefaultValidators();
+			_validators = new ValidatorMutable[vals.length];
+			for (int i=0; i<vals.length; i++)_validators[i] = new ValidatorMutable(vals[i]);
 			updateWidgets();
 			getDefaultsButton().setFocus();
 			return true;
@@ -707,7 +695,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		
 		private void setAllValidators(boolean bool){
 			_changeCount++;
-			for (Validator v : _validators){
+			for (ValidatorMutable v : _validators){
 				v.setBuildValidation(bool);
 				v.setManualValidation(bool);
 			}

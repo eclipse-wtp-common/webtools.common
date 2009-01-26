@@ -54,7 +54,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	/*
 	 * GRK - This class serves as a main entry point into the framework. There is one instance of this class for every
 	 * project that has a validation builder configured for it. Typically if you had ten projects in your workspace you would have
-	 * ten of these objects. They created early in the life cycle of the workbench, and then are reused. 
+	 * ten of these objects. They are created early in the life cycle of the workbench, and then are reused. 
 	 * 
 	 * My observation was that they are run serially by the same thread.
 	 */
@@ -63,8 +63,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	protected IWorkbenchContext workbenchContext = null;
 	
 	/** 
-	 * All the jobs that the validation framework spawns (except for the FamilyValidationFinishedJob) 
-	 * will belong to this family. 
+	 * All the jobs that the validation framework spawns will belong to this family. 
 	 */
 	public static final Object FAMILY_VALIDATION_JOB = new Object();
 	

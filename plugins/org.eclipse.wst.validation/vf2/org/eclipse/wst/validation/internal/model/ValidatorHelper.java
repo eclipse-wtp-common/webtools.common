@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.model;
 
-import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 
 /**
  * Implement some common validator methods, that don't need to be part of the API.
@@ -23,7 +23,7 @@ public final class ValidatorHelper {
 	/**
 	 * Answer true if this validator already has an exclude filter.
 	 */
-	public static boolean hasExcludeGroup(Validator.V2 v){
+	public static boolean hasExcludeGroup(ValidatorMutable v){
 		for (FilterGroup group : v.getGroups())if (group.isExclude())return true;
 		return false;		
 	}

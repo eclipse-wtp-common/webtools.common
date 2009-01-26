@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.resources.IContainer;
@@ -43,68 +44,70 @@ import org.osgi.framework.Bundle;
  * ValidatorMetaData; it is for use by the base framework only.
  */
 public class ValidatorMetaData {
-	private ValidatorFilter[] 		_filters;
-	private ValidatorNameFilter[] 	_projectNatureFilters;
-	private String[] 				_facetFilters;
-	private IValidator 				_validator;
-	private IWorkbenchContext 		_helper;
-	private String 					_validatorDisplayName;
-	private String 			_validatorUniqueName;
-	private String[] 		_aggregatedValidators;
-    private String[] 		_contentTypeIds = null;
-	private String[] 		_validatorNames;
-	private String 			_pluginId;
-	private boolean 		_supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
-	private boolean 		_supportsFullBuild = RegistryConstants.ATT_FULLBUILD_DEFAULT;
-	private boolean 		_isEnabledByDefault = RegistryConstants.ATT_ENABLED_DEFAULT;
-	private MigrationMetaData _migrationMetaData;
-	private int 			_ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
-	private boolean 		_async = RegistryConstants.ATT_ASYNC_DEFAULT;
-	private boolean 		_dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
-	private String[] 		_markerIds;
-	private String 			_helperClassName;
-	private IConfigurationElement _helperClassElement;
-	private IConfigurationElement _validatorClassElement;
-	private boolean 		_cannotLoad;
-	private boolean 		_manualValidation = true;
-	private boolean 		_buildValidation = true;
-	private Map<IValidatorJob, IWorkbenchContext> _helpers = 
-		Collections.synchronizedMap( new HashMap<IValidatorJob, IWorkbenchContext>() );
-	private Expression 		_enablementExpression;
-
-	ValidatorMetaData() {
-	}
-
+	private final ValidatorFilter[] _filters;
+	private final ValidatorNameFilter[] 	_projectNatureFilters;
+	private final String[]			_facetFilters;
+	private final AtomicReference<IValidator>	_validator = new AtomicReference<IValidator>();
+	private final AtomicReference<IWorkbenchContext> 		_helper = new AtomicReference<IWorkbenchContext>();
+	private final String 			_validatorDisplayName;
+	private final String 			_validatorUniqueName;
+	
 	/**
-	 * Add to the list of class names of every validator which this validator aggregates. For
+	 * The list of class names of every validator which this validator aggregates. For
 	 * example, if the EJB Validator instantiated another validator, and started its validate
 	 * method, then that instantiated class' name should be in this list.
 	 */
-	void addAggregatedValidatorNames(String[] val) {
-		_aggregatedValidators = val;
-	}
+	private final String[] 	_aggregatedValidators;
+    private final String[] 	_contentTypeIds;
+	private final String[] 	_validatorNames;
+	private final String 	_pluginId;
+	private final boolean	_supportsIncremental;
+	private final boolean 	_supportsFullBuild;
+	private final boolean 	_isEnabledByDefault;
+	private final MigrationMetaData _migrationMetaData;
+	private final int 		_ruleGroup;
+	private final boolean 	_async;
+	private final boolean 	_dependentValidator;
+	private final String[]	_markerIds;
+	private final String 	_helperClassName;
+	private final IConfigurationElement _helperClassElement;
+	private final IConfigurationElement _validatorClassElement;
+	private volatile boolean 	_cannotLoad;
+	private volatile boolean 	_manualValidation = true;
+	private volatile boolean	_buildValidation = true;
+	private final Map<IValidatorJob, IWorkbenchContext> _helpers = 
+		Collections.synchronizedMap( new HashMap<IValidatorJob, IWorkbenchContext>() );
+	private final Expression 		_enablementExpression;
 
-	/**
-	 * Add the name/type filter pair(s).
-	 */
-	void addFilters(ValidatorFilter[] filters) {
+	ValidatorMetaData(boolean async, String[] aggregatedValidators, boolean isEnabledByDefault, boolean supportsIncremental,
+			boolean supportsFullBuild, IConfigurationElement helperClassElement, String helperClassName, 
+			MigrationMetaData migrationMetaData, String pluginId, int ruleGroup, IConfigurationElement validatorClassElement,
+			String validatorDisplayName, String validatorUniqueName, String[] contentTypeIds, boolean dependentValidator,
+			Expression enablementExpression, String[] facetFilters, ValidatorFilter[] filters,
+			ValidatorNameFilter[] projectNatureFilters, String[] markerIds) {
+		_async = async;
+		_aggregatedValidators = aggregatedValidators;
+		_isEnabledByDefault = isEnabledByDefault;
+		_supportsIncremental = supportsIncremental;
+		_supportsFullBuild = supportsFullBuild;
+		_helperClassElement = helperClassElement;
+		_helperClassName = helperClassName;
+		_migrationMetaData = migrationMetaData;
+		_pluginId = pluginId;
+		_ruleGroup = ruleGroup;
+		_validatorClassElement = validatorClassElement;
+		_validatorDisplayName = validatorDisplayName;
+		_validatorUniqueName = validatorUniqueName;
+		_contentTypeIds = contentTypeIds;
+		_dependentValidator = dependentValidator;
+		_enablementExpression = enablementExpression;
+		_facetFilters = facetFilters;
 		_filters = filters;
+		_projectNatureFilters = projectNatureFilters;
+		_markerIds = markerIds;
+		_validatorNames = buildValidatorNames();
 	}
-
-	/**
-	 * Add the project nature filter(s).
-	 */
-	void addProjectNatureFilters(ValidatorNameFilter[] filters) {
-		_projectNatureFilters = filters;
-	}
-	
-	/**
-	 * Add the facet  filter(s).
-	 */
-	protected void addFacetFilters(String[] filters) {
-		_facetFilters = filters;
-	}
-	
+		
 	protected String[] getFacetFilters() {
 		return _facetFilters;
 	}
@@ -126,15 +129,17 @@ public class ValidatorMetaData {
 	 * Return the list of class names of the primary validator and its aggregates.
 	 */
 	public String[] getValidatorNames() {
-		if (_validatorNames == null) {
-			int aLength = (_aggregatedValidators == null) ? 0 : _aggregatedValidators.length;
-			_validatorNames = new String[aLength + 1]; // add 1 for the primary validator name
-			_validatorNames[0] = getValidatorUniqueName();
-			if (_aggregatedValidators != null) {
-				System.arraycopy(_aggregatedValidators, 0, _validatorNames, 1, aLength);
-			}
-		}
 		return _validatorNames;
+	}
+	
+	private String[] buildValidatorNames() {
+		int aLength = (_aggregatedValidators == null) ? 0 : _aggregatedValidators.length;
+		String [] validatorNames = new String[aLength + 1]; // add 1 for the primary validator name
+		validatorNames[0] = getValidatorUniqueName();
+		if (_aggregatedValidators != null) {
+			System.arraycopy(_aggregatedValidators, 0, validatorNames, 1, aLength);
+		}
+		return validatorNames;
 	}
 
 	/**
@@ -191,30 +196,21 @@ public class ValidatorMetaData {
 	//TODO just want to remember to figure out the many-temporary-objects problem if this method
 	// continues to new an IValidationContext every time - Ruth
 	public IWorkbenchContext getHelper(IProject project) throws InstantiationException {
-		if (_helper == null) {
-			_helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
-			if (_helper == null) {
-				_helper = new WorkbenchContext();
-				//setCannotLoad();
-				//throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
-			}
-			// Won't be using the element & name again, so clear them.
-			//_helperClassElement = null;
-			//_helperClassName = null;
+		IWorkbenchContext helper = _helper.get();
+		if (helper != null)return helper;
+		
+		helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
+		if (helper == null)helper = new WorkbenchContext();
+		
+		if ((helper.getProject() == null) || !(helper.getProject().equals(project))) {
+			helper.setProject(project);
 		}
-		if ((_helper.getProject() == null) || !(_helper.getProject().equals(project))) {
-			// Initialize helper with the new project
-			_helper.setProject(project);
-		}
-		return _helper;
+		if (_helper.compareAndSet(null, helper))return helper;
+		return _helper.get();
 	}
 
 	/**
 	 * cannotLoad is false if both the IValidator and IWorkbenchContext instance can be instantiated.
-	 * This method should be called only by the validation framework, and only if an
-	 * InstantiationException was thrown.
-	 * 
-	 * @param can
 	 */
 	private void setCannotLoad() {
 		_cannotLoad = true;
@@ -251,23 +247,19 @@ public class ValidatorMetaData {
 	 * This method returns the validator if it can be loaded; if the validator cannot be loaded,
 	 * e.g., if its plugin is disabled for some reason, then this method throws an
 	 * InstantiationException. Before the CoreException is thrown, this validator is disabled.
-	 * 
-	 * @return IValidator
-	 * @throws InstantiationException
 	 */
 	public IValidator getValidator() throws InstantiationException {
-		if (_validator == null) {
-			_validator = ValidationRegistryReader.createValidator(_validatorClassElement, getValidatorUniqueName());
+		IValidator val = _validator.get();
+		if (val != null)return val;
+		
+		val = ValidationRegistryReader.createValidator(_validatorClassElement, getValidatorUniqueName());
 
-			// Since the element won't be used any more, clear it.
-			//_validatorClassElement = null;
-
-			if (_validator == null) {
-				setCannotLoad();
-				throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEV, new String[]{getValidatorUniqueName()}));
-			}
+		if (val == null) {
+			setCannotLoad();
+			throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEV, new String[]{getValidatorUniqueName()}));
 		}
-		return _validator;
+		if (_validator.compareAndSet(null, val))return val;
+		return _validator.get();
 	}
 
 	public String getValidatorDisplayName() {
@@ -413,57 +405,11 @@ public class ValidatorMetaData {
 		return _async;
 	}
 
-	void setHelperClass(IConfigurationElement element, String helperClassName) {
-		_helperClassElement = element;
-		_helperClassName = helperClassName;
-	}
-
-	void setEnabledByDefault(boolean enabledByDefault) {
-		_isEnabledByDefault = enabledByDefault;
-	}
-
-	void setIncremental(boolean isIncremental) {
-		_supportsIncremental = isIncremental;
-	}
-
-	void setFullBuild(boolean fullBuild) {
-		_supportsFullBuild = fullBuild;
-	}
-
-	void setAsync(boolean isAsync) {
-		_async = isAsync;
-	}
-
-	void setMigrationMetaData(MigrationMetaData mmd) {
-		_migrationMetaData = mmd;
-	}
-
-	void setRuleGroup(int ruleGroup) {
-		_ruleGroup = ruleGroup;
-	}
-
-	void setValidatorClass(IConfigurationElement element) {
-		_validatorClassElement = element;
-		// validator class name == validatorUniqueName
-	}
-
-	void setValidatorDisplayName(String validatorName) {
-		_validatorDisplayName = validatorName;
-	}
-
-	void setValidatorUniqueName(String validatorUniqueName) {
-		_validatorUniqueName = validatorUniqueName;
-	}
-
-	void setPluginId(String validatorPluginId) {
-		_pluginId = validatorPluginId;
-	}
-
 	public String toString() {
 		return getValidatorUniqueName();
 	}
 
-	public class MigrationMetaData {
+	public final static class MigrationMetaData {
 		private Set<String[]> _ids;
 
 		public MigrationMetaData() {
@@ -483,10 +429,6 @@ public class ValidatorMetaData {
 		}
 	}
 
-	public void addDependentValidator(boolean b) {
-		_dependentValidator = b;
-	}
-
 	public boolean isDependentValidator() {
 		return _dependentValidator;
 	}
@@ -498,20 +440,12 @@ public class ValidatorMetaData {
 		return _markerIds;
 	}
 
-	/**
-	 * @param markerId
-	 *            The markerId to set.
-	 */
-	public void setMarkerIds(String[] markerId) {
-		this._markerIds = markerId;
-	}
-
 	public boolean isBuildValidation() {
 		return _buildValidation;
 	}
 
 	public void setBuildValidation(boolean buildValidation) {
-		this._buildValidation = buildValidation;
+		_buildValidation = buildValidation;
 	}
 
 	public boolean isManualValidation() {
@@ -519,7 +453,7 @@ public class ValidatorMetaData {
 	}
 
 	public void setManualValidation(boolean manualValidation) {
-		this._manualValidation = manualValidation;
+		_manualValidation = manualValidation;
 	}
   
 	/**
@@ -587,16 +521,8 @@ public class ValidatorMetaData {
 		return _enablementExpression;
 	}
 
-   public void setEnablementElement(Expression enablementElement) {
-	 _enablementExpression = enablementElement;
-	}
-
 public String[] getContentTypeIds() {
 	return _contentTypeIds;
-}
-
-public void setContentTypeIds(String[] contentTypeIds) {
-	this._contentTypeIds = contentTypeIds;
 }
 
  

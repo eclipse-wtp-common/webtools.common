@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +31,7 @@ import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * This class represents the user's preference or project settings.
@@ -136,16 +134,14 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * @return
 	 */
 	public static Set<String> getValidatorIdsManual(){
-		String config = null;
-		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
-		if (prefs != null)config = prefs.getString(UserManualPreference);
+		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
+		String config = prefs.get(UserManualPreference, null);
 		return getValidatorIds(config);
 	}
 	
 	public static Set<String> getValidatorIdsBuild(){
-		String config = null;
-		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
-		if (prefs != null)config = prefs.getString(UserBuildPreference);
+		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
+		String config = prefs.get(UserBuildPreference, null);
 		return getValidatorIds(config);
 	}
 	
@@ -564,27 +560,28 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		System.arraycopy(c, 0, result, 0, length);
 		return result;
 	}
-
+	
 	/**
 	 * Save the values of these fields before the project or workspace is closed.
 	 */
 	public void store() throws InvocationTargetException {
-		Preferences pref = ValidationPlugin.getPlugin().getPluginPreferences();
-		if (pref != null) {
-			try {
-				OutputStream os = new ByteArrayOutputStream();
-				pref.setValue(ValidationConfiguration.UserPreference, serialize());
-				pref.store(os, ValidationConfiguration.UserPreference);
-				pref.setValue(ValidationConfiguration.UserManualPreference, serializeManualSetting());
-				pref.store(os, ValidationConfiguration.UserManualPreference);
-				pref.setValue(ValidationConfiguration.UserBuildPreference, serializeBuildSetting());
-				pref.store(os, ValidationConfiguration.UserBuildPreference);
-				pref.setValue(ValidationConfiguration.DelegatesPreference, serializeDelegatesSetting());
-				pref.store(os, ValidationConfiguration.DelegatesPreference);
-			} catch (IOException e) {
-				ValidationPlugin.getPlugin().handleException(e);
-			}
+		store(null);
+	}
 
+	/**
+	 * Save the values of these fields before the project or workspace is closed.
+	 */
+	public void store(Boolean persist) throws InvocationTargetException {
+		PreferencesWrapper pref = PreferencesWrapper.getPreferences(null, persist);
+		pref.put(ValidationConfiguration.UserPreference, serialize());
+		pref.put(ValidationConfiguration.UserManualPreference, serializeManualSetting());
+		pref.put(ValidationConfiguration.UserBuildPreference, serializeBuildSetting());
+		pref.put(ValidationConfiguration.DelegatesPreference, serializeDelegatesSetting());
+		try {
+			pref.flush();
+		}
+		catch (BackingStoreException e){
+			throw new InvocationTargetException(e);
 		}
 	}
 
@@ -716,24 +713,22 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		// 1. This is a new workspace and no preferences exist.
 		// 2. This is a migrated workspace and the old preferences have already been created as
 		// persistent properties.
-		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
-		if (prefs != null) {
-			deserializeAllPrefs(prefs);
-		}
+		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
+		deserializeAllPrefs(prefs);
 	}
 
 	/**
 	 * @param prefs
 	 * @throws InvocationTargetException
 	 */
-	private void deserializeAllPrefs(Preferences prefs) throws InvocationTargetException {
-		String storedConfig = prefs.getString(ValidationConfiguration.UserPreference);
+	private void deserializeAllPrefs(PreferencesWrapper prefs) throws InvocationTargetException {
+		String storedConfig = prefs.get(ValidationConfiguration.UserPreference, null);
 		deserialize(storedConfig);
-		String storedManualConfig = prefs.getString(ValidationConfiguration.UserManualPreference);
+		String storedManualConfig = prefs.get(ValidationConfiguration.UserManualPreference, null);
 		deserializeManual(storedManualConfig);
-		String storedBuildConfig = prefs.getString(ValidationConfiguration.UserBuildPreference);
+		String storedBuildConfig = prefs.get(ValidationConfiguration.UserBuildPreference, null);
 		deserializeBuild(storedBuildConfig);
-		String storedDelegatesConfiguration = prefs.getString(ValidationConfiguration.DelegatesPreference);
+		String storedDelegatesConfiguration = prefs.get(ValidationConfiguration.DelegatesPreference, null);
 		deserializeDelegates(storedDelegatesConfiguration);
 	}
 	

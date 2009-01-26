@@ -19,17 +19,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.wst.validation.Friend;
+import org.eclipse.wst.validation.IMutableValidator;
 import org.eclipse.wst.validation.MessageSeveritySetting;
+import org.eclipse.wst.validation.MutableProjectSettings;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.Validator.V2;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * A class that knows how to manage the project level persisted validation settings.
@@ -76,7 +74,7 @@ public final class ValPrefManagerProject {
 	 * @deprecated
 	 */
 	public boolean hasProjectSpecificSettings(){
-		IEclipsePreferences pref = getPreferences();
+		PreferencesWrapper pref = getPreferences(null);
 		
 		if (pref == null)return false;
 		return true;
@@ -115,9 +113,9 @@ public final class ValPrefManagerProject {
 	 */
 	private List<Validator> loadValidators(Map<String, Validator> baseValidators) throws BackingStoreException {
 		List<Validator> list = new LinkedList<Validator>();
-		IEclipsePreferences pref = getPreferences();
+		PreferencesWrapper pref = getPreferences(null);
 		if (pref.nodeExists(PrefConstants.vals)){
-			Preferences vals = pref.node(PrefConstants.vals);
+			PreferencesWrapper vals = pref.node(PrefConstants.vals);
 			for (String id : vals.childrenNames()){
 				Validator base = baseValidators.get(id);
 				Validator v = ValPrefManagerGlobal.loadValidator(id, vals, base);
@@ -135,9 +133,10 @@ public final class ValPrefManagerProject {
 	 * Answer the setting of the getOverride field.
 	 */
 	public boolean getOverride(){
-		IEclipsePreferences pref = getPreferences();
+		PreferencesWrapper pref = getPreferences(null);
 		
-		if (pref == null)return ProjectPreferences.DefaultOverride;
+		if (!pref.nodeExists())return ProjectPreferences.DefaultOverride;
+		
 		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
 		if (version == 0){
 			try {
@@ -199,7 +198,7 @@ public final class ValPrefManagerProject {
 	public ProjectPreferences loadProjectPreferences(IProject project, Map<String, Validator> baseValidators) 
 		throws BackingStoreException {
 		
-		IEclipsePreferences pref = getPreferences();
+		PreferencesWrapper pref = getPreferences(null);
 
 		if (pref == null)return null;
 		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
@@ -215,7 +214,7 @@ public final class ValPrefManagerProject {
 				pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend), new Validator[0]);
 		}
 		
-		Preferences vp = pref.node(PrefConstants.vals);
+		PreferencesWrapper vp = pref.node(PrefConstants.vals);
 		List<Validator> list = new LinkedList<Validator>();
 		for (String id : vp.childrenNames()){
 			Validator base = baseValidators.get(id);
@@ -232,19 +231,17 @@ public final class ValPrefManagerProject {
 			pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend), vals);
 	}
 
-	private IEclipsePreferences getPreferences() {
-		IScopeContext projectContext = new ProjectScope(_project);
-		IEclipsePreferences pref = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
-		return pref;
+	private PreferencesWrapper getPreferences(Boolean persist) {
+		return PreferencesWrapper.getPreferences(_project, persist);
 	}
 
 	public void savePreferences(ProjectPreferences projectPreferences) {
 		Validator[] validators = projectPreferences.getValidators();
-		IEclipsePreferences pref = getPreferences();
+		PreferencesWrapper pref = getPreferences(null);
 		pref.putBoolean(PrefConstants.suspend, projectPreferences.getSuspend());
 		pref.putBoolean(PrefConstants.override, projectPreferences.getOverride());
 		pref.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
-		Preferences vals = pref.node(PrefConstants.vals);
+		PreferencesWrapper vals = pref.node(PrefConstants.vals);
 		try {
 			Validator[] workspaceVals = ValManager.getDefault().getValidators();
 			Map<String, Validator> base = new HashMap<String, Validator>(workspaceVals.length);
@@ -263,6 +260,67 @@ public final class ValPrefManagerProject {
 			ValidationPlugin.getPlugin().handleException(e);
 		}		
 	}
+
+	public void savePreferences(ProjectPreferences projectPreferences, ValidatorMutable[] validators) {
+		PreferencesWrapper pref = getPreferences(null);
+		pref.putBoolean(PrefConstants.suspend, projectPreferences.getSuspend());
+		pref.putBoolean(PrefConstants.override, projectPreferences.getOverride());
+		pref.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
+		try {
+			savePreferences(validators, false, null);
+			pref.flush();
+			updateListeners(_project);
+		}
+		catch (Exception e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}		
+	}
+	
+	public void savePreferences(MutableProjectSettings settings, Boolean persist){
+		IProject project = settings.getProject();
+		PreferencesWrapper pref = PreferencesWrapper.getPreferences(project, persist);
+		pref.putBoolean(PrefConstants.suspend, settings.getSuspend());
+		pref.putBoolean(PrefConstants.override, settings.getOverride());
+		pref.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
+		
+		IMutableValidator[] vms = settings.getValidators();
+		ValidatorMutable[] validators = new ValidatorMutable[vms.length];
+		for (int i=0; i<vms.length;i++)validators[i] = (ValidatorMutable)vms[i];
+		
+		try {
+			savePreferences(validators, false, persist);
+			pref.flush();
+			updateListeners(project);
+		}
+		catch (Exception e){
+			if (project.isAccessible())ValidationPlugin.getPlugin().handleException(e);
+		}
+	}
+	
+	public void savePreferences(ValidatorMutable[] validators, boolean flush, Boolean persist){
+		PreferencesWrapper pref = getPreferences(persist);
+		pref.putInt(PrefConstants.frameworkVersion, ValPrefManagerGlobal.frameworkVersion);
+		PreferencesWrapper vals = pref.node(PrefConstants.vals);
+		try {
+			Validator[] workspaceVals = ValManager.getDefault().getValidators();
+			Map<String, Validator> base = new HashMap<String, Validator>(workspaceVals.length);
+			for (Validator v : workspaceVals)base.put(v.getId(), v);
+			for (ValidatorMutable v : validators)ValPrefManagerGlobal.save(v, vals, base);
+			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(_project);
+			pc.setEnabledBuildValidators(getEnabledBuildValidators(validators));
+			pc.setEnabledManualValidators(getEnabledManualValidators(validators));
+			pc.passivate();
+			pc.store();
+			if (flush){
+				pref.flush();
+				updateListeners(_project);
+			}
+		}
+		catch (Exception e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}		
+		
+	}
 	
 	/**
 	 * Answer all the V1 validators that are enabled for build.
@@ -275,6 +333,18 @@ public final class ValPrefManagerProject {
 				Validator.V1 v1 = v.asV1Validator();
 				if (v1 != null)set.add(v1.getVmd());
 			}
+		}
+		return set;
+	}
+	
+	/**
+	 * Answer all the V1 validators that are enabled for build.
+	 * @return
+	 */
+	private Set<ValidatorMetaData> getEnabledBuildValidators(ValidatorMutable[] validators) {
+		Set<ValidatorMetaData> set = new HashSet<ValidatorMetaData>(50);
+		for (ValidatorMutable v : validators){
+			if (v.isBuildValidation() && v.isV1Validator())set.add(v.getVmd());
 		}
 		return set;
 	}
@@ -294,9 +364,21 @@ public final class ValPrefManagerProject {
 		return set;
 	}
 	
+	/**
+	 * Answer all the V1 validators that are enabled for manual validation.
+	 * @return
+	 */
+	private Set<ValidatorMetaData> getEnabledManualValidators(ValidatorMutable[] validators) {
+		Set<ValidatorMetaData> set = new HashSet<ValidatorMetaData>(50);
+		for (ValidatorMutable v : validators){
+			if (v.isManualValidation() && v.isV1Validator())set.add(v.getVmd());
+		}
+		return set;
+	}
+	
 	public void loadMessages(Validator validator, Map<String, MessageSeveritySetting> settings) {
 		try {
-			ValPrefManagerGlobal.loadMessageSettings(validator, settings, getPreferences());
+			ValPrefManagerGlobal.loadMessageSettings(validator, settings, getPreferences(null));
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);

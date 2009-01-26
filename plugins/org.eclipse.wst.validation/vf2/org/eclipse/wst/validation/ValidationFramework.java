@@ -46,10 +46,15 @@ import org.eclipse.wst.validation.internal.ProjectUnavailableError;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 import org.eclipse.wst.validation.internal.ValManager.UseProjectPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferences;
+import org.eclipse.wst.validation.internal.model.GlobalPreferencesValues;
+import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
@@ -173,7 +178,7 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Answer the preference store that holds the global validation settings.
+	 * Answer the preference store that holds the persisted global validation settings.
 	 */
 	public IEclipsePreferences getPreferenceStore(){
 		return new InstanceScope().getNode(ValidationPlugin.PLUGIN_ID);
@@ -278,6 +283,86 @@ public final class ValidationFramework {
 	 */
 	public Validator[] getValidators(){
 		return ValManager.getDefault().getValidatorsCopy();
+	}
+		
+	/**
+	 * Answer the validation settings that have been defined on the
+	 * project. To "activate" any changes to these settings, the
+	 * {@link #applyChanges(MutableProjectSettings, boolean)} method needs to be
+	 * called.
+	 * 
+	 * @param project The project who's settings you wish to examine or change.
+	 * @return Validation settings that apply to the given project.
+	 */
+	public MutableProjectSettings getProjectSettings(IProject project){
+		ProjectPreferences pp = ValManager.getDefault().getProjectPreferences(project);
+		Validator[] vals = pp.getValidators();
+		ValidatorMutable[] vms = new ValidatorMutable[vals.length];
+		for (int i=0; i<vals.length; i++)vms[i] = new ValidatorMutable(vals[i]);
+
+		MutableProjectSettings mps = new MutableProjectSettings(project, vms);
+		mps.setOverride(pp.getOverride());
+		mps.setSuspend(pp.getSuspend());
+		return mps;
+	}
+	
+	/**
+	 * Answer the validation settings that have been defined at the workspace level.
+	 * To "activate" any changes to these settings, the
+	 * {@link #applyChanges(MutableWorkspaceSettings, boolean)} method needs to be
+	 * called.
+	 * 
+	 * @return Validation settings that apply to the entire workspace.
+	 */
+	public MutableWorkspaceSettings getWorkspaceSettings() throws InvocationTargetException{
+		
+		ValManager vm = ValManager.getDefault();
+		GlobalPreferences gp = vm.getGlobalPreferences();
+		
+		Validator[] vals = vm.getValidators();		
+		ValidatorMutable[] vms = new ValidatorMutable[vals.length];
+		for (int i=0; i<vals.length; i++)vms[i] = new ValidatorMutable(vals[i]);
+
+		MutableWorkspaceSettings mws = new MutableWorkspaceSettings(vms, gp.asValues());
+		return mws;
+	}
+		
+	/**
+	 * Apply the changes that have been been to the validation settings.
+	 * 
+	 * @param settings
+	 *            The project settings.
+	 * @param persist
+	 *            If true then the changes are persisted to the property files.
+	 *            If false the changes are applied to the validators, but are
+	 *            not persisted.
+	 */
+	public void applyChanges(MutableProjectSettings settings, boolean persist){
+		ValPrefManagerProject vpm = new ValPrefManagerProject(settings.getProject());
+		vpm.savePreferences(settings, persist);
+	}
+	
+	/**
+	 * Apply the changes that have been been to the validation settings.
+	 * 
+	 * @param settings
+	 *            The workspace settings.
+	 * @param persist
+	 *            If true then the changes are persisted to the property files.
+	 *            If false the changes are applied to the validators, but are
+	 *            not persisted.
+	 */
+	public void applyChanges(MutableWorkspaceSettings settings, boolean persist){
+		
+		ValManager vm = ValManager.getDefault();
+		GlobalPreferencesValues gpv = settings.getGlobalPreferencesValues();
+		vm.replace(gpv);
+		
+		IMutableValidator[] mvs = settings.getValidators();
+		ValidatorMutable[] vals = new ValidatorMutable[mvs.length];
+		for (int i=0; i<mvs.length; i++)vals[i] = (ValidatorMutable)mvs[i];
+		ValPrefManagerGlobal.getDefault().savePreferences(vm.getGlobalPreferences(), vals, persist);
+		ValPrefManagerGlobal.saveV1Preferences(vals, persist);		
 	}
 	
 	/**
