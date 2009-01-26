@@ -22,10 +22,6 @@
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
-   <requires>
-      <import feature="org.eclipse.platform" version="3.4.0"/>
-   </requires>
-
    <plugin
          id="org.eclipse.wst.common.project.facet.core"
          download-size="0"
