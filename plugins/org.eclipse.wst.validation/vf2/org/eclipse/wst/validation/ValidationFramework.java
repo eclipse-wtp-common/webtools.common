@@ -332,6 +332,21 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer whether or not the validator has been activated, i.e. has the
+	 * bundle that defines the validator been loaded. We do not want to cause
+	 * unnecessary bundle loading, so this check can be performed by third party
+	 * callers, to prevent making other calls that will force the validator to
+	 * be loaded.
+	 * 
+	 * @param validator
+	 *            The validator that is being tested.
+	 * @return true if the validator has already been loaded.
+	 */
+	public boolean isLoaded(Validator validator){
+		return validator.isLoaded();
+	}
+	
+	/**
 	 * Waits until all validation jobs are finished. This method will block the
 	 * calling thread until all such jobs have finished executing, or until this
 	 * thread is interrupted. If there are no validation jobs that are
