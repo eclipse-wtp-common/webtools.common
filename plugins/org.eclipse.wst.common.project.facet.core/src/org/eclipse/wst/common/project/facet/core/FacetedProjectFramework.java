@@ -60,6 +60,23 @@ public final class FacetedProjectFramework
     }
     
     /**
+     * Determines whether the specified project is faceted. This method will return
+     * <code>false</code> if the project is not accessible.
+     * 
+     * @param project the project to check
+     * @return <code>true</code> if the project is faceted
+     * @throws CoreException if failed while reading project metadata
+     */
+    
+    public static boolean isFacetedProject( final IProject project )
+    
+        throws CoreException
+        
+    {
+        return ( project.isAccessible() && project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) );
+    }
+    
+    /**
      * <p>Determines whether the specified project facet is installed in the
      * provided project. Returns <code>false</code> if the project is not 
      * accessible, the project is not faceted or the facet id is unrecognized.</p>
