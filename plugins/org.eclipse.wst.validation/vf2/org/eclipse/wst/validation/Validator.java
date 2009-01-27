@@ -116,6 +116,10 @@ public abstract class Validator implements Comparable<Validator> {
 	
 	/** Has the validator been migrated from an earlier version in this session, but not yet saved? */
 	private boolean _migrated;
+	
+	public Validator(IProject project){
+		_project = project;
+	}
 		
 	void setMigrated(boolean migrated){
 		_migrated = migrated;
@@ -144,8 +148,7 @@ public abstract class Validator implements Comparable<Validator> {
 	 *            means that you are a global validator.
 	 */
 	public static Validator create(ValidatorMetaData vmd, ValidationConfiguration config, IProject project){
-		V1 v1 = new V1(vmd, config);
-		v1._project = project;
+		V1 v1 = new V1(vmd, config, project);
 		return v1;
 	}
 	
@@ -196,7 +199,6 @@ public abstract class Validator implements Comparable<Validator> {
 		_manualValidation = v._manualValidation;
 		_markerId = v._markerId;
 		_messageSettings = v._messageSettings;
-		_project = v._project;
 		_sourceId = v._sourceId;
 		_version = v._version;
 		_migrated = v._migrated;
@@ -636,7 +638,8 @@ public static class V1 extends Validator {
 	 * @param vmd
 	 * @param config this is used to set the global enablement options. In some case this can be null.
 	 */
-	public V1(ValidatorMetaData vmd, ValidationConfiguration config){
+	public V1(ValidatorMetaData vmd, ValidationConfiguration config, IProject project){
+		super(project);
 		_vmd = vmd;
 		if (config != null){
 			setBuildValidation(config.isBuildEnabled(vmd));
@@ -663,17 +666,9 @@ public static class V1 extends Validator {
 	public V1 asV1Validator() {
 		return this;
 	}
-	
-	@Override
-	public void become(Validator val) {
-		super.become(val);
-		V1 v1 = val.asV1Validator();
-		if (v1 == null)throw new IllegalArgumentException("Internal error, the incoming validator must be a v1 validator"); //$NON-NLS-1$
-		_vmd = v1._vmd;
-	}
-		
+			
 	public Validator copy(boolean includeChangeCounts) {
-		V1 v = new V1Copy(_vmd, null);
+		V1 v = new V1Copy(_vmd, null, _project);
 		v.copyLocal(this, includeChangeCounts);
 				
 		return v;
@@ -776,9 +771,9 @@ public static class V1 extends Validator {
 	 * want to copy the vmd object), I came up with this approach to only copy the fields that
 	 * the preference page was worried about. 
 	 */
-	public static class V1Copy extends V1 {
-		public V1Copy(ValidatorMetaData vmd, ValidationConfiguration vc){
-			super(vmd, vc);
+	public final static class V1Copy extends V1 {
+		public V1Copy(ValidatorMetaData vmd, ValidationConfiguration vc, IProject project){
+			super(vmd, vc, project);
 		}
 		
 		@Override
@@ -790,14 +785,7 @@ public static class V1 extends Validator {
 		public boolean setBuildValidation(boolean bool) {
 			return setBuildValidation2(bool);
 		}
-		
-		@Override
-		public void become(Validator val) {
-			super.become(val);
-			super.setBuildValidation(val.isBuildValidation());
-			super.setManualValidation(val.isManualValidation());
-		}
-		
+				
 	}
 		
 }
@@ -855,10 +843,10 @@ public final static class V2 extends Validator implements IAdaptable {
 	private AtomicBoolean _pendingValidationStarted = new AtomicBoolean();
 	
 	V2(IConfigurationElement configElement, IProject project){
+		super(project);
 		assert configElement != null;
 		_validatorConfigElement = configElement;
 		_validatorClassName = configElement.getAttribute(ExtensionConstants.AttribClass);
-		_project = project;
 
 		IConfigurationElement[] groupReferenceElements = configElement.getChildren(ExtensionConstants.Group.elementGroup);
 		List<String> validatorGroupIDs = new ArrayList<String>();
@@ -872,9 +860,9 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	private V2(IProject project, String validatorClassName, AbstractValidator validator){
+		super(project);
 		assert validator != null;
 		
-		_project = project;
 		_validatorClassName = validatorClassName;
 		_validator = validator;
 		init();
@@ -1170,7 +1158,6 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * @return true if the test passed
 	 */
 //	private boolean sanityTest(int numberofMessages, IResource resource) {
-//		//FIXME make this more general and configurable
 //		if (numberofMessages < 201)return true;
 //		
 //		String resName = ""; //$NON-NLS-1$
@@ -1291,24 +1278,6 @@ public final static class V2 extends Validator implements IAdaptable {
 		return true;
 	}
 	
-	@Override
-	public void become(Validator val) {
-		super.become(val);
-		V2 v2 = val.asV2Validator();
-		if (v2 == null)throw new IllegalArgumentException(ValMessages.Error20);
-		_changeCountGroups = v2._changeCountGroups;
-		_delegated = v2._delegated;
-		_groups = v2._groups;
-		_groupsArray = v2._groupsArray;
-		_id = v2._id;
-		_name = v2._name;
-		_pendingValidationStarted = v2._pendingValidationStarted;
-		_validator = v2._validator;
-		_validatorConfigElement = v2._validatorConfigElement;
-		_validatorClassName = v2._validatorClassName;
-		_validatorGroupIds = v2._validatorGroupIds;
-	}
-
 	public synchronized void replaceFilterGroup(FilterGroup existing, FilterGroup merged) {
 		remove(existing);
 		add(merged);
@@ -1327,23 +1296,6 @@ public void setSourceId(String sourceId) {
 	}
 }
 
-/**
- * Take the instance variables from the incoming validator and set them to yourself.
- * @param validator
- */
-public void become(Validator validator) {
-	_buildValidation = validator._buildValidation;
-	_delegatingId = validator._delegatingId;
-	_manualValidation = validator._manualValidation;
-	_markerId = validator._markerId;
-	_messageSettings = validator._messageSettings;
-	_project = validator._project;
-	_sourceId = validator._sourceId;
-	_version = validator._version;
-	_changeCountGlobal = validator._changeCountGlobal;
-	_changeCountMessages = validator._changeCountMessages;
-	_migrated = validator._migrated;
-}
 
 void setMessages(Map<String, MessageSeveritySetting> map) {
 	_messageSettings = map;

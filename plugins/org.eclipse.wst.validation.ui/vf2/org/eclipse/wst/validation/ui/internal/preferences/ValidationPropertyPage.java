@@ -1,5 +1,3 @@
-package org.eclipse.wst.validation.ui.internal.preferences;
-
 /*******************************************************************************
  * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -10,9 +8,9 @@ package org.eclipse.wst.validation.ui.internal.preferences;
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.wst.validation.ui.internal.preferences;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -68,6 +66,7 @@ import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 import org.eclipse.wst.validation.internal.ValManager.UseProjectPreferences;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
@@ -90,24 +89,19 @@ public class ValidationPropertyPage extends PropertyPage  {
 	private Shell 			_shell;
 
 	public interface IValidationPage {
+		
 		Composite createPage(Composite parent) throws InvocationTargetException;
-
 		boolean performOk() throws InvocationTargetException;
-
 		boolean performDefaults() throws InvocationTargetException;
-
 		Composite getControl();
-
 		void dispose();
-
 		void loseFocus();
-
 		void gainFocus();
 	}
 
 	public class InvalidPage implements IValidationPage {
+		
 		private Composite page = null;
-
 		private Composite composite = null;
 		private GridLayout layout = null;
 		private Label messageLabel = null;
@@ -169,7 +163,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 	}
 
-	private class ValidatorListPage implements IValidationPage {
+	private final class ValidatorListPage implements IValidationPage {
 		private Composite 		_page;
 
 		private TableViewer 	_validatorList;
@@ -180,7 +174,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		private Link			_configLink;
 		private Button			_addValidationBuilder;
 		private Table 			_validatorsTable;
-		private Validator[]		_validators;
+		private ValidatorMutable[]		_validators;
 		
 		/** Number of things that may have changed. */
 		private int				_changes;
@@ -194,8 +188,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 
 			public Object[] getElements(Object inputElement) {
-				if (inputElement instanceof Validator[]) {
-					return (Validator[]) inputElement;
+				if (inputElement instanceof ValidatorMutable[]) {
+					return (ValidatorMutable[]) inputElement;
 				}
 				return new Object[0];
 			}
@@ -213,7 +207,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			public String getText(Object element) {
 				if (element == null)return ""; //$NON-NLS-1$
 				else if (element instanceof Validator)
-					return ((Validator) element).getName();
+					return ((ValidatorMutable) element).getName();
 				else
 					return super.getText(element);
 			}
@@ -227,7 +221,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 
 			public Image getColumnImage(Object element, int columnIndex) {
-				Validator v = (Validator) element;
+				ValidatorMutable v = (ValidatorMutable) element;
 				if (columnIndex == 1) {
 					return getImage(v.isManualValidation() ? ImageNames.okTable
 							: ImageNames.failTable);
@@ -242,7 +236,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				if (columnIndex == 0)return ((Validator) element).getName();
+				if (columnIndex == 0)return ((ValidatorMutable) element).getName();
 				return null;
 			}
 		}
@@ -267,8 +261,10 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefault()
-				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustUse));
+			Validator[] vals = ValManager.getDefault()
+				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustUse);
+			_validators = new ValidatorMutable[vals.length];
+			for (int i=0; i<vals.length; i++)_validators[i] = new ValidatorMutable(vals[i]);
 
 			Composite validatorGroup = new Composite(parent, SWT.NONE);
 
@@ -466,23 +462,14 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_addValidationBuilder.setText(ValUIMessages.ADD_VALIDATION_BUILDER);
 			_addValidationBuilder.setSelection(false);
 		}
-		
-		/**
-		 * Make a copy of the current validators and store the results.
-		 */
-		private Validator[] copyValidators(Validator[] vals){
-			Validator[] validators = new Validator[vals.length];
-			for (int i=0; i<vals.length; i++)validators[i] = vals[i].copy();
-			return validators;
-		}
-		
+				
 		/**
 		 * Does this validator have extra settings that can be configured?
 		 * @param v
 		 * @return true if it does
 		 */
-		boolean hasSettings(Validator v){
-			if (v.asV2Validator() != null)return true;
+		boolean hasSettings(ValidatorMutable v){
+			if (v.isV2Validator())return true;
 			if (v.getDelegatingId() != null)return true;
 			return false;
 		}
@@ -561,7 +548,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			menu.addMenuListener(new MenuAdapter() {
 				public void menuShown(MenuEvent e) {
 					IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-					Validator val = (Validator) selection.getFirstElement();
+					ValidatorMutable val = (ValidatorMutable) selection.getFirstElement();
 					manualItem.setSelection(val.isManualValidation());
 					buildItem.setSelection(val.isBuildValidation());
 					settingsItem.setEnabled(hasSettings(val));
@@ -573,22 +560,24 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 		protected void columnClicked(int columnToEdit) {
 			IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-			Validator val = (Validator) selection.getFirstElement();
+			ValidatorMutable val = (ValidatorMutable) selection.getFirstElement();
 
 			switch (columnToEdit) {
 			case 1:
-				if (val.setManualValidation(!val.isManualValidation()))_changes++;
+				val.setManualValidation(!val.isManualValidation());
 				break;
 			case 2:
-				if (val.setBuildValidation(!val.isBuildValidation()))_changes++;
+				val.setBuildValidation(!val.isBuildValidation());
 				break;
 			case 3:
-				Validator.V2 v2 = val.asV2Validator();
-				if (v2 != null){
-					FilterDialog fd = new FilterDialog(_shell, val, getProject());
+				if (val.isV2Validator()){
+					ValidatorMutable newVal = new ValidatorMutable(val);
+					FilterDialog fd = new FilterDialog(_shell, newVal, getProject());
 					if (Window.OK == fd.open()){
 						_changes++;
-						val.become(fd.getValidator());
+						newVal = fd.getValidator();
+						int i = findit(val);
+						if (i != -1)_validators[i] = newVal;
 					}
 				}
 				else {
@@ -602,12 +591,16 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_validatorList.refresh();
 		}
 
-		private void handleOldDelegate(Validator val) {
+		private int findit(ValidatorMutable val) {
+			for (int i=0; i<_validators.length; i++)if (_validators[i] == val)return i;
+			return -1;
+		}
+		
+		private void handleOldDelegate(ValidatorMutable val) {
 			try {
-				Validator.V1 v1 = val.asV1Validator();
-				if (v1 == null)return;
+				if (!val.isV1Validator())return;
 				
-				ValidatorMetaData vmd = v1.getVmd();
+				ValidatorMetaData vmd = val.getVmd();
 			    if (!vmd.isDelegating())return;
 			    
 			    GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
@@ -658,6 +651,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		public boolean performOk() throws InvocationTargetException {
 			
 			addBuilder();
+			for (ValidatorMutable vm : _validators)if (vm.isChanged())_changes++;
 			if (_changes == 0)return true;
 			// [213631] this warning should only be shown if the user actually tried to override
 			// the validators
@@ -667,9 +661,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 			updateV1ProjectSettings();
 			IProject project = getProject();
-			ProjectPreferences pp = new ProjectPreferences(project, _override.getSelection(), _suspend.getSelection(), _validators);
+			ProjectPreferences pp = new ProjectPreferences(project, _override.getSelection(), _suspend.getSelection(), null);
 			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-			vpm.savePreferences(pp);
+			vpm.savePreferences(pp, _validators);
 			return true;
 		}
 		
@@ -697,8 +691,11 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
-			_validators = copyValidators(ValManager.getDefault()
-				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustNotUse));
+			Validator[] vals = ValManager.getDefault()
+				.getValidatorsConfiguredForProject(getProject(), UseProjectPreferences.MustNotUse);
+			_validators = new ValidatorMutable[vals.length];
+			for (int i=0; i<vals.length; i++)_validators[i] = new ValidatorMutable(vals[i]);
+
 			_changes++;
 			updateWidgetsForDefaults();
 			getDefaultsButton().setFocus();
@@ -714,9 +711,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 		private void setAllValidators(boolean bool) {
 			for (TableItem item : _validatorsTable.getItems()) {
-				Validator val = (Validator) item.getData();
-				if (val.setManualValidation(bool))_changes++;
-				if (val.setBuildValidation(bool))_changes++;
+				ValidatorMutable val = (ValidatorMutable) item.getData();
+				val.setManualValidation(bool);
+				val.setBuildValidation(bool);
 			}
 		}
 

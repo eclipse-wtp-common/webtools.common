@@ -45,6 +45,7 @@ import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
@@ -68,14 +69,8 @@ public final class FilterDialog extends Dialog {
 	 */
 	private IProject	_project;
 	
-	/** 
-	 * A deep copy of the validator, so that we can use it as a model object, and not worry about the
-	 * user not saving their changes.
-	 */
-	private Validator 	_validator;
+	private ValidatorMutable 	_validator;
 	
-	// The V2 version of _validator.
-	private Validator.V2	_v2;
 	private TreeViewer		_tree;
 	private Combo			_delegating;
 	private IAdapterFactory _adaptorFactory = new AdapterFactory();
@@ -109,12 +104,11 @@ public final class FilterDialog extends Dialog {
 	 * @param project the project that the filters are being added to. If these are workspace
 	 * level filters, then this must be null. 
 	 */
-	public FilterDialog(Shell shell, Validator validator, IProject project){
+	public FilterDialog(Shell shell, ValidatorMutable validator, IProject project){
 		super(shell);
 		_shell = shell;
 		setShellStyle(getShellStyle() | SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
-		_validator = validator.copy(true);
-		_v2 = _validator.asV2Validator();
+		_validator = validator;
 		_project = project;
 	}
 	
@@ -126,7 +120,7 @@ public final class FilterDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite c = (Composite)super.createDialogArea(parent);
 		c.setLayout(new GridLayout(2, false));
-		if (_v2 == null){
+		if (!_validator.isV2Validator()){
 			new Label(c, SWT.NONE).setText(ValUIMessages.fdNoFilters);
 		}
 		else {
@@ -136,17 +130,17 @@ public final class FilterDialog extends Dialog {
 			
 			_tree = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 			_tree.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			Platform.getAdapterManager().registerAdapters(_adaptorFactory, Validator.V2.class);
+			Platform.getAdapterManager().registerAdapters(_adaptorFactory, ValidatorMutable.class);
 			Platform.getAdapterManager().registerAdapters(_adaptorFactory, FilterGroup.class);
 			Platform.getAdapterManager().registerAdapters(_adaptorFactory, FilterRule.class);
 			_tree.setContentProvider(new BaseWorkbenchContentProvider());
 			_tree.setLabelProvider(new WorkbenchLabelProvider());
-			_tree.setInput(_v2);
+			_tree.setInput(_validator);
 			_tree.expandAll();
 			
 			addButtons(c);
 			
-			String delegatingId = _v2.getDelegatingId();
+			String delegatingId = _validator.getDelegatingId();
 			if (delegatingId != null){
 				addDelegatorSelection(c);
 			}
@@ -237,7 +231,7 @@ public final class FilterDialog extends Dialog {
 				FilterRule rule = nfr.getRule();
 				if (rule != null){
 					FilterGroup newGroup = FilterGroup.addRule(_selectedGroup, rule);
-					_v2.replaceFilterGroup(_selectedGroup, newGroup);
+					_validator.replaceFilterGroup(_selectedGroup, newGroup);
 					_selectedGroup = newGroup;
 					refresh();
 				}
@@ -276,15 +270,14 @@ public final class FilterDialog extends Dialog {
 	}
 	
 	private void restoreDefaults() {
-		if (_v2 != null){
+		if (_validator.isV2Validator()){
 			try {
-				String id = _v2.getId();
+				String id = _validator.getId();
 				Validator[] vals = ValManager.getDefaultValidators();
 				for (Validator v : vals){
 					if (v.getId().equals(id)){
-						_validator = v;
-						_v2 = v.asV2Validator();
-						_tree.setInput(_v2);
+						_validator = new ValidatorMutable(v);
+						_tree.setInput(_validator);
 						_tree.expandAll();
 						refresh();
 						return;
@@ -300,7 +293,7 @@ public final class FilterDialog extends Dialog {
 
 
 	private void addMessageMappings(Composite c) {
-		if (_v2 == null)return;
+		if (!_validator.isV2Validator())return;
 		Map<String,MessageSeveritySetting> mappings = _validator.getMessageSettings();
 		if (mappings == null || mappings.size() == 0)return;
 		
@@ -351,7 +344,7 @@ public final class FilterDialog extends Dialog {
 	 * Add a combo box so that the user can change which delegating validator to call.
 	 */
 	private void addDelegatorSelection(Composite c) {
-		Map map = ValidatorDelegatesRegistry.getInstance().getDelegateDescriptors(_v2.getValidatorClassname());
+		Map map = ValidatorDelegatesRegistry.getInstance().getDelegateDescriptors(_validator.getValidatorClassname());
 		if (map == null)return;
 		
 		Composite line = new Composite(c, SWT.NONE);
@@ -371,7 +364,7 @@ public final class FilterDialog extends Dialog {
 			ValidatorDelegateDescriptor vd = (ValidatorDelegateDescriptor)it.next();
 			items[i] = vd.getName();
 			ids[i] = vd.getId();
-			if (vd.getId().equals(_v2.getDelegatingId())){
+			if (vd.getId().equals(_validator.getDelegatingId())){
 				selected = vd.getName();
 			}
 		}
@@ -384,7 +377,7 @@ public final class FilterDialog extends Dialog {
 
 			public void widgetSelected(SelectionEvent e) {
 				int sel = _delegating.getSelectionIndex();
-				_v2.setDelegatingId(ids[sel]);
+				_validator.setDelegatingId(ids[sel]);
 			}
 			
 		});
@@ -395,15 +388,16 @@ public final class FilterDialog extends Dialog {
 	 * @param exclude
 	 */
 	private void addGroup(boolean exclude){
-		if (_v2 == null)return;
+		if (!_validator.isV2Validator())return;
 		FilterRule[] rules = new FilterRule[0];
-		_v2.add(FilterGroup.create(exclude, rules));
+		_validator.add(FilterGroup.create(exclude, rules));
 		refresh();
 		
 	}
 	
 	private void refresh(){
 		_tree.refresh();
+		_tree.expandAll();
 		updateButtons();		
 	}
 	
@@ -415,13 +409,13 @@ public final class FilterDialog extends Dialog {
 			FilterGroup group = findGroup(_selectedRule);
 			if (group != null){
 				FilterGroup newGroup = FilterGroup.removeRule(group, _selectedRule);
-				_v2.replaceFilterGroup(group, newGroup);
+				_validator.replaceFilterGroup(group, newGroup);
 				refresh();
 			}
 		}
 		
 		if (_selectedGroup != null){
-			_v2.remove(_selectedGroup);
+			_validator.remove(_selectedGroup);
 			refresh();
 			return;
 		}
@@ -433,7 +427,7 @@ public final class FilterDialog extends Dialog {
 	 * @return null if we can not find the group.
 	 */
 	private FilterGroup findGroup(FilterRule rule) {
-		for (FilterGroup group : _v2.getGroups()){
+		for (FilterGroup group : _validator.getGroups()){
 			for (FilterRule fr : group.getRules()){
 				if (fr.equals(rule))return group;
 			}
@@ -442,8 +436,8 @@ public final class FilterDialog extends Dialog {
 	}
 
 	private void updateButtons() {
-		if (_v2 != null){
-			_addGroupExclude.setEnabled(!ValidatorHelper.hasExcludeGroup(_v2));
+		if (_validator.isV2Validator()){
+			_addGroupExclude.setEnabled(!ValidatorHelper.hasExcludeGroup(_validator));
 		}
 		_addRule.setEnabled(_selectedGroup != null);
 		_remove.setEnabled(_selectedGroup != null || _selectedRule != null);
@@ -469,7 +463,7 @@ public final class FilterDialog extends Dialog {
 		return new Point(600, 475);
 	}
 
-	public Validator getValidator() {
+	public ValidatorMutable getValidator() {
 		return _validator;
 	}
 }

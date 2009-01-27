@@ -19,10 +19,7 @@ import java.util.StringTokenizer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
@@ -588,8 +585,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
   
   public void store() throws InvocationTargetException {
 		IProject project = (IProject) getResource();
-		IScopeContext projectContext = new ProjectScope(project);
-		final IEclipsePreferences pref = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
+		final PreferencesWrapper pref = PreferencesWrapper.getPreferences(project, null);
 		if (pref != null) {
 			try {
 				pref.put(ValidationConfiguration.UserPreference, serialize());
@@ -607,9 +603,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
   
   protected void loadPreference() throws InvocationTargetException {
 		IProject project = (IProject) getResource();
-		IScopeContext projectContext = new ProjectScope(project);
-		final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
-		if (prefs != null) {
+		final PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
+		if (prefs.nodeExists()) { 
 			String storedConfig = prefs.get(ValidationConfiguration.UserPreference, DefaultValue);
 			deserialize(storedConfig);
 			String storedManualConfig = prefs.get(ValidationConfiguration.UserManualPreference, DefaultValue);
@@ -644,8 +639,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
    */
   private Set<String> getIds(String prefKey, String enabledPhrase){
 	IProject project = (IProject) getResource();
-	IScopeContext projectContext = new ProjectScope(project);
-	final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
+	final PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
 	if (prefs == null)return null;
 	
 	String storedConfig = prefs.get(prefKey, DefaultValue);

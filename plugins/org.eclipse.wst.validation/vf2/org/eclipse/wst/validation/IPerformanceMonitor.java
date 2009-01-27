@@ -20,7 +20,8 @@ import java.util.List;
  * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
  * (repeatedly) as the API evolves.
  * </p>
- * @noimplement
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author karasiuk
  *
  */

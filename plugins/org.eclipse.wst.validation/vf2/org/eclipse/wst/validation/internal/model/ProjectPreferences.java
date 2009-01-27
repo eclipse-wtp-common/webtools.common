@@ -42,11 +42,11 @@ public final class ProjectPreferences {
 		_validators = new Validator[0];
 	}
 	
-	public ProjectPreferences(IProject project, boolean override, boolean suspend, Validator[] validtors){
+	public ProjectPreferences(IProject project, boolean override, boolean suspend, Validator[] validators){
 		_project = project;
 		_override = override;
 		_suspend = suspend;
-		_validators = validtors;
+		_validators = validators;
 	}
 	
 	public boolean getOverride() {

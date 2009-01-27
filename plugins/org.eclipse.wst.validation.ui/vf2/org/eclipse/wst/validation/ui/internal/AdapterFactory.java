@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.internal.ValidatorMutable;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.model.FilterRule;
 
@@ -23,6 +24,7 @@ public class AdapterFactory implements IAdapterFactory {
 		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof Validator.V2)return _valAdaptor;
 		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof FilterGroup)return _fgAdaptor;
 		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof FilterRule)return _ruleAdaptor;
+		if (adapterType == IWorkbenchAdapter.class && adaptableObject instanceof ValidatorMutable)return _valMutableAdaptor;
 
 		return null;
 	}
@@ -43,6 +45,25 @@ public class AdapterFactory implements IAdapterFactory {
 
 		public String getLabel(Object o) {
 			return ((Validator.V2) o).getName();
+		}
+
+		public Object getParent(Object o) {
+			return null;
+		}
+
+	};
+	private IWorkbenchAdapter _valMutableAdaptor = new IWorkbenchAdapter() {
+
+		public Object[] getChildren(Object o) {
+			return ((ValidatorMutable) o).getGroups();
+		}
+
+		public ImageDescriptor getImageDescriptor(Object o) {
+			return null;
+		}
+
+		public String getLabel(Object o) {
+			return ((ValidatorMutable) o).getName();
 		}
 
 		public Object getParent(Object o) {
