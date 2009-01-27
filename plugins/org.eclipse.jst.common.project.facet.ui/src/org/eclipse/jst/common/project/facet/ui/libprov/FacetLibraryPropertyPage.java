@@ -299,6 +299,10 @@ public abstract class FacetLibraryPropertyPage
             {
                 setMessage( st.getMessage(), WARNING );
             }
+            else if( severity == IStatus.INFO )
+            {
+                setMessage( st.getMessage(), INFORMATION );
+            }
             else
             {
                 setMessage( null );
