@@ -46,7 +46,7 @@ public final class ValidationState {
 	 * this id.
 	 * </p>
 	 * @deprecated This approach is not thread safe, the longer form of the AbstractValidator validate method should be used instead.
-	 * @see AbstractValidator#validate(org.eclipse.core.resources.IResource, int, ValidationState, org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.resources.IResource, int)
+	 * @see AbstractValidator#validate(ValidationEvent, ValidationState, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static final String TriggerResource = ValidationPlugin.PLUGIN_ID + ".Trigger"; //$NON-NLS-1$
 
