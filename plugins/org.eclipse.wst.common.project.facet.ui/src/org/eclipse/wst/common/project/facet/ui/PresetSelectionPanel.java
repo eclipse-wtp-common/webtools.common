@@ -105,8 +105,6 @@ public final class PresetSelectionPanel
         
         this.descTextField.setLayoutData( gd );
         
-        refreshDescription();
-        
         this.fpjwc.addListener
         ( 
             new IFacetedProjectListener()
