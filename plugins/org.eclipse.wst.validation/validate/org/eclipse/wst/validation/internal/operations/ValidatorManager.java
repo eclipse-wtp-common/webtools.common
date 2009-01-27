@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,12 +51,11 @@ public final class ValidatorManager {
 	private static IResourceUtil _resourceUtil; // a common utility, different whether or not
 	// WSAD is running in headless or UI mode, which can retrieve the line number of some MOF objects.
 	private static final Class RESOURCEUTIL_DEFAULTCLASS = org.eclipse.wst.validation.internal.operations.DefaultResourceUtil.class;
-	private static Class _resourceUtilClass = RESOURCEUTIL_DEFAULTCLASS;
-		
-	// an empty set, provided for convenience, so that we only construct one empty set once.
-	private static final Set<ValidatorMetaData> EMPTY_SET = new HashSet<ValidatorMetaData>();
-	
+	private static Class _resourceUtilClass = RESOURCEUTIL_DEFAULTCLASS;		
 	private static Class 	_messageLimitOwner;
+	
+	private static final Set<ValidatorMetaData> EmptySet = Collections.emptySet();
+		
 	private String[] 		_internalOwners;
 	private Map<IValidatorJob, List<MessageInfo>> _validatorMsgs = 
 		Collections.synchronizedMap( new HashMap<IValidatorJob, List<MessageInfo>>() );	
@@ -75,7 +73,7 @@ public final class ValidatorManager {
 	 */
 	public void disableAllValidators(IProject currentProject, IProgressMonitor monitor) {
 		// Disable the individual validators
-		setEnabledValidators(currentProject, EMPTY_SET, monitor);
+		setEnabledValidators(currentProject, EmptySet, monitor);
 	}
 
 	public void enableValidator(String validatorId) {
@@ -257,14 +255,14 @@ public final class ValidatorManager {
 	 * Return a collection of incremental ValidatorMetaData configured on a certain type of IProject
 	 * (e.g. EJB Project vs. Web Project).
 	 */
-	public Set getProjectConfiguredIncrementalValidators(IProject project) {
+	public Set<ValidatorMetaData> getProjectConfiguredIncrementalValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getIncrementalValidators());
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
@@ -276,14 +274,14 @@ public final class ValidatorManager {
 	 * 
 	 * If the collection has not been calculated before, calculate it now, and cache the result.
 	 */
-	public Set getProjectConfiguredValidatorMetaData(IProject project) {
+	public Set<ValidatorMetaData> getProjectConfiguredValidatorMetaData(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getValidators());
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
@@ -296,14 +294,14 @@ public final class ValidatorManager {
 	 * true, return incremental validators. If the parameter is false, return nonincremental
 	 * validators.
 	 */
-	public Set getProjectEnabledIncrementalValidators(IProject project) {
+	public Set<ValidatorMetaData> getProjectEnabledIncrementalValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true));
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
@@ -316,14 +314,14 @@ public final class ValidatorManager {
 	 * true, return incremental validators. If the parameter is false, return nonincremental
 	 * validators.
 	 */
-	public Collection getProjectEnabledNonIncrementalValidators(IProject project) {
+	public Collection<ValidatorMetaData> getProjectEnabledNonIncrementalValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(false));
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
@@ -334,7 +332,7 @@ public final class ValidatorManager {
 	 * and who are also enabled by this project. If the list of enabled validators hasn't been
 	 * loaded into the cache, load it now. Otherwise, just return it.
 	 */
-	public Set getProjectEnabledValidators(IProject project) {
+	public Set<ValidatorMetaData> getProjectEnabledValidators(IProject project) {
 		return getEnabledValidators(project);
 	}
 
@@ -400,16 +398,12 @@ public final class ValidatorManager {
 	/**
 	 * @deprecated For use by the validation framework only.
 	 */
-	public Set<ValidatorMetaData> getIncrementalValidators(Collection vmds) {
+	public Set<ValidatorMetaData> getIncrementalValidators(Collection<ValidatorMetaData> vmds) {
 		if (vmds == null)return new HashSet<ValidatorMetaData>();
 
 		Set<ValidatorMetaData> result = new HashSet<ValidatorMetaData>();
-		Iterator iterator = vmds.iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			if (vmd.isIncremental()) {
-				result.add(vmd);
-			}
+		for (ValidatorMetaData vmd : vmds) {
+			if (vmd.isIncremental())result.add(vmd);
 		}
 		return result;
 	}
@@ -520,7 +514,7 @@ public final class ValidatorManager {
 	/**
 	 * @deprecated For use by the validation framework only.
 	 */
-	public Set getEnabledIncrementalValidators(IProject project) {
+	public Set<ValidatorMetaData> getEnabledIncrementalValidators(IProject project) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getEnabledIncrementalValidators(true);
@@ -528,7 +522,7 @@ public final class ValidatorManager {
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
@@ -585,14 +579,14 @@ public final class ValidatorManager {
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}
 
 	private ValidatorMetaData[] getStateOfProjectLevelValidatorsFromGlobal(ProjectConfiguration prjp) throws InvocationTargetException {
 		List<ValidatorMetaData> enabledGlobalValidatorsForProject = new ArrayList<ValidatorMetaData>();
 		GlobalConfiguration gf = ConfigurationManager.getManager().getGlobalConfiguration();
-		List allProjectValidator = getAllValidatorUniqueNames(prjp.getValidators());
+		List<String> allProjectValidator = getAllValidatorUniqueNames(prjp.getValidators());
 		for(ValidatorMetaData vmd : gf.getBuildEnabledValidators()) {
 			if(allProjectValidator.contains(vmd.getValidatorUniqueName())) {
 				enabledGlobalValidatorsForProject.add(vmd);
@@ -619,7 +613,7 @@ public final class ValidatorManager {
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}	
 	
@@ -631,7 +625,7 @@ public final class ValidatorManager {
 		} catch (InvocationTargetException e) {
 			ValidationPlugin.getPlugin().handleException(e);
 			ValidationPlugin.getPlugin().handleException(e.getTargetException());
-			return Collections.EMPTY_SET;
+			return EmptySet;
 		}
 	}	
 	

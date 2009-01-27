@@ -119,8 +119,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			_dependents = new HashMap<IResource,Set<Depends>>(100);
 		}
 		else {
-			String errorMessage = "The following dependency could not be restored " + 
-				"because the following resource {0} could no longer be found."; 
+			String errorMessage = ValMessages.Error21; 
 			DataInputStream in = null;
 			try {
 				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();

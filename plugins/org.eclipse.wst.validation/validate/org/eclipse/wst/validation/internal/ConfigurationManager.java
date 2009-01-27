@@ -107,7 +107,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 			gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
 			if (gp == null) {
 				gp = new GlobalConfiguration(root);
-				PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
+//				PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
 //				prefs.addPropertyChangeListener(gp);
 				
 				gp.getVersion(); // initialize the configuration's version attribute

@@ -22,6 +22,7 @@ import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.RegistryConstants;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
@@ -57,7 +58,7 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 	 *             EnabledIncrementalValidatorsOperation(IProject, IResourceDelta, int, boolean)
 	 *             instead.
 	 */
-	public EnabledIncrementalValidatorsOperation(IProject project, Set validators, IResourceDelta delta, int ruleGroup) {
+	public EnabledIncrementalValidatorsOperation(IProject project, Set<ValidatorMetaData> validators, IResourceDelta delta, int ruleGroup) {
 		this(project, delta, ruleGroup, DEFAULT_ASYNC);
 		setEnabledValidators(validators);
 	}

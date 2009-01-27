@@ -501,8 +501,7 @@ public abstract class FilterRule implements IAdaptable {
 
 		@Override
 		public String getDisplayableType() {
-			// FIXME this should be replaced as soon as we are allowed to change the UI.
-			return ValMessages.RuleFile;
+			return ValMessages.RulePattern;
 		}
 
 		@Override

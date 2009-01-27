@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ public class ValMessages extends NLS {
 	
 	public static String DecodeError1;
 	public static String Error20;
+	public static String Error21;
 	
 	public static String ErrConfig;	
 	public static String ErrFilterRule;	  
@@ -64,6 +65,7 @@ public class ValMessages extends NLS {
 	public static String RuleFull;
 	public static String RuleContentType;
 	public static String RuleFacet;
+	public static String RulePattern;
 	
 	public static String ContentTypeExact;
 	public static String ContentTypeNotExact;
