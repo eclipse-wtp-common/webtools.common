@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -266,7 +267,7 @@ public abstract class FacetLibraryPropertyPage
         }
     }
     
-    private void updateValidation()
+    protected final void updateValidation()
     {
         if( this.rootComposite.getDisplay().getThread() != Thread.currentThread() )
         {
@@ -284,28 +285,45 @@ public abstract class FacetLibraryPropertyPage
             return;
         }
         
-        String message = null;
+        final IStatus st = performValidation();
+        final int severity = st.getSeverity();
         
-        if( this.libraryInstallDelegate != null )
+        if( severity == IStatus.ERROR )
         {
-            IStatus status = this.libraryInstallDelegate.validate();
-                
-            if( status.getSeverity() == IStatus.ERROR )
-            {
-                message = status.getMessage();
-            }
-        }
-        
-        if( message == null )
-        {
-            setMessage( null );
-            setValid( true );
+            setMessage( st.getMessage(), ERROR );
+            setValid( false );
         }
         else
         {
-            setMessage( message, ERROR );
-            setValid( false );
+            if( severity == IStatus.WARNING )
+            {
+                setMessage( st.getMessage(), WARNING );
+            }
+            else
+            {
+                setMessage( null );
+            }
+            
+            setValid( true );
         }
+    }
+    
+    /**
+     * The method that performs validation of controls displayed on the page. It can be
+     * overridden as necessary to incorporate validation of additional controls. The
+     * subclass can call updateValidation() method to refresh page validation.
+     * 
+     * @return the validation result
+     */
+    
+    protected IStatus performValidation()
+    {
+        if( this.libraryInstallDelegate != null )
+        {
+            return this.libraryInstallDelegate.validate();
+        }
+        
+        return Status.OK_STATUS;
     }
 
     @Override
