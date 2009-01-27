@@ -7,21 +7,19 @@ import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.ValidationState;
 
 /**
- * A test validator that we never expect to be activated. The reason we never expect it to be validated is that by
- * default it is turned off. The user can still explicitly turn it on, in which case it will run, and that would not
- * be considered an error.
+ * A test validator that we never expect to be activated. The reason we never expect it to be validated is that it has a bogus facet filter.
  * @author karasiuk
  *
  */
-public class T3A extends AbstractValidator {
+public class T3B extends AbstractValidator {
 	
 	private boolean _invoked;
 	
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
 		if (!_invoked){
 			_invoked = true;
-			throw new RuntimeException("The T3A validator should never be activated or called. If this validator was manually turned on " +
-				"though the preferences, then this is not a real error.");
+			throw new RuntimeException("The T3B validator should never be activated or called. If this validator was manually chnaged " +
+				"though the preferences, and the bogus filter was removed, then this isn't a real error.");
 		}
 		
 		return null;		

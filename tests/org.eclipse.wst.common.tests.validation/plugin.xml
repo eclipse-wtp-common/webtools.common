@@ -89,11 +89,8 @@
       </validator>
    </extension>
    
-   <extension
-         point="org.eclipse.wst.validation.validatorV2"
-         id="Test4" name="%Test4.Validator.Name">
-      <validator
-            build="false"
+   <extension point="org.eclipse.wst.validation.validatorV2" id="Test4" name="%Test4.Validator.Name">
+      <validator build="false"
             class="org.eclipse.wst.validation.tests.TestValidator4"
             manual="false">
          <include>
@@ -105,11 +102,9 @@
          </include>
       </validator>
    </extension>
+   
    <extension id="Test5" name="%Test5.Validator.Name" point="org.eclipse.wst.validation.validatorV2">
-      <validator
-            build="false"
-            class="org.eclipse.wst.validation.tests.TestValidator5"
-            manual="false">
+      <validator build="false" class="org.eclipse.wst.validation.tests.TestValidator5" manual="false">
          <include>
             <rules>
                <fileext
@@ -119,8 +114,8 @@
          </include>
       </validator>
    </extension>
-   <extension
-         point="org.eclipse.wst.validation.validatorDelegates">
+   
+   <extension point="org.eclipse.wst.validation.validatorDelegates">
       <delegate
             class="org.eclipse.wst.validation.tests.TestValidator5D"
             name="%Test5D.Validator.Name"
@@ -207,12 +202,8 @@
       </validator>
      </extension>
      
-	<extension
-         point="org.eclipse.wst.validation.validatorV2"
-         id="T1B" name="T1B Validator">
-      <validator
-            build="false"
-            class="org.eclipse.wst.validation.tests.T1B"
+	<extension point="org.eclipse.wst.validation.validatorV2" id="T1B" name="T1B Validator">
+      <validator build="false" class="org.eclipse.wst.validation.tests.T1B"
             markerId="org.eclipse.wst.common.tests.validation.t1bmarker">
          <include>
             <rules>
@@ -224,13 +215,8 @@
       </validator>
      </extension>
      
-	<extension
-         point="org.eclipse.wst.validation.validatorV2"
-         id="T1C" name="T1C">
-      <validator
-            build="false"
-            class="org.eclipse.wst.validation.tests.T1C"
-            manual="false">
+	<extension point="org.eclipse.wst.validation.validatorV2" id="T1C" name="T1C">
+      <validator build="false" class="org.eclipse.wst.validation.tests.T1C" manual="false">
          <include>
             <rules>
                <fileext
@@ -253,10 +239,7 @@
       </validator>
    </extension>
      
- <extension
-       id="t2a"
-       name="T2A"
-       point="org.eclipse.wst.validation.validator">
+ <extension id="t2a" name="T2A" point="org.eclipse.wst.validation.validator">
     <validator>
        <helper
              class="org.eclipse.wst.validation.tests.T2AHelper">
@@ -395,7 +378,5 @@
          </include>
       </validator>
    </extension>
-   
- 
- 
+  
 </plugin>

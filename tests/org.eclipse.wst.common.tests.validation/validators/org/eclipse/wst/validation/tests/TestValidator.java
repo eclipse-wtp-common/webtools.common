@@ -79,6 +79,7 @@ public class TestValidator extends AbstractValidator {
 			count++;
 			int severity = -1;
 			String[] tokens = line.split("\\s");
+			if (tokens.length == 0)continue;
 			String token = tokens[0];
 			severity = findSeverity(token, severity);
 			if (severity == -1 && map != null){
