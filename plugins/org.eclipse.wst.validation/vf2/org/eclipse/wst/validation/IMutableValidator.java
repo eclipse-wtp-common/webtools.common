@@ -47,6 +47,12 @@ public interface IMutableValidator {
 	String getName();
 	
 	/**
+	 * Answer the validator's class name.
+	 * @return
+	 */
+	String getValidatorClassname();
+	
+	/**
 	 * Answer if the validator is enabled for build based validation.
 	 */
 	boolean isBuildValidation();
