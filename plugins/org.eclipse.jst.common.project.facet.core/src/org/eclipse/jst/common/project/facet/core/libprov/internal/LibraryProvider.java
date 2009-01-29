@@ -25,7 +25,9 @@ import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext;
 import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryInstallDelegate;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderActionType;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderInstallOperationConfig;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
@@ -331,6 +333,40 @@ public final class LibraryProvider
         return instantiate( actionDef.getPluginId(), cl );
     }
 
+    public LibraryProviderOperationConfig createInstallOperationConfig( final LibraryInstallDelegate libraryInstallDelegate )
+    {
+        final ActionDef actionDef = getActionDef( LibraryProviderActionType.INSTALL );
+        
+        if( actionDef == null )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        final Class<LibraryProviderOperationConfig> cl = actionDef.getConfigClass();
+        
+        if( cl == null )
+        {
+            // Either the action has no config or the config class could not be loaded. In
+            // the latter case, the problem has been reported to the user via the log.
+            
+            return null;
+        }
+        
+        final LibraryProviderOperationConfig cfg = instantiate( actionDef.getPluginId(), cl );
+        
+        if( cfg instanceof LibraryProviderInstallOperationConfig )
+        {
+            ( (LibraryProviderInstallOperationConfig) cfg ).init( libraryInstallDelegate, this );
+        }
+        else
+        {
+            cfg.init( libraryInstallDelegate.getFacetedProject(), 
+                      libraryInstallDelegate.getProjectFacetVersion(), this );
+        }
+        
+        return cfg;
+    }
+    
     public LibraryProviderOperationConfig createOperationConfig( final IFacetedProjectBase fproj,
                                                                  final IProjectFacetVersion fv,
                                                                  final LibraryProviderActionType type )

@@ -34,7 +34,7 @@ import org.eclipse.jdt.internal.core.UserLibraryManager;
 import org.eclipse.jst.common.project.facet.core.internal.ClasspathUtil;
 import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderFramework;
-import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderInstallOperationConfig;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
@@ -52,9 +52,11 @@ import org.osgi.service.prefs.Preferences;
  * @since 1.4
  */
 
+@SuppressWarnings( "restriction" )
+
 public class UserLibraryProviderInstallOperationConfig
 
-    extends LibraryProviderOperationConfig
+    extends LibraryProviderInstallOperationConfig
     
 {
     private static final String CLASS_NAME 
@@ -178,13 +180,29 @@ public class UserLibraryProviderInstallOperationConfig
     }
     
     /**
+     * Adds a library to the list of selected user libraries.
+     * 
+     * @param libraryName the name of the library
+     */
+    
+    public synchronized final void addLibraryName( final String libraryName )
+    {
+        if( ! this.libraryNamesReadOnly.contains( libraryName ) )
+        {
+            final List<String> oldLibraryNames = this.libraryNamesReadOnly;
+            this.libraryNames = new ArrayList<String>( oldLibraryNames );
+            this.libraryNamesReadOnly = Collections.unmodifiableList( this.libraryNames );
+            this.libraryNames.add( libraryName );
+            notifyListeners( PROP_LIBRARY_NAMES, oldLibraryNames, this.libraryNamesReadOnly );
+        }
+    }
+    
+    /**
      * Resolve the referenced user libraries into a collection of classpath entries that reference
      * physical libraries. 
      * 
      * @return the classpath entries contributed by the referenced user libraries
      */
-    
-    @SuppressWarnings( "restriction" )
     
     public synchronized Collection<IClasspathEntry> resolve()
     {

@@ -68,21 +68,13 @@ public final class DomUtil
         }
     }
 
-    public static Document doc( final String str )
-    {
-        return doc( new StringReader( str ) );
-    }
-    
-    public static Document doc( final File f )
+    public static Document doc( final InputStream stream )
     {
         final DocumentBuilder docbuilder = docbuilder();
         
-        InputStream in = null;
-
         try
         {
-            in = new BufferedInputStream( new FileInputStream( f ) );
-            return docbuilder.parse( in );
+            return docbuilder.parse( stream );
         }
         catch( IOException e )
         {
@@ -96,13 +88,33 @@ public final class DomUtil
         {
             throw new XmlParseException( e );
         }
+    }
+    
+    public static Document doc( final String str )
+    {
+        return doc( new StringReader( str ) );
+    }
+    
+    public static Document doc( final File f )
+    {
+        InputStream stream = null;
+
+        try
+        {
+            stream = new BufferedInputStream( new FileInputStream( f ) );
+            return doc( stream );
+        }
+        catch( IOException e )
+        {
+            throw new XmlParseException( e );
+        }
         finally
         {
-            if( in != null )
+            if( stream != null )
             {
                 try
                 {
-                    in.close();
+                    stream.close();
                 }
                 catch( IOException e ) {}
             }
@@ -256,8 +268,9 @@ public final class DomUtil
         for( int i = 0, n = nodes.getLength(); i < n; i++ )
         {
             final Node node = nodes.item( i );
+            final short nodeType = node.getNodeType();
             
-            if( node.getNodeType() == Node.TEXT_NODE )
+            if( nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE )
             {
                 final String val = node.getNodeValue();
                 
@@ -287,6 +300,21 @@ public final class DomUtil
         else
         {
             return str;
+        }
+    }
+    
+    public static String text( final Element el,
+                               final String childElementName )
+    {
+        final Element childElement = element( el, childElementName );
+        
+        if( childElement == null )
+        {
+            return null;
+        }
+        else
+        {
+            return text( childElement );
         }
     }
     

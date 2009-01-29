@@ -140,6 +140,11 @@
     name="%legacyLibraryProviderDetectorsExtensionPointName" 
     schema="schemas/legacyLibraryProviderDetectors.exsd"/>
    	
+  <extension-point 
+    id="downloadableLibraries" 
+    name="%downloadableLibrariesExtensionPointName" 
+    schema="schemas/downloadableLibraries.exsd"/>
+   	
   <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
     <provider id="user-library-provider" abstract="true">
       <label>%userLibraryProviderLabel</label>
@@ -230,6 +235,26 @@
         <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
       </action>
     </provider>
+  </extension>
+  
+
+  <!--
+    ********
+    * Demo *
+    ********
+  -->
+  
+  <!-- IMPORTANT: This extension exists in order to demo the downloadable libraries feature. It should 
+     be removed (along with the jpa-demo-libs.xml file) prior to Galileo GA. -->
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.downloadableLibraries">
+    <import-definitions url="http://www.eclipse.org/fproj/jpa-demo-libs.xml">
+      <enablement>
+        <with variable="requestingProjectFacet">
+          <test property="org.eclipse.wst.common.project.facet.core.projectFacet" value="jpt.jpa" forcePluginActivation="true"/>
+        </with>
+      </enablement>
+    </import-definitions>
   </extension>
 
 </plugin>

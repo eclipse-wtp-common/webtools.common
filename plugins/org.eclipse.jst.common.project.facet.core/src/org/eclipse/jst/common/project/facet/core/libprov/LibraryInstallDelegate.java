@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -263,6 +264,35 @@ public final class LibraryInstallDelegate
         return this.configs.get( provider );
     }
     
+    private static final String EXPR_VAR_CONTEXT 
+        = "context"; //$NON-NLS-1$
+    
+    private static final String EXPR_VAR_REQUESTING_PROJECT_FACET 
+        = "requestingProjectFacet"; //$NON-NLS-1$
+    
+    private static final String EXPR_VAR_PROJECT_FACETS 
+        = "projectFacets"; //$NON-NLS-1$
+    
+    private static final String EXPR_VAR_TARGETED_RUNTIMES 
+        = "targetedRuntimes"; //$NON-NLS-1$
+
+    /**
+     * This method is not api-ready. Don't use it yet.
+     */
+    
+    public synchronized EvaluationContext createEvaluationContent()
+    {
+        final EvaluationContext evalContext = new EvaluationContext( null, this.fv );
+        final EnablementExpressionContext context = new EnablementExpressionContext( this.fproj, this.fv );
+        evalContext.addVariable( EXPR_VAR_CONTEXT, context );
+        evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, this.fv );
+        evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, this.fproj.getProjectFacets() );
+        evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, this.fproj.getTargetedRuntimes() );
+        evalContext.setAllowPluginActivation( true );
+    
+        return evalContext;
+    }
+    
     /**
      * Refreshes the list of available library providers and resets the current library provider
      * if the one currently selected is not in the available list any longer.
@@ -306,12 +336,8 @@ public final class LibraryInstallDelegate
         for( ILibraryProvider provider : this.providers )
         {
             final LibraryProvider prov = (LibraryProvider) provider;
-            
-            final LibraryProviderOperationConfig config 
-                = prov.createOperationConfig( fproj, fv, LibraryProviderActionType.INSTALL );
-            
+            final LibraryProviderOperationConfig config = prov.createInstallOperationConfig( this );
             config.addListener( this.providerConfigListener );
-            
             this.configs.put( provider, config );
         }
         

@@ -28,6 +28,10 @@ public final class FacetedProjectFrameworkJavaExtUiPlugin
     
     public static final String IMG_PATH_JAVA_WIZBAN = "images/java-wizban.png"; //$NON-NLS-1$
     public static final String IMG_PATH_SOURCE_FOLDER = "images/source-folder.gif"; //$NON-NLS-1$
+    public static final String IMG_PATH_WIZBAN_DOWNLOAD_LIBRARY = "images/wizban/download-library.png"; //$NON-NLS-1$
+    public static final String IMG_PATH_BUTTON_DOWNLOAD = "images/buttons/download.png"; //$NON-NLS-1$
+    public static final String IMG_PATH_BUTTON_MANAGE_LIBRARIES = "images/buttons/manage-libraries.png"; //$NON-NLS-1$
+    public static final String IMG_PATH_OBJECTS_LIBRARY = "images/objects/library.gif"; //$NON-NLS-1$
     
     private static final ILog platformLog
         = Platform.getLog( Platform.getBundle( PLUGIN_ID ) );

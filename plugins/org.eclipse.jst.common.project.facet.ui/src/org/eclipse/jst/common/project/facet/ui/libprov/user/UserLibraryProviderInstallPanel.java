@@ -11,9 +11,13 @@
 
 package org.eclipse.jst.common.project.facet.ui.libprov.user;
 
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gd;
+import static org.eclipse.jst.common.project.facet.ui.internal.FacetedProjectFrameworkJavaExtUiPlugin.IMG_PATH_BUTTON_DOWNLOAD;
+import static org.eclipse.jst.common.project.facet.ui.internal.FacetedProjectFrameworkJavaExtUiPlugin.IMG_PATH_BUTTON_MANAGE_LIBRARIES;
+import static org.eclipse.jst.common.project.facet.ui.internal.FacetedProjectFrameworkJavaExtUiPlugin.IMG_PATH_OBJECTS_LIBRARY;
+import static org.eclipse.jst.common.project.facet.ui.internal.FacetedProjectFrameworkJavaExtUiPlugin.getImageDescriptor;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdvfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 
 import java.util.ArrayList;
@@ -21,7 +25,6 @@ import java.util.List;
 
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.core.UserLibraryManager;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.preferences.UserLibraryPreferencePage;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -35,18 +38,23 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jst.common.project.facet.core.libprov.IPropertyChangeListener;
 import org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperationConfig;
 import org.eclipse.jst.common.project.facet.ui.libprov.LibraryProviderOperationPanel;
+import org.eclipse.jst.common.project.facet.ui.libprov.user.internal.DownloadLibraryWizard;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.wst.common.project.facet.ui.internal.util.EnhancedHyperlink;
 
 /**
  * The install operation panel corresponding to the user-library-provider that uses JDT user library facility
@@ -56,6 +64,8 @@ import org.eclipse.wst.common.project.facet.ui.internal.util.EnhancedHyperlink;
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 1.4
  */
+
+@SuppressWarnings( "restriction" )
 
 public class UserLibraryProviderInstallPanel
 
@@ -78,7 +88,11 @@ public class UserLibraryProviderInstallPanel
         this.rootComposite = new Composite( parent, SWT.NONE );
         this.rootComposite.setLayout( gl( 1, 0, 0 ) );
         
-        final Table libsTable = new Table( this.rootComposite, SWT.CHECK | SWT.BORDER );
+        final Composite tableComposite = new Composite( this.rootComposite, SWT.NONE );
+        tableComposite.setLayoutData( gdhfill() );
+        tableComposite.setLayout( gl( 2, 0, 0 ) );
+        
+        final Table libsTable = new Table( tableComposite, SWT.CHECK | SWT.BORDER );
         libsTable.setLayoutData( gdhhint( gdhfill(), 60 ) );
         
         this.libsTableViewer = new CheckboxTableViewer( libsTable );
@@ -122,58 +136,113 @@ public class UserLibraryProviderInstallPanel
         
         cfg.addListener( listener, UserLibraryProviderInstallOperationConfig.PROP_LIBRARY_NAMES );
         
-        final Composite manageLibrariesHyperlinkComposite = new Composite( this.rootComposite, SWT.NONE );
-        manageLibrariesHyperlinkComposite.setLayoutData( gdhfill() );
-        manageLibrariesHyperlinkComposite.setLayout( gl( 3, 0, 0 ) );
+        final Image manageLibrariesImage = getImageDescriptor( IMG_PATH_BUTTON_MANAGE_LIBRARIES ).createImage();
+        final Image downloadLibraryImage = getImageDescriptor( IMG_PATH_BUTTON_DOWNLOAD ).createImage();
         
-        final EnhancedHyperlink manageLibrariesHyperlink 
-            = new EnhancedHyperlink( manageLibrariesHyperlinkComposite, SWT.NONE );
-        
-        manageLibrariesHyperlink.setLayoutData( gd() );
-        manageLibrariesHyperlink.setText( Resources.manageLibrariesLink );
-        
-        manageLibrariesHyperlink.addHyperlinkListener
+        libsTable.addDisposeListener
         (
-            new HyperlinkAdapter()
+            new DisposeListener()
             {
-                public void linkActivated( final HyperlinkEvent event )
+                public void widgetDisposed( final DisposeEvent event )
                 {
-                    final String id = UserLibraryPreferencePage.ID;
-                    final Shell shell = manageLibrariesHyperlink.getShell();
-                    
-                    final PreferenceDialog dialog 
-                        = PreferencesUtil.createPreferenceDialogOn( shell, id, new String[] { id }, null );
-                    
-                    if( dialog.open() == Window.OK )
-                    {
-                        UserLibraryProviderInstallPanel.this.libsTableViewer.refresh();
-                    }
+                    manageLibrariesImage.dispose();
+                    downloadLibraryImage.dispose();
                 }
             }
         );
         
-        final Label spacer = new Label( manageLibrariesHyperlinkComposite, SWT.NONE );
-        spacer.setLayoutData( gdhfill() );
+        final Menu menu = new Menu( libsTable );
+        libsTable.setMenu( menu );
         
-        final Control controlNextToManageHyperlink 
-            = createControlNextToManageHyperlink( manageLibrariesHyperlinkComposite );
+        final ToolBar toolBar = new ToolBar( tableComposite, SWT.FLAT | SWT.VERTICAL );
+        toolBar.setLayoutData( gdvfill() );
         
-        controlNextToManageHyperlink.setLayoutData( gd() );
+        final SelectionAdapter manageLibrariesListener = new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( final SelectionEvent event )
+            {
+                final String id = UserLibraryPreferencePage.ID;
+                final Shell shell = libsTable.getShell();
+                
+                final PreferenceDialog dialog 
+                    = PreferencesUtil.createPreferenceDialogOn( shell, id, new String[] { id }, null );
+                
+                if( dialog.open() == Window.OK )
+                {
+                    UserLibraryProviderInstallPanel.this.libsTableViewer.refresh();
+                }
+            }
+        };
+
+        final MenuItem manageLibrariesMenuItem = new MenuItem( menu, SWT.PUSH );
+        manageLibrariesMenuItem.setText( Resources.manageLibrariesMenuItem );
+        manageLibrariesMenuItem.setImage( manageLibrariesImage );
+        manageLibrariesMenuItem.addSelectionListener( manageLibrariesListener );
+
+        final ToolItem manageLibrariesButton = new ToolItem( toolBar, SWT.PUSH );
+        manageLibrariesButton.setImage( manageLibrariesImage );
+        manageLibrariesButton.setToolTipText( Resources.manageLibrariesButtonToolTip );
+        manageLibrariesButton.addSelectionListener( manageLibrariesListener );
+        
+        final SelectionAdapter downloadLibraryListener = new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( final SelectionEvent event )
+            {
+                final UserLibraryProviderInstallOperationConfig cfg
+                    = (UserLibraryProviderInstallOperationConfig) getOperationConfig();
+                
+                final String downloadedLibraryName = DownloadLibraryWizard.open( cfg);
+                
+                if( downloadedLibraryName != null )
+                {
+                    refreshLibrariesList();
+                    cfg.addLibraryName( downloadedLibraryName );
+                }
+            }
+        };
+
+        final MenuItem downloadLibraryMenuItem = new MenuItem( menu, SWT.PUSH );
+        downloadLibraryMenuItem.setText( Resources.downloadLibraryMenuItem );
+        downloadLibraryMenuItem.setImage( downloadLibraryImage );
+        downloadLibraryMenuItem.addSelectionListener( downloadLibraryListener );
+
+        final ToolItem downloadLibraryButton = new ToolItem( toolBar, SWT.PUSH );
+        downloadLibraryButton.setImage( downloadLibraryImage );
+        downloadLibraryButton.setToolTipText( Resources.downloadLibraryButtonToolTip );
+        downloadLibraryButton.addSelectionListener( downloadLibraryListener );
+        
+        final Control footerControl = createFooter( this.rootComposite );
+        
+        if( footerControl != null )
+        {
+            footerControl.setLayoutData( gdhfill() );
+        }
         
         return this.rootComposite;
     }
     
     /**
-     * This method can be overridden to create a control to the right of the manage libraries
-     * hyperlink. The default implementation creates an invisible filler control.
+     * This method can be overridden to create a control beneath the libraries table. The default
+     * implementation doesn't create a control and returns <code>null</code>.
      * 
      * @param parent the parent composite 
      * @return the created control
      */
     
+    protected Control createFooter( final Composite parent )
+    {
+        return createControlNextToManageHyperlink( parent );
+    }
+
+    /**
+     * @deprecated override createFooter method instead
+     */
+    
     protected Control createControlNextToManageHyperlink( final Composite parent )
     {
-        return new Label( parent, SWT.NONE );
+        return null;
     }
     
     private void handleLibraryNamesChanged()
@@ -198,6 +267,11 @@ public class UserLibraryProviderInstallPanel
             = (UserLibraryProviderInstallOperationConfig) getOperationConfig();
 
         this.libsTableViewer.setCheckedElements( cfg.getLibraryNames().toArray() );        
+    }
+    
+    private void refreshLibrariesList()
+    {
+        this.libsTableViewer.refresh();
     }
     
     private static final class LibrariesContentProvider
@@ -228,14 +302,22 @@ public class UserLibraryProviderInstallPanel
         extends LabelProvider
         
     {
+        private final Image libraryImage = getImageDescriptor( IMG_PATH_OBJECTS_LIBRARY ).createImage();
+        
         public Image getImage( final Object element )
         {
-            return JavaPluginImages.get( JavaPluginImages.IMG_OBJS_LIBRARY );
+            return this.libraryImage;
         }
 
         public String getText( final Object element )
         {
             return (String) element;
+        }
+
+        @Override
+        public void dispose()
+        {
+            this.libraryImage.dispose();
         }
     }
     
@@ -245,6 +327,11 @@ public class UserLibraryProviderInstallPanel
         
     {
         public static String manageLibrariesLink;
+        public static String downloadLibraryLink;
+        public static String manageLibrariesMenuItem;
+        public static String manageLibrariesButtonToolTip;
+        public static String downloadLibraryMenuItem;
+        public static String downloadLibraryButtonToolTip;
 
         static
         {

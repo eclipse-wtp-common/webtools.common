@@ -46,6 +46,11 @@ public final class FacetedProjectFrameworkJavaPlugin
         platformLog.log( status );
     }
     
+    public static void logError( final String message )
+    {
+        log( createErrorStatus( message ) );
+    }
+    
     public static IStatus createErrorStatus( final String message )
     {
         return createErrorStatus( message, null );

@@ -66,6 +66,7 @@ public final class FacetedProjectFramework
      * @param project the project to check
      * @return <code>true</code> if the project is faceted
      * @throws CoreException if failed while reading project metadata
+     * @since 1.4
      */
     
     public static boolean isFacetedProject( final IProject project )

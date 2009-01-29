@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.jst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.jst.common.project.facet.core" id="downloadableLibraries" name="Downloadable Libraries Extension Point"/>
+      </appinfo>
+      <documentation>
+         Provides a way to register libraries that can be downloaded from remote servers. This is a feature of the user library provider.
+      </documentation>
+   </annotation>
+
+   <include schemaLocation="schema://org.eclipse.core.expressions/schema/expressionLanguage.exsd"/>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            Allows importing one or more files that contain definitions of downloadable libraries.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="import-definitions" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="import-definitions">
+      <annotation>
+         <documentation>
+            Imports a single file that contains definitions of downloadable libraries.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="enablement" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="path" type="string">
+            <annotation>
+               <documentation>
+                  The local path (within the plugin) to the definitions file. The path attribute is mutually exclusive with the url attribute.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="url" type="string">
+            <annotation>
+               <documentation>
+                  The URL of the definitions file on a remote server. The url attribute is mutually exclusive with the path attribute.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         WTP 3.1
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;The following example adds downloadable libraries catalog entries from a file that is located within the plugin:&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.jst.common.project.facet.core.downloadableLibraries&quot;&gt;
+  &lt;import-definitions path=&quot;libs/catalog.xml&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The following example adds catalog entries from a file that is located on a server:&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.jst.common.project.facet.core.downloadableLibraries&quot;&gt;
+  &lt;import-definitions url=&quot;http://www.mycorp.com/libs/catalog.xml&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Here is an example definition file. Such file can be placed inside a plugin or hosted on a server.
+Multiple libraries can be defined in a single definition file.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;libraries&gt;
+  &lt;library&gt;
+    &lt;name&gt;EclipseLink 1.0.0&lt;/name&gt;
+    &lt;download-provider&gt;Eclipse Foundation&lt;/download-provider&gt;
+    &lt;download-url&gt;&lt;![CDATA[http://www.eclipse.org/downloads/...]]&gt;&lt;/download-url&gt;
+    &lt;license-url&gt;&lt;![CDATA[http://www.eclipse.org/legal/epl-v10.html]]&gt;&lt;/license-url&gt;&gt;
+    &lt;attributes&gt;
+      &lt;component&gt;eclipselink/jlib/eclipselink.jar&lt;/component&gt;
+      &lt;source&gt;eclipselink/jlib/eclipselink-src.zip&lt;/source&gt;
+      &lt;javadoc&gt;eclipselink/jlib/eclipselink-javadocs.zip&lt;/javadoc&gt;
+    &lt;/attributes&gt;
+  &lt;/library&gt;
+&lt;/libraries&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2008 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>
