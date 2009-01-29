@@ -298,19 +298,22 @@ public abstract class VirtualResource implements IVirtualResource {
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore.getComponent();
-			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
-			if (resources.length > 0) {
-				for (int resourceIndx = 0; resourceIndx < resources.length; resourceIndx++) {
-					if (aProjectRelativeLocation.makeAbsolute().equals(resources[resourceIndx].getSourcePath())) {
-						component.getResources().remove(resources[resourceIndx]);
+			if (component != null) {
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+				ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
+				if (resources.length > 0) {
+					for (int resourceIndx = 0; resourceIndx < resources.length; resourceIndx++) {
+						if (aProjectRelativeLocation.makeAbsolute().equals(resources[resourceIndx].getSourcePath())) {
+							component.getResources().remove(resources[resourceIndx]);
+						}
 					}
 				}
 			}
 		}
 		finally {
 			if (moduleCore != null) {
-				moduleCore.saveIfNecessary(monitor);
+				if (component != null)
+					moduleCore.saveIfNecessary(monitor);
 				moduleCore.dispose();
 			}
 		}
