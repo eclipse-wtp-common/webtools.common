@@ -470,6 +470,9 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 
 	public void dispose() {
 		super.dispose();
+		if (model != null) {
+			model.removeListener(this);
+		}
 		if (synchHelper != null) {
 			synchHelper.dispose();
 			synchHelper = null;
