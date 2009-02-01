@@ -24,6 +24,8 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
  * facet versions. For instance, the facet author may choose to supply one
  * action definition for all versions of his facet. 
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

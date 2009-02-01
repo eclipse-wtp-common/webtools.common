@@ -30,6 +30,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * get access to <code>IRuntime</code> objects by using methods on the {@link RuntimeManager} 
  * class.</p>  
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @see RuntimeManager#getRuntimes()
  * @see RuntimeManager#getRuntime(String)
  * @see RuntimeManager#isRuntimeDefined(String)

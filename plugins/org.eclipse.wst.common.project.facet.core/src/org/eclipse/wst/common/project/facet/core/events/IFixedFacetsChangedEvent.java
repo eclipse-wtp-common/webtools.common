@@ -19,6 +19,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
  * This interface is implemented by the event object that is used for the FIXED_FACETS_CHANGED 
  * event. 
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

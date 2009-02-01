@@ -34,8 +34,8 @@ import org.eclipse.osgi.util.NLS;
  * the selected libraries. Validation fails if one or more of the key classes are not found. This
  * validator can be used as is or subclassed.
  * 
- * @since 1.4
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ * @since 1.4
  */
 
 public class KeyClassesValidator

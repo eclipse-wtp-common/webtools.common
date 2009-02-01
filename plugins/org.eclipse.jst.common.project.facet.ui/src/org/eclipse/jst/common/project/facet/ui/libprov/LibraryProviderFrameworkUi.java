@@ -18,10 +18,9 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * The root entry point for working with the UI portion of the Library Provider Framework.
- *  
+ * 
+ * @noinstantiate This class is not intended to be instantiated by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
- * @noextend
- * @noinstantiate
  * @since 1.4
  */
 

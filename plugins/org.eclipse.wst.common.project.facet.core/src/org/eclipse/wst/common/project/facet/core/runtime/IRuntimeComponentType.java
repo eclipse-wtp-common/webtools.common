@@ -28,6 +28,8 @@ import org.eclipse.wst.common.project.facet.core.DefaultVersionComparator;
  * extension point. Once declared, client code can get access to <code>IRuntimeComponentType</code> 
  * objects by using methods on the {@link RuntimeManager} class.</p>  
  *
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @see RuntimeManager#getRuntimeComponentTypes()
  * @see RuntimeManager#getRuntimeComponentType(String)
  * @see RuntimeManager#isRuntimeComponentTypeDefined(String)

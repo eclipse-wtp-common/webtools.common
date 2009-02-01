@@ -15,7 +15,9 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * Describes the runtime changed event to the RUNTIME_CHANGED event handlers.
- * 
+ *
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @deprecated use the IFacetedProjectListener class from the facet.core.events package instead
  *   of the event handler extension point

@@ -28,6 +28,7 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFramewor
  * can (among other things) list available project facets and create instances 
  * of {@link IFacetedProject}.
  * 
+ * @noinstantiate This class is not intended to be instantiated by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

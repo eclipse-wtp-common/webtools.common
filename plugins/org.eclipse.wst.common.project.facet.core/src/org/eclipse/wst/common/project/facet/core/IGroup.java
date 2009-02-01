@@ -20,6 +20,8 @@ import java.util.Set;
  * all the members of the group. A given project facet version can belong to 
  * several groups.
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

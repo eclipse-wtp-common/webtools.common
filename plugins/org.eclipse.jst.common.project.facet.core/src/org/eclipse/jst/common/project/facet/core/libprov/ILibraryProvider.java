@@ -19,10 +19,10 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 /**
  * Represents a single library provider as declared to the framework.
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 1.4
- * @noimplement
- * @noextend
  */
 
 public interface ILibraryProvider

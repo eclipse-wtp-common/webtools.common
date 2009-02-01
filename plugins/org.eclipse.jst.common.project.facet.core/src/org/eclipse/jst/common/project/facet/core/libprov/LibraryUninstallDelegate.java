@@ -35,7 +35,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 1.4
- * @noextend
  */
 
 public final class LibraryUninstallDelegate

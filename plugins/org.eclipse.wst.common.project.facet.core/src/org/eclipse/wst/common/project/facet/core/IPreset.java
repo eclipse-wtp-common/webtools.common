@@ -18,6 +18,8 @@ import java.util.Set;
  * facets. Presets can be defined by plugin writers through the supplied <code>presets</code> 
  * extension point as well as by end users. User-defined presets are stored in the workspace.
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

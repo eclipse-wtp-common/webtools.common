@@ -22,6 +22,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycl
 import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManagerImpl;
 
 /**
+ * @noinstantiate This class is not intended to be instantiated by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

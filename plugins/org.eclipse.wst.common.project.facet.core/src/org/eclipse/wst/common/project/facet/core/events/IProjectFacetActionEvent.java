@@ -18,6 +18,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
  * This interface is implemented by the event object that is used for the PRE_INSTALL, POST_INSTALL, 
  * PRE_UNINSTALL, POST_UNINSTALL, PRE_VERSION_CHANGE, and POST_VERSION_CHANGE events.
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

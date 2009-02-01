@@ -19,11 +19,10 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 
 /**
  * The root entry point for working with the Library Provider Framework.
- *  
+ * 
+ * @noinstantiate This class is not intended to be instantiated by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 1.4
- * @noextend
- * @noinstantiate
  */
 
 public final class LibraryProviderFramework

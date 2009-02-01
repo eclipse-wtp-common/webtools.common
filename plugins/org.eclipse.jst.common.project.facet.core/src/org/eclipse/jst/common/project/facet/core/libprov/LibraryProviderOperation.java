@@ -17,10 +17,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * This class should be subclassed in order to provider the logic that should execute
  * when a library provider action (such as install and uninstall) is triggered.
- * 
+ *
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 1.4
- * @noinstantiate
  */
 
 public abstract class LibraryProviderOperation

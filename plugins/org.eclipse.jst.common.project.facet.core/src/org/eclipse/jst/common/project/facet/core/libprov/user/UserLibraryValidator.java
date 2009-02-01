@@ -30,9 +30,9 @@ import org.eclipse.core.runtime.IStatus;
  *   &lt;/provider>
  * &lt;/extension></pre>
  * 
- * @since 1.4
  * @see KeyClassesValidator
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ * @since 1.4
  */
 
 public abstract class UserLibraryValidator

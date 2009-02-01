@@ -21,6 +21,8 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
  * the <code>presets</code> extension point and can take into account the context in which the 
  * preset will be used. 
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  * @since 2.0
  */

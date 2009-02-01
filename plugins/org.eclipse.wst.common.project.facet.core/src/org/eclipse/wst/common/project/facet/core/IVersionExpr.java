@@ -15,6 +15,8 @@ package org.eclipse.wst.common.project.facet.core;
  * The compiled form of a version expression. A version expression is used to
  * specify one or more versions.
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 

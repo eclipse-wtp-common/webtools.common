@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.IAdaptable;
  * get access to <code>IRuntimeComponent</code> objects by using methods on the 
  * {@link IRuntime} and {@link RuntimeManager} classes.</p>  
  * 
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @see IRuntime#getRuntimeComponents()
  * @see RuntimeManager#createRuntimeComponent(IRuntimeComponentVersion,Map) 
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>

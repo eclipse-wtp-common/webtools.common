@@ -24,6 +24,8 @@ import org.eclipse.wst.common.project.facet.core.IVersion;
  * <code>IRuntimeComponentVersion</code> objects by using methods on the 
  * {@link IRuntimeComponentType} class.</p>  
  *
+ * @noextend This interface is not intended to be extended by clients.
+ * @noimplement This interface is not intended to be implemented by clients.
  * @see IRuntimeComponentType#getVersions()
  * @see IRuntimeComponentType#getVersions(String)
  * @see IRuntimeComponentType#getVersion(String)
