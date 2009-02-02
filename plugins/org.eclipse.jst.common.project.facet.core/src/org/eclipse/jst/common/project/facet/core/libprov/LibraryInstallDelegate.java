@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -85,6 +84,7 @@ public final class LibraryInstallDelegate
     private final Map<ILibraryProvider,LibraryProviderOperationConfig> configs;
     private final IPropertyChangeListener providerConfigListener;
     private LibraryUninstallDelegate uninstallDelegate = null;
+    private Map<String,Object> customEnablementContextVariables;
     
     /**
      * Constructs a new library install delegate. 
@@ -103,6 +103,7 @@ public final class LibraryInstallDelegate
         this.selectedProvider = null;
         this.isDefaultSelection = true;
         this.configs = new HashMap<ILibraryProvider,LibraryProviderOperationConfig>();
+        this.customEnablementContextVariables = new HashMap<String,Object>();
         
         this.providerConfigListener = new IPropertyChangeListener()
         {
@@ -263,33 +264,29 @@ public final class LibraryInstallDelegate
         return this.configs.get( provider );
     }
     
-    private static final String EXPR_VAR_CONTEXT 
-        = "context"; //$NON-NLS-1$
-    
-    private static final String EXPR_VAR_REQUESTING_PROJECT_FACET 
-        = "requestingProjectFacet"; //$NON-NLS-1$
-    
-    private static final String EXPR_VAR_PROJECT_FACETS 
-        = "projectFacets"; //$NON-NLS-1$
-    
-    private static final String EXPR_VAR_TARGETED_RUNTIMES 
-        = "targetedRuntimes"; //$NON-NLS-1$
-
     /**
-     * This method is not api-ready. Don't use it yet.
+     * Adds a custom variable to the expression evaluation context for enablement expressions
+     * controlling activation of library providers. Setting the variable to <code>null</code>
+     * has the effect of removing it. Calling this method will trigger a refresh of available 
+     * library providers.
+     *  
+     * @param name the name of the variable
+     * @param value the value of the variable
      */
     
-    public synchronized EvaluationContext createEvaluationContent()
+    public synchronized void setEnablementContextVariable( final String name,
+                                                           final Object value )
     {
-        final EvaluationContext evalContext = new EvaluationContext( null, this.fv );
-        final EnablementExpressionContext context = new EnablementExpressionContext( this.fproj, this.fv );
-        evalContext.addVariable( EXPR_VAR_CONTEXT, context );
-        evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, this.fv );
-        evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, this.fproj.getProjectFacets() );
-        evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, this.fproj.getTargetedRuntimes() );
-        evalContext.setAllowPluginActivation( true );
-    
-        return evalContext;
+        if( value == null )
+        {
+            this.customEnablementContextVariables.remove( name );
+        }
+        else
+        {
+            this.customEnablementContextVariables.put( name, value );
+        }
+        
+        refresh();
     }
     
     /**
@@ -320,7 +317,7 @@ public final class LibraryInstallDelegate
         for( ILibraryProvider provider : LibraryProviderFramework.getProviders() )
         {
             if( ! provider.isAbstract() && ! provider.isHidden() 
-                && provider.isEnabledFor( fproj, fv ) )
+                && provider.isEnabledFor( fproj, fv, this.customEnablementContextVariables ) )
             {
                 newProviders.add( provider );
             }

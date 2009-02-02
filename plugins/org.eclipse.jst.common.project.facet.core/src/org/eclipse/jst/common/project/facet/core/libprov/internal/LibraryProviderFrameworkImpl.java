@@ -17,6 +17,7 @@ import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectF
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getElementValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -402,7 +403,13 @@ public final class LibraryProviderFrameworkImpl
                     else if( childName.equals( EL_PARAM ) )
                     {
                         final String name = findRequiredAttribute( child, ATTR_NAME );
-                        final String value = findRequiredAttribute( child, ATTR_VALUE );
+                        
+                        String value = child.getAttribute( ATTR_VALUE );
+                        
+                        if( value == null )
+                        {
+                            value = getElementValue( child, null );
+                        }
                         
                         provider.addParam( name, value );
                     }

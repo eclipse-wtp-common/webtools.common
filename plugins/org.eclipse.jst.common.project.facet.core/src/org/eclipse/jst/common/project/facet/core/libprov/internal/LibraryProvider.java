@@ -15,8 +15,10 @@ import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectF
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.loadClass;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.expressions.EvaluationContext;
@@ -107,6 +109,9 @@ public final class LibraryProvider
     
     private static final String EXPR_VAR_TARGETED_RUNTIMES 
         = "targetedRuntimes"; //$NON-NLS-1$
+    
+    private static final String EXPR_VAR_PROVIDER
+        = "provider"; //$NON-NLS-1$
     
     private String id;
     private String pluginId;
@@ -250,27 +255,41 @@ public final class LibraryProvider
     public boolean isEnabledFor( final IFacetedProjectBase fproj,
                                  final IProjectFacetVersion fv )
     {
-        if( this.base == null || this.base.isEnabledFor( fproj, fv ) )
-        {
-            if( this.enablementCondition == null )
-            {
-                return true;
-            }
-            
-            final EvaluationContext evalContext = new EvaluationContext( null, fv );
-            final EnablementExpressionContext context = new EnablementExpressionContext( fproj, fv );
-            evalContext.addVariable( EXPR_VAR_CONTEXT, context );
-            evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, fv );
-            evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fproj.getProjectFacets() );
-            evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fproj.getTargetedRuntimes() );
-            evalContext.setAllowPluginActivation( true );
+        return isEnabledFor( fproj, fv, null );
+    }
+    
+    public boolean isEnabledFor( final IFacetedProjectBase fproj,
+                                 final IProjectFacetVersion fv,
+                                 final Map<String,Object> customVariables )
+    {
+        final EvaluationContext evalContext = new EvaluationContext( null, fv );
+        final EnablementExpressionContext context = new EnablementExpressionContext( fproj, fv, this );
+        evalContext.setAllowPluginActivation( true );
         
+        if( customVariables != null )
+        {
+            for( Map.Entry<String,Object> entry : customVariables.entrySet() )
+            {
+                evalContext.addVariable( entry.getKey(), entry.getValue() );
+            }
+        }
+        
+        evalContext.addVariable( EXPR_VAR_CONTEXT, context );
+        evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, fv );
+        evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fproj.getProjectFacets() );
+        evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fproj.getTargetedRuntimes() );
+        evalContext.addVariable( EXPR_VAR_PROVIDER, this );
+        
+        for( Expression expression : getEnablementConditions() )
+        {
             try
             {
-                final EvaluationResult evalResult 
-                    = this.enablementCondition.evaluate( evalContext );
+                final EvaluationResult evalResult = expression.evaluate( evalContext );
                 
-                return ( evalResult == EvaluationResult.TRUE );
+                if( evalResult == EvaluationResult.FALSE )
+                {
+                    return false;
+                }
             }
             catch( CoreException e )
             {
@@ -278,12 +297,30 @@ public final class LibraryProvider
             }
         }
 
-        return false;
+        return true;
     }
     
     void setEnablementCondition( final Expression enablementCondition )
     {
         this.enablementCondition = enablementCondition;
+    }
+    
+    private List<Expression> getEnablementConditions()
+    {
+        final List<Expression> expressions = new ArrayList<Expression>();
+        LibraryProvider provider = this;
+        
+        while( provider != null )
+        {
+            if( provider.enablementCondition != null )
+            {
+                expressions.add( provider.enablementCondition );
+            }
+            
+            provider = (LibraryProvider) provider.base;
+        }
+        
+        return expressions;
     }
     
     public Map<String,String> getParams()

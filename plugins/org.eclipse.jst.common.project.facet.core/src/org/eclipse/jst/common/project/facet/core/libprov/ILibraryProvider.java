@@ -116,6 +116,20 @@ public interface ILibraryProvider
                           IProjectFacetVersion fv );
     
     /**
+     * Checks whether this provider is enabled for the given context.
+     * 
+     * @param fpjwc the faceted project (or working copy)
+     * @param fv the project facet that is making the request for libraries
+     * @param customVariables custom variables to add to the enablement expressions
+     *   evaluation context
+     * @return <code>true</code> if this provider is enabled for the given context
+     */
+    
+    boolean isEnabledFor( IFacetedProjectBase fproj, 
+                          IProjectFacetVersion fv,
+                          Map<String,Object> customVariables );
+    
+    /**
      * Determines whether this provider supports the specified action type.
      * 
      * @param type the action type to check

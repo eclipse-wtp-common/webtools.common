@@ -27,12 +27,15 @@ public final class EnablementExpressionContext
 {
     private final IFacetedProjectBase fproj;
     private final IProjectFacetVersion fv;
+    private final ILibraryProvider provider;
     
     public EnablementExpressionContext( final IFacetedProjectBase fproj,
-                                        final IProjectFacetVersion fv )
+                                        final IProjectFacetVersion fv,
+                                        final ILibraryProvider provider )
     {
         this.fproj = fproj;
         this.fv = fv;
+        this.provider = provider;
     }
     
     public IFacetedProjectBase getFacetedProject()
@@ -48,6 +51,11 @@ public final class EnablementExpressionContext
     public IProjectFacetVersion getRequestingProjectFacetVersion()
     {
         return this.fv;
+    }
+    
+    public ILibraryProvider getLibraryProvider()
+    {
+        return this.provider;
     }
 
 }

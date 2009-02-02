@@ -40,9 +40,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jst.common.project.facet.core.libprov.LibraryInstallDelegate;
+import org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext;
+import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperationConfig;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.util.internal.XmlParseException;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
@@ -73,6 +76,12 @@ public final class DownloadableLibrariesExtensionPoint
     private static final String EL_SOURCE = "source"; //$NON-NLS-1$
     private static final String EL_JAVADOC = "javadoc"; //$NON-NLS-1$
 
+    private static final String EXPR_VAR_CONTEXT = "context"; //$NON-NLS-1$
+    private static final String EXPR_VAR_REQUESTING_PROJECT_FACET = "requestingProjectFacet"; //$NON-NLS-1$
+    private static final String EXPR_VAR_PROJECT_FACETS = "projectFacets"; //$NON-NLS-1$
+    private static final String EXPR_VAR_TARGETED_RUNTIMES = "targetedRuntimes"; //$NON-NLS-1$
+    private static final String EXPR_VAR_PROVIDER = "provider"; //$NON-NLS-1$
+
     public static List<DownloadableLibrary> list( final UserLibraryProviderInstallOperationConfig cfg,
                                                   final IProgressMonitor monitor )
     {
@@ -82,7 +91,6 @@ public final class DownloadableLibrariesExtensionPoint
         
         try
         {
-            final LibraryInstallDelegate libraryInstallDelegate = cfg.getLibraryInstallDelegate();
             final List<DownloadableLibrary> libraries = new ArrayList<DownloadableLibrary>();
             
             for( IConfigurationElement element 
@@ -106,12 +114,13 @@ public final class DownloadableLibrariesExtensionPoint
                             final Expression expr 
                                 = ExpressionConverter.getDefault().perform( elEnablement );
                             
-                            final EvaluationContext context 
-                                = libraryInstallDelegate.createEvaluationContent();
+                            final EvaluationContext context
+                                = createEvaluationContext( cfg.getFacetedProject(), cfg.getProjectFacetVersion(), 
+                                                           cfg.getLibraryProvider() );
                             
                             if( expr.evaluate( context ) != EvaluationResult.TRUE )
                             {
-                                break;
+                                continue;
                             }
                         }
                         catch( CoreException e )
@@ -168,6 +177,22 @@ public final class DownloadableLibrariesExtensionPoint
         {
             mon.done();
         }
+    }
+    
+    private static EvaluationContext createEvaluationContext( final IFacetedProjectBase fproj,
+                                                              final IProjectFacetVersion fv,
+                                                              final ILibraryProvider provider )
+    {
+        final EvaluationContext evalContext = new EvaluationContext( null, fv );
+        final EnablementExpressionContext context = new EnablementExpressionContext( fproj, fv, provider );
+        evalContext.addVariable( EXPR_VAR_CONTEXT, context );
+        evalContext.addVariable( EXPR_VAR_REQUESTING_PROJECT_FACET, fv );
+        evalContext.addVariable( EXPR_VAR_PROJECT_FACETS, fproj.getProjectFacets() );
+        evalContext.addVariable( EXPR_VAR_TARGETED_RUNTIMES, fproj.getTargetedRuntimes() );
+        evalContext.addVariable( EXPR_VAR_PROVIDER, provider );        
+        evalContext.setAllowPluginActivation( true );
+    
+        return evalContext;
     }
     
     private static void readLibraryDefinitions( final URL url,
