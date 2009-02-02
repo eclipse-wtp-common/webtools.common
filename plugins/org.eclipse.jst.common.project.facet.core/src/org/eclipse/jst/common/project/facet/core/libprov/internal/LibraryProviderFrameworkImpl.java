@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderActionType;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderFramework;
+import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -435,7 +436,7 @@ public final class LibraryProviderFrameworkImpl
                         
                         if( elConfig == null )
                         {
-                            configClassName = null;
+                            configClassName = LibraryProviderOperationConfig.class.getName();
                         }
                         else
                         {

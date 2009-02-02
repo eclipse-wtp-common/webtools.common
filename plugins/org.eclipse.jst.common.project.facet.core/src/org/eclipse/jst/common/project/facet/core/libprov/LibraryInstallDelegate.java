@@ -401,6 +401,11 @@ public final class LibraryInstallDelegate
                 this.providersReadOnly = Collections.unmodifiableList( this.providers );
                 this.providers.add( provider );
                 
+                final LibraryProvider prov = (LibraryProvider) provider;
+                final LibraryProviderOperationConfig config = prov.createInstallOperationConfig( this );
+                config.addListener( this.providerConfigListener );
+                this.configs.put( provider, config );
+                
                 notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
             }
         }
