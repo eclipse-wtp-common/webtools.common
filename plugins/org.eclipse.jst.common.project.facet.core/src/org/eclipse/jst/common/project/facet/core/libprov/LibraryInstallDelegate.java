@@ -417,7 +417,14 @@ public final class LibraryInstallDelegate
         
             if( provider == null || ! this.providers.contains( provider ) )
             {
-                provider = this.providers.iterator().next();
+                if( ! this.providers.isEmpty() )
+                {
+                    provider = this.providers.iterator().next();
+                }
+                else
+                {
+                    provider = null;
+                }
             }
         }
         

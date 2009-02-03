@@ -175,21 +175,6 @@ public abstract class LibraryFacetPropertyPage
     
     protected Control createPageContents( final Composite parent )
     {
-        final IPropertyChangeListener delegateListener = new IPropertyChangeListener()
-        {
-            public void propertyChanged( final String property,
-                                         final Object oldValue,
-                                         final Object newValue )
-            {
-                updateValidation();
-            }
-        };
-
-        final IProjectFacetVersion fv = getProjectFacetVersion();
-        
-        this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
-        this.libraryInstallDelegate.addListener( delegateListener );
-        
         return createInstallLibraryPanel( parent, this.libraryInstallDelegate );
     }
     
@@ -234,6 +219,19 @@ public abstract class LibraryFacetPropertyPage
                 control.dispose();
             }
         
+            final IPropertyChangeListener delegateListener = new IPropertyChangeListener()
+            {
+                public void propertyChanged( final String property,
+                                             final Object oldValue,
+                                             final Object newValue )
+                {
+                    updateValidation();
+                }
+            };
+
+            this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
+            this.libraryInstallDelegate.addListener( delegateListener );
+            
             this.rootComposite.setLayout( gl( 1, 0, 0 ) );
             
             final Control contents = createPageContents( this.rootComposite );
