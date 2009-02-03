@@ -298,13 +298,4 @@
     </import-definitions>
   </extension>
 
-  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
-    <provider id="osgi-bundles-library-provider-demo" extends="osgi-bundles-library-provider">
-      <label>Random OSGi Bundles</label>
-      <param name="bundle.0" value="org.eclipse.core.runtime:[7,8)"/>
-      <param name="bundle.1" value="org.eclipse.core.resources:[3,6)"/>
-    </provider>
-  </extension>
-
-
 </plugin>
