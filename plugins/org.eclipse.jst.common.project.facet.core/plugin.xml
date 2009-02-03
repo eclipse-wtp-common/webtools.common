@@ -237,6 +237,47 @@
     </provider>
   </extension>
   
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="osgi-bundles-library-provider" abstract="true">
+      <priority>600</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderUninstallOperation"/>
+      </action>
+      <enablement>
+        <with variable="provider">
+          <test property="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable" value="true" forcePluginActivation="true"/>
+        </with>
+      </enablement>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jdt.core.classpathContainerInitializer">
+    <classpathContainerInitializer
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesContainerImpl$Initializer"
+      id="eclipse.fproj.jdt.libprov.osgi"/>
+  </extension>
+  
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable"
+      type="org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext"
+      namespace="eclipse.fproj.jdt.libprov.osgi"
+      properties="bundleReferencesResolvable"
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesLibraryProviderResolvablePropertyTester">
+    </propertyTester>
+    <propertyTester
+      id="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable"
+      type="org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider"
+      namespace="eclipse.fproj.jdt.libprov.osgi"
+      properties="bundleReferencesResolvable"
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesLibraryProviderResolvablePropertyTester">
+    </propertyTester>
+  </extension>
+  
 
   <!--
     ********
@@ -256,5 +297,14 @@
       </enablement>
     </import-definitions>
   </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="osgi-bundles-library-provider-demo" extends="osgi-bundles-library-provider">
+      <label>Random OSGi Bundles</label>
+      <param name="bundle.0" value="org.eclipse.core.runtime:[7,8)"/>
+      <param name="bundle.1" value="org.eclipse.core.resources:[3,6)"/>
+    </provider>
+  </extension>
+
 
 </plugin>

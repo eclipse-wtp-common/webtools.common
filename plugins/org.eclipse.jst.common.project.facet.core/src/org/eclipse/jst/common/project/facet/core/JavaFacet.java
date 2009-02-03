@@ -13,6 +13,7 @@ package org.eclipse.jst.common.project.facet.core;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -51,6 +52,26 @@ public final class JavaFacet
         catch( CoreException e )
         {
             FacetedProjectFrameworkJavaPlugin.log( e );
+            return false;
+        }
+    }
+    
+    /**
+     * Checks whether the specified project is a Java project.
+     * 
+     * @param pj the project to check.
+     * @return <code>true</code> if the project is a Java project
+     * @since 1.4
+     */
+    
+    public static boolean isJavaProject( final IProject project )
+    {
+        try
+        {
+            return project.getNature( JavaCore.NATURE_ID ) != null;
+        }
+        catch( CoreException e )
+        {
             return false;
         }
     }

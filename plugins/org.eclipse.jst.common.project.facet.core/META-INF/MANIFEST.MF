@@ -10,6 +10,7 @@ Export-Package: org.eclipse.jst.common.project.facet.core,
  org.eclipse.jst.common.project.facet.core.internal;x-internal:=true,
  org.eclipse.jst.common.project.facet.core.libprov,
  org.eclipse.jst.common.project.facet.core.libprov.internal;x-friends:="org.eclipse.jst.common.project.facet.ui",
+ org.eclipse.jst.common.project.facet.core.libprov.osgi,
  org.eclipse.jst.common.project.facet.core.libprov.user,
  org.eclipse.jst.common.project.facet.core.libprov.user.internal;x-friends:="org.eclipse.jst.common.project.facet.ui"
 Require-Bundle: org.eclipse.core.resources;bundle-version="[3.2.0,4.0)",
