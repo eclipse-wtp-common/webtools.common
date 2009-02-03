@@ -78,7 +78,12 @@ public class KeyClassesValidator
     @Override
     public IStatus validate( final UserLibraryProviderInstallOperationConfig config )
     {
-        final Set<String> classFileNamesCopy = new HashSet<String>( this.classFileNames );
+        final Map<String,Integer> classAppearanceCounts = new HashMap<String,Integer>();
+        
+        for( String classFileName : this.classFileNames )
+        {
+            classAppearanceCounts.put( classFileName, 0 );
+        }
         
         for( IClasspathEntry cpe : config.resolve() )
         {
@@ -99,14 +104,11 @@ public class KeyClassesValidator
                             final ZipEntry zipEntry = itr.nextElement();
                             final String name = zipEntry.getName();
                             
-                            if( classFileNamesCopy.contains( name ) )
+                            Integer count = classAppearanceCounts.get( name );
+                            
+                            if( count != null )
                             {
-                                classFileNamesCopy.remove( name );
-                                
-                                if( classFileNamesCopy.isEmpty() )
-                                {
-                                    return Status.OK_STATUS;
-                                }
+                                classAppearanceCounts.put( name, count + 1 );
                             }
                         }
                     }
@@ -129,18 +131,30 @@ public class KeyClassesValidator
             }
         }
         
-        if( classFileNamesCopy.isEmpty() )
+        for( Map.Entry<String,Integer> entry : classAppearanceCounts.entrySet() )
         {
-            return Status.OK_STATUS;
-        }
-        else
-        {
-            final String notFoundClassFileName = classFileNamesCopy.iterator().next();
-            final String notFoundClassName = this.classFileNameToClassName.get( notFoundClassFileName );
-            final String message = Resources.bind( Resources.classNotFound, notFoundClassName );
+            final int count = entry.getValue();
             
-            return new Status( IStatus.ERROR, PLUGIN_ID, message );
+            if( count != 1 )
+            {
+                final String classFileName = entry.getKey();
+                final String className = this.classFileNameToClassName.get( classFileName );
+                final String message;
+                
+                if( count == 0 )
+                {
+                    message = Resources.bind( Resources.classNotFound, className );
+                }
+                else
+                {
+                    message = Resources.bind( Resources.classPresentMultipleTimes, className );
+                }
+                
+                return new Status( IStatus.ERROR, PLUGIN_ID, message );
+            }
         }
+        
+        return Status.OK_STATUS;
     }
     
     private static final class Resources
@@ -149,6 +163,7 @@ public class KeyClassesValidator
         
     {
         public static String classNotFound;
+        public static String classPresentMultipleTimes;
         
         static
         {

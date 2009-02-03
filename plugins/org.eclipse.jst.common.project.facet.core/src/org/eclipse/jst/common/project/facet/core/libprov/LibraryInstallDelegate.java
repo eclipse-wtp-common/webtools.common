@@ -91,10 +91,14 @@ public final class LibraryInstallDelegate
      * 
      * @param fproj the faceted project (or a working copy)
      * @param fv the project facet that is requesting libraries
+     * @param customEnablementContextVariables custom variables to add to the expression
+     *   evaluation context for enablement expressions or <code>null</code> for none
+     * @see #setEnablementContextVariable(String, Object)  
      */
     
     public LibraryInstallDelegate( final IFacetedProjectBase fproj,
-                                   final IProjectFacetVersion fv )
+                                   final IProjectFacetVersion fv,
+                                   final Map<String,Object> customEnablementContextVariables )
     {
         this.fproj = fproj;
         this.fv = fv;
@@ -104,6 +108,11 @@ public final class LibraryInstallDelegate
         this.isDefaultSelection = true;
         this.configs = new HashMap<ILibraryProvider,LibraryProviderOperationConfig>();
         this.customEnablementContextVariables = new HashMap<String,Object>();
+        
+        if( customEnablementContextVariables != null )
+        {
+            this.customEnablementContextVariables.putAll( customEnablementContextVariables );
+        }
         
         this.providerConfigListener = new IPropertyChangeListener()
         {
@@ -128,6 +137,19 @@ public final class LibraryInstallDelegate
         );
         
         reset();
+    }
+    
+    /**
+     * Constructs a new library install delegate. 
+     * 
+     * @param fproj the faceted project (or a working copy)
+     * @param fv the project facet that is requesting libraries
+     */
+    
+    public LibraryInstallDelegate( final IFacetedProjectBase fproj,
+                                   final IProjectFacetVersion fv )
+    {
+        this( fproj, fv, null );
     }
     
     /**

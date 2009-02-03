@@ -105,6 +105,22 @@ public abstract class LibraryFacetPropertyPage
     {
         return this.libraryInstallDelegate;
     }
+
+    /**
+     * Constructs a new library install delegate. This method can be overridden to adjust
+     * the construction of the library install delegate as necessary. This is necessary, for
+     * instance, in order to declare custom enablement expression evaluation context variables.
+     *
+     * @param project the faceted project
+     * @param fv the project facet version
+     * @return the constructed library install delegate
+     */
+    
+    protected LibraryInstallDelegate createLibraryInstallDelegate( final IFacetedProject project,
+                                                                   final IProjectFacetVersion fv )
+    {
+        return new LibraryInstallDelegate( project, fv );
+    }
     
     @Override
     public final void createControl( final Composite parent )
@@ -229,7 +245,7 @@ public abstract class LibraryFacetPropertyPage
                 }
             };
 
-            this.libraryInstallDelegate = new LibraryInstallDelegate( this.facetedProject, fv );
+            this.libraryInstallDelegate = createLibraryInstallDelegate( this.facetedProject, fv );
             this.libraryInstallDelegate.addListener( delegateListener );
             
             this.rootComposite.setLayout( gl( 1, 0, 0 ) );
