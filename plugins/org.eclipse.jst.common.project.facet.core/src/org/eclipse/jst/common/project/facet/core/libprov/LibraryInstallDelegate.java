@@ -85,6 +85,7 @@ public final class LibraryInstallDelegate
     private final IPropertyChangeListener providerConfigListener;
     private LibraryUninstallDelegate uninstallDelegate = null;
     private Map<String,Object> customEnablementContextVariables;
+    private final IFacetedProjectListener facetedProjectListener;
     
     /**
      * Constructs a new library install delegate. 
@@ -124,17 +125,15 @@ public final class LibraryInstallDelegate
             }
         };
 
-        getFacetedProject().addListener
-        (
-            new IFacetedProjectListener()
+        this.facetedProjectListener = new IFacetedProjectListener()
+        {
+            public void handleEvent( final IFacetedProjectEvent event )
             {
-                public void handleEvent( final IFacetedProjectEvent event )
-                {
-                    refresh();
-                }
-            },
-            IFacetedProjectEvent.Type.PROJECT_MODIFIED
-        );
+                refresh();
+            }
+        };
+
+        getFacetedProject().addListener( this.facetedProjectListener, IFacetedProjectEvent.Type.PROJECT_MODIFIED );
         
         reset();
     }
@@ -219,11 +218,12 @@ public final class LibraryInstallDelegate
     
     public synchronized void setLibraryProvider( final ILibraryProvider provider )
     {
-        setLibraryProvider( provider, false );
+        setLibraryProvider( provider, false, true );
     }
 
     private synchronized void setLibraryProvider( final ILibraryProvider provider,
-                                                  final boolean isDefaultSelection )
+                                                  final boolean isDefaultSelection,
+                                                  final boolean notifyListeners )
     {
         if( ! this.providers.contains( provider ) &&
             ! ( this.providers.size() == 0 && provider == null ) )
@@ -245,7 +245,10 @@ public final class LibraryInstallDelegate
                 config.reset();
             }
             
-            notifyListeners( PROP_SELECTED_PROVIDER, oldSelectedProvider, this.selectedProvider );
+            if( notifyListeners )
+            {
+                notifyListeners( PROP_SELECTED_PROVIDER, oldSelectedProvider, this.selectedProvider );
+            }
         }
     }
     
@@ -318,6 +321,7 @@ public final class LibraryInstallDelegate
     
     public synchronized void refresh()
     {
+        final IProjectFacet f = getProjectFacet();
         final IProjectFacetVersion fv = getProjectFacetVersion();
         final IFacetedProjectBase fproj = getFacetedProject();
         
@@ -348,6 +352,36 @@ public final class LibraryInstallDelegate
         final Comparator<ILibraryProvider> comp = CollectionsUtil.getInvertingComparator();
         Collections.sort( newProviders, comp );
         
+        final IFacetedProject base;
+        
+        if( fproj instanceof IFacetedProject )
+        {
+            base = (IFacetedProject) fproj;
+        }
+        else
+        {
+            base = ( (IFacetedProjectWorkingCopy) fproj ).getFacetedProject();
+        }
+        
+        if( base != null && base.hasProjectFacet( f ) )
+        {
+            // This code is here to take care of cases where framework injects a provider
+            // that is not typically available for unknown and legacy usecases.
+            
+            final ILibraryProvider provider 
+                = LibraryProviderFramework.getCurrentProvider( base.getProject(), f );
+            
+            if( provider == null )
+            {
+                throw new RuntimeException();
+            }
+            
+            if( ! newProviders.contains( provider ) )
+            {
+                newProviders.add( provider );
+            }
+        }
+        
         this.providers = newProviders;
         this.providersReadOnly = Collections.unmodifiableList( this.providers );
         
@@ -359,7 +393,7 @@ public final class LibraryInstallDelegate
             this.configs.put( provider, config );
         }
         
-        notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
+        final ILibraryProvider oldSelectedProvider = this.selectedProvider;
         
         if( this.providers.size() > 0 )
         {
@@ -373,12 +407,19 @@ public final class LibraryInstallDelegate
                     provider = this.providers.iterator().next();
                 }
                     
-                setLibraryProvider( provider, true );
+                setLibraryProvider( provider, true, false );
             }
         }
         else
         {
-            setLibraryProvider( null, true );
+            setLibraryProvider( null, true, false );
+        }
+        
+        notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
+
+        if( ! MiscUtil.equal( oldSelectedProvider, this.selectedProvider ) )
+        {
+            notifyListeners( PROP_SELECTED_PROVIDER, oldSelectedProvider, this.selectedProvider );
         }
     }
 
@@ -413,22 +454,6 @@ public final class LibraryInstallDelegate
             if( provider == null )
             {
                 throw new RuntimeException();
-            }
-            
-            if( ! this.providers.contains( provider ) )
-            {
-                final List<ILibraryProvider> oldProviders = this.providersReadOnly;
-                
-                this.providers = new ArrayList<ILibraryProvider>( this.providers );
-                this.providersReadOnly = Collections.unmodifiableList( this.providers );
-                this.providers.add( provider );
-                
-                final LibraryProvider prov = (LibraryProvider) provider;
-                final LibraryProviderOperationConfig config = prov.createInstallOperationConfig( this );
-                config.addListener( this.providerConfigListener );
-                this.configs.put( provider, config );
-                
-                notifyListeners( PROP_AVAILABLE_PROVIDERS, oldProviders, this.providersReadOnly );
             }
         }
         else
@@ -549,6 +574,8 @@ public final class LibraryInstallDelegate
     
     public synchronized void dispose()
     {
+        getFacetedProject().removeListener( this.facetedProjectListener );
+        
         for( LibraryProviderOperationConfig cfg : this.configs.values() )
         {
             try

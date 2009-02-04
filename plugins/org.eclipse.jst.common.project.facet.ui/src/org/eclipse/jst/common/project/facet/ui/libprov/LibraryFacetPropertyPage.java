@@ -304,6 +304,11 @@ public abstract class LibraryFacetPropertyPage
     
     protected final void updateValidation()
     {
+        if( this.rootComposite.isDisposed() )
+        {
+            return;
+        }
+        
         if( this.rootComposite.getDisplay().getThread() != Thread.currentThread() )
         {
             this.rootComposite.getDisplay().asyncExec
