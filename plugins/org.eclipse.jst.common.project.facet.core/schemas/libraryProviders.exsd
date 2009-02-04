@@ -114,7 +114,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="value" type="string" use="required">
+         <attribute name="value" type="string">
             <annotation>
                <documentation>
                   (no description available)
