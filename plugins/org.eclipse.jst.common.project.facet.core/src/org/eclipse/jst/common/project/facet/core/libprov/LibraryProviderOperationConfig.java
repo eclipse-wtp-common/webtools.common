@@ -143,9 +143,9 @@ public class LibraryProviderOperationConfig
      */
     
     @Override
-    protected final void notifyListeners( final String property,
-                                          final Object oldValue,
-                                          final Object newValue )
+    public final void notifyListeners( final String property,
+                                       final Object oldValue,
+                                       final Object newValue )
     {
         super.notifyListeners( property, oldValue, newValue );
     }

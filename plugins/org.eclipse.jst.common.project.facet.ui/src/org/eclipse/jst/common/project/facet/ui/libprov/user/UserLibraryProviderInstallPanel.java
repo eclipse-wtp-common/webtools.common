@@ -171,6 +171,13 @@ public class UserLibraryProviderInstallPanel
                 if( dialog.open() == Window.OK )
                 {
                     UserLibraryProviderInstallPanel.this.libsTableViewer.refresh();
+                    
+                    // We need to send an event up the listener chain since validation needs to be
+                    // refreshed. This not an ideal solution, but it does work. The name of the 
+                    // property is not important since the listener that does validation is global.
+                    
+                    final List<String> libNames = cfg.getLibraryNames();
+                    cfg.notifyListeners( "validation", libNames, libNames ); //$NON-NLS-1$
                 }
             }
         };

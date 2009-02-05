@@ -530,6 +530,21 @@ public final class LibraryInstallDelegate
             final IProjectFacetVersion fv = getProjectFacetVersion();
             final LibraryProvider provider = (LibraryProvider) getLibraryProvider();
             
+            // Turn this into a no-op if the selected library provider is either the legacy
+            // library provider or the unknown library provider. Those represent special corner
+            // cases and the standard uninstall/install does not work. This comes up in the property
+            // page case where the user hits ok without picking a different provider. Would be nice 
+            // if we could somehow turn this check into a more general "did user change" anything 
+            // check.
+            
+            final String rootLibraryProviderId = this.selectedProvider.getRootProvider().getId();
+            
+            if( rootLibraryProviderId.equals( "unknown-library-provider" ) || //$NON-NLS-1$
+                rootLibraryProviderId.equals( "legacy-library-provider" ) ) //$NON-NLS-1$
+            {
+                return;
+            }
+            
             // Uninstall the previous library, if applicable.
             
             if( this.uninstallDelegate != null )
