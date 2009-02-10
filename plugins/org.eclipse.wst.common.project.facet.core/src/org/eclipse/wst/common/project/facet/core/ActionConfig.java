@@ -67,4 +67,14 @@ public abstract class ActionConfig
         return Status.OK_STATUS;
     }
     
+    /**
+     * Called when the action config object is not longer needed by the framework. Implementations
+     * can override to perform cleanup of allocated resources or registered listeners.
+     * 
+     * @since 1.4
+     */
+    
+    public void dispose()
+    {
+    }
 }

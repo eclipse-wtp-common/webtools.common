@@ -1580,6 +1580,28 @@ public final class FacetedProjectWorkingCopy
         newActions.addAll( toadd );
         
         this.actions = newActions;
+        
+        for( Action action : toremove )
+        {
+            final Object actionConfig = action.getConfig();
+            ActionConfig c = null;
+            
+            if( actionConfig instanceof ActionConfig )
+            {
+                c = (ActionConfig) actionConfig;
+            }
+            else if( actionConfig != null )
+            {
+                final IAdapterManager m = Platform.getAdapterManager();
+                final String t = ActionConfig.class.getName();
+                c = (ActionConfig) m.loadAdapter( actionConfig, t );
+            }
+            
+            if( c != null )
+            {
+                c.dispose();
+            }
+        }
     }
     
     public void setProjectFacetActionConfig( final IProjectFacet facet,
