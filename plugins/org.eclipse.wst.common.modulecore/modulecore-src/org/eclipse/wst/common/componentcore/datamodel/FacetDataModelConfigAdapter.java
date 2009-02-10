@@ -62,6 +62,12 @@ public final class FacetDataModelConfigAdapter
     {
         return dm.validate();
     }
+    
+    public void dispose()
+    {
+        super.dispose();
+        dm.dispose();
+    }
 
     public static final class Factory
     
