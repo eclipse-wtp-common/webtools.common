@@ -165,7 +165,10 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 	public void replaceFilterGroup(FilterGroup existing, FilterGroup merged) {
 		int i = find(existing);
 		if (i == -1)add(merged);  // this should never happen
-		else _groups[i] = merged;
+		else {
+			_groups[i] = merged;
+			bumpChangeCountGroups();
+		}
 	}
 	
 	public void remove(FilterGroup group) {
