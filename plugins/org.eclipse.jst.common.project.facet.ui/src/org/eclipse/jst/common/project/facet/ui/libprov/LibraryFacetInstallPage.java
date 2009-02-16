@@ -166,11 +166,11 @@ public abstract class LibraryFacetInstallPage
     
     protected IStatus performValidation()
     {
-        if( this.libraryInstallDelegate != null )
+        if( this.config != null )
         {
-            return this.libraryInstallDelegate.validate();
+            return this.config.validate();
         }
-        
+
         return Status.OK_STATUS;
     }
 

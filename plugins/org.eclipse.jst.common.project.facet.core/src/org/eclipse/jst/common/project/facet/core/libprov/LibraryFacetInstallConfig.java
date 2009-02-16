@@ -11,6 +11,8 @@
 
 package org.eclipse.jst.common.project.facet.core.libprov;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
@@ -47,6 +49,19 @@ public class LibraryFacetInstallConfig
         init();
     }
     
+    @Override
+    public IStatus validate() 
+    {
+        if( this.libraryInstallDelegate != null )
+        {
+            return this.libraryInstallDelegate.validate();
+        }
+        else
+        {
+            return Status.OK_STATUS;
+        }
+    }
+
     private void init()
     {
         final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
