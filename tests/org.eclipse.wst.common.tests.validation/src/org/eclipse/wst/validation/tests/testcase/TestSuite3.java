@@ -16,11 +16,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.wst.validation.IMutableValidator;
+import org.eclipse.wst.validation.MutableWorkspaceSettings;
 import org.eclipse.wst.validation.ValidationFramework;
-import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.Tracing;
-import org.eclipse.wst.validation.internal.ValManager;
-import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 
 public class TestSuite3 extends TestCase {
 	
@@ -87,15 +86,14 @@ public class TestSuite3 extends TestCase {
 	 * these tests.
 	 */
 	private static void enableOnlyTestValidators() throws InvocationTargetException {
-		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
-		for (Validator v : vals){
+		ValidationFramework vf = ValidationFramework.getDefault();
+		MutableWorkspaceSettings ws = vf.getWorkspaceSettings();
+		for (IMutableValidator v : ws.getValidators()){
 			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test");
 			v.setBuildValidation(enable);
 			v.setManualValidation(enable);
 		}
-		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
-		gp.saveAsPrefs(vals);		
-		TestEnvironment.saveV1Preferences(vals);
+		vf.applyChanges(ws, true);
 	}
 
 	protected void tearDown() throws Exception {

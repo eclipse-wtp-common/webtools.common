@@ -5,8 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -21,15 +19,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.IMutableValidator;
+import org.eclipse.wst.validation.MutableWorkspaceSettings;
 import org.eclipse.wst.validation.ValidationFramework;
-import org.eclipse.wst.validation.Validator;
-import org.eclipse.wst.validation.Validator.V1;
-import org.eclipse.wst.validation.internal.ConfigurationManager;
-import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ValConstants;
-import org.eclipse.wst.validation.internal.ValManager;
-import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
-import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 
 public class TestEnvironment {
@@ -160,16 +153,15 @@ public class TestEnvironment {
 	 * @param validatorPrefix The start of the validator class name, but without the package name. For example "T5".
 	 */
 	public static void enableOnlyTheseValidators(String validatorPrefix) throws InvocationTargetException {
-		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
+		ValidationFramework vf = ValidationFramework.getDefault();
 		String name = "org.eclipse.wst.validation.tests." + validatorPrefix;
-		for (Validator v : vals){
+		MutableWorkspaceSettings ws = vf.getWorkspaceSettings();
+		for (IMutableValidator v : ws.getValidators()){
 			boolean enable = v.getValidatorClassname().startsWith(name);
 			v.setBuildValidation(enable);
 			v.setManualValidation(enable);
 		}
-		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
-		gp.saveAsPrefs(vals);		
-		TestEnvironment.saveV1Preferences(vals);
+		vf.applyChanges(ws, true);
 	}
 
 	/**
@@ -179,42 +171,16 @@ public class TestEnvironment {
 	 * org.eclipse.wst.validation.tests.TestValidator
 	 */
 	public static void enableOnlyThisValidator(String name) throws InvocationTargetException {
-		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
-		for (Validator v : vals){
+		ValidationFramework vf = ValidationFramework.getDefault();
+		MutableWorkspaceSettings ws = vf.getWorkspaceSettings();
+		for (IMutableValidator v : ws.getValidators()){
 			boolean enable = v.getValidatorClassname().equals(name);
 			v.setBuildValidation(enable);
 			v.setManualValidation(enable);
 		}
-		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
-		gp.saveAsPrefs(vals);		
-		TestEnvironment.saveV1Preferences(vals);
+		vf.applyChanges(ws, true);
 	}
 	
-	/**
-	 * Save the V1 preferences.
-	 */
-	public static void saveV1Preferences(Validator[] validators) throws InvocationTargetException {
-		GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
-		
-		List<ValidatorMetaData> manual = new LinkedList<ValidatorMetaData>();
-		List<ValidatorMetaData> build = new LinkedList<ValidatorMetaData>();
-		for (Validator v : validators){
-			V1 v1 = v.asV1Validator();
-			if (v1 == null)continue;
-			if (v1.isManualValidation())manual.add(v1.getVmd());
-			if (v1.isBuildValidation())build.add(v1.getVmd());
-		}
-		
-		ValidatorMetaData[] array = new ValidatorMetaData[manual.size()];
-		gc.setEnabledManualValidators(manual.toArray(array));
-		
-		array = new ValidatorMetaData[build.size()];
-		gc.setEnabledBuildValidators(build.toArray(array));
-
-		gc.passivate();
-		gc.store();
-	}
-
 	public void turnoffAutoBuild() throws CoreException {
 		IWorkspaceDescription wd = _workspace.getDescription();
 		if (wd.isAutoBuilding()){

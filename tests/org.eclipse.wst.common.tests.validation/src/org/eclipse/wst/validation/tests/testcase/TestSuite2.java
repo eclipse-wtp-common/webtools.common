@@ -18,11 +18,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.IMutableValidator;
+import org.eclipse.wst.validation.MutableWorkspaceSettings;
 import org.eclipse.wst.validation.ValidationFramework;
-import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ValConstants;
-import org.eclipse.wst.validation.internal.ValManager;
-import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
 import org.eclipse.wst.validation.tests.T1B;
 import org.eclipse.wst.validation.tests.T1Group;
 import org.osgi.framework.Bundle;
@@ -83,15 +82,14 @@ public class TestSuite2 extends TestCase {
 	 * these tests.
 	 */
 	private static void adjustEnabledValidators() throws InvocationTargetException {
-		Validator[] vals = ValManager.getDefault().getValidatorsCopy();
-		for (Validator v : vals){
-			boolean validateIt = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.T1");
-			v.setBuildValidation(validateIt);
-			v.setManualValidation(validateIt);
+		ValidationFramework vf = ValidationFramework.getDefault();
+		MutableWorkspaceSettings ws = vf.getWorkspaceSettings();
+		for (IMutableValidator v : ws.getValidators()){
+			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.T1");
+			v.setBuildValidation(enable);
+			v.setManualValidation(enable);
 		}
-		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
-		gp.saveAsPrefs(vals);		
-		TestEnvironment.saveV1Preferences(vals);
+		vf.applyChanges(ws, true);
 	}
 
 	protected void tearDown() throws Exception {

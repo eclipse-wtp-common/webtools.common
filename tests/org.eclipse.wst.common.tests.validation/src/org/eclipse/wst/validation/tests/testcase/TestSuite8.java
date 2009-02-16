@@ -59,7 +59,8 @@ public class TestSuite8 extends TestCase {
 
 	
 	/**
-	 * Test the order of a clean build.
+	 * Test the transient settings support. That is the ability to change validator settings without changing
+	 * the property files.
 	 */
 	public void testPrefs() throws CoreException, UnsupportedEncodingException, InterruptedException, InvocationTargetException {
 		Tracing.log("TestSuite8-01: testClean starting");
