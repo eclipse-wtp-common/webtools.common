@@ -83,6 +83,7 @@ public final class RuntimeManagerImpl
     private static final Map<String,IRuntimeBridge> bridges;
     private static final Set<IListener> listeners;
     private static final RuntimeLifecycleListenerRegistry runtimeLifecycleListenerRegistry;
+    private static RuntimeValidationThread runtimeValidationThread;
     
     static
     {
@@ -92,11 +93,10 @@ public final class RuntimeManagerImpl
         bridges = new HashMap<String,IRuntimeBridge>();
         listeners = new HashSet<IListener>();
         runtimeLifecycleListenerRegistry = new RuntimeLifecycleListenerRegistry();
+        runtimeValidationThread = null;
         
         readMetadata();
         readBridgesExtensions();
-        
-        ( new RuntimeValidationThread() ).start();
     }
     
     private RuntimeManagerImpl() {}
@@ -287,12 +287,30 @@ public final class RuntimeManagerImpl
     public static void addListener( final IRuntimeLifecycleListener listener,
                                     final IRuntimeLifecycleEvent.Type... types )
     {
-        runtimeLifecycleListenerRegistry.addListener( listener, types );
+        synchronized( runtimeLifecycleListenerRegistry )
+        {
+            runtimeLifecycleListenerRegistry.addListener( listener, types );
+            
+            if( runtimeValidationThread == null )
+            {
+                runtimeValidationThread = new RuntimeValidationThread();
+                runtimeValidationThread.start();
+            }
+        }
     }
     
     public static void removeListener( final IRuntimeLifecycleListener listener )
     {
-        runtimeLifecycleListenerRegistry.removeListener( listener );
+        synchronized( runtimeLifecycleListenerRegistry )
+        {
+            runtimeLifecycleListenerRegistry.removeListener( listener );
+            
+            if( runtimeValidationThread != null && runtimeLifecycleListenerRegistry.isEmpty() )
+            {
+                runtimeValidationThread.terminate();
+                runtimeValidationThread = null;
+            }
+        }
     }
     
     static Set<IProjectFacetVersion> getSupportedFacets( final List<IRuntimeComponent> composition )

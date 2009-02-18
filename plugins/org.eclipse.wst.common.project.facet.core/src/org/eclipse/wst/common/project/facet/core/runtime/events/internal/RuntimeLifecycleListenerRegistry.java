@@ -86,5 +86,18 @@ public final class RuntimeLifecycleListenerRegistry
     {
         return this.listeners.get( eventType );
     }
+    
+    public boolean isEmpty()
+    {
+        for( Set<IRuntimeLifecycleListener> listeners : this.listeners.values() )
+        {
+            if( ! listeners.isEmpty() )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
 }
