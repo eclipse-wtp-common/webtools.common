@@ -2,9 +2,9 @@
 <!-- Schema file written by PDE -->
 <schema targetNamespace="org.eclipse.wst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appinfo>
+      <appInfo>
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="facets" name="Project Facets Extension Point"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          This is the main extension point in the faceted project framework. It is used for defining project facets. A project facet can be thought of as a unit of functionality that the user can add to the project when the functionality is needed.
       </documentation>
@@ -12,6 +12,9 @@
 
    <element name="extension">
       <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
          <documentation>
             (no description available)
          </documentation>
@@ -46,9 +49,9 @@
                <documentation>
                   An optional name of the extension instance.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -83,6 +86,22 @@
             <element ref="requires"/>
             <element ref="conflicts"/>
          </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -99,6 +118,22 @@
             <element ref="requires"/>
             <element ref="conflicts"/>
          </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -137,6 +172,22 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -168,6 +219,22 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -184,6 +251,22 @@
             <element ref="requires"/>
             <element ref="conflicts"/>
          </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -272,9 +355,9 @@
                <documentation>
                   The version comparator class name. Has to implement java.util.Comparator&amp;lt;String&amp;gt; interface.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="java.util.Comparator"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -303,9 +386,9 @@
 
    <element name="preset">
       <annotation>
-         <appinfo>
+         <appInfo>
             <meta.element deprecated="true"/>
-         </appinfo>
+         </appInfo>
          <documentation>
             Declares a preset. A preset represents a common configuration of facets and their versions that a user might want to utilize on several projects. Presets can be supplied via this extension point or created by the user.
          </documentation>
@@ -431,9 +514,9 @@
                <documentation>
                   The config factory class name. Has to implement org.eclipse.wst.common.project.facet.core.IActionConfigFactory interface.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IActionConfigFactory"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -451,9 +534,9 @@
                <documentation>
                   The delegate class name. Has to implement org.eclipse.wst.common.project.facet.core.IDelegate interface.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDelegate"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -461,9 +544,9 @@
 
    <element name="event-handler">
       <annotation>
-         <appinfo>
+         <appInfo>
             <meta.element deprecated="true"/>
-         </appinfo>
+         </appInfo>
          <documentation>
             Adds an event handler for one of the events in the faceted project life cycle. The event-handler element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.&lt;br/&gt;&lt;br/&gt;
 
@@ -559,9 +642,9 @@
                <documentation>
                   Specifies the version provider that will be consulted in order to determine the default version. If this attribute is used, the &lt;code&gt;version&lt;/code&gt; attribute will be ignored if present.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -607,9 +690,9 @@
 
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="examples"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          &lt;p&gt;The following example illustrates the various facilities exposed by this extension point. This example is taken from the &lt;i&gt;Building Project Facets&lt;/i&gt; tutorial.&lt;/p&gt;
 
@@ -673,9 +756,9 @@
 
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="copyright"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          Copyright (c) 2008 Oracle and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials

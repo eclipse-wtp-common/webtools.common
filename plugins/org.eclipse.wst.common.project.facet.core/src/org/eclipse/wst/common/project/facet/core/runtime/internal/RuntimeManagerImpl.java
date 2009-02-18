@@ -37,7 +37,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
-import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
+import org.eclipse.wst.common.project.facet.core.internal.ProblemLog;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
@@ -60,7 +60,6 @@ public final class RuntimeManagerImpl
 {
     private static final String EXTENSION_ID = "runtimes"; //$NON-NLS-1$
     private static final String BRIDGES_EXTENSION_ID = "runtimeBridges"; //$NON-NLS-1$
-    private static final String DEFAULT_FACETS_EXTENSION_ID = "defaultFacets"; //$NON-NLS-1$
 
     private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
     private static final String ATTR_ID = "id"; //$NON-NLS-1$
@@ -68,7 +67,6 @@ public final class RuntimeManagerImpl
     private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
     private static final String EL_ADAPTER = "adapter"; //$NON-NLS-1$
     private static final String EL_BRIDGE = "bridge"; //$NON-NLS-1$
-    private static final String EL_DEFAULT_FACETS = "default-facets"; //$NON-NLS-1$
     private static final String EL_FACET = "facet"; //$NON-NLS-1$
     private static final String EL_FACTORY = "factory"; //$NON-NLS-1$
     private static final String EL_RUNTIME_COMPONENT = "runtime-component"; //$NON-NLS-1$
@@ -83,7 +81,6 @@ public final class RuntimeManagerImpl
     private static final IndexedSet<String,IRuntime> runtimes;
     private static final List<Mapping> mappings;
     private static final Map<String,IRuntimeBridge> bridges;
-    private static final List<DefaultFacetsEntry> defaultFacets;
     private static final Set<IListener> listeners;
     private static final RuntimeLifecycleListenerRegistry runtimeLifecycleListenerRegistry;
     
@@ -93,13 +90,11 @@ public final class RuntimeManagerImpl
         runtimes = new IndexedSet<String,IRuntime>();
         mappings = new ArrayList<Mapping>();
         bridges = new HashMap<String,IRuntimeBridge>();
-        defaultFacets = new ArrayList<DefaultFacetsEntry>();
         listeners = new HashSet<IListener>();
         runtimeLifecycleListenerRegistry = new RuntimeLifecycleListenerRegistry();
         
         readMetadata();
         readBridgesExtensions();
-        readDefaultFacetsExtensions();
         
         ( new RuntimeValidationThread() ).start();
     }
@@ -320,28 +315,6 @@ public final class RuntimeManagerImpl
                 {
                     FacetCorePlugin.log( e );
                 }
-            }
-        }
-        
-        return result;
-    }
-    
-    static Set<IProjectFacetVersion> getDefaultFacets( final IRuntimeComponentVersion rcv )
-    {
-        final Set<IProjectFacetVersion> result = new HashSet<IProjectFacetVersion>();
-        
-        for( DefaultFacetsEntry dfe : defaultFacets )
-        {
-            try
-            {
-                if( dfe.match( rcv ) )
-                {
-                    result.addAll( dfe.facets );
-                }
-            }
-            catch( CoreException e )
-            {
-                FacetCorePlugin.log( e );
             }
         }
         
@@ -903,118 +876,6 @@ public final class RuntimeManagerImpl
             }
         }
     }
-
-    private static void readDefaultFacetsExtensions()
-    {
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        
-        final IExtensionPoint point 
-            = registry.getExtensionPoint( FacetCorePlugin.PLUGIN_ID, 
-                                          DEFAULT_FACETS_EXTENSION_ID );
-        
-        if( point == null )
-        {
-            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
-        }
-        
-        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
-        
-        for( IExtension extension : point.getExtensions() )
-        {
-            for( IConfigurationElement cfgel : extension.getConfigurationElements() )
-            {
-                cfgels.add( cfgel );
-            }
-        }
-
-        for( IConfigurationElement config : cfgels )
-        {
-            if( config.getName().equals( EL_DEFAULT_FACETS ) )
-            {
-                readDefaultFacets( config );
-            }
-        }
-    }
-    
-    private static void readDefaultFacets( final IConfigurationElement config )
-    {
-        final DefaultFacetsEntry dfe = new DefaultFacetsEntry();
-        final IConfigurationElement[] children = config.getChildren();
-        
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( EL_RUNTIME_COMPONENT ) )
-            {
-                dfe.rct = readRuntimeComponentTypeRef( child );
-                
-                if( dfe.rct == null )
-                {
-                    return;
-                }
-                
-                final String v = child.getAttribute( ATTR_VERSION );
-                
-                if( v != null )
-                {
-                    try
-                    {
-                        final String pluginId 
-                            = config.getContributor().getName();
-                        
-                        dfe.rcvexpr = new VersionExpr<RuntimeComponentVersion>( dfe.rct, v, pluginId );
-                    }
-                    catch( CoreException e )
-                    {
-                        FacetCorePlugin.log( e.getStatus() );
-                        return;
-                    }
-                }
-            }
-            else if( childName.equals( EL_FACET ) )
-            {
-                final IProjectFacet f = readProjectFacetRef( child );
-                
-                if( f == null )
-                {
-                    return;
-                }
-                
-                final String ver = child.getAttribute( ATTR_VERSION );
-                
-                if( ver == null )
-                {
-                    reportMissingAttribute( child, ATTR_VERSION );
-                    return;
-                }
-                
-                if( ! f.hasVersion( ver ) )
-                {
-                    String msg
-                        = NLS.bind( FacetedProjectFrameworkImpl.Resources.facetVersionNotDefined,
-                                    f.getId(), ver );
-                    
-                    msg += NLS.bind( Resources.usedInPlugin, 
-                                     config.getContributor().getName() );
-                    
-                    FacetCorePlugin.log( msg );
-                    
-                    return;
-                }
-                
-                dfe.facets.add( f.getVersion( ver ) );
-            }
-        }
-        
-        if( dfe.rct == null )
-        {
-            return;
-        }
-        
-        defaultFacets.add( dfe );
-    }
     
     private static IRuntimeComponentType readRuntimeComponentTypeRef( final IConfigurationElement config )
     {
@@ -1053,7 +914,7 @@ public final class RuntimeManagerImpl
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            FacetedProjectFrameworkImpl.reportMissingFacet( id, config.getContributor().getName() );
+            ProblemLog.reportMissingFacet( id, config.getContributor().getName() );
             return null;
         }
         
@@ -1119,28 +980,6 @@ public final class RuntimeManagerImpl
             }
             
             return result;
-        }
-    }
-    
-    private static final class DefaultFacetsEntry
-    {
-        public IRuntimeComponentType rct;
-        public VersionExpr<RuntimeComponentVersion> rcvexpr;
-        public final Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
-        
-        public boolean match( final IRuntimeComponentVersion rcv )
-        
-            throws CoreException
-            
-        {
-            if( rcv.getRuntimeComponentType() != this.rct )
-            {
-                return false;
-            }
-            else
-            {
-                return this.rcvexpr.check( rcv );
-            }
         }
     }
     

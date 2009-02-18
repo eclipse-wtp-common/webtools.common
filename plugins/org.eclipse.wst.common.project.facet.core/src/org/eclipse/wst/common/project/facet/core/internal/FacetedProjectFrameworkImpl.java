@@ -1274,38 +1274,6 @@ public final class FacetedProjectFrameworkImpl
         return group.getPreferences( facet );
     }
     
-    public static void reportMissingFacet( final String fid,
-                                           final String plugin )
-    {
-        final String msg
-            = NLS.bind( Resources.facetNotDefined, fid ) +
-              NLS.bind( Resources.usedInPlugin, plugin );
-        
-        FacetCorePlugin.logError( msg, true );
-    }
-
-    public static void reportMissingFacet( final String fid,
-                                           final IProjectFacetVersion fv )
-    {
-        final String msg
-            = NLS.bind( Resources.facetNotDefined, fid ) +
-              NLS.bind( Resources.usedInConstraint, 
-                        fv.getProjectFacet().getId(),
-                        fv.getVersionString() );
-        
-        FacetCorePlugin.logError( msg, true );
-    }
-    
-    public static void reportMissingRuntimeComponentType( final String rct,
-                                                          final String plugin )
-    {
-        final String msg
-            = NLS.bind( Resources.runtimeComponentTypeNotDefined, rct ) +
-              NLS.bind( Resources.usedInPlugin, plugin );
-        
-        FacetCorePlugin.logError( msg, true );
-    }
-    
     private static IProgressMonitor submon( final IProgressMonitor monitor,
                                             final int ticks )
     {
@@ -1607,7 +1575,7 @@ public final class FacetedProjectFrameworkImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getContributor().getName() );
+            ProblemLog.reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -1833,7 +1801,7 @@ public final class FacetedProjectFrameworkImpl
                         }
                         else
                         {
-                            FacetCorePlugin.log( f.createVersionNotFoundErrMsg( version ) );
+                            ProblemLog.reportMissingFacetVersion( f, version, config.getContributor().getName() );
                         }
                     }
                     else
@@ -1871,7 +1839,7 @@ public final class FacetedProjectFrameworkImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getContributor().getName() );
+            ProblemLog.reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -2062,7 +2030,7 @@ public final class FacetedProjectFrameworkImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getContributor().getName() );
+            ProblemLog.reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -2166,12 +2134,15 @@ public final class FacetedProjectFrameworkImpl
     private void readConstraint( final IConfigurationElement config,
                                  final ProjectFacetVersion fv )
     {
+        final ProblemLog.Policy problemLoggingPolicy 
+            = ProblemLog.Policy.createBasedOnIgnoreProblemsAttr( config );
+
         final IConfigurationElement[] ops = config.getChildren();
         final List<IConstraint> parsed = new ArrayList<IConstraint>();
         
         for( int j = 0; j < ops.length; j++ )
         {
-            final IConstraint op = readConstraintHelper( ops[ j ], fv );
+            final IConstraint op = readConstraintHelper( ops[ j ], fv, problemLoggingPolicy );
             
             if( op != null )
             {
@@ -2194,9 +2165,13 @@ public final class FacetedProjectFrameworkImpl
     }
     
     private IConstraint readConstraintHelper( final IConfigurationElement root,
-                                              final ProjectFacetVersion fv )
+                                              final ProjectFacetVersion fv,
+                                              final ProblemLog.Policy parentProblemLoggingPolicy )
     {
         final String pluginId = root.getContributor().getName();
+        
+        final ProblemLog.Policy localProblemLoggingPolicy 
+            = ProblemLog.Policy.createBasedOnIgnoreProblemsAttr( root, parentProblemLoggingPolicy );
         
         final IConstraint.Type type
             = IConstraint.Type.valueOf( root.getName() );
@@ -2207,20 +2182,27 @@ public final class FacetedProjectFrameworkImpl
             type == IConstraint.Type.OR )
         {
             final IConfigurationElement[] children = root.getChildren();
-            operands = new IConstraint[ children.length ];
+            final List<Object> operandsList = new ArrayList<Object>( children.length );
             
             for( int i = 0; i < children.length; i++ )
             {
                 final IConstraint operand 
-                    = readConstraintHelper( children[ i ], fv );
+                    = readConstraintHelper( children[ i ], fv, localProblemLoggingPolicy );
                 
-                if( operand == null )
+                if( operand != null )
                 {
-                    return null;
+                    operandsList.add( operand );
                 }
-                
-                operands[ i ] = operand;
+                else
+                {
+                    if( type == IConstraint.Type.AND )
+                    {
+                        return null;
+                    }
+                }
             }
+            
+            operands = operandsList.toArray();
         }
         else if( type == IConstraint.Type.REQUIRES ||
                  type == IConstraint.Type.CONFLICTS )
@@ -2253,11 +2235,7 @@ public final class FacetedProjectFrameworkImpl
             {
                 if( ! isGroupDefined( gid ) )
                 {
-                    final String msg
-                        = NLS.bind( Resources.groupNotDefined, gid ) +
-                          NLS.bind( Resources.usedInPlugin, pluginId );
-                    
-                    FacetCorePlugin.logError( msg, true );
+                    ProblemLog.reportMissingGroup( gid, pluginId, localProblemLoggingPolicy );
                     return null;
                 }
                 
@@ -2276,11 +2254,7 @@ public final class FacetedProjectFrameworkImpl
             {
                 if( ! isProjectFacetDefined( fid ) )
                 {
-                    final String msg
-                        = NLS.bind( Resources.facetNotDefined, fid ) +
-                          NLS.bind( Resources.usedInPlugin, pluginId );
-                    
-                    FacetCorePlugin.logError( msg, true );
+                    ProblemLog.reportMissingFacet( fid, pluginId, localProblemLoggingPolicy );
                     return null;
                 }
                 
@@ -2451,9 +2425,7 @@ public final class FacetedProjectFrameworkImpl
         public static String groupNotDefined;
         public static String presetNotDefined;
         public static String templateNotDefined;
-        public static String runtimeComponentTypeNotDefined;
         public static String usedInPlugin;
-        public static String usedInConstraint;
         public static String invalidActionType;
         public static String invalidEventHandlerType;
         public static String invalidRequiresConstraint;

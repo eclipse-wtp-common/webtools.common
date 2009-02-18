@@ -12,6 +12,8 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
+import static org.eclipse.wst.common.project.facet.core.internal.ProblemLog.reportMissingFacet;
+import static org.eclipse.wst.common.project.facet.core.internal.ProblemLog.reportMissingFacetVersion;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
@@ -26,7 +28,6 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectBase;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -178,6 +179,7 @@ public final class DefaultFacetsExtensionPoint
         
     {
         final String pluginId = config.getContributor().getName();
+        final ProblemLog.Policy problemLoggingPolicy = ProblemLog.Policy.createBasedOnIgnoreProblemsAttr( config );
         final DefaultFacetsExtension extension = new DefaultFacetsExtension();
         
         for( IConfigurationElement child : config.getChildren() )
@@ -186,7 +188,7 @@ public final class DefaultFacetsExtensionPoint
             
             if( childName.equals( EL_RUNTIME_COMPONENT ) )
             {
-                final RuntimeComponentTypeRef rctRef = RuntimeComponentTypeRef.read( child );
+                final RuntimeComponentTypeRef rctRef = RuntimeComponentTypeRef.read( child, problemLoggingPolicy );
                 
                 if( rctRef == null )
                 {
@@ -203,7 +205,7 @@ public final class DefaultFacetsExtensionPoint
                     
                     if( contextChildName.equals( EL_RUNTIME_COMPONENT ) )
                     {
-                        final RuntimeComponentTypeRef rctRef = RuntimeComponentTypeRef.read( contextChild );
+                        final RuntimeComponentTypeRef rctRef = RuntimeComponentTypeRef.read( contextChild, problemLoggingPolicy );
                         
                         if( rctRef == null )
                         {
@@ -214,11 +216,11 @@ public final class DefaultFacetsExtensionPoint
                     }
                     else if( contextChildName.equals( EL_FIXED_FACET ) )
                     {
-                        final String fid = findRequiredAttribute( child, ATTR_ID );
+                        final String fid = findRequiredAttribute( contextChild, ATTR_ID );
                         
                         if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
                         {
-                            FacetedProjectFrameworkImpl.reportMissingFacet( fid, pluginId );
+                            reportMissingFacet( fid, pluginId, problemLoggingPolicy );
                             throw new InvalidExtensionException();
                         }
                         
@@ -234,7 +236,7 @@ public final class DefaultFacetsExtensionPoint
                 
                 if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
                 {
-                    FacetedProjectFrameworkImpl.reportMissingFacet( fid, pluginId );
+                    reportMissingFacet( fid, pluginId, problemLoggingPolicy );
                     throw new InvalidExtensionException();
                 }
 
@@ -244,14 +246,7 @@ public final class DefaultFacetsExtensionPoint
                 
                 if( ! f.hasVersion( ver ) )
                 {
-                    String msg
-                        = NLS.bind( FacetedProjectFrameworkImpl.Resources.facetVersionNotDefined,
-                                    f.getId(), ver );
-                    
-                    msg += NLS.bind( FacetedProjectFrameworkImpl.Resources.usedInPlugin, pluginId ); 
-                    
-                    FacetCorePlugin.log( msg );
-                    
+                    reportMissingFacetVersion( f, ver, pluginId, problemLoggingPolicy );
                     throw new InvalidExtensionException();
                 }
                 

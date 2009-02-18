@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.project.facet.core">
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="defaultFacets" name="Default Facets Extension Point"/>
@@ -12,6 +12,9 @@
 
    <element name="extension">
       <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
          <documentation>
             (no description available)
          </documentation>
@@ -56,6 +59,21 @@
             <element ref="runtime-component" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this extension are not defined. When a problem is encountered, the framework will ignore the extension contribution at level of the default-facets element. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+runtime-component-type-not-defined&lt;br/&gt;
+runtime-component-version-not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -184,7 +202,6 @@
   &lt;/default-facets&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 

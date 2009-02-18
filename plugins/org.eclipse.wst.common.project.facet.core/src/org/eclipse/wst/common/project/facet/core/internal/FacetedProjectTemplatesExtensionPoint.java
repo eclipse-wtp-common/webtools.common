@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
-import static org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl.reportMissingFacet;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
 import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
@@ -112,7 +111,7 @@ public final class FacetedProjectTemplatesExtensionPoint
                 
                 if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
                 {
-                    reportMissingFacet( fid, pluginId );
+                    ProblemLog.reportMissingFacet( fid, pluginId );
                     return;
                 }
                 

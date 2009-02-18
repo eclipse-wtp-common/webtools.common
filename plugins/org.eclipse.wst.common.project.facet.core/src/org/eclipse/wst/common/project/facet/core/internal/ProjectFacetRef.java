@@ -109,7 +109,7 @@ public final class ProjectFacetRef
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            FacetedProjectFrameworkImpl.reportMissingFacet( id, config.getContributor().getName() );
+            ProblemLog.reportMissingFacet( id, config.getContributor().getName() );
             return null;
         }
         

@@ -72,6 +72,12 @@ public final class RuntimeComponentTypeRef
     
     public static RuntimeComponentTypeRef read( final IConfigurationElement config )
     {
+        return read( config, ProblemLog.DEFAULT_POLICY );
+    }
+    
+    public static RuntimeComponentTypeRef read( final IConfigurationElement config,
+                                                final ProblemLog.Policy problemLoggingPolicy )
+    {
         final String pluginId = config.getContributor().getName();
         final String id = config.getAttribute( ATTR_ID );
 
@@ -83,7 +89,7 @@ public final class RuntimeComponentTypeRef
         
         if( ! RuntimeManager.isRuntimeComponentTypeDefined( id ) )
         {
-            FacetedProjectFrameworkImpl.reportMissingRuntimeComponentType( id, pluginId );
+            ProblemLog.reportMissingRuntimeComponentType( id, pluginId, problemLoggingPolicy );
             return null;
         }
         
