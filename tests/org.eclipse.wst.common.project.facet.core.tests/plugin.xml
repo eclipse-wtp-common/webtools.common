@@ -565,6 +565,7 @@
 
     <project-facet id="pct-f2"/>
     <project-facet-version facet="pct-f2" version="1.0"/>
+    <project-facet-version facet="pct-f2" version="2.0"/>
     <action facet="pct-f2" type="INSTALL">
       <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
     </action>

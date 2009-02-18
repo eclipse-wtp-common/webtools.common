@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
@@ -20,6 +22,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr2;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -98,6 +101,7 @@ public final class FacetedProjectFramework
      * 
      * @param project the project to check for the facet presence
      * @param fid the project facet id
+     * @return <code>true</code> if specified project has the given facet
      * @throws CoreException if failed while reading faceted project metadata
      */
 
@@ -113,7 +117,8 @@ public final class FacetedProjectFramework
     /**
      * <p>Determines whether the specified project facet is installed in the
      * provided project. Returns <code>false</code> if the project is not 
-     * accessible, the project is not faceted or the facet id is unrecognized.</p>
+     * accessible or the project is not faceted. Works even if the facet or
+     * the version that is being checked is not defined.</p>
      * 
      * <p>This method is explicitly designed to avoid activation of the Faceted
      * Project Framework if the project is not faceted. For the code that
@@ -128,6 +133,7 @@ public final class FacetedProjectFramework
      * @param fid the project facet id
      * @param vexpr the version match expression, or <code>null</code> to
      *   match any version
+     * @return <code>true</code> if specified project has the given facet
      * @throws CoreException if failed while reading faceted project metadata;
      *   if the version expression is invalid
      */
@@ -162,7 +168,28 @@ public final class FacetedProjectFramework
                         
                         if( fv != null )
                         {
-                            return f.getVersions( vexpr ).contains( fv );
+                            final VersionExpr2 expr = new VersionExpr2( vexpr );
+                            return expr.check( fv.getVersionString() );
+                        }
+                    }
+                }
+                else
+                {
+                    for( IProjectFacetVersion fv : fproj.getProjectFacets() )
+                    {
+                        final IProjectFacet f = fv.getProjectFacet();
+                        
+                        if( f.getId().equals( fid ) )
+                        {
+                            if( vexpr == null )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                final VersionExpr2 expr = new VersionExpr2( vexpr );
+                                return expr.check( fv.getVersionString() );
+                            }
                         }
                     }
                 }

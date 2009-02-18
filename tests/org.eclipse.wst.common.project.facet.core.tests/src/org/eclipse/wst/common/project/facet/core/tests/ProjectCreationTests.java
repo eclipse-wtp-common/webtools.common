@@ -11,18 +11,24 @@
 
 package org.eclipse.wst.common.project.facet.core.tests;
 
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.readFromFile;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.writeToFile;
+
 import java.io.IOException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProject;
 import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils;
 
 /**
@@ -42,6 +48,7 @@ public final class ProjectCreationTests
 
     private static IProjectFacet f2;
     private static IProjectFacetVersion f2v1;
+    private static IProjectFacetVersion f2v2;
     
     static
     {
@@ -50,6 +57,7 @@ public final class ProjectCreationTests
 
         f2 = ProjectFacetsManager.getProjectFacet( "pct-f2" );
         f2v1 = f2.getVersion( "1.0" );
+        f2v2 = f2.getVersion( "2.0" );
     }
 
     private ProjectCreationTests( final String name )
@@ -74,12 +82,14 @@ public final class ProjectCreationTests
         suite.addTest( new ProjectCreationTests( "testWrapperCreation1" ) );
         suite.addTest( new ProjectCreationTests( "testWrapperCreation2" ) );
         suite.addTest( new ProjectCreationTests( "testWrapperCreation3" ) );
+        suite.addTest( new ProjectCreationTests( "testHasProjectFacet1" ) );
+        suite.addTest( new ProjectCreationTests( "testHasProjectFacet2" ) );
         
         return suite;
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
      * method. In this scenario, there is no project with the same name.
      * 
      * @throws CoreException
@@ -110,7 +120,7 @@ public final class ProjectCreationTests
     }
     
     /**
-     * Tests {@see ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
      * method. In this scenario, there is a faceted project with the same name.
      * 
      * @throws CoreException
@@ -139,7 +149,7 @@ public final class ProjectCreationTests
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(String,IPath,IProgressMonitor)}
      * method. In this scenario, there is a non-faceted project with the same
      * name.
      * 
@@ -174,7 +184,7 @@ public final class ProjectCreationTests
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(String,IPath,IProgressMonitor)} method. In this 
+     * Tests {@link ProjectFacetsManager.create(String,IPath,IProgressMonitor)} method. In this 
      * scenario, there was previously a faceted project at the specified location. The test 
      * verifies that previously-installed facets are recognized after the project is resurrected.
      * 
@@ -208,7 +218,7 @@ public final class ProjectCreationTests
     }
     
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
      * method. In this scenario project is not faceted and convertIfNecessary
      * is set to true.
      * 
@@ -241,7 +251,7 @@ public final class ProjectCreationTests
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
      * method. In this scenario project is faceted and convertIfNecessary
      * is set to true.
      * 
@@ -271,7 +281,7 @@ public final class ProjectCreationTests
     }
     
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
      * method. In this scenario project is faceted and convertIfNecessary
      * is set to false.
      * 
@@ -301,7 +311,7 @@ public final class ProjectCreationTests
     }
     
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
+     * Tests {@link ProjectFacetsManager.create(IProject,boolean,IProgressMonitor)}
      * method. In this scenario project is not faceted and convertIfNecessary
      * is set to false.
      * 
@@ -328,7 +338,7 @@ public final class ProjectCreationTests
     }
     
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject)} method. This scenario
+     * Tests {@link ProjectFacetsManager.create(IProject)} method. This scenario
      * validates that the wrapper cache is working and the same instance is
      * returned when the create method is called multiple times.
      * 
@@ -354,7 +364,7 @@ public final class ProjectCreationTests
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject)} method. In this
+     * Tests {@link ProjectFacetsManager.create(IProject)} method. In this
      * scenario, the input project does not exist.
      * 
      * @throws CoreException
@@ -370,7 +380,7 @@ public final class ProjectCreationTests
     }
 
     /**
-     * Tests {@see ProjectFacetsManager.create(IProject)} method. In this
+     * Tests {@link ProjectFacetsManager.create(IProject)} method. In this
      * scenario, the input project is closed.
      * 
      * @throws CoreException
@@ -392,4 +402,101 @@ public final class ProjectCreationTests
         assertNull( ProjectFacetsManager.create( proj ) );
     }
     
+    /**
+     * Tests the various methods that check whether a particular facet is present in a project:<br/><br/>
+     * 
+     * {@link IFacetedProject.hasProjecFacet(IProjectFacet)}<br/>
+     * {@link IFacetedProject.hasProjecFacet(IProjectFacet)}<br/>
+     * {@link FacetedProjectFramework.hasProjectFacet(IProject,String,String)}</br><br/>
+     * 
+     * In this scenario, the facets being tested are known to the framework.
+     * 
+     * @throws CoreException
+     */
+    
+    public void testHasProjectFacet1()
+    
+        throws CoreException
+        
+    {
+        final IFacetedProject fproj 
+            = ProjectFacetsManager.create( "abc", null, null );
+        
+        final IProject proj = fproj.getProject();
+        this.resourcesToCleanup.add( proj );
+        
+        fproj.installProjectFacet( f1v1, null, null );
+        fproj.installProjectFacet( f2v1, null, null );
+        
+        assertTrue( fproj.hasProjectFacet( f1 ) );
+        assertTrue( fproj.hasProjectFacet( f1v1 ) );
+
+        assertTrue( fproj.hasProjectFacet( f2 ) );
+        assertTrue( fproj.hasProjectFacet( f2v1 ) );
+        assertFalse( fproj.hasProjectFacet( f2v2 ) );
+        
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f1.getId() ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f1.getId(), null ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f1.getId(), "1.0" ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f1.getId(), "[0.5-3.7]" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f1.getId(), "2.3" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f1.getId(), "[2.3-5.8)" ) );
+        
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId() ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), null ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "1.0" ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "[0.5-3.7]" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "2.3" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "[2.3-5.8)" ) );
+    }
+    
+    /**
+     * Tests the various methods that check whether a particular facet is present in a project:<br/><br/>
+     * 
+     * {@link FacetedProjectFramework.hasProjectFacet(IProject,String,String)}</br><br/>
+     * 
+     * In this scenario, the facets being tested are not known to the framework. This comes up as part of
+     * upgrade and transition scenarios where facets previously installed are no longer defined.
+     * 
+     * @throws CoreException
+     */
+    
+    public void testHasProjectFacet2()
+    
+        throws CoreException, IOException
+        
+    {
+        final IFacetedProject fproj 
+            = ProjectFacetsManager.create( "abc", null, null );
+        
+        final IProject proj = fproj.getProject();
+        this.resourcesToCleanup.add( proj );
+        
+        fproj.installProjectFacet( f1v1, null, null );
+        fproj.installProjectFacet( f2v1, null, null );
+        
+        final IFile fpjMdFile = proj.getFile( FacetedProject.METADATA_FILE );
+        
+        String fpjMdFileContents = readFromFile( fpjMdFile );
+        fpjMdFileContents = fpjMdFileContents.replace( "pct-f1", "foo" );
+        fpjMdFileContents = fpjMdFileContents.replace( "<installed facet=\"pct-f2\" version=\"1.0\"/>", "<installed facet=\"pct-f2\" version=\"1.1\"/>" );
+        writeToFile( fpjMdFile, fpjMdFileContents );
+        
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, "foo" ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, "foo", null ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, "foo", "1.0" ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, "foo", "[0.5-3.7]" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, "foo", "2.3" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, "foo", "[2.3-5.8)" ) );
+        
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId() ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), null ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "1.1" ) );
+        assertTrue( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "[0.5-3.7]" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "2.3" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, f2.getId(), "[2.3-5.8)" ) );
+
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, "abc" ) );
+        assertFalse( FacetedProjectFramework.hasProjectFacet( proj, "abc", null ) );
+    }
 }
