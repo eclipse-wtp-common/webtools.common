@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.DefaultConfigurationPresetFactory;
@@ -194,39 +195,41 @@ public final class FacetedProjectWorkingCopy
         }
         
         // Listen for changes to registered runtimes.
+        
+        final Job runtimesRefreshJob = new Job( Resources.refreshingAvailableRuntimesJobName )
+        {
+            protected IStatus run( final IProgressMonitor monitor )
+            {
+                // Suspending event notification to make sure that the internal list of
+                // targetable runtimes is updated before the AVAILABLE_RUNTIMES_CHANGED
+                // event is received by listeners.
+                
+                suspendEventNotification();
+                
+                try
+                {
+                    final IFacetedProjectEvent event
+                        = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
+                                                   IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
+                    
+                    notifyListeners( event );
+                    
+                    refreshTargetableRuntimes();
+                }
+                finally
+                {
+                    resumeEventNotification();
+                }
+                
+                return Status.OK_STATUS;
+            }
+        };
 
         final IListener runtimeManagerListener = new IListener()
         {
             public void handle()
             {
-                final Thread runtimesRefreshThread = new Thread()
-                {
-                    public void run()
-                    {
-                        // Suspending event notification to make sure that the internal list of
-                        // targetable runtimes is updated before the AVAILABLE_RUNTIMES_CHANGED
-                        // event is received by listeners.
-                        
-                        suspendEventNotification();
-                        
-                        try
-                        {
-                            final IFacetedProjectEvent event
-                                = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
-                                                           IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
-                            
-                            notifyListeners( event );
-                            
-                            refreshTargetableRuntimes();
-                        }
-                        finally
-                        {
-                            resumeEventNotification();
-                        }
-                    }
-                };
-                
-                runtimesRefreshThread.start();
+                runtimesRefreshJob.schedule();
             }
         };
         
@@ -2119,6 +2122,7 @@ public final class FacetedProjectWorkingCopy
         public static String facetVersionNotFound;
         public static String facetNotSupportedByTarget;
         public static String invalidRuntimeMsg;
+        public static String refreshingAvailableRuntimesJobName;
         
         static
         {

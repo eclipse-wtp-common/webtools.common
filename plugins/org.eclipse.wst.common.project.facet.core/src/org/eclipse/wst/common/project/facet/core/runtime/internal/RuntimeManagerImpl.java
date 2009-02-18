@@ -416,7 +416,7 @@ public final class RuntimeManagerImpl
     {
         String name = suggestion;
         
-        for( int i = 1; runtimes.contains( name ); i++ )
+        for( int i = 1; runtimes.containsKey( name ); i++ )
         {
             name = suggestion + " (" + i + ")"; //$NON-NLS-1$ //$NON-NLS-2$
         }
