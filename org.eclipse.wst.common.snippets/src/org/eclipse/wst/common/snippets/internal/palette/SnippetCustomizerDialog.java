@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteRoot;
@@ -128,12 +127,6 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IHelpContextIds.CUSTOMIZE_IMPORT_BUTTON);
-		}
-
-		protected PaletteContainer determineContainerForNewEntry(PaletteEntry selected) {
-			if (selected instanceof PaletteContainer)
-				return (PaletteContainer) selected;
-			return selected.getParent();
 		}
 
 		protected void handleImport() {
