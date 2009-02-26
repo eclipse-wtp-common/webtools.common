@@ -101,7 +101,6 @@ public final class PresetSelectionPanel
         final GridData gd = gdhspan( gdhfill(), 2 );
         gd.widthHint = 400;
         gd.minimumHeight = 30;
-        gd.grabExcessVerticalSpace = true;
         
         this.descTextField.setLayoutData( gd );
         
