@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -40,9 +41,12 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 * {A, B} }
 	 */
 	private Map<IProject, Set<IProject>> graph = null;
-
+	
 	private long modStamp = 0;
 
+	private Map<String, Object> referenceOptions = new HashMap<String, Object>();
+	
+	
 	/**
 	 * This is not public; only {@link IDependencyGraph#INSTANCE} should be
 	 * used.
@@ -153,18 +157,31 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	 */
 	private void initGraph() {
 		synchronized (graphLock) {
+			referenceOptions.put("GET_JAVA_REFS", Boolean.FALSE);
 			try {
 				preUpdate();
 				graph = new HashMap<IProject, Set<IProject>>();
 				listener = new DependencyGraphResourceChangedListener();
 				ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
-				IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-				for (IProject sourceProject : allProjects) {
-					queueProjectAdded(sourceProject);
-				}
+				initAll();
 			} finally {
 				postUpdate();
 			}
+		}
+	}
+	
+	private void initAll(){
+		synchronized (graphLock) {
+			try{
+				preUpdate();
+				IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+				for (IProject sourceProject : allProjects) {
+					queueProjectAdded(sourceProject);
+				}	
+			} finally{
+				postUpdate();
+			}
+			
 		}
 	}
 
@@ -300,7 +317,12 @@ public class DependencyGraphImpl implements IDependencyGraph {
 						for (IProject sourceProject : allProjects) {
 							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 							if (component != null) {
-								IVirtualReference[] references = component.getReferences();
+								IVirtualReference[] references = null;
+								if(referenceOptions != null && component instanceof VirtualComponent) {
+									references = ((VirtualComponent)component).getReferences(referenceOptions);
+								} else {
+									references = component.getReferences();
+								}
 								for (IVirtualReference ref : references) {
 									IVirtualComponent targetComponent = ref.getReferencedComponent();
 									if (targetComponent != null) {
@@ -320,7 +342,12 @@ public class DependencyGraphImpl implements IDependencyGraph {
 							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 							if (component != null) {
 								validRefs.clear();
-								IVirtualReference[] references = component.getReferences();
+								IVirtualReference[] references = null;
+								if(referenceOptions != null && component instanceof VirtualComponent) {
+									references = ((VirtualComponent)component).getReferences(referenceOptions);
+								} else {
+									references = component.getReferences();
+								}
 								for (IVirtualReference ref : references) {
 									IVirtualComponent targetComponent = ref.getReferencedComponent();
 									if (targetComponent != null) {
@@ -349,6 +376,17 @@ public class DependencyGraphImpl implements IDependencyGraph {
 							}
 						}
 					}
+					boolean scheduleUpdate = false;
+					synchronized (graphLock) {
+						if(referenceOptions != null){
+							scheduleUpdate = true;
+							referenceOptions = null;
+						}
+					}
+					if(scheduleUpdate){
+						initAll();
+					}
+					
 				}
 			});
 			// System.err.println(IDependencyGraph.INSTANCE);
