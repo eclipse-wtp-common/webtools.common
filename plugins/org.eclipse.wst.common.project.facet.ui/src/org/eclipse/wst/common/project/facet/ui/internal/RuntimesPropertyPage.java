@@ -11,19 +11,25 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
@@ -136,7 +142,7 @@ public class RuntimesPropertyPage extends PropertyPage
                 }
             );
             
-    	    Dialog.applyDialogFont( parent );
+            Dialog.applyDialogFont( parent );
             
             return composite;
         }
@@ -145,27 +151,81 @@ public class RuntimesPropertyPage extends PropertyPage
     
     public boolean performOk() 
     {
-        final Runnable op = new Runnable()
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            public void run()
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
             {
-                try
-                {
-                    RuntimesPropertyPage.this.fpjwc.commitChanges( null );
-                }
-                catch( CoreException e )
-                {
-                    final IStatus st = e.getStatus();
-                    
-                    ErrorDialog.openError( getShell(), Resources.errDlgTitle,
-                                           st.getMessage(), st );
-                    
-                    FacetUiPlugin.log( st );
-                }
+                RuntimesPropertyPage.this.fpjwc.commitChanges( monitor );
             }
         };
         
-        BusyIndicator.showWhile( null, op );
+        final IRunnableWithProgress op = new IRunnableWithProgress()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws InvocationTargetException, InterruptedException
+                
+            {
+                try
+                {
+                    final IWorkspace ws = ResourcesPlugin.getWorkspace();
+                    ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
+                }
+                catch( CoreException e )
+                {
+                    throw new InvocationTargetException( e );
+                }
+            }
+        };
+
+        boolean failed = false;
+        
+        try 
+        {
+            new ProgressMonitorDialog( getShell() ).run( true, false, op );
+        }
+        catch( InterruptedException e ) 
+        {
+            failed = true;
+            return false;
+        } 
+        catch( InvocationTargetException e ) 
+        {
+            failed = true;
+            
+            final Throwable te = e.getTargetException();
+            
+            if( te instanceof CoreException )
+            {
+                final IStatus st = ( (CoreException) te ).getStatus();
+                
+                ErrorDialog.openError( getShell(), Resources.errDlgTitle,
+                                       st.getMessage(), st );
+                
+                FacetUiPlugin.log( st );
+            }
+            else
+            {
+                throw new RuntimeException( te );
+            }
+        }
+        finally
+        {
+            if( failed )
+            {
+                try
+                {
+                    this.fpjwc.revertChanges();
+                }
+                catch( Exception e )
+                {
+                    FacetUiPlugin.log( e );
+                }
+            }
+        }
         
         return true;
     }
