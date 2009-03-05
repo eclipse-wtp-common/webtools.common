@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_core.feature.patch"
       label="%featureName"
-      version="3.0.1.qualifier"
+      version="3.0.4.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,23 +18,8 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.wst.common_core.feature" version="3.0.1.v200807220139-7C7_EV6E_EkMNrNZWGV9bi" patch="true"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="3.0.4.v200811200248-7C7_EVNE_EkMNtRvY4V6o0" patch="true"/>
    </requires>
-
-
-   <plugin
-         id="org.eclipse.wst.common.project.facet.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.wst.validation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
          
    <plugin
          id="org.eclipse.wst.common.modulecore"
