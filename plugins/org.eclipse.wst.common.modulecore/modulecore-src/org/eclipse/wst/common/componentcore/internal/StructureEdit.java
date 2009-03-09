@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -435,10 +437,25 @@ public class StructureEdit implements IEditModelHandler {
 	 * to add or remove {@see WorkbenchComponent}s. If a client needs to just read the existing
 	 * {@see WorkbenchComponent}s, use {@see #getWorkbenchModules()}.
 	 * </p>
+	 * <p>
+	 * Deadlock Warning: Calling this method requires two locks.  First the component file's file lock
+	 * is required and then the EMFWorkbenchEditContextFactory's projectILock is required.  If another
+	 * thread acquires these same two locks in the opposite order, deadlock could occur.
+	 * </p>
 	 * 
 	 * @return The root object of the underlying model
 	 */
 	public ProjectComponents getComponentModelRoot() {
+		IFile file = structuralModel.getComponentFile();
+		if (!file.isSynchronized(IResource.DEPTH_ONE)) {
+			try {
+				File iofile = file.getFullPath().toFile();
+				if (iofile.exists() || file.exists())
+					file.refreshLocal(IResource.DEPTH_ONE, null);
+			} catch (CoreException ce) {
+				//ignore
+			}
+		}	
 		ProjectComponents comps = null;
 		ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(structuralModel.getProject());
 		try{

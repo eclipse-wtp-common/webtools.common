@@ -274,6 +274,24 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			return true;
 		else return componentFile.isSynchronized(IResource.DEPTH_ZERO);
 	}
+	
+	public IFile getComponentFile() {
+		IFile compFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
+		if (compFile.isAccessible())
+			return compFile;
+		else { //Need to check for legacy file locations also....
+			compFile = getProject().getFile(ModuleStructuralModel.R1_MODULE_META_FILE_NAME);
+			if (compFile.isAccessible())
+				return compFile;
+			else {
+				compFile = getProject().getFile(ModuleStructuralModel.R0_7_MODULE_META_FILE_NAME);
+				if (compFile.isAccessible())
+					return compFile;
+			}
+		}
+		return getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
+	}
+	
 	public WTPModulesResource  makeWTPModulesResource() {
 		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
 	}
