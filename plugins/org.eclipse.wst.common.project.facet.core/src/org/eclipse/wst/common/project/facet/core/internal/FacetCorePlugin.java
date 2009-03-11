@@ -31,7 +31,7 @@ public final class FacetCorePlugin
     private static final String TRACING_ACTION_SORTING
         = PLUGIN_ID + "/actionSorting"; //$NON-NLS-1$
 
-    private static final String TRACING_FRAMEWORK_ACTIVATION
+    private static final String TRACING_FRAMEWORK_ACTIVATION   
         = PLUGIN_ID + "/activation"; //$NON-NLS-1$
     
     private static final Set<String> messagesLogged = new HashSet<String>();
@@ -49,7 +49,7 @@ public final class FacetCorePlugin
         return checkDebugOption( TRACING_FRAMEWORK_ACTIVATION );
     }
     
-    private static boolean checkDebugOption( final String debugOption )
+    public static boolean checkDebugOption( final String debugOption )
     {
         final String optionValue = Platform.getDebugOption( debugOption );
         
