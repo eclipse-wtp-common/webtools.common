@@ -254,7 +254,7 @@
               class=&quot;org.eclipse.wst.common.snippets.insertions.PrependInsertion&quot;
               id=&quot;org.eclipse.wst.jsp.jsp_taglib_directive&quot;&gt;
            &lt;content&gt;
-              &lt;![CDATA[ &lt;%@taglib uri=&quot;$uri&quot; prefix=&quot;$prefix&quot; %&gt; ]]&gt;
+              &lt;![CDATA[ &lt;%@taglib uri=&quot;${uri}&quot; prefix=&quot;${prefix}&quot; %&gt; ]]&gt;
            &lt;/content&gt;
            &lt;variable
                  description=&quot;%jsp_taglib_directive_uri&quot;
