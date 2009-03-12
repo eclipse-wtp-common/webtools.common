@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,11 @@ public final class DownloadableLibrary
     
     private Map<IPath,DownloadableLibraryComponentAttributes> componentAttributesMap
         = new HashMap<IPath,DownloadableLibraryComponentAttributes>();
+    
+    private final List<String> includePatterns = new ArrayList<String>();
+    private final List<String> includePatternsReadOnly = Collections.unmodifiableList( this.includePatterns );
+    private final List<String> excludePatterns = new ArrayList<String>();
+    private final List<String> excludePatternsReadOnly = Collections.unmodifiableList( this.excludePatterns );
     
     public String getName()
     {
@@ -115,6 +122,52 @@ public final class DownloadableLibrary
         return attachment;
     }
     
+    public Collection<String> getIncludePatterns()
+    {
+        return this.includePatternsReadOnly;
+    }
+    
+    public void addIncludePattern( final String includePattern )
+    {
+        if( includePattern == null )
+        {
+            return;
+        }
+        
+        for( String segment : includePattern.split( "," ) ) //$NON-NLS-1$
+        {
+            segment = segment.trim();
+            
+            if( segment.length() > 0 )
+            {
+                this.includePatterns.add( segment );
+            }
+        }
+    }
+        
+    public Collection<String> getExcludePatterns()
+    {
+        return this.excludePatternsReadOnly;
+    }
+    
+    public void addExcludePattern( final String excludePattern )
+    {
+        if( excludePattern == null )
+        {
+            return;
+        }
+        
+        for( String segment : excludePattern.split( "," ) ) //$NON-NLS-1$
+        {
+            segment = segment.trim();
+            
+            if( segment.length() > 0 )
+            {
+                this.excludePatterns.add( segment );
+            }
+        }
+    }
+        
     public void download( final File destFolder,
                           final String localLibraryName,
                           final IProgressMonitor monitor )
@@ -146,7 +199,7 @@ public final class DownloadableLibrary
             
             // Unzip the downloaded file.
 
-            unzip( destFile, destFolder );
+            unzip( destFile, destFolder, monitor );
             
             // Delete the original downloaded file.
             
@@ -161,6 +214,11 @@ public final class DownloadableLibrary
             {
                 final IPath jarPath = new Path( jarFile.getPath() );
                 final IPath relativeJarPath = jarPath.makeRelativeTo( destFolderPath );
+                
+                if( ! shouldInclude( relativeJarPath ) )
+                {
+                    continue;
+                }
                 
                 IPath sourceArchivePath = null;
                 String javadocArchivePath = null;
@@ -302,6 +360,38 @@ public final class DownloadableLibrary
             
             monitor.done();
         }
+    }
+    
+    private boolean shouldInclude( final IPath path )
+    {
+        if( ! this.includePatterns.isEmpty() )
+        {
+            boolean included = false;
+            
+            for( String pattern : this.includePatterns )
+            {
+                if( path.equals( new Path( pattern ) ) )
+                {
+                    included = true;
+                    break;
+                }
+            }
+            
+            if( ! included )
+            {
+                return false;
+            }
+        }
+        
+        for( String pattern : this.excludePatterns )
+        {
+            if( path.equals( new Path( pattern ) ) )
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     private String formatByteCount( final int byteCount )

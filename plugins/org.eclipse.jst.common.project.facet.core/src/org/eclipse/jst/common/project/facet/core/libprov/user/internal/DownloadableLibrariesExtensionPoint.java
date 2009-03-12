@@ -71,6 +71,8 @@ public final class DownloadableLibrariesExtensionPoint
     private static final String EL_DOWNLOAD_PROVIDER = "download-provider"; //$NON-NLS-1$
     private static final String EL_DOWNLOAD_URL = "download-url"; //$NON-NLS-1$
     private static final String EL_LICENSE_URL = "license-url"; //$NON-NLS-1$
+    private static final String EL_INCLUDE = "include"; //$NON-NLS-1$
+    private static final String EL_EXCLUDE = "exclude"; //$NON-NLS-1$
     private static final String EL_ATTRIBUTES = "attributes"; //$NON-NLS-1$
     private static final String EL_COMPONENT = "component"; //$NON-NLS-1$
     private static final String EL_SOURCE = "source"; //$NON-NLS-1$
@@ -254,6 +256,16 @@ public final class DownloadableLibrariesExtensionPoint
                         
                         final String licenseUrl = text( elLibrary, EL_LICENSE_URL );
                         library.setLicenseUrl( licenseUrl );
+                        
+                        for( Element elInclude : elements( elLibrary, EL_INCLUDE ) )
+                        {
+                            library.addIncludePattern( text( elInclude ) );
+                        }
+
+                        for( Element elExclude : elements( elLibrary, EL_EXCLUDE ) )
+                        {
+                            library.addExcludePattern( text( elExclude ) );
+                        }
                         
                         for( Element elAttachment : elements( elLibrary, EL_ATTRIBUTES ) )
                         {
