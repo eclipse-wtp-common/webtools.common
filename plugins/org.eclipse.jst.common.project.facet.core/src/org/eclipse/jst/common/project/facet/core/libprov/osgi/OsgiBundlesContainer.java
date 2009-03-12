@@ -45,6 +45,7 @@ public final class OsgiBundlesContainer
     
     private static final String PREFS_OSGI_BUNDLES_CONTAINER = "osgi-bundles-container"; //$NON-NLS-1$
     private static final String PREFS_BUNDLES = "bundles"; //$NON-NLS-1$
+    private static final String PREFS_LABEL = "label"; //$NON-NLS-1$
     
     public static boolean isOnClasspath( final IProject project,
                                          final IProjectFacet facet )
@@ -322,6 +323,100 @@ public final class OsgiBundlesContainer
         }
         
         return new BundleReference( bundleId, versionRange );        
+    }
+    
+    public static String getContainerLabel( final IProject project,
+                                            final IProjectFacet facet )
+    {
+        IFacetedProject fproj = null;
+        
+        try
+        {
+            fproj = ProjectFacetsManager.create( project );
+        }
+        catch( CoreException e )
+        {
+            log( e );
+        }
+        
+        if( fproj == null )
+        {
+            return null;
+        }
+        else
+        {
+            return getContainerLabel( fproj, facet );
+        }
+    }
+    
+    public static String getContainerLabel( final IFacetedProject project,
+                                            final IProjectFacet facet )
+    {
+        String label = null;
+        
+        try
+        {
+            Preferences prefs = project.getPreferences( facet );
+            
+            if( prefs.nodeExists( PREFS_OSGI_BUNDLES_CONTAINER ) )
+            {
+                prefs = prefs.node( PREFS_OSGI_BUNDLES_CONTAINER );
+                label = prefs.get( PREFS_LABEL, (String) null );
+            }
+        }
+        catch( BackingStoreException e )
+        {
+            log( e );
+        }
+        
+        return label;
+    }
+    
+    public static void setContainerLabel( final IProject project,
+                                          final IProjectFacet facet,
+                                          final String label )
+    {
+        IFacetedProject fproj = null;
+        
+        try
+        {
+            fproj = ProjectFacetsManager.create( project );
+        }
+        catch( CoreException e )
+        {
+            log( e );
+        }
+        
+        if( fproj != null )
+        {
+            setContainerLabel( fproj, facet, label );
+        }
+    }
+    
+    public static void setContainerLabel( final IFacetedProject project,
+                                          final IProjectFacet facet,
+                                          final String label )
+    {
+        try
+        {
+            Preferences prefs = project.getPreferences( facet );
+            prefs = prefs.node( PREFS_OSGI_BUNDLES_CONTAINER );
+            
+            if( label == null )
+            {
+                prefs.remove( PREFS_LABEL );
+            }
+            else
+            {
+                prefs.put( PREFS_LABEL, label );
+            }
+            
+            prefs.flush();
+        }
+        catch( BackingStoreException e )
+        {
+            log( e );
+        }
     }
     
     private static String convert( final BundleReference bundleReference )

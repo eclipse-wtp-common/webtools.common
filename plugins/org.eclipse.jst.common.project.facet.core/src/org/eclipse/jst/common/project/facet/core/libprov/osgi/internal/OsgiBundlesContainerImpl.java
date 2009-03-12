@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -44,6 +45,7 @@ public final class OsgiBundlesContainerImpl
     private final IPath containerPath;
     private final IProjectFacet facet;
     private final IClasspathEntry[] entries;
+    private final String description;
     
     private OsgiBundlesContainerImpl( final IJavaProject project,
                                       final IPath containerPath )
@@ -52,9 +54,20 @@ public final class OsgiBundlesContainerImpl
         
         final String fid = containerPath.segment( 1 );
         this.facet = ProjectFacetsManager.getProjectFacet( fid );
+        
+        final IProject pj = project.getProject();
+        
+        String desc = OsgiBundlesContainer.getContainerLabel( pj, this.facet );
+        
+        if( desc == null )
+        {
+            desc = NLS.bind( Resources.containerLabel, this.facet.getLabel() );
+        }
+        
+        this.description = desc;
 
         final List<BundleReference> bundleReferences 
-            = OsgiBundlesContainer.getBundleReferences( project.getProject(), this.facet );
+            = OsgiBundlesContainer.getBundleReferences( pj, this.facet );
         
         final List<IClasspathEntry> entriesList = new ArrayList<IClasspathEntry>();
         
@@ -89,7 +102,7 @@ public final class OsgiBundlesContainerImpl
 
     public String getDescription()
     {
-        return NLS.bind( Resources.containerLabel, this.facet.getLabel() );
+        return this.description;
     }
 
     public int getKind()

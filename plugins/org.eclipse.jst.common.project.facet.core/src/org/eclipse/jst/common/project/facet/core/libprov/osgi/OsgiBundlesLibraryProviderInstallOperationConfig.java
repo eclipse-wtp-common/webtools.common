@@ -37,13 +37,16 @@ public class OsgiBundlesLibraryProviderInstallOperationConfig
 	extends LibraryProviderOperationConfig
     
 {
+    private static final String PARAM_CONTAINER_LABEL = "container.label"; //$NON-NLS-1$
     private static final String PARAM_BUNDLE = "bundle."; //$NON-NLS-1$
     
+    private String containerLabelOverride;
     private List<BundleReference> bundleReferences;
     private List<BundleReference> bundleReferencesReadOnly;
 
     public OsgiBundlesLibraryProviderInstallOperationConfig()
     {
+        this.containerLabelOverride = null;
         this.bundleReferences = new ArrayList<BundleReference>();
         this.bundleReferencesReadOnly = Collections.unmodifiableList( this.bundleReferences );
     }
@@ -54,6 +57,8 @@ public class OsgiBundlesLibraryProviderInstallOperationConfig
                                    final ILibraryProvider provider )
     {
         super.init( fproj, fv, provider );
+        
+        this.containerLabelOverride = provider.getParams().get( PARAM_CONTAINER_LABEL );
         this.bundleReferences.addAll( getBundleReferences( provider ) );
     }
     
@@ -79,6 +84,11 @@ public class OsgiBundlesLibraryProviderInstallOperationConfig
     public IClasspathAttribute[] getClasspathAttributes()
     {
         return null;
+    }
+    
+    public String getContainerLabel()
+    {
+        return this.containerLabelOverride;
     }
 
     @Override

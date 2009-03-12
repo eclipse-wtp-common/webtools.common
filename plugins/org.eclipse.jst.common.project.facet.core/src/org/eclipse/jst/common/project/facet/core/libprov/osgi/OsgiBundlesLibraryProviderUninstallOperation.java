@@ -13,6 +13,7 @@ package org.eclipse.jst.common.project.facet.core.libprov.osgi;
 
 import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.removeFromClasspath;
 import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.setBundleReferences;
+import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.setContainerLabel;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.worked;
@@ -49,6 +50,7 @@ public class OsgiBundlesLibraryProviderUninstallOperation
             
             removeFromClasspath( project, facet );
             setBundleReferences( project, facet, null );
+            setContainerLabel( project, facet, null );
 
             worked( monitor, 1 );
         }

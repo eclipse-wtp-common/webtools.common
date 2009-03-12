@@ -13,7 +13,7 @@ package org.eclipse.jst.common.project.facet.core.libprov.osgi;
 
 import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.addToClasspath;
 import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.isOnClasspath;
-import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.setBundleReferences;
+import static org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesContainer.*;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.worked;
@@ -62,6 +62,7 @@ public class OsgiBundlesLibraryProviderInstallOperation
             final IProjectFacet facet = cfg.getProjectFacet();
             
             setBundleReferences( project, facet, cfg.getBundleReferences() );
+            setContainerLabel( project, facet, cfg.getContainerLabel() );
             
             if( ! isOnClasspath( project, facet ) )
             {
