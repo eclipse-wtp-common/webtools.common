@@ -89,7 +89,8 @@ public abstract class Versionable<T extends IVersion>
     {
         if( this.versions.size() > 0 )
         {
-            return Collections.max( this.versions );
+        	// [263113] Versionable no longer compiles as of I20090125-2000
+            return (T) Collections.max( this.versions );
         }
         else
         {
