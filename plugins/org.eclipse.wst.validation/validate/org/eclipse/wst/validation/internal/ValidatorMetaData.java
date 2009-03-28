@@ -197,7 +197,11 @@ public class ValidatorMetaData {
 	// continues to new an IValidationContext every time - Ruth
 	public IWorkbenchContext getHelper(IProject project) throws InstantiationException {
 		IWorkbenchContext helper = _helper.get();
-		if (helper != null)return helper;
+		if (helper != null){
+			IProject oldProject = helper.getProject();
+			if ((oldProject == null) || !(oldProject.equals(project)))helper.setProject(project);
+			return helper;
+		}
 		
 		helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
 		if (helper == null)helper = new WorkbenchContext();
