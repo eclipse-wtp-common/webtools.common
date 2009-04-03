@@ -84,7 +84,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	private Depends getOrCreateDepends(IResource dependent, IResource dependsOn) {
 		Set<Depends> set = getSet(_dependents, dependent);
 		for (Depends d : set){
-			if (d.getDependsOn().equals(dependsOn)) return d;
+			if (d.getDependsOn() != null && d.getDependsOn().equals(dependsOn)) return d;
 		}
 		Depends d = new Depends(dependent, dependsOn);
 		_dirty = true;
