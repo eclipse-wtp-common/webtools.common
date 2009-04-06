@@ -272,7 +272,8 @@ public class Translator {
 	}
 
 	public boolean shouldIndentEndTag(Node node) {
-		return shouldIndentEndTag();
+		// indent end tag if there are some nested nodes
+		return node.hasChildNodes() && shouldIndentEndTag();
 	}
 
 	public boolean isEmptyContentSignificant() {
