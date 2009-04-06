@@ -272,7 +272,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	private class ResourceFactoryRegistryReader extends RegistryReader implements IResourceFactoryExtPtConstants { 
  		
 		public ResourceFactoryRegistryReader() {
-			super(Platform.getPluginRegistry(), ModulecorePlugin.PLUGIN_ID, EXTPT_RESOURCE_FACTORIES);
+			super(ModulecorePlugin.PLUGIN_ID, EXTPT_RESOURCE_FACTORIES);
 		}
 
 		public boolean readElement(final IConfigurationElement element) {
