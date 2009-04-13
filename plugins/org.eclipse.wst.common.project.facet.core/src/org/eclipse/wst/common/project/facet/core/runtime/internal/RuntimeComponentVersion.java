@@ -198,14 +198,6 @@ public final class RuntimeComponentVersion
         public static String bind( final String template,
                                    final Object arg1,
                                    final Object arg2,
-                                   final Object arg3 )
-        {
-            return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
-        }
-    
-        public static String bind( final String template,
-                                   final Object arg1,
-                                   final Object arg2,
                                    final Object arg3,
                                    final Object arg4 )
         {

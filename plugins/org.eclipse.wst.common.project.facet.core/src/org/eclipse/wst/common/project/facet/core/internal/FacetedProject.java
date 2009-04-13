@@ -285,38 +285,45 @@ public final class FacetedProject
                 try
                 {
                     final IFacetedProjectWorkingCopy fpjwc = createWorkingCopy();
-                    
-                    for( Action action : actions )
+
+                    try
                     {
-                        final Action.Type type = action.getType();
-                        final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                        for( Action action : actions )
+                        {
+                            final Action.Type type = action.getType();
+                            final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                            
+                            if( type == Action.Type.INSTALL )
+                            {
+                                fpjwc.addProjectFacet( fv );
+                            }
+                            else if( type == Action.Type.VERSION_CHANGE )
+                            {
+                                fpjwc.changeProjectFacetVersion( fv );
+                            }
+                            else if( type == Action.Type.UNINSTALL )
+                            {
+                                fpjwc.removeProjectFacet( fv );
+                            }
+                            else
+                            {
+                                throw new IllegalStateException();
+                            }
+                            
+                            final Object config = action.getConfig();
+                            
+                            if( config != null )
+                            {
+                                fpjwc.setProjectFacetActionConfig( fv.getProjectFacet(), config );
+                            }
+                        }
                         
-                        if( type == Action.Type.INSTALL )
-                        {
-                            fpjwc.addProjectFacet( fv );
-                        }
-                        else if( type == Action.Type.VERSION_CHANGE )
-                        {
-                            fpjwc.changeProjectFacetVersion( fv );
-                        }
-                        else if( type == Action.Type.UNINSTALL )
-                        {
-                            fpjwc.removeProjectFacet( fv );
-                        }
-                        else
-                        {
-                            throw new IllegalStateException();
-                        }
-                        
-                        final Object config = action.getConfig();
-                        
-                        if( config != null )
-                        {
-                            fpjwc.setProjectFacetActionConfig( fv.getProjectFacet(), config );
-                        }
+                        result.set( mergeChangesInternal( fpjwc, monitor ) );
                     }
-                    
-                    result.set( mergeChangesInternal( fpjwc, monitor ) );
+                    finally
+                    {
+                        fpjwc.dispose();
+                    }
                 }
                 finally
                 {
@@ -1934,8 +1941,6 @@ public final class FacetedProject
         public static String failedOnInstall;
         public static String failedOnUninstall;
         public static String failedOnVersionChange;
-        public static String facetNotDefined;
-        public static String facetVersionNotDefined;
         public static String facetNotSupported;
         public static String illegalModificationMsg;
         public static String tracingDelegateStarting;

@@ -1937,23 +1937,30 @@ public final class FacetedProjectWorkingCopy
                 clone = (FacetedProjectWorkingCopy) clone();
             }
             
-            final IFacetedProject fpj;
-                
-            if( this.project == null )
+            try
             {
-                fpj = ProjectFacetsManager.create( this.projectName,
-                                                   this.projectLocation, 
-                                                   pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
+                final IFacetedProject fpj;
+                    
+                if( this.project == null )
+                {
+                    fpj = ProjectFacetsManager.create( this.projectName,
+                                                       this.projectLocation, 
+                                                       pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
+                    
+                    this.project = fpj;
+                }
+                else
+                {
+                    fpj = clone.getFacetedProject();
+                    pm.worked( 10 );
+                }
                 
-                this.project = fpj;
+                ( (FacetedProject) fpj ).mergeChanges( clone, pm.newChild( 90 ) );
             }
-            else
+            finally
             {
-                fpj = clone.getFacetedProject();
-                pm.worked( 10 );
+                clone.dispose();
             }
-            
-            ( (FacetedProject) fpj ).mergeChanges( clone, pm.newChild( 90 ) );
                 
             // Reset the working copy so that it can be used again.
             

@@ -20,7 +20,8 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.*;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getPreferredWidth;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.runOnDisplayThread;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -1853,8 +1854,6 @@ public final class FacetsSelectionPanel
         public static String presetsLabel;
         public static String saveButtonLabel;
         public static String deleteButtonLabel;
-        public static String savePresetDialogTitle;
-        public static String savePresetDialogMessage;
         public static String facetColumnLabel;
         public static String versionColumnLabel;
         public static String couldNotDeselectFixedFacetMessage;
@@ -1868,14 +1867,6 @@ public final class FacetsSelectionPanel
         {
             initializeMessages( FacetsSelectionPanel.class.getName(), 
                                 Resources.class );
-        }
-        
-        public static String bind( final String msg,
-                                   final Object arg1,
-                                   final Object arg2,
-                                   final Object arg3 )
-        {
-            return NLS.bind( msg, new Object[] { arg1, arg2, arg3 } );
         }
     }
     
