@@ -194,11 +194,6 @@ public final class LibraryProviderFrameworkUiImpl
             return this.pluginId;
         }
         
-        public String getPanelClassName()
-        {
-            return this.className;
-        }
-        
         public synchronized Class<LibraryProviderOperationPanel> getPanelClass()
         {
             if( this.panelClass == null )

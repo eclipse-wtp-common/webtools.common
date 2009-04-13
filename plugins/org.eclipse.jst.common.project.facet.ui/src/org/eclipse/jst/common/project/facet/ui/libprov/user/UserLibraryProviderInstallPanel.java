@@ -333,8 +333,6 @@ public class UserLibraryProviderInstallPanel
         extends NLS
         
     {
-        public static String manageLibrariesLink;
-        public static String downloadLibraryLink;
         public static String manageLibrariesMenuItem;
         public static String manageLibrariesButtonToolTip;
         public static String downloadLibraryMenuItem;
