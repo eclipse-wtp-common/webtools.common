@@ -153,9 +153,16 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException {
 		
 			if (runtime != null) {
-				final IFacetedProjectWorkingCopy fpjwc = facetProj.createWorkingCopy();
-				Set<IProjectFacetVersion> presetFacets = fpjwc.getDefaultConfiguration().getProjectFacets();
-				addDefaultFacets(facetProj, presetFacets);
+				IFacetedProjectWorkingCopy fpjwc = null;
+				try{
+					fpjwc = facetProj.createWorkingCopy();
+					Set<IProjectFacetVersion> presetFacets = fpjwc.getDefaultConfiguration().getProjectFacets();
+					addDefaultFacets(facetProj, presetFacets);
+				} finally{
+					if(fpjwc != null){
+						fpjwc.dispose();
+					}
+				}
 			}
 		
 	}

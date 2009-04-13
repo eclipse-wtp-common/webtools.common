@@ -80,10 +80,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		return names;
 	}
 
+	private final IFacetedProjectWorkingCopy fpjwc = FacetedProjectFramework.createNewProject();
+	
 	public void init() {
 		super.init();
 		
-		final IFacetedProjectWorkingCopy fpjwc = FacetedProjectFramework.createNewProject();
 		model.setProperty(FACETED_PROJECT_WORKING_COPY, fpjwc);
 		
 		fpjwc.addListener
@@ -146,6 +147,14 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		model.addNestedModel(NESTED_PROJECT_DM, projectDataModel);
 	}
 
+	@Override
+	public void dispose() {
+		if(fpjwc != null){
+			fpjwc.dispose();
+		}
+		super.dispose();
+	}
+	
 	protected class FacetActionMapImpl extends HashMap implements FacetActionMap {
 		private static final long serialVersionUID = 1L;
 		private boolean supressNotification = false;
