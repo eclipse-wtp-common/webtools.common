@@ -46,7 +46,13 @@ public class LibraryFacetInstallConfig
     public void setProjectFacetVersion( final IProjectFacetVersion fv )
     {
         super.setProjectFacetVersion( fv );
-        init();
+        
+        final boolean initialized = init();
+        
+        if( this.libraryInstallDelegate != null && ! initialized )
+        {
+            this.libraryInstallDelegate.setProjectFacetVersion( fv );
+        }
     }
     
     @Override
@@ -62,15 +68,18 @@ public class LibraryFacetInstallConfig
         }
     }
 
-    private void init()
+    private boolean init()
     {
         final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
         final IProjectFacetVersion fv = getProjectFacetVersion();
         
-        if( fpjwc != null && fv != null )
+        if( this.libraryInstallDelegate != null && fpjwc != null && fv != null )
         {
             this.libraryInstallDelegate = new LibraryInstallDelegate( fpjwc, fv );
+            return true;
         }
+        
+        return false;
     }
     
     public static final class Factory

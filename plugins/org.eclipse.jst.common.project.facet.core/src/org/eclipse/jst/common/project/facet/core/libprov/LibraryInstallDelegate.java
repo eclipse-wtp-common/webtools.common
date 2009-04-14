@@ -169,7 +169,7 @@ public final class LibraryInstallDelegate
      * @return the project facet that made the request for libraries
      */
     
-    public IProjectFacet getProjectFacet()
+    public synchronized IProjectFacet getProjectFacet()
     {
         return this.fv.getProjectFacet();
     }
@@ -180,9 +180,22 @@ public final class LibraryInstallDelegate
      * @return the project facet version that made the request for libraries
      */
     
-    public IProjectFacetVersion getProjectFacetVersion()
+    public synchronized IProjectFacetVersion getProjectFacetVersion()
     {
         return this.fv;
+    }
+    
+    /**
+     * Changes the project facet version of the requesting facet after the library install
+     * delegate has been created.
+     * 
+     * @param fv the project facet version
+     */
+    
+    public synchronized void setProjectFacetVersion( final IProjectFacetVersion fv )
+    {
+        this.fv = fv;
+        refresh();
     }
     
     /**
