@@ -25,6 +25,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IMsgLogger {
+	/**
+	 * @deprecated
+	 */
 	protected static Logger logger = null;
 	public ResourceBundle resourceBundle;
 	protected static AbstractWTPUIPlugin instance = null; 
@@ -37,6 +40,10 @@ public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IM
 		instance = this;
 	}
 
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public Logger getMsgLogger() {
 		if (logger == null) {
 			logger = Logger.getLogger(getPluginID());
@@ -48,6 +55,7 @@ public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IM
 	public abstract String getPluginID();
 
 	/**
+	 * @deprecated
 	 * @param aLogger
 	 */
 	protected void setRenderer(Logger aLogger) {

@@ -28,7 +28,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -141,7 +140,7 @@ public class EnablementManager implements IEnablementManager {
 			} catch (Exception ex) {
 				//Defer the exception so others can handle it.
 				nextStatus = WTPCommonPlugin.createErrorStatus(WTPCommonMessages.INTERNAL_ERROR, ex);
-				Logger.getLogger().logError(ex);
+				WTPCommonPlugin.logError(ex);
 				if (errorStatus == null)
 					errorStatus = nextStatus;
 				else if (errorStatus.isMultiStatus())

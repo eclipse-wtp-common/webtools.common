@@ -15,7 +15,6 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
@@ -38,11 +37,11 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 			return false;
 		String id = element.getAttribute(ATTRIBUTE_ID);
 		if (null == id || id.trim().length() == 0) {
-			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_ID)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			WTPUIPlugin.logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_ID)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		String className = element.getAttribute(ATTRIBUTE_CLASS);
 		if (null == className || className.trim().length() == 0) {
-			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_CLASS)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			WTPUIPlugin.logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_CLASS)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		addExtension(id, element);
 		return true;
@@ -50,7 +49,7 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 
 	private void addExtension(String id, IConfigurationElement element) {
 		if (extensions.containsKey(id)) {
-			Logger.getLogger().logError(new RuntimeException("Duplicate " + ELEMENT + " " + ATTRIBUTE_ID + " " + id)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			WTPUIPlugin.logError(new RuntimeException("Duplicate " + ELEMENT + " " + ATTRIBUTE_ID + " " + id)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		extensions.put(id, element);
 	}

@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class ComposedExtendedOperationHolder {
 
@@ -46,7 +46,7 @@ public class ComposedExtendedOperationHolder {
 						extOperationHolder.addPreOperation(preOp);
 					}
 				} catch (CoreException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				}
 				try {
 					postOp = currentExt.getPostOperation();
@@ -54,7 +54,7 @@ public class ComposedExtendedOperationHolder {
 						extOperationHolder.addPostOperation(postOp);
 					}
 				} catch (CoreException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				}
 			}
 		}

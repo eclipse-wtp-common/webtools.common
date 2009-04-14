@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * @author jsholl
@@ -101,6 +101,6 @@ public class WTPActivityBridge {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Plugin " + extension.getNamespace() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("\n" + text); //$NON-NLS-1$
-		Logger.getLogger().logError(buf.toString());
+		WTPCommonPlugin.logError(buf.toString());
 	}
 }

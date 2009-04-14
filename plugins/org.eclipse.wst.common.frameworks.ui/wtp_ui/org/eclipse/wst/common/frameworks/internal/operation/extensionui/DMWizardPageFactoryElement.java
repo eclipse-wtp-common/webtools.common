@@ -12,10 +12,10 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 /**
  * This class provides convenient methods for accessing the semantics of the
@@ -86,8 +86,8 @@ public class DMWizardPageFactoryElement extends ConfigurationElementWrapper {
 		try {
 			wizardPageFactory = (DMWizardPageExtensionFactory) element.createExecutableExtension(ATT_CLASS_NAME);
 		} catch (CoreException e) {
-			Logger.getLogger().logError("Error getting page factory: " + className); //$NON-NLS-1$ 
-			Logger.getLogger().logError(e);
+			WTPUIPlugin.logError("Error getting page factory: " + className); //$NON-NLS-1$ 
+			WTPUIPlugin.logError(e);
 		} finally {
 			isPageFactoryInitialized = true;
 		}

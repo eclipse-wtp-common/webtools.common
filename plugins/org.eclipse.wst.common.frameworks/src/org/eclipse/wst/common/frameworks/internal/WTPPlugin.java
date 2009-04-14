@@ -27,6 +27,9 @@ import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WorkbenchUtil
 import org.osgi.framework.BundleContext;
 
 public abstract class WTPPlugin extends Plugin implements IMsgLogger {
+	/**
+	 * {@link Deprecated}
+	 */
 	protected static Logger logger = null;
 	protected static WTPPlugin instance = null; 
 	public ResourceBundle resourceBundle;
@@ -39,6 +42,9 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 		instance = this;
 	}
 
+	/**
+	 * {@link Deprecated}
+	 */
 	public Logger getMsgLogger() {
 		if (logger == null) {
 			logger = Logger.getLogger(getPluginID());
@@ -48,12 +54,15 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	}
 
 	/**
-	 * @param aLogger
+	 * {@link Deprecated}
 	 */
 	protected void setRenderer(Logger aLogger) {
 		new DefaultPluginTraceRenderer(aLogger);
 	}
 
+	/**
+	 * {@link Deprecated}
+	 */
 	public Logger getLogger() {
 		return getMsgLogger();
 	}

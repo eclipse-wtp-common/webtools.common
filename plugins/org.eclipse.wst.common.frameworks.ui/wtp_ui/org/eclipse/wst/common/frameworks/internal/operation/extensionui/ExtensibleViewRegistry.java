@@ -120,7 +120,7 @@ public class ExtensibleViewRegistry extends RegistryReader {
 			try {
 				factoryInstance = (IExtensibleViewFactory) this.element.createExecutableExtension(getFactoryClass());
 			} catch (CoreException e) {
-				WTPUIPlugin.getLogger().logError(e);
+				WTPUIPlugin.logError(e);
 			}
 			return factoryInstance;
 		}

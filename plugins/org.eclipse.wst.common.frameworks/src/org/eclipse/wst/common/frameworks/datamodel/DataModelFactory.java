@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelExtensionReader;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * <p>
@@ -104,13 +104,13 @@ public class DataModelFactory {
 				} catch (NoSuchFieldException e) {
 					//ignore; the interface may not have defined the field and is relying on extensions.
 				} catch (IllegalArgumentException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				} catch (SecurityException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				} catch (IllegalAccessException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				} catch (InstantiationException e) {
-					Logger.getLogger().logError(e);
+					WTPCommonPlugin.logError(e);
 				}  
 		}
 		return createDataModel(aClass.getName());

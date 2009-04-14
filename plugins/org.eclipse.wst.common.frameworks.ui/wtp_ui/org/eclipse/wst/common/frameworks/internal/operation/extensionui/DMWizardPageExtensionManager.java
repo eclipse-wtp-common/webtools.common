@@ -23,9 +23,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 public class DMWizardPageExtensionManager {
 
@@ -121,8 +121,8 @@ public class DMWizardPageExtensionManager {
 				return;
 			}
 			if (!parentElement.allowsExtendedPagesAfter()) {
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_0, new Object[]{parentElement.getPageID()}));
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_1, new Object[]{newElement.getPageID()}));
+				WTPUIPlugin.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_0, new Object[]{parentElement.getPageID()}));
+				WTPUIPlugin.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_1, new Object[]{newElement.getPageID()}));
 				return;
 			}
 			TreeSet set = (TreeSet) pageMap.get(parentElement);
@@ -197,7 +197,7 @@ public class DMWizardPageExtensionManager {
 		for (Iterator iter = treeSet.iterator(); iter.hasNext();) {
 			DMWizardPageGroupElement element = (DMWizardPageGroupElement) iter.next();
 			if (alreadyVistedList.contains(element)) {
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageGroupElement.ATT_PAGE_INSERTION_ID})); 
+				WTPUIPlugin.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageGroupElement.ATT_PAGE_INSERTION_ID})); 
 				return;
 			}
 			if (allPageElementsList.contains(element)) {
@@ -250,17 +250,15 @@ public class DMWizardPageExtensionManager {
 			}
 		}
 		if (insertNotFound) {
-			Logger logger = Logger.getLogger();
-			logger.logError(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_3);
+			WTPUIPlugin.logError(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_3);
 		}
 
 	}
 
 	private void logMissingClassError() {
-		Logger logger = Logger.getLogger();
 		for (int i = 0; i < nonSyncedPageElementList.size(); i++) {
 			DMWizardPageGroupElement element = (DMWizardPageGroupElement) nonSyncedPageElementList.get(i);
-			logger.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_4, new Object[]{element.pageInsertionID, element.getPageID(), element.pluginID}));
+			WTPUIPlugin.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_4, new Object[]{element.pageInsertionID, element.getPageID(), element.pluginID}));
 		}
 		nonSyncedPageElementList.clear();
 

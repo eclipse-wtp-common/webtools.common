@@ -16,8 +16,8 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 
 /**
@@ -85,8 +85,8 @@ public class FunctionGroup implements Comparable {
 			try {
 				groupInterface = (IGroupInitializer) element.createExecutableExtension(GROUP_INTIALIZER_CLASS_ATTR);
 			} catch (CoreException e) {
-				Logger.getLogger().logError(WTPResourceHandler.getString("29", new Object[]{GROUP_INTIALIZER_CLASS_ATTR, getInitalizerClassName(), getDeclaringExtensionName()}) + "\r\n"); //$NON-NLS-1$//$NON-NLS-2$
-				Logger.getLogger().logError(e);
+				WTPCommonPlugin.logError(WTPResourceHandler.getString("29", new Object[]{GROUP_INTIALIZER_CLASS_ATTR, getInitalizerClassName(), getDeclaringExtensionName()}) + "\r\n"); //$NON-NLS-1$//$NON-NLS-2$
+				WTPCommonPlugin.logError(e);
 			}
 		return groupInterface;
 	}
@@ -131,7 +131,7 @@ public class FunctionGroup implements Comparable {
 	public boolean isMatch(String string) {
 		if (functionGroupPatternBindings == null) {
 			if (!errorReported) {
-				Logger.getLogger().logError(WTPResourceHandler.getString("30", new Object[]{getGroupID()})); //$NON-NLS-1$
+				WTPCommonPlugin.logError(WTPResourceHandler.getString("30", new Object[]{getGroupID()})); //$NON-NLS-1$
 				errorReported = true;
 			}
 			return false;

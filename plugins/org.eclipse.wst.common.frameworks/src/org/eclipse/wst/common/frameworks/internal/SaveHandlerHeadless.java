@@ -12,8 +12,8 @@
 package org.eclipse.wst.common.frameworks.internal;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.IWFTWrappedException;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * Insert the type's description here. Creation date: (10/19/2001 11:40:59 AM)
@@ -80,7 +80,7 @@ public class SaveHandlerHeadless implements ISaveHandler {
 		if (aFile == null)
 			return false;
 		String error = WTPResourceHandler.getString("Unable_to_save_read-only_f_ERROR_", new Object[]{aFile.getFullPath()}); //$NON-NLS-1$ = "Unable to save read-only file: "
-		Logger.getLogger().logError(error);
+		WTPCommonPlugin.logError(error);
 		return false;
 	}
 }

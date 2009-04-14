@@ -25,9 +25,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class ProjectCreationOperationNew extends AbstractDataModelOperation implements IProjectCreationPropertiesNew {
 
@@ -56,7 +56,7 @@ public class ProjectCreationOperationNew extends AbstractDataModelOperation impl
 				project.setDescription(desc, monitor);
 			}
 		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
+			WTPCommonPlugin.logError(e);
 		} finally {
 			monitor.done();
 		}

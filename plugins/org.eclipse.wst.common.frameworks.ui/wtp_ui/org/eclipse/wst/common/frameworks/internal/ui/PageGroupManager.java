@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperation;
@@ -117,12 +116,12 @@ public class PageGroupManager {
 		try {
 			pageFound = findNextPage(true);
 		} catch (Exception exc) {
-			Logger.getLogger().logError(exc);
+			WTPUIPlugin.logError(exc);
 			if (rootOperation != null) {
 				try {
 					rootOperation.rollBack(null, null);
 				} catch (ExecutionException e) {
-					Logger.getLogger().logError(e);
+					WTPUIPlugin.logError(e);
 				}
 			}
 			pageFound = false;
@@ -155,7 +154,7 @@ public class PageGroupManager {
 					try {
 						rootOperation.rollBack(null, null);
 					} catch (ExecutionException e) {
-						Logger.getLogger().logError(e);
+						WTPUIPlugin.logError(e);
 					}
 				}
 			}
@@ -274,7 +273,7 @@ public class PageGroupManager {
 					try {
 						status = rootOperation.resume(null, null);
 					} catch (ExecutionException e) {
-						Logger.getLogger().logError(e);
+						WTPUIPlugin.logError(e);
 					}
 					nextStackEntry.ranOperations = true;
 
@@ -409,7 +408,7 @@ public class PageGroupManager {
 				try {
 					newPageId = pageGroupEntry.getPageHandler().getNextPage(pageId, expectedId);
 				} catch (Exception exc) {
-					Logger.getLogger().logError(exc);
+					WTPUIPlugin.logError(exc);
 				}
 
 				if (newPageId != null && newPageId.equals(IDMPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.size() - 2) {
@@ -430,7 +429,7 @@ public class PageGroupManager {
 			try {
 				nextGroupID = pageGroupEntry.getPageGroupHandler().getNextPageGroup(afterId, groupIDList);
 			} catch (Exception exc) {
-				Logger.getLogger().logError(exc);
+				WTPUIPlugin.logError(exc);
 			}
 
 			if (nextGroupID != null) {
@@ -509,7 +508,7 @@ public class PageGroupManager {
 				pageHandler = pageGroup.getPageHandler(dataModel);
 				pageGroupHandler = pageGroup.getPageGroupHandler(dataModel);
 			} catch (Exception exc) {
-				Logger.getLogger().logError(exc);
+				WTPUIPlugin.logError(exc);
 			}
 
 			if (pageHandler == null)

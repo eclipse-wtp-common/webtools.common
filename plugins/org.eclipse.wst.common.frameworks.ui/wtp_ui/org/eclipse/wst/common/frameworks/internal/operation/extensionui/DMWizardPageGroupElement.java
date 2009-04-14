@@ -13,14 +13,15 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 public class DMWizardPageGroupElement extends AbstractRegistryDescriptor implements Comparable {
 	static final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
@@ -81,7 +82,7 @@ public class DMWizardPageGroupElement extends AbstractRegistryDescriptor impleme
   
 	private void validateSettings() {
 		if (wizardID == null || wizardPageFactoryElement == null) {
-			Logger.getLogger().logError("Incomplete page extension specification."); //$NON-NLS-1$
+			WTPUIPlugin.logError("Incomplete page extension specification."); //$NON-NLS-1$
 		}
 	}
 

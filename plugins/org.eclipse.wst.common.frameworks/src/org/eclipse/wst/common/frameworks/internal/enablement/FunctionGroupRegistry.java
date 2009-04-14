@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -224,11 +223,11 @@ public class FunctionGroupRegistry extends RegistryReader {
 		FunctionGroup group1 = getGroupByID(groupID1);
 		FunctionGroup group2 = getGroupByID(groupID2);
 		if (group1 == null) {
-			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID1}))); //$NON-NLS-1$
+			WTPCommonPlugin.logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID1}))); //$NON-NLS-1$
 			return -1;
 		}
 		if (group2 == null) {
-			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID2}))); //$NON-NLS-1$
+			WTPCommonPlugin.logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID2}))); //$NON-NLS-1$
 			return 1;
 		}
 
