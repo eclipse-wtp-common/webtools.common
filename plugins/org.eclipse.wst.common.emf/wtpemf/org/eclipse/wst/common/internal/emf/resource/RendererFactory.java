@@ -8,10 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.resource;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 
 public abstract class RendererFactory {
@@ -56,7 +55,8 @@ public abstract class RendererFactory {
 
 		private static final Notifier INSTANCE = new Notifier();
 
-		private final Collection resourceFactoryListeners = new ArrayList();
+		// use a WeakHashMap for a weak HashSet
+		private final Map resourceFactoryListeners = new WeakHashMap();
 
 		private Notifier() {
 		}
@@ -72,17 +72,11 @@ public abstract class RendererFactory {
 				 * work
 				 */
 				if (rendererFactory != RendererFactory.getDefaultRendererFactory()) {
-					WeakReference wref = null;
-					Listener listener = null;
 					synchronized (resourceFactoryListeners) {
-						for (Iterator i = resourceFactoryListeners.iterator(); i.hasNext();) {
-							wref = (WeakReference) i.next();
-							listener = (Listener) wref.get();
+						for (Iterator i = resourceFactoryListeners.keySet().iterator(); i.hasNext();) {
+							Listener listener = (Listener) i.next();
 							//System.out.println("Notifying Listener: " + listener);
-							if (listener != null)
-								listener.updateRendererFactory(rendererFactory);
-							else
-								i.remove();
+							listener.updateRendererFactory(rendererFactory);
 						}
 					}
 				}
@@ -92,29 +86,13 @@ public abstract class RendererFactory {
 		public void addListener(Listener l) {
 			//System.out.println("Adding listener: " + l);
 			synchronized (resourceFactoryListeners) {
-				resourceFactoryListeners.add(new WeakReference(l));
+				resourceFactoryListeners.put(l, null);
 			}
 		}
 
 		public void removeListener(Listener listenerToRemove) {
-			final int length = resourceFactoryListeners.size();
-			if (length > 0) {
-				WeakReference wref = null;
-				Listener listener = null;
-				synchronized (resourceFactoryListeners) {
-					for (Iterator i = resourceFactoryListeners.iterator(); i.hasNext();) {
-						wref = (WeakReference) i.next();
-						listener = (Listener) wref.get();
-						if (listener != null) {
-							if (listener == listenerToRemove) {
-								i.remove();
-								break;
-							}
-						} else {
-							i.remove();
-						}
-					}
-				}
+			synchronized (resourceFactoryListeners) {
+				resourceFactoryListeners.remove(listenerToRemove);
 			}
 		}
 
