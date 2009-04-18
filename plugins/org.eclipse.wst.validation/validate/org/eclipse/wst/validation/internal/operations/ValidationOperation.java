@@ -1111,15 +1111,22 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * <code>process</code> also sends output to the <code>IProgressMonitor</code>, and calls
 	 * the current Validator to validate the resource.
 	 * 
-	 * To process a resource, there are several steps: 1. check if the resource is registered for
+	 * <p>To process a resource, there are several steps:</p> 
+	 * <p>1. check if the resource is registered for
 	 * this validator (i.e., the validator has either specified it in a filter, or has not filtered
-	 * it out explicitly) 2. call <code>isValidationSource</code> on the current validator with
+	 * it out explicitly)</p>
+	 * 
+	 * <p>2. call <code>isValidationSource</code> on the current validator with
 	 * the current resource. This method performs further filtering by the Validator itself, in
 	 * addition to the static filtering done by the framework, based on the information in
-	 * plugin.xml. 3. If the resource passes both filters, call <code>validate</code> on the
-	 * validator, with the resource. 4. When complete (either by failing to pass a filter, or by the
+	 * plugin.xml.</p> 
+	 * 
+	 * <p>3. If the resource passes both filters, call <code>validate</code> on the
+	 * validator, with the resource.</p> 
+	 * 
+	 * <p>4. When complete (either by failing to pass a filter, or by the
 	 * completion of the <code>validate</code>), increment the IProgressMonitor's status by one
-	 * (i.e., one resource has been processed.)
+	 * (i.e., one resource has been processed.)</p>
 	 */
 	private final void launchValidator(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta) {
 		if (reporter == null)return;

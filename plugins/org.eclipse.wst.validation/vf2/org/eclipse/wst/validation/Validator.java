@@ -752,7 +752,12 @@ public static class V1 extends Validator {
 				ValidatorLauncher.getLauncher().start(helper, v, reporter);
 			}
 			finally {
-				helper.cleanup(reporter);
+				try {
+					v.cleanup(reporter);
+				}
+				finally {
+					helper.cleanup(reporter);
+				}
 			}
 			
 			vr.incrementError(reporter.getSeverityHigh());
