@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -344,11 +344,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 			});
 			
 			addButtons(validatorGroup);
-
-			// Have to set the tab order or only the first checkbox in a
-			// Composite can be tabbed to. (Seems to apply only to checkboxes. Have to use the
-			// arrow key to navigate the checkboxes.)
-			validatorGroup.setTabList(new Control[] { _override, _suspend});
 
 			updateWidgets();
 

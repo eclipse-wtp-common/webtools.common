@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2005, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -176,7 +176,7 @@ public class NewFilterRule extends Wizard {
 				button.setText(labels[i]);
 				button.setData(new Integer(i));			
 				button.addSelectionListener(listener);
-				(new Label(control, SWT.WRAP)).setText(desc[i]);
+				(new Text(control, SWT.WRAP|SWT.READ_ONLY)).setText(desc[i]);
 				if (i == 0)button.setSelection(true);				
 			}			
 			setControl(control);			
@@ -208,7 +208,7 @@ public class NewFilterRule extends Wizard {
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFileExtensionLabel);
-			_pattern = new Text(control, SWT.NONE);
+			_pattern = new Text(control, SWT.BORDER);
 			_pattern.setFocus();
 			_pattern.addModifyListener(new ModifyListener(){
 
@@ -261,7 +261,7 @@ public class NewFilterRule extends Wizard {
 			setControl(control);
 			control.setLayout(new GridLayout(4, false));
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFolderOrFileLabel);
-			_pattern = new Text(control, SWT.NONE);
+			_pattern = new Text(control, SWT.BORDER);
 			_pattern.setFocus();
 			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
 			_pattern.addModifyListener(new ModifyListener(){
@@ -465,7 +465,7 @@ public class NewFilterRule extends Wizard {
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFacitLabel);
-			_pattern = new Text(control, SWT.NONE);
+			_pattern = new Text(control, SWT.BORDER);
 			_pattern.setFocus();
 			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
 			_pattern.addModifyListener(new ModifyListener(){
