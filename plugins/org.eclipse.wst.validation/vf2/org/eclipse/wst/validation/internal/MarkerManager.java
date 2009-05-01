@@ -108,8 +108,17 @@ public class MarkerManager {
 		try {
 			hook(resource); 
 			IMarker[] markers = resource.findMarkers(null, true, depth);
+			String markerType;
 			for (IMarker marker : markers){
-				if (_markers.contains(marker.getType())){
+				try {
+					markerType = marker.getType();
+				}
+				catch (CoreException e)
+				{
+					//ignore the marker
+					return;
+				}
+				if (_markers.contains(markerType)){
 					long createTime = marker.getCreationTime();
 					if (createTime < operationStartTime){
 						try {
