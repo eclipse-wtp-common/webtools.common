@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -917,9 +918,14 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 		try {
 			if (valType == ValType.Build)resource.setSessionProperty(StatusBuild, vp);
 			else if (valType == ValType.Manual)resource.setSessionProperty(StatusManual, vp);
-		}
-		catch (CoreException e){
-			ValidationPlugin.getPlugin().handleException(e, IStatus.WARNING);
+		} 
+		catch (CoreException e) {
+	        // If the resource is not found, it is likely just been deleted 
+	        // and there is no need to do anything. 
+	        // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=269022
+	        if (!e.getStatus().equals(IResourceStatus.RESOURCE_NOT_FOUND)) {
+	                ValidationPlugin.getPlugin().handleException(e, IStatus.WARNING);
+	        }
 		}
 	}
 
