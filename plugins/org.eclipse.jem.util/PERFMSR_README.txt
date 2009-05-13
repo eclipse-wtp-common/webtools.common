@@ -11,7 +11,7 @@ The jar is in this project's classpath, but it is not exported and is not in
 the plugin.xml or build.properties. This means it will be available for compilation
 but it won't show up in the runtime workbench.
 
-05/13/2009
+05/13/2009 See bug 274534 "Can we remove org.eclipse.perfmsr.core"
 Note: the optional prereq, 
  org.eclipse.perfmsr.core;bundle-version="1.0.0";resolution:=optional,
 was removed since it was confusing to build or releng teams, who want to make 
