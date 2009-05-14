@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.21 $$  $$Date: 2008/04/21 14:50:16 $$ 
+ *  $$Revision: 1.22 $$  $$Date: 2009/05/14 00:58:23 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.*;
@@ -41,6 +42,208 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		public static final int PROJECT_NAME_INDX = 1;
 		public static final int MODULE_NAME_INDX = 2;
 		public static final int CONTENT_TYPE_INDX = 3;
+	}
+	
+	public class SynchronizedResourcesEList<E extends Object & Resource> extends ResourcesEList<E> implements EList<E> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private final Object lock = new Object();
+
+		public void move(int newPosition, E object) {
+			
+			synchronized(lock) {
+				super.move(newPosition, object);
+			}
+
+		}
+
+		public E move(int newPosition, int oldPosition) {
+
+			synchronized(lock) {
+				return super.move(newPosition, oldPosition);
+			}
+		}
+
+		public boolean add(E o) {
+			
+			synchronized(lock) {
+				return super.add(o);
+			}
+		}
+
+		public void add(int index, E element) {
+			
+			synchronized(lock) {
+				super.add(index, element);
+			}
+
+		}
+
+		public boolean addAll(Collection<? extends E> c) {
+			
+			synchronized(lock) {
+				return super.addAll(c);
+			}
+		}
+
+		public boolean addAll(int index, Collection<? extends E> c) {
+			
+			synchronized(lock) {
+				return super.addAll(index, c);
+			}
+		}
+
+		public void clear() {
+			
+			synchronized(lock) {
+				super.clear();
+			}
+
+		}
+
+		public boolean contains(Object o) {
+			
+			synchronized(lock) {
+				return super.contains(o);
+			}
+		}
+
+		public boolean containsAll(Collection<?> c) {
+			
+			synchronized(lock) {
+				return super.containsAll(c);
+			}
+		}
+
+		public boolean equals(Object o) {
+			
+			synchronized(lock) {
+				return super.equals(o);
+			}
+		}
+
+		public E get(int index) {
+			
+			synchronized(lock) {
+				return super.get(index);
+			}
+		}
+
+		public int hashCode() {
+			
+			synchronized(lock) {
+				return super.hashCode();
+			}
+		}
+
+		public int indexOf(Object o) {
+			
+			synchronized(lock) {
+				return super.indexOf(o);
+			}
+		}
+
+		public boolean isEmpty() {
+			
+			synchronized(lock) {
+				return super.isEmpty();
+			}
+		}
+
+		public Iterator<E> iterator() {
+			
+			synchronized(lock) {
+				return super.iterator();
+			}
+		}
+
+		public int lastIndexOf(Object o) {
+			
+			synchronized(lock) {
+				return super.lastIndexOf(o);
+			}
+		}
+
+		public ListIterator<E> listIterator() {
+			
+			synchronized(lock) {
+				return super.listIterator();
+			}
+		}
+
+		public ListIterator<E> listIterator(int index) {
+			
+			synchronized(lock) {
+				return super.listIterator(index);
+			}
+		}
+
+		public boolean remove(Object o) {
+			
+			synchronized(lock) {
+				return super.remove(o);
+			}
+		}
+
+		public E remove(int index) {
+			
+			synchronized(lock) {
+				return super.remove(index);
+			}
+		}
+
+		public boolean removeAll(Collection<?> c) {
+			
+			synchronized(lock) {
+				return super.removeAll(c);
+			}
+		}
+
+		public boolean retainAll(Collection<?> c) {
+			
+			synchronized(lock) {
+				return super.retainAll(c);
+			}
+		}
+
+		public E set(int index, E element) {
+			
+			synchronized(lock) {
+				return super.set(index, element);
+			}
+		}
+
+		public int size() {
+			
+			synchronized(lock) {
+				return super.size();
+			}
+		}
+
+		public List<E> subList(int fromIndex, int toIndex) {
+			
+			synchronized(lock) {
+				return super.subList(fromIndex, toIndex);
+			}
+		}
+
+		public Object[] toArray() {
+			
+			synchronized(lock) {
+				return super.toArray();
+			}
+		}
+
+		public <T> T[] toArray(T[] a) {
+			
+			synchronized(lock) {
+				return super.toArray(a);
+			}
+		}
+
 	}
 
 	private boolean isReleasing = false;
@@ -568,6 +771,14 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	protected Resource demandCreateResource(URI uri, Factory resourceFactory) {
 		// TODO Auto-generated method stub
 		return createResource(uri,resourceFactory);
+	}
+	
+	public EList<Resource> getResources() {
+		 if (resources == null)
+		    {
+		      resources = new SynchronizedResourcesEList<Resource>();
+		    }
+		    return resources;
 	}
 
 }
