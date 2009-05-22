@@ -73,6 +73,15 @@ public class LibraryFacetUninstallConfig
         }
     }
     
+    @Override
+    public void dispose()
+    {
+    	if( this.libraryUninstallDelegate != null )
+    	{
+    		this.libraryUninstallDelegate.dispose();
+    	}
+    }
+    
     public static final class Factory
     
         implements IActionConfigFactory

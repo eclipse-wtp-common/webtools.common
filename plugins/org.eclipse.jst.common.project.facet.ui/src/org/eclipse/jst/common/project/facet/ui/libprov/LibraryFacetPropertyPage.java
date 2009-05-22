@@ -452,6 +452,11 @@ public abstract class LibraryFacetPropertyPage
     {
         super.dispose();
         
+        if( this.libraryInstallDelegate != null )
+        {
+        	this.libraryInstallDelegate.dispose();
+        }
+        
         if( this.facetedProject != null )
         {
             this.facetedProject.removeListener( this.facetedProjectListener );

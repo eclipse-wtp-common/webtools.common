@@ -73,7 +73,7 @@ public class LibraryFacetInstallConfig
         final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
         final IProjectFacetVersion fv = getProjectFacetVersion();
         
-        if( this.libraryInstallDelegate != null && fpjwc != null && fv != null )
+        if( this.libraryInstallDelegate == null && fpjwc != null && fv != null )
         {
             this.libraryInstallDelegate = new LibraryInstallDelegate( fpjwc, fv );
             return true;
@@ -82,7 +82,16 @@ public class LibraryFacetInstallConfig
         return false;
     }
     
-    public static final class Factory
+    @Override
+	public void dispose() 
+    {
+    	if( this.libraryInstallDelegate != null )
+    	{
+    		this.libraryInstallDelegate.dispose();
+    	}
+	}
+
+	public static final class Factory
         
         implements IActionConfigFactory
         

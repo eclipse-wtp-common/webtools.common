@@ -458,6 +458,12 @@ public final class LibraryInstallDelegate
         
         ILibraryProvider provider = null;
         
+        if( this.uninstallDelegate != null )
+        {
+        	this.uninstallDelegate.dispose();
+        	this.uninstallDelegate = null;
+        }
+        
         if( fpj != null && fpj.hasProjectFacet( facet ) )
         {
             this.uninstallDelegate = new LibraryUninstallDelegate( fpj, this.fv );
@@ -471,8 +477,6 @@ public final class LibraryInstallDelegate
         }
         else
         {
-            this.uninstallDelegate = null;
-            
             provider = LibraryProviderFrameworkImpl.get().getLastProviderUsed( this.fv );
         
             if( provider == null || ! this.providers.contains( provider ) )
@@ -602,6 +606,11 @@ public final class LibraryInstallDelegate
     
     public synchronized void dispose()
     {
+    	if( this.uninstallDelegate != null )
+    	{
+    		this.uninstallDelegate.dispose();
+    	}
+    	
         getFacetedProject().removeListener( this.facetedProjectListener );
         
         for( LibraryProviderOperationConfig cfg : this.configs.values() )
