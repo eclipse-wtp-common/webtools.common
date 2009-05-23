@@ -260,7 +260,12 @@ public abstract class LibraryFacetPropertyPage
             {
                 control.dispose();
             }
-
+            
+            if( this.libraryInstallDelegate != null )
+            {
+            	this.libraryInstallDelegate.dispose();
+            }
+            
             this.libraryInstallDelegate = null;
             
             this.rootComposite.setLayout( gl( 1, 0, 0 ) );
