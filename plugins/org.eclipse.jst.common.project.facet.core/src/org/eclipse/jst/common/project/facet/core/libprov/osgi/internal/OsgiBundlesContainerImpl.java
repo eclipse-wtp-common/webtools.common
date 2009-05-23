@@ -107,7 +107,7 @@ public final class OsgiBundlesContainerImpl
 
     public int getKind()
     {
-        return K_SYSTEM;
+    	return K_APPLICATION;
     }
 
     public IPath getPath()
