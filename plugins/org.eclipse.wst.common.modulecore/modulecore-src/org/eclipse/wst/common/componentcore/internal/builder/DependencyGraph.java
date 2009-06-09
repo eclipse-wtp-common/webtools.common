@@ -28,7 +28,7 @@ public class DependencyGraph {
 
 	public IProject[] getReferencingComponents(IProject target) {
 		Set<IProject> referencingComponents = IDependencyGraph.INSTANCE.getReferencingComponents(target);
-		return (IProject[]) referencingComponents.toArray(new IProject[referencingComponents.size()]);
+		return referencingComponents.toArray(new IProject[referencingComponents.size()]);
 	}
 
 	public void addReference(IProject target, IProject referencingComponent) {

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.8 2006/04/27 04:17:40 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.9 2009/06/09 20:02:04 jsholl Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -44,7 +44,7 @@ public interface ComponentcorePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "componentcore.xmi";
+	String eNS_URI = "componentcore.xmi"; //$NON-NLS-1$
 
 	/**
 	 * The package namespace name.
@@ -52,7 +52,7 @@ public interface ComponentcorePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "org.eclipse.wst.common.componentcore";
+	String eNS_PREFIX = "org.eclipse.wst.common.componentcore"; //$NON-NLS-1$
 
 	/**
 	 * The singleton instance of the package.

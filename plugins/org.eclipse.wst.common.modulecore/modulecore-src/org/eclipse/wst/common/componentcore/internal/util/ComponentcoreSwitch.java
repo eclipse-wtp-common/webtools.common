@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreSwitch.java,v 1.6 2005/10/18 22:27:18 cbridgha Exp $
+ * $Id: ComponentcoreSwitch.java,v 1.7 2009/06/09 20:02:03 jsholl Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
@@ -74,13 +74,11 @@ public class ComponentcoreSwitch {
 		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		else {
-			List eSuperTypes = theEClass.getESuperTypes();
-			return
-				eSuperTypes.isEmpty() ?
-					defaultCase(theEObject) :
-					doSwitch((EClass)eSuperTypes.get(0), theEObject);
-		}
+		List eSuperTypes = theEClass.getESuperTypes();
+		return
+			eSuperTypes.isEmpty() ?
+				defaultCase(theEObject) :
+				doSwitch((EClass)eSuperTypes.get(0), theEObject);
 	}
 
 	/**

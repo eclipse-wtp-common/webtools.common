@@ -200,7 +200,7 @@ public class ModuleURIUtil {
 		if (aComponent.isBinary())
 			return ModuleURIUtil.archiveComponentfullyQualifyURI(aComponent.getName()).toString();
 		else
-			return "[" + aComponent.getProject().getFullPath() + "]:" + aComponent.getProject().getName();
+			return "[" + aComponent.getProject().getFullPath() + "]:" + aComponent.getProject().getName(); //$NON-NLS-1$  //$NON-NLS-2$
 	}
 
 	public static String getContentTypeName(URI uri) {

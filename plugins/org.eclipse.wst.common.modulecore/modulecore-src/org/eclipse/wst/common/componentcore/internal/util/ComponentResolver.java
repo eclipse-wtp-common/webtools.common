@@ -34,7 +34,7 @@ public class ComponentResolver implements URIResolverExtension {
 	private static boolean _DEBUG = "true".equals(Platform.getDebugOption("org.eclipse.wst.common.modulecore/ComponentResolver")); //$NON-NLS-1$ //$NON-NLS-2$ 
 	private static final String FILE_PROTOCOL = "file:///"; //$NON-NLS-1$
 	private static final String FILE_PROTOCOL2 = "file://"; //$NON-NLS-1$
-	private static final String ROOT_PATH_STRING = Path.ROOT.toString(); //$NON-NLS-1$
+	private static final String ROOT_PATH_STRING = Path.ROOT.toString();
 	private static final String HTTP_PROTOCOL = "http:"; //$NON-NLS-1$
 
 	/**

@@ -415,13 +415,13 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	protected String getContentTypeDescriber() {
 		
 		if (isProjectOfType(project, IModuleConstants.JST_EJB_MODULE))
-			return "org.eclipse.jst.j2ee.ejbDD";
+			return "org.eclipse.jst.j2ee.ejbDD"; //$NON-NLS-1$
 		if (isProjectOfType(project, IModuleConstants.JST_WEB_MODULE))
-			return "org.eclipse.jst.j2ee.webDD";
+			return "org.eclipse.jst.j2ee.webDD"; //$NON-NLS-1$
 		if (isProjectOfType(project, IModuleConstants.JST_EAR_MODULE))
-			return "org.eclipse.jst.j2ee.earDD";
+			return "org.eclipse.jst.j2ee.earDD"; //$NON-NLS-1$
 		if (isProjectOfType(project, IModuleConstants.JST_APPCLIENT_MODULE))
-			return "org.eclipse.jst.j2ee.appclientDD";
+			return "org.eclipse.jst.j2ee.appclientDD"; //$NON-NLS-1$
 		return null;
 	}
 	
