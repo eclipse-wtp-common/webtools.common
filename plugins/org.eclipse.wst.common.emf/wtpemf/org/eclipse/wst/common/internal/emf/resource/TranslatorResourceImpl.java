@@ -172,8 +172,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
                  notifySaveFailed();
                 if (e instanceof IOException)
                     throw (IOException) e;
-                else
-                    Logger.getLogger().write(e);
+                Logger.getLogger().write(e);
             }
             notifySaved();
         }
