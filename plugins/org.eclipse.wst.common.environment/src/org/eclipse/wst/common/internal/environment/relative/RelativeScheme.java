@@ -24,7 +24,7 @@ public class RelativeScheme implements IURIScheme
   @Override
 public String toString()
   {
-    return "relative";  
+    return "relative"; //$NON-NLS-1$  
   }
   
   /* (non-Javadoc)
@@ -40,7 +40,7 @@ public String toString()
    */
   public boolean isValid(IURI uri)
   {
-    return !uri.toString().startsWith( "/" );
+    return !uri.toString().startsWith( "/" ); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -80,7 +80,7 @@ public String toString()
     }
     else
     {
-      result = new Status( IStatus.ERROR, "id", 0, "",null );      
+      result = new Status( IStatus.ERROR, "id", 0, "",null ); //$NON-NLS-1$ //$NON-NLS-2$     
     }
     
     return result;

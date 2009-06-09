@@ -12,7 +12,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS
 {
-  private static final String BUNDLE_NAME = "org.eclipse.wst.common.internal.environment.eclipse.environment";
+  private static final String BUNDLE_NAME = "org.eclipse.wst.common.internal.environment.eclipse.environment"; //$NON-NLS-1$
   
   public static String MSG_NULL_ARG_SPECIFIED;
   public static String MSG_SCHEME_NOT_FOUND;

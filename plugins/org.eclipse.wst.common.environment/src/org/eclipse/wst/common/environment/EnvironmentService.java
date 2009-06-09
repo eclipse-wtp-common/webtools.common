@@ -58,7 +58,7 @@ public class EnvironmentService
     
     try
     {
-      scheme = environment.getURIFactory().newURIScheme( "platform" );
+      scheme = environment.getURIFactory().newURIScheme( "platform" ); //$NON-NLS-1$
     }
     catch( URIException exc )
     {    
@@ -78,7 +78,7 @@ public class EnvironmentService
     
     try
     {
-      scheme = environment.getURIFactory().newURIScheme( "file" );
+      scheme = environment.getURIFactory().newURIScheme( "file" ); //$NON-NLS-1$
     }
     catch( URIException exc )
     {    

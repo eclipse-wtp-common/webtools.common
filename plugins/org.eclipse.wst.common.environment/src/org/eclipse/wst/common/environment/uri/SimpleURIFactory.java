@@ -86,8 +86,8 @@ public class SimpleURIFactory implements IURIFactory
     if( schemeOrURI == null )
     {
       throw new URIException( 
-              new Status( IStatus.ERROR, "id", 0, 
-                 NLS.bind( Messages.MSG_NULL_ARG_SPECIFIED, "newURIScheme"), null ) );
+              new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$ 
+                 NLS.bind( Messages.MSG_NULL_ARG_SPECIFIED, "newURIScheme"), null ) ); //$NON-NLS-1$
     }
     
     int colon    = schemeOrURI.indexOf(':');
@@ -108,15 +108,15 @@ public class SimpleURIFactory implements IURIFactory
       if( newScheme == null )
       {
         throw new URIException( 
-            new Status( IStatus.ERROR, "id", 0, 
+            new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$ 
                 NLS.bind( Messages.MSG_SCHEME_NOT_FOUND, schemeOrURI ), null ) );
                 
       }
     }
-    else if( schemeOrURI.startsWith( "/") )
+    else if( schemeOrURI.startsWith( "/") ) //$NON-NLS-1$
     {
       throw new URIException( 
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
               NLS.bind( Messages.MSG_ABSOLUTE_PATH_WITHOUT_SCHEME, schemeOrURI ), null ) );
       
     }

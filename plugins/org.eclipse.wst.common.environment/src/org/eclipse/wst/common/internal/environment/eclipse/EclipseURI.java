@@ -83,7 +83,7 @@ public void erase() throws URIException
     }
     catch( Exception exc ) 
     {      
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
     }
   }
 
@@ -107,7 +107,7 @@ public InputStream getInputStream() throws URIException
     }
     catch( Throwable exc ) 
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
     }
     
     return null;
@@ -350,7 +350,7 @@ public void rename(IURI newURI ) throws URIException
     catch( CoreException exc )
     {
       exc.printStackTrace();
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ) );
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ) ); //$NON-NLS-1$
     }
   }
 
@@ -373,7 +373,7 @@ public void touchFolder() throws URIException
           if( folder.members().length > 0 )
           {
             throw new URIException( 
-                new Status( IStatus.ERROR, "id", 0, 
+                new Status( IStatus.ERROR, "id", 0,  //$NON-NLS-1$
                     NLS.bind( Messages.MSG_ERROR_FOLDER_HAS_CHILDREN, folder.toString() ), null ),
                 this );
 								
@@ -381,7 +381,7 @@ public void touchFolder() throws URIException
         }
         catch( CoreException exc )
         {        
-          throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+          throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
         }
       }
       else
@@ -400,7 +400,7 @@ public void touchFolder() throws URIException
       }
       catch( CoreException exc )
       {
-        throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+        throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
       }
     }
   }
@@ -435,7 +435,7 @@ public void touchLeaf() throws URIException
       }
       catch( IOException exc )
       {
-        throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+        throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
       }
     }
 
@@ -497,7 +497,7 @@ public URL asURL() throws URIException
     }
     catch( MalformedURLException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); 
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );  //$NON-NLS-1$
     }
     
     return url;
@@ -524,7 +524,7 @@ public boolean isAvailableAsURL()
 
   private File getFile()
   {
-    String platformRes = "platform:/resource";
+    String platformRes = "platform:/resource"; //$NON-NLS-1$
     File   result      = null;
     
     if (uri_.startsWith(platformRes))

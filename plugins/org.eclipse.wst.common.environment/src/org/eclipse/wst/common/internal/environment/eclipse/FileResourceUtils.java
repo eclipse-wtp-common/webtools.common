@@ -278,8 +278,7 @@ public final class FileResourceUtils
        folder.delete(true, true, null);
        return true;
      }
-     else
-       return false;
+     return false;
    }
 
   /**
@@ -308,15 +307,15 @@ public final class FileResourceUtils
   {    
     if (!absolutePath.isAbsolute())
     {
-      throw new CoreException(new Status(IStatus.ERROR, "ResourceUtils",0, NLS.bind( Messages.MSG_ERROR_PATH_NOT_ABSOLUTE, absolutePath.toString() ),null));
+      throw new CoreException(new Status(IStatus.ERROR, "ResourceUtils",0, NLS.bind( Messages.MSG_ERROR_PATH_NOT_ABSOLUTE, absolutePath.toString() ),null)); //$NON-NLS-1$
     }
     if (absolutePath.segmentCount() < 1)
     {
-      throw new CoreException(new Status(IStatus.ERROR,"ResourceUtils",0,NLS.bind( Messages.MSG_ERROR_PATH_EMPTY, absolutePath.toString() ),null));
+      throw new CoreException(new Status(IStatus.ERROR,"ResourceUtils",0,NLS.bind( Messages.MSG_ERROR_PATH_EMPTY, absolutePath.toString() ),null)); //$NON-NLS-1$
     }
     if (absolutePath.segmentCount() < 2)
     {
-      throw new CoreException(new Status(IStatus.ERROR,"ResourceUtils",0,NLS.bind( Messages.MSG_ERROR_PATH_NOT_FOLDER, absolutePath.toString() ),null));
+      throw new CoreException(new Status(IStatus.ERROR,"ResourceUtils",0,NLS.bind( Messages.MSG_ERROR_PATH_NOT_FOLDER, absolutePath.toString() ),null)); //$NON-NLS-1$
     }
     IContainer parent   = makeFolderPath(absolutePath.removeLastSegments(1), statusHandler);
     String     fileName = absolutePath.lastSegment();
@@ -448,13 +447,10 @@ public final class FileResourceUtils
     {
       return getWorkspaceRoot().getProject(absolutePath.segment(0));
     }
-    else
-    {
       IContainer parent = makeFolderPath(absolutePath.removeLastSegments(1), statusHandler );
       String folderName = absolutePath.lastSegment();
       
       return makeFolder(parent,folderName, statusHandler );
-    }
   }
   //
   // Creates a folder under a container.
@@ -483,7 +479,7 @@ public final class FileResourceUtils
     {
       throw new CoreException(
         new Status( IStatus.ERROR, 
-                    "ResourceUtils",
+                    "ResourceUtils", //$NON-NLS-1$
                     0, 
 					NLS.bind( Messages.MSG_ERROR_RESOURCE_NOT_FOLDER, parent.getFullPath().append(folderName).toString()),
 			null ) );
@@ -502,7 +498,8 @@ public final class FileResourceUtils
 
  throws CoreException
  {
-	 IFile file = parent.getFile( new Path(fileName) );
+	 String innerFileName = fileName;
+	 IFile file = parent.getFile( new Path(innerFileName) );
 
 	 // create the file if it doesn't exist
 	 if (!file.exists()) {
@@ -515,11 +512,11 @@ public final class FileResourceUtils
 				 boolean foundIgnoringCase = false;
 
 				 for (IResource resource : parent.members()) {
-					 if (resource.getName().equalsIgnoreCase(fileName)) {
+					 if (resource.getName().equalsIgnoreCase(innerFileName)) {
 						 // found the file
 						 foundIgnoringCase = true;
-						 fileName = resource.getName();
-						 file = parent.getFile( new Path(fileName));
+						 innerFileName = resource.getName();
+						 file = parent.getFile( new Path(innerFileName));
 						 break;
 					 }
 				 }
@@ -561,14 +558,11 @@ public final class FileResourceUtils
 		 return file;
 
 	 }
-	 else
-	 {
-		 throw new CoreException( 
-				 new Status( IStatus.ERROR,
-						 "ResourceUtils",
-						 0, 
-						 NLS.bind( Messages.MSG_ERROR_RESOURCE_NOT_FILE, parent.getFullPath().append(fileName)),
-						 null ) );
-	 }
+	 throw new CoreException( 
+			 new Status( IStatus.ERROR,
+					 "ResourceUtils", //$NON-NLS-1$
+					 0, 
+					 NLS.bind( Messages.MSG_ERROR_RESOURCE_NOT_FILE, parent.getFullPath().append(innerFileName)),
+					 null ) );
  }
 }

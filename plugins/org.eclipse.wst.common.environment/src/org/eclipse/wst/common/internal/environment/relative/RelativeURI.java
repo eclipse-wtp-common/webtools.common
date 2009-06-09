@@ -42,12 +42,12 @@ public class RelativeURI implements IURI
     if( !relativeURI.isRelative()) 
      {      
       throw new URIException( 
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
               NLS.bind( Messages.MSG_URI_NOT_RELATIVE, relativeURI.toString() ), null ) );
       
     }
     
-    String newURI = uri_ + "/" + relativeURI.toString();
+    String newURI = uri_ + "/" + relativeURI.toString(); //$NON-NLS-1$
     
     return getURIScheme().newURI( newURI );
   }

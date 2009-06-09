@@ -101,7 +101,7 @@ public InputStream getInputStream() throws URIException
     }
     catch( IOException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
     }
     
     return stream;
@@ -124,7 +124,7 @@ public OutputStream getOutputStream() throws URIException
     }
     catch( IOException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$
     }
     
     return stream;
@@ -171,7 +171,7 @@ public URL asURL() throws URIException
     }
     catch( MalformedURLException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$      
     }
     
     return url;
@@ -230,7 +230,7 @@ public IURI[] list() throws URIException
     
       for( int index = 0; index < length; index++ )
       {
-        URIs[index] = new FileURI( "file:" + children[index].getAbsolutePath() );
+        URIs[index] = new FileURI( "file:" + children[index].getAbsolutePath() ); //$NON-NLS-1$
       }
     }
     
@@ -247,16 +247,17 @@ public IURI[] list(IURIFilter uriFilter) throws URIException
     int      length   = children == null ? 0 : children.length;
     Vector   URIs     = new Vector();
     
-    for( int index = 0; index < length; index++ )
-    {
-      IURI newURI = new FileURI( "file:" + children[index].getAbsolutePath() );
-      
-      if( uriFilter.accepts( newURI) )
-      {
-        URIs.add( newURI );
-      } 
+    if(children != null){
+	    for( int index = 0; index < length; index++ )
+	    {
+	      IURI newURI = new FileURI( "file:" + children[index].getAbsolutePath() ); //$NON-NLS-1$
+	      
+	      if( uriFilter.accepts( newURI) )
+	      {
+	        URIs.add( newURI );
+	      } 
+	    }
     }
-    
     return (IURI[])URIs.toArray( new IURI[0] );
   }
 
@@ -274,7 +275,7 @@ public void rename(IURI newURI) throws URIException
     }
     catch( MalformedURLException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$      
     }
   }
 
@@ -303,7 +304,7 @@ public void touchLeaf() throws URIException
     }
     catch( IOException exc )
     {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); //$NON-NLS-1$      
     }
   }
 

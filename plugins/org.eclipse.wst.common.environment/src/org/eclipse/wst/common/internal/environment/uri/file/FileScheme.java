@@ -27,7 +27,7 @@ public class FileScheme extends RelativeScheme
   @Override
 public String toString()
   {
-    return "file";  
+    return "file"; //$NON-NLS-1$
   }
   
   /* (non-Javadoc)
@@ -42,11 +42,11 @@ public boolean isValid(IURI uri)
     
     IURIScheme scheme = uri.getURIScheme();
       
-    if( scheme.toString().equals( "relative") ) return scheme.isValid( uri );
+    if( scheme.toString().equals( "relative") ) return scheme.isValid( uri ); //$NON-NLS-1$
         
     String uriString = uri.toString();
       
-    if( uriString != null && uriString.startsWith( "file:" ) )
+    if( uriString != null && uriString.startsWith( "file:" ) ) //$NON-NLS-1$
     {
       result = true;
     }  
@@ -62,33 +62,30 @@ public IURI newURI(String uri) throws URIException
   {
     String newURI = null;
     
-    if( uri != null && uri.startsWith( "file:") )
+    if( uri != null && uri.startsWith( "file:") ) //$NON-NLS-1$
     {
       // The file protocol has been specified so keep it as is.
       newURI = uri;
     }
-    else if( uri == null || uri.indexOf( ":") != -1 )
+    else if( uri == null || uri.indexOf( ":") != -1 ) //$NON-NLS-1$
     {
       // The file uri is not allowed to contain some other protocol. 
       throw new URIException(
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
               NLS.bind( Messages.MSG_INVALID_FILE_URL,uri), null ) );
               
     }
-    else if( uri.startsWith( "/") )
+    else if( uri.startsWith( "/") ) //$NON-NLS-1$
     {
       // The file scheme has not been specified so we will add it.
-      newURI = "file:" + uri;
+      newURI = "file:" + uri; //$NON-NLS-1$
     }
     
     if( newURI == null )
     {
       return new RelativeURI( uri );
     }
-    else
-    {
-      return new FileURI( newURI );
-    }
+    return new FileURI( newURI );
   }
 
   /* (non-Javadoc)

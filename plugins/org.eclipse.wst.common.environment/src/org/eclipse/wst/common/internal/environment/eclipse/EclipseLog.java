@@ -149,11 +149,12 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 		logger.log( status );
 	}
 	
-	private String getMessageNumString(int messageNum) {
+	private String getMessageNumString(final int messageNum) {
 		String messageNumString = "IWAB"; //$NON-NLS-1$
-		if (messageNum > 9999 || messageNum < 0)
-			messageNum = 9999; //default message number
-		messageNumString += (new Integer(messageNum)).toString();
+		int innerMessageNum = messageNum;
+		if (innerMessageNum > 9999 || innerMessageNum < 0)
+			innerMessageNum = 9999; //default message number
+		messageNumString += (new Integer(innerMessageNum)).toString();
 		return messageNumString;
 	}
 	

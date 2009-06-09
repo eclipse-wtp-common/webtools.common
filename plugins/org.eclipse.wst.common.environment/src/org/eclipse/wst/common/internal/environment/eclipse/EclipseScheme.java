@@ -35,7 +35,7 @@ public class EclipseScheme implements IURIScheme
   @Override
 public String toString()
   {
-    return "platform";  
+    return "platform"; //$NON-NLS-1$
   }
   
   /**
@@ -57,7 +57,7 @@ public String toString()
     {
       IURIScheme scheme = uri.getURIScheme();
       
-      if( scheme.toString().equals( "relative") ) return scheme.isValid( uri );
+      if( scheme.toString().equals( "relative") ) return scheme.isValid( uri ); //$NON-NLS-1$
         
       getPathFromPlatformURI( uri.toString() );
     }
@@ -75,33 +75,30 @@ public String toString()
   {
     String newURI = null;
     
-    if( uri != null && uri.startsWith( "platform:") )
+    if( uri != null && uri.startsWith( "platform:") ) //$NON-NLS-1$
     {
       // The platform has been specified so keep it as is.
       newURI = uri;
     }
-    else if( uri == null || uri.indexOf( ":") != -1 )
+    else if( uri == null || uri.indexOf( ":") != -1 ) //$NON-NLS-1$
     {
       // The platform uri is not allowed to contain some other protocol. 
       throw new URIException(
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
               NLS.bind( Messages.MSG_INVALID_PLATFORM_URL,uri), null ) );
               
     }
-    else if( uri.startsWith( "/") )
+    else if( uri.startsWith( "/") ) //$NON-NLS-1$
     {
       // The platform scheme has not been specified so we will add it.
-      newURI = "platform:/resource" + uri;
+      newURI = "platform:/resource" + uri; //$NON-NLS-1$
     }
     
     if( newURI == null )
     {
       return new RelativeURI( uri );
     }
-    else
-    {
-      return new EclipseURI( newURI, environment_ );
-    }
+    return new EclipseURI( newURI, environment_ );
   }
 
   /**
@@ -128,7 +125,7 @@ public String toString()
     {
       IURIScheme scheme = uri.getURIScheme();
       
-      if( scheme.toString().equals( "relative") ) return scheme.validate( uri );
+      if( scheme.toString().equals( "relative") ) return scheme.validate( uri ); //$NON-NLS-1$
       
       getPathFromPlatformURI( uri.toString() );
       status = Status.OK_STATUS;
@@ -157,21 +154,15 @@ public String toString()
     catch( MalformedURLException exc )
     { 
       throw new URIException(
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
               NLS.bind( Messages.MSG_INVALID_PLATFORM_URL, uri ), exc ) );
     }
     
-    if( url == null )
-    {
-      throw new URIException(
-          new Status( IStatus.ERROR, "id", 0,
-              NLS.bind( Messages.MSG_INVALID_PLATFORM_URL, uri ), null ) );
-    }
-    if( url.getProtocol().equals("platform") ) 
+    if( url.getProtocol().equals("platform") )  //$NON-NLS-1$
     {
       String resourceURL = url.getFile();
       
-      if (resourceURL.startsWith("/resource")) 
+      if (resourceURL.startsWith("/resource"))  //$NON-NLS-1$
       {
         resourceFile = resourceURL.substring(10);   // omit the "/resource" portion
       }
@@ -179,7 +170,7 @@ public String toString()
     else 
     {
       throw new URIException(
-          new Status( IStatus.ERROR, "id", 0,
+          new Status( IStatus.ERROR, "id", 0, //$NON-NLS-1$
                       NLS.bind( Messages.MSG_INVALID_PLATFORM_URL,url.getFile() ), null ) );
     }
     
@@ -193,6 +184,6 @@ public String toString()
    */
   public String getURLFromPath( IPath absolutePath )
   {
-    return "platform:/resource" + absolutePath;
+    return "platform:/resource" + absolutePath; //$NON-NLS-1$
   }
 }
