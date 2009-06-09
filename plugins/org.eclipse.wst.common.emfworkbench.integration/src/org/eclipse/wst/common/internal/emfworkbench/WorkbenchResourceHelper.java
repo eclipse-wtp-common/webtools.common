@@ -192,13 +192,6 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		}
 
 		/**
-		 * @param file
-		 */
-		public void setFile(IFile file) {
-			this.file = file;
-		}
-
-		/**
 		 * @param l
 		 */
 		public void setSynchronizationStamp(long l) {

@@ -201,11 +201,9 @@ public class ComponentImplManager  {
 	private class ComponentImplDescriptor {
 
 		private final IConfigurationElement element;
-		private final String type;
-
+		
 		public ComponentImplDescriptor(IConfigurationElement configElement) {
 			element = configElement;
-			type = element.getAttribute(ATT_TYPE);
 		}
 
 		/**
@@ -233,15 +231,6 @@ public class ComponentImplManager  {
 
 			return factory[0];
 		}
-
-		/**
-		 * 
-		 * @return The type id of this ArtifactEdit definition
-		 */
-		public String getType() {
-			return type;
-		}
-
 	}
 	
 	private class ComponentImplRegistryReader extends RegistryReader {

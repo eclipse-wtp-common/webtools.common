@@ -496,13 +496,6 @@ public class PageGroupManager {
 			return pageGroup.getPages(dataModel);
 		}
 
-		public PageGroupEntry(PageGroupEntry originalEntry) {
-			pageGroup = originalEntry.pageGroup;
-			groupsThatFollow = originalEntry.groupsThatFollow;
-			pageHandler = originalEntry.pageHandler;
-			pageGroupHandler = originalEntry.pageGroupHandler;
-		}
-
 		private void init() {
 			try {
 				pageHandler = pageGroup.getPageHandler(dataModel);

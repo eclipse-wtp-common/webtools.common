@@ -75,15 +75,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		public Resource getRes() {
 			return this.res == null ? null : (Resource)res.get();
 		}
-		public void setRes(Resource res) {
-			this.res = new WeakReference(res);
-		}
-		public IFile getSavedFile() {
-			return savedFile;
-		}
-		public void setSavedFile(IFile savedFile) {
-			this.savedFile = savedFile;
-		}
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
