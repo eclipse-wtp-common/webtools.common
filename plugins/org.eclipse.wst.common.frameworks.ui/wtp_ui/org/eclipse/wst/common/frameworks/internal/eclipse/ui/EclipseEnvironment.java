@@ -56,7 +56,7 @@ public class EclipseEnvironment implements IEnvironment
 	  if( logger_ == null )
     {  
       logger_ = EnvironmentService.getEclipseLog(); 
-    };
+    }
 	
     return logger_;
   }

@@ -14,10 +14,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.wst.common.frameworks.internal.ISimpleValidateEditContext;
 import org.eclipse.wst.common.frameworks.internal.SimpleValidateEditContextHeadless;
 
-public class SimpleValidateEditContextUI extends SimpleValidateEditContextHeadless implements ISimpleValidateEditContext {
+public class SimpleValidateEditContextUI extends SimpleValidateEditContextHeadless {
 
 	@Override
 	protected IStatus validateEditImpl(final IFile[] filesToValidate) {

@@ -19,10 +19,9 @@ package org.eclipse.wst.common.frameworks.internal.ui;
  */
 import java.awt.event.ActionListener;
 
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Widget;
 
-public class TimedModifyListener extends TimedKeyListener implements ModifyListener {
+public class TimedModifyListener extends TimedKeyListener {
 	/**
 	 * J2EETimedModefyListener constructor comment.
 	 * 

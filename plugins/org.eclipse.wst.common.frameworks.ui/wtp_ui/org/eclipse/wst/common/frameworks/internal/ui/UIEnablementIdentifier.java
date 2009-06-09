@@ -74,8 +74,7 @@ class UIEnablementIdentifier extends EnablementIdentifier implements IIdentifier
 		IIdentifier identifier = getActivityIdentifier();
 		if (identifier != null)
 			return identifier.isEnabled() && super.getNewEnabled();
-		else
-			return false;
+		return false;
 	}
 
 	

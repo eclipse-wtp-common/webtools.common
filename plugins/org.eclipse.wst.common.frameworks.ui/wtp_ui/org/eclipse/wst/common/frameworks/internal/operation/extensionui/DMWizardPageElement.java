@@ -67,7 +67,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor {
 	public String getID() {
 		String id = wizardID;
 		if (factoryElement != null) {
-			id = id + "@" + factoryElement.className;
+			id = id + "@" + factoryElement.className; //$NON-NLS-1$
 		}
 		return id; 
 	}

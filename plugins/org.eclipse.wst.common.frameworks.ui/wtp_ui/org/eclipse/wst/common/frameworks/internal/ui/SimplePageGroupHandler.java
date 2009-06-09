@@ -26,10 +26,7 @@ public class SimplePageGroupHandler implements IDMPageGroupHandler {
 				// array if there is one.
 				if (index + 1 < pageGroupIDs.length) {
 					result = pageGroupIDs[index + 1];
-				} else {
-					result = null;
 				}
-
 				break;
 			}
 		}

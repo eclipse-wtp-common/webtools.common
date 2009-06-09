@@ -38,8 +38,7 @@ public class UIEnablementManager extends EnablementManager {
 	protected IActivityManager getActivityManager() {
 		if (getActivitySupport() != null)
 			return getActivitySupport().getActivityManager();
-		else
-			return null;
+		return null;
 	}
 
 	/**

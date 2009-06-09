@@ -87,7 +87,7 @@ public class PageExtensionManager {
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(CommonUIPluginConstants.PLUGIN_ID, POINT_WIZARD_PAGE_GROUP);
 		IConfigurationElement[] allElements = point.getConfigurationElements();
 		for (int i = 0; i < allElements.length; i++) {
-			IConfigurationElement element = (IConfigurationElement) allElements[i];
+			IConfigurationElement element = allElements[i];
 			if (ELEMENT_WIZARD_PAGE.equals(element.getName())) {
 				result.add(new DMWizardPageElement(element));
 			}
