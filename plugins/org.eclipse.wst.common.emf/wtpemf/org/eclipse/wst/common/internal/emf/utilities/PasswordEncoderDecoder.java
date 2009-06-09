@@ -8,7 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.utilities;
 
-public class PasswordEncoderDecoder extends EncoderDecoderAdapter implements EncoderDecoder {
+public class PasswordEncoderDecoder extends EncoderDecoderAdapter {
 	public static final String KEY = "password-security-coder"; //$NON-NLS-1$
 
 	public PasswordEncoderDecoder() {

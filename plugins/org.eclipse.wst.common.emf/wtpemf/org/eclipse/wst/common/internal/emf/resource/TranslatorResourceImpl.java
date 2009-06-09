@@ -257,6 +257,11 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 
 	protected void initializeContents() {
 		contents = new ResourceImpl.ContentsEList() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean add(Object object) {
 				renderer.prepareToAddContents();

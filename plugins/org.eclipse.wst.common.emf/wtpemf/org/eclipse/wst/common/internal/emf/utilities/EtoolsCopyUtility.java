@@ -531,9 +531,10 @@ public class EtoolsCopyUtility {
 	public Resource newInstance(Resource aResource, String newUri) {
 		if (aResource == null)
 			return null;
+		String innerNewUri = newUri;
 		Resource newResource;
 		String originalUri = aResource.getURI().toString();
-		newUri = newUri == null ? originalUri : newUri;
+		innerNewUri = innerNewUri == null ? originalUri : innerNewUri;
 
 		Resource.Factory factory = null;
 		if (aResource.getResourceSet() == null)
@@ -542,7 +543,7 @@ public class EtoolsCopyUtility {
 			factory = aResource.getResourceSet().getResourceFactoryRegistry().getFactory(URI.createURI(originalUri));
 
 
-		newResource = factory.createResource(URI.createURI(newUri));
+		newResource = factory.createResource(URI.createURI(innerNewUri));
 		return newResource;
 	}
 

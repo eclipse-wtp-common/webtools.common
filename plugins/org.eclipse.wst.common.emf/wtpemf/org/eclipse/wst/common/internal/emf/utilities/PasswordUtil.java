@@ -60,15 +60,16 @@ public class PasswordUtil {
 
 	public static String getCryptoAlgorithm(String s) {
 		String s1 = null;
-		if (s != null) {
-			s = s.trim();
-			if (s.length() >= 2) {
-				int i = s.indexOf("{"); //$NON-NLS-1$
+		String innerS = s;
+		if (innerS != null) {
+			innerS = innerS.trim();
+			if (innerS.length() >= 2) {
+				int i = innerS.indexOf("{"); //$NON-NLS-1$
 				if (i == 0) {
-					int j = s.indexOf("}", ++i); //$NON-NLS-1$
+					int j = innerS.indexOf("}", ++i); //$NON-NLS-1$
 					if (j > 0)
 						if (i < j)
-							s1 = s.substring(i, j).trim();
+							s1 = innerS.substring(i, j).trim();
 						else
 							s1 = EMPTY_STRING;
 				}
@@ -91,12 +92,13 @@ public class PasswordUtil {
 	}
 
 	public static boolean isValidCryptoAlgorithm(String s) {
-		if (s != null) {
-			s = s.trim();
-			if (s.length() == 0)
+		String innerS = s;
+		if (innerS != null) {
+			innerS = innerS.trim();
+			if (innerS.length() == 0)
 				return true;
 			for (int i = 0; i < SUPPORTED_CRYPTO_ALGORITHMS.length; i++)
-				if (s.equalsIgnoreCase(SUPPORTED_CRYPTO_ALGORITHMS[i]))
+				if (innerS.equalsIgnoreCase(SUPPORTED_CRYPTO_ALGORITHMS[i]))
 					return true;
 		}
 		return false;
@@ -137,15 +139,16 @@ public class PasswordUtil {
 
 	public static String removeCryptoAlgorithmTag(String s) {
 		String s1 = null;
-		if (s != null) {
-			s = s.trim();
-			if (s.length() >= 2) {
-				int i = s.indexOf("{"); //$NON-NLS-1$
+		String innerS = s;
+		if (innerS != null) {
+			innerS = innerS.trim();
+			if (innerS.length() >= 2) {
+				int i = innerS.indexOf("{"); //$NON-NLS-1$
 				if (i == 0) {
-					int j = s.indexOf("}", ++i); //$NON-NLS-1$
+					int j = innerS.indexOf("}", ++i); //$NON-NLS-1$
 					if (j > 0)
-						if (++j < s.length())
-							s1 = s.substring(j).trim();
+						if (++j < innerS.length())
+							s1 = innerS.substring(j).trim();
 						else
 							s1 = EMPTY_STRING;
 				}
@@ -163,7 +166,7 @@ public class PasswordUtil {
 				try {
 					abyte0 = s.getBytes(STRING_CONVERSION_CODE);
 				} catch (UnsupportedEncodingException unsupportedencodingexception) {
-					abyte0 = null;
+					//do nothing
 				}
 		return abyte0;
 	}
@@ -177,7 +180,7 @@ public class PasswordUtil {
 				try {
 					s = new String(abyte0, STRING_CONVERSION_CODE);
 				} catch (UnsupportedEncodingException unsupportedencodingexception) {
-					s = null;
+					//do nothing
 				}
 		return s;
 	}

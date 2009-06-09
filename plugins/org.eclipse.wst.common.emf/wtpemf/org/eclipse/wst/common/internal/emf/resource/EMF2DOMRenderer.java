@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 
 
 
-public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
+public class EMF2DOMRenderer extends AbstractRendererImpl {
 
 	protected Map domAdapterRegistry;
 	protected boolean needsToCreateDOM = true;

@@ -18,6 +18,11 @@ package org.eclipse.wst.common.internal.emf.utilities;
  */
 public class PleaseMigrateYourCodeError extends Error {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1137010999400298839L;
+
 	//TODO Delete me
 	public PleaseMigrateYourCodeError() {
 		super(WFTUtilsResourceHandler.PleaseMigrateYourCodeError_ERROR_0);

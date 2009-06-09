@@ -348,7 +348,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 	 * @aValue.
 	 */
 	protected Object failedToConvert(Object aValue, String aString) {
-		String errorString = java.text.MessageFormat.format(FAILED_CONVERSION_PATTERN, new String[]{aValue.toString(), aString});
+		String errorString = java.text.MessageFormat.format(FAILED_CONVERSION_PATTERN, new Object[]{aValue.toString(), aString});
 		throw new FeatureValueConversionException(errorString);
 	}
 }

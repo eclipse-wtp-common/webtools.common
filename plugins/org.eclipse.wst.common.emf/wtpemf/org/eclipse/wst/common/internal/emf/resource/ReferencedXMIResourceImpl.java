@@ -43,7 +43,12 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	  public static class ESynchronizedAdapterList extends EAdapterList
 	  {
 
-	    public ESynchronizedAdapterList(Notifier notifier) {
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 7855438339187540718L;
+
+		public ESynchronizedAdapterList(Notifier notifier) {
 			super(notifier);
 		}
 
@@ -374,8 +379,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
             notifySaveFailed();
             if (e instanceof IOException)
                 throw (IOException) e;
-            else
-                Logger.getLogger().write(e);
+            Logger.getLogger().write(e);
         }
         notifySaved();
 	}

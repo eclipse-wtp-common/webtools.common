@@ -12,5 +12,10 @@ package org.eclipse.wst.common.internal.emf.utilities;
 import org.omg.CORBA.UserException;
 
 public class InvalidPasswordDecodingException extends UserException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6211942853796823840L;
 }
 

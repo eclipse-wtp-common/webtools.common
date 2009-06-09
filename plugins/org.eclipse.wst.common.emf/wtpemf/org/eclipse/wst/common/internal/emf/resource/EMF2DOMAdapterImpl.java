@@ -138,8 +138,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		try {
 			// If the Platform class can be found, then continue to check if the OSGI platform is running
 			Class clazz = Class.forName(PLATFORM);
-			Method m = clazz.getMethod(ISRUNNING, null);
-			isRunning = ((Boolean)m.invoke(clazz, null)).booleanValue();
+			Method m = clazz.getMethod(ISRUNNING, (Class)null);
+			isRunning = ((Boolean)m.invoke(clazz, (Class)null)).booleanValue();
 		} catch (ClassNotFoundException e) {
 		     // Ignore because this must be in a non_OSGI environment
 		} catch (SecurityException e) {

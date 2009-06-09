@@ -20,6 +20,11 @@ package org.eclipse.wst.common.internal.emf.utilities;
 public class DanglingHREFException extends Exception {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3369128742899263327L;
+
 	public DanglingHREFException() {
 		super();
 	}

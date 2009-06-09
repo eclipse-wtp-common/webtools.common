@@ -418,6 +418,11 @@ public class Translator {
 		Translator mapInfo = (Translator) object;
 		return fDOMNames.equals(mapInfo.getDOMNames()) && (feature == null && mapInfo.getFeature() == null || feature.equals(mapInfo.getFeature()));
 	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode() +fDOMNames.hashCode();
+	}
 
 	/**
 	 * Returns the isManagedByParent.
@@ -512,20 +517,21 @@ public class Translator {
 	public Object convertStringToValue(String strValue, EObject owner) {
 		if (feature == null)
 			return strValue;
-		if (strValue != null) {
+		String innerStrValue = strValue;
+		if (innerStrValue != null) {
 			if (isEnumWithHyphens())
-				strValue = strValue.replace('-', '_');
+				innerStrValue = innerStrValue.replace('-', '_');
 			if (!isCDATAContent()) {
-				strValue = strValue.trim();
+				innerStrValue = innerStrValue.trim();
 			}
 		}
-		Object value = FeatureValueConverter.DEFAULT.convertValue(strValue, feature);
+		Object value = FeatureValueConverter.DEFAULT.convertValue(innerStrValue, feature);
 		if (value == null) {
 			if (isEmptyTag() && !isDOMAttribute() && !isDOMTextValue() && isBooleanFeature())
 				return Boolean.TRUE;
 			EObject convertToType = feature.getEType();
 			if (convertToType == null)
-				value = strValue;
+				value = innerStrValue;
 			else if (convertToType.equals(getEcorePackage().getEString())) {
 				value = ""; //$NON-NLS-1$
 			}

@@ -16,7 +16,6 @@
  */
 package org.eclipse.wst.common.internal.emf.utilities;
 
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -25,7 +24,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 /**
  * @author mdelder
  */
-public class ResourceIsLoadingAdapter extends AdapterImpl implements Adapter {
+public class ResourceIsLoadingAdapter extends AdapterImpl {
 
     private static final Class RESOURCE_IS_LOADING_ADAPTER_CLASS = ResourceIsLoadingAdapter.class;
 

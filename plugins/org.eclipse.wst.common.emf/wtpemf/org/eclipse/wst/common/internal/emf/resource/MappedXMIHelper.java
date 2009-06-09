@@ -97,7 +97,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 		if (uri.endsWith(".ecore")) { //$NON-NLS-1$
 			usingMaps = false;
 		}
-		String existing = (String) prefixesToURIs.get(prefix);
+		String existing = prefixesToURIs.get(prefix);
 		if (existing == null) {
 			prefixesToURIs.put(prefix, uri);
 			namespaceSupport.declarePrefix(prefix, uri);
@@ -161,13 +161,14 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	}
 
 	protected URI makeRelative(URI objectURI, CompatibilityURIConverter conv) {
-		String fragment = objectURI.fragment();
-		objectURI = objectURI.trimFragment();
-		URI relative = (URI) getCachedRelativeURIs().get(objectURI);
+		URI innerObjectURI = objectURI;
+		String fragment = innerObjectURI.fragment();
+		innerObjectURI = innerObjectURI.trimFragment();
+		URI relative = (URI) getCachedRelativeURIs().get(innerObjectURI);
 		if (relative == null) {
-			relative = conv.deNormalize(objectURI);
+			relative = conv.deNormalize(innerObjectURI);
 			if (relative.isRelative())
-				cachedRelativeURIs.put(objectURI, relative);
+				cachedRelativeURIs.put(innerObjectURI, relative);
 		}
 		return relative.appendFragment(fragment);
 	}

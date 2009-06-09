@@ -14,7 +14,7 @@ package org.eclipse.wst.common.internal.emf.utilities;
 /**
  * An XML value escaping EncoderDecoder implementation
  */
-public class XMLValueEncoderDecoder extends EncoderDecoderAdapter implements EncoderDecoder {
+public class XMLValueEncoderDecoder extends EncoderDecoderAdapter {
 	/**
 	 * Identifies the last printable character in the Unicode range that is supported by the
 	 * encoding used with this serializer. For 8-bit encodings this will be either 0x7E or 0xFF. For

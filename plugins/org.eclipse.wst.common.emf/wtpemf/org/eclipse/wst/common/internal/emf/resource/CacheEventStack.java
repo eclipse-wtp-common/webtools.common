@@ -27,6 +27,11 @@ public class CacheEventStack extends ArrayList {
 
 	/**
 	 * 
+	 */
+	private static final long serialVersionUID = 1208895320149054103L;
+
+	/**
+	 * 
 	 * @return the top of the stack without removing it
 	 */
 	public CacheEventNode peek() {

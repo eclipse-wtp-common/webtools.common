@@ -104,6 +104,7 @@ public abstract class TranslatorFilter {
 				 * update the mode to VARIABLE_TRANSLATORS so we can skip to it directly next time
 				 */
 				this.mode = VARIABLE_TRANSLATORS_MODE;
+			//$FALL-THROUGH$
 			case VARIABLE_TRANSLATORS_MODE :
 				children = this.translator.getVariableChildren(target, this.version);
 				found = scanNextTranslator(children, this.index);
@@ -154,14 +155,15 @@ public abstract class TranslatorFilter {
 	public static final Translator getNextChild(Translator translator, int startHint, int[] hints, EObject target, int version, TranslatorFilter translatorFilter) {
 
 		Translator result = null;
-
-		int index = startHint;
+		
+		int innerStartHint = startHint;
+		int index = innerStartHint;
 		Translator children[] = null;
 
 		switch (hints[MODE_HINT_INDX]) {
 			case STANDARD_TRANSLATORS_MODE :
 				children = translator.getChildren(target, version);
-				if (children != null && startHint < children.length) {
+				if (children != null && innerStartHint < children.length) {
 
 					/* Look for the next Attribute Translator */
 					index = translatorFilter.scanNextTranslator(children, index);
@@ -179,17 +181,18 @@ public abstract class TranslatorFilter {
 					 * DO NOT BREAK we will default to VARIABLE TRANSLATORS MODE so we must reset
 					 * the startHint appropriately
 					 */
-					startHint = -1;
+					innerStartHint = -1;
 				}
 
+			//$FALL-THROUGH$
 			case VARIABLE_TRANSLATORS_MODE :
 				hints[MODE_HINT_INDX] = VARIABLE_TRANSLATORS_MODE;
 				/*
 				 * Reset the index.
 				 */
-				index = startHint;
+				index = innerStartHint;
 				children = translator.getVariableChildren(target, version);
-				if (children != null && children.length > 0 && startHint < children.length) {
+				if (children != null && children.length > 0 && innerStartHint < children.length) {
 					index = translatorFilter.scanNextTranslator(children, index);
 					result = (index >= 0) ? children[index] : null;
 				}

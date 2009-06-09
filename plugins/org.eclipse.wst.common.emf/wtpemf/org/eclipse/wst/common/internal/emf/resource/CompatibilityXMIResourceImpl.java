@@ -149,7 +149,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	@Override
 	protected EObject getEObjectByID(String id) {
 		if (idToEObjectMap != null) {
-			EObject eObject = (EObject) idToEObjectMap.get(id);
+			EObject eObject = idToEObjectMap.get(id);
 			if (eObject != null) {
 				return eObject;
 			}

@@ -11,6 +11,11 @@ package org.eclipse.wst.common.internal.emf.utilities;
 public class FeatureValueConversionException extends RuntimeException {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8190891648333814201L;
+
+	/**
 	 * Constructor for FeatureValueConversionException.
 	 */
 	public FeatureValueConversionException() {

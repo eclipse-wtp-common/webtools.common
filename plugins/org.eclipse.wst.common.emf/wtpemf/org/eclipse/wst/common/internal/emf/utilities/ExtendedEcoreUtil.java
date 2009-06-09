@@ -194,7 +194,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 		Resource res = root.eResource();
 		EObject container = root.eContainer();
 		/* Making sure the proxy is created first before unloading */
-		if (root != null && res != null)
+		if (res != null)
 			becomeProxy(root, res);
 		if (container == null)
 			if (res != null)

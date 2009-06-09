@@ -25,6 +25,11 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 public class IDTranslator extends Translator {
 	public class NoResourceException extends RuntimeException {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8633201291288237530L;
+
 		public NoResourceException() {
 			super();
 		}

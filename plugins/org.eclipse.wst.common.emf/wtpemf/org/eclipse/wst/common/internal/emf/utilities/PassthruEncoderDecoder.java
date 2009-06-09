@@ -14,7 +14,7 @@ package org.eclipse.wst.common.internal.emf.utilities;
 /**
  * A passthru EncoderDecoder implementation
  */
-public class PassthruEncoderDecoder extends EncoderDecoderAdapter implements EncoderDecoder {
+public class PassthruEncoderDecoder extends EncoderDecoderAdapter {
 	public static final PassthruEncoderDecoder INSTANCE = new PassthruEncoderDecoder();
 	public static final String KEY = PassthruEncoderDecoder.class.getName();
 

@@ -25,6 +25,11 @@ package org.eclipse.wst.common.internal.emf.utilities;
 // on other packages and internal APIs.
 class AssertionFailedException extends RuntimeException {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3408284008342683621L;
+
+	/**
 	 * Constructs a new exception.
 	 */
 	public AssertionFailedException() {

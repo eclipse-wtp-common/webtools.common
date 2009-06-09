@@ -52,14 +52,15 @@ public class IDUtil {
 	}
 
 	protected static String ensureUniqueID(XMLResource aResource, String baseIDName) {
-		baseIDName += "_"; //$NON-NLS-1$
+		String innerBaseIDName = baseIDName;
+		innerBaseIDName += "_"; //$NON-NLS-1$
 		//Change to use the current time instead of incremental numbers to help
 		//support team development.
 		long currentTime = System.currentTimeMillis();
-		String id = baseIDName + currentTime;
+		String id = innerBaseIDName + currentTime;
 		while (aResource.getEObject(id) != null) {
 			++currentTime;
-			id = baseIDName + currentTime;
+			id = innerBaseIDName + currentTime;
 		}
 		return id;
 	}
