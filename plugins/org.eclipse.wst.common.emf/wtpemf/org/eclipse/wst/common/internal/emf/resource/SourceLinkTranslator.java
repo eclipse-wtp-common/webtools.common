@@ -51,6 +51,7 @@ public class SourceLinkTranslator extends Translator {
 		super(domNameAndPath, aFeature, style);
 	}
 
+	@Override
 	public Object convertStringToValue(String strValue, EObject owner) {
 
 		Object value = null;
@@ -62,6 +63,7 @@ public class SourceLinkTranslator extends Translator {
 		return value;
 	}
 
+	@Override
 	public String convertValueToString(Object value, EObject owner) {
 		TranslatorPath path = fTranslatorPaths[0];
 		Object attrValue = path.getLastMap().getMOFValue((EObject) value);

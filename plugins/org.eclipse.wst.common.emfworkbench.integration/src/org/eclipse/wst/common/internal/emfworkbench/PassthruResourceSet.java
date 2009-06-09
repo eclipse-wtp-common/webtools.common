@@ -42,6 +42,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	protected boolean isIsolated = false;
 
 	public class PassthruResourcesEList extends ResourceSetImpl.ResourcesEList {
+		@Override
 		public boolean add(Object object) {
 			if (object == null)
 				return false;
@@ -53,6 +54,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 		}
 
 
+		@Override
 		public boolean addAll(Collection collection) {
 			if (collection.isEmpty())
 				return false;
@@ -84,6 +86,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 		return isIsolated;
 	}
 
+	@Override
 	public Resource createResource(URI uri) {
 		Resource result = WorkbenchResourceHelperBase.getExistingOrCreateResource(uri);
 		if (result == null)
@@ -94,6 +97,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceSetImpl#demandCreateResource(URI)
 	 */
+	@Override
 	protected Resource demandCreateResource(URI uri) {
 		Resource result = WorkbenchResourceHelperBase.createResource(uri);
 		if (result == null)
@@ -105,6 +109,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	/*
 	 * Javadoc copied from interface.
 	 */
+	@Override
 	public EList getResources() {
 		if (isIsolated)
 			return super.getResources();
@@ -117,6 +122,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	/**
 	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#createResourceFromHandlers(URI)
 	 */
+	@Override
 	protected Resource createResourceFromHandlers(URI uri) {
 		if (!isIsolated)
 			return super.createResourceFromHandlers(uri);
@@ -126,6 +132,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	/**
 	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#getResourceFromHandlers(URI)
 	 */
+	@Override
 	protected Resource getResourceFromHandlers(URI uri) {
 		if (!isIsolated)
 			return super.getResourceFromHandlers(uri);
@@ -135,6 +142,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	/**
 	 * @see com.ibm.etools.emf.workbench.ProjectResourceSetImpl#getEObjectFromHandlers(URI, boolean)
 	 */
+	@Override
 	protected EObject getEObjectFromHandlers(URI uri, boolean loadOnDemand) {
 		if (!isIsolated)
 			return super.getEObjectFromHandlers(uri, loadOnDemand);

@@ -57,6 +57,7 @@ public class WFTWrappedException extends java.lang.reflect.InvocationTargetExcep
 	/**
 	 * Print out a stack trace to the system err.
 	 */
+	@Override
 	public void printStackTrace() {
 		printStackTrace(System.err);
 	}
@@ -64,6 +65,7 @@ public class WFTWrappedException extends java.lang.reflect.InvocationTargetExcep
 	/**
 	 * Prints the exception to System.err. If we have a nested exception, print its stack.
 	 */
+	@Override
 	public void printStackTrace(java.io.PrintStream s) {
 		if (getTargetException() != null) {
 			s.println(this);
@@ -79,6 +81,7 @@ public class WFTWrappedException extends java.lang.reflect.InvocationTargetExcep
 	/**
 	 * Prints the exception to System.err. If we have a nested exception, print its stack.
 	 */
+	@Override
 	public void printStackTrace(java.io.PrintWriter s) {
 		if (getTargetException() != null) {
 			s.println(this);

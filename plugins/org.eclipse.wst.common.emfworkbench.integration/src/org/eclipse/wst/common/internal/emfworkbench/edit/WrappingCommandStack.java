@@ -32,6 +32,7 @@ public class WrappingCommandStack extends BasicCommandStack {
 		editModel = anEditModel;
 	}
 
+	@Override
 	public void execute(Command command) {
 		ParentCommand parent = new ParentCommand(command, editModel);
 		super.execute(parent);

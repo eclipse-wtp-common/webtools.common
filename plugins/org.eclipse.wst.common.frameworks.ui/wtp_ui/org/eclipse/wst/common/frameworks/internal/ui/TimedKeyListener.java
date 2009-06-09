@@ -119,6 +119,7 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.ui.util.Timer#getSource()
 	 */
+	@Override
 	protected Object getSource() {
 		return monitoringTarget;
 	}

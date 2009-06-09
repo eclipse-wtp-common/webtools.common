@@ -44,6 +44,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#resolveEntity(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
 		InputSource result = null;
 		this.resource.setDoctypeValues(publicId, systemId);
@@ -65,6 +66,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ContentHandler#startDocument()
 	 */
+	@Override
 	public void startDocument() throws SAXException {
 		/*
 		 * The endDocument() method should have frozen the pool, or it may not be warmed yet. In
@@ -82,6 +84,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String,
 	 *      java.lang.String, org.xml.sax.Attributes)
 	 */
+	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		addToStack(qName, attributes);
 	}
@@ -89,6 +92,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
 	 */
+	@Override
 	public void characters(char[] data, int start, int length) throws SAXException {
 
 		CacheEventNode currentRecord = getCurrentRecord();
@@ -101,6 +105,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String,
 	 *      java.lang.String)
 	 */
+	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 
 		CacheEventNode currentRecord = null;
@@ -120,6 +125,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ContentHandler#endDocument()
 	 */
+	@Override
 	public void endDocument() throws SAXException {
 		CacheEventNode lastRecord = this.removeCurrentRecord();
 		lastRecord.commit();
@@ -129,6 +135,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
 	 */
+	@Override
 	public void error(SAXParseException ex) throws SAXException {
 		throw ex;
 	}
@@ -136,6 +143,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
 	 */
+	@Override
 	public void fatalError(SAXParseException ex) throws SAXException {
 		throw ex;
 	}
@@ -143,6 +151,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	/**
 	 * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
 	 */
+	@Override
 	public void warning(SAXParseException ex) throws SAXException {
 		Logger.getLogger().logWarning(ex);
 	}

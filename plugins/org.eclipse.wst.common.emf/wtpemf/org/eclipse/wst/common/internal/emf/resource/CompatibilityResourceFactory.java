@@ -53,6 +53,7 @@ public class CompatibilityResourceFactory extends XMIResourceFactoryImpl {
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public Resource createResource(URI uri) {
 		return new CompatibilityXMIResourceImpl(uri);
 	}

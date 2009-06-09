@@ -42,6 +42,7 @@ public class OperationExtensionReader extends RegistryReader {
 	 * postOperationClass="com.ibm.etools....PostDeleteOperation"> </operationExtension>
 	 */
 
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		if (!element.getName().equals(ELEMENT_J2EEOPEXT))
 			return false;

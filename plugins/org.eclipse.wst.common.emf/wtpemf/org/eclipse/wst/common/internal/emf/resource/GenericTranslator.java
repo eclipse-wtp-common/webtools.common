@@ -79,6 +79,7 @@ public class GenericTranslator extends Translator {
 	/**
 	 * @return Translator[]
 	 */
+	@Override
 	public Translator[] getChildren() {
 		return children;
 	}

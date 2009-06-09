@@ -58,6 +58,7 @@ public class ClientAccessRegistryException extends RuntimeException {
 	 * 
 	 * @see java.lang.Throwable#printStackTrace(java.io.PrintStream)
 	 */
+	@Override
 	public void printStackTrace(PrintStream s) {
 
 		s.println(toString());
@@ -90,6 +91,7 @@ public class ClientAccessRegistryException extends RuntimeException {
 	 * 
 	 * @see java.lang.Throwable#printStackTrace(java.io.PrintWriter)
 	 */
+	@Override
 	public void printStackTrace(PrintWriter s) {
 
 		s.println(toString());
@@ -127,6 +129,7 @@ public class ClientAccessRegistryException extends RuntimeException {
 		}
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer(super.toString()).append("\r\n"); //$NON-NLS-1$
 		result.append(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.ClientAccessRegistryException_UI_1, new Object[]{getType()}));

@@ -44,6 +44,7 @@ public class EcoreUtilitiesPlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		RendererFactory.setDefaultHandler(PluginRendererFactoryDefaultHandler.INSTANCE);

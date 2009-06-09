@@ -47,7 +47,8 @@ public class OptionsDialog extends MessageDialog
   /*
    * (non-Javadoc) This should also be overwritten Method declared on Dialog.
    */
-  protected void createButtonsForButtonBar(Composite parent)
+  @Override
+protected void createButtonsForButtonBar(Composite parent)
   {
     // create a button for each options
     for (int i = 0; i < choices.length; i++)
@@ -65,7 +66,8 @@ public class OptionsDialog extends MessageDialog
     }
   }
 
-  protected void buttonPressed(int id)
+  @Override
+protected void buttonPressed(int id)
   {
     if (id == StatusDialogConstants.DETAILS_ID)
       // was the Details button pressed?
@@ -77,12 +79,14 @@ public class OptionsDialog extends MessageDialog
     }
   }
 
-  protected void setReturnCode(int id)
+  @Override
+protected void setReturnCode(int id)
   {
     returnCode_ = id;
   }
 
-  public int getReturnCode()
+  @Override
+public int getReturnCode()
   {
     return returnCode_;
   }
@@ -90,7 +94,8 @@ public class OptionsDialog extends MessageDialog
    * This is one of the few methods that needs to be overwritten by the
    * subclasses. The image names can be found in the Dialog class
    */
-  protected Image getDialogImage()
+  @Override
+protected Image getDialogImage()
   {
     // create image
     switch (status.getSeverity())

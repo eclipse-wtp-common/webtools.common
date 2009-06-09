@@ -173,6 +173,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * Default empty implementation of redo.
 	 * </p>
 	 */
+	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}
@@ -182,6 +183,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * Default empty implementation of undo.
 	 * </p>
 	 */
+	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}

@@ -71,7 +71,8 @@ public class RelativeURI implements IURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#toString()
    */
-  public String toString()
+  @Override
+public String toString()
   {
     return uri_;
   }

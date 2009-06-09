@@ -43,6 +43,7 @@ public class PluginRendererFactoryDefaultHandler extends EMF2DOMRendererFactoryD
 	 * 
 	 * @see com.ibm.etools.emf2xml.EMF2DOMRendererFactoryDefaultHandler#getDefaultRendererFactory()
 	 */
+	@Override
 	public RendererFactory getDefaultRendererFactory() {
 		RendererFactory aFactory = (RendererFactory) UIContextDetermination.createInstance(EXT_POINT_NAME);
 		return aFactory == null ? super.getDefaultRendererFactory() : aFactory;

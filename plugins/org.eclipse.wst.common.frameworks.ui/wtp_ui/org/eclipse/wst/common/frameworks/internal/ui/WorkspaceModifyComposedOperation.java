@@ -65,6 +65,7 @@ public class WorkspaceModifyComposedOperation extends org.eclipse.ui.actions.Wor
 		return getRunnables().add(nestedOp);
 	}
 
+	@Override
 	protected void execute(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try{
 			List runnables = getRunnables();

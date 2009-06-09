@@ -48,6 +48,7 @@ public abstract class TranslatorResourceFactory extends ReferencedXMIFactoryImpl
 		return this.listeningForUpdates;
 	}
 
+	@Override
 	public Resource doCreateResource(URI uri) {
 		Renderer aRenderer = rendererFactory.createRenderer();
 		return createResource(uri, aRenderer);

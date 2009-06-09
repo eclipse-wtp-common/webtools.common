@@ -47,6 +47,7 @@ public abstract class RendererFactory {
 		defaultRendererFactory = factory;
 	}
 
+	@Override
 	public String toString() {
 		return "RendererFactory instance: " + getClass().getName(); //$NON-NLS-1$
 	}

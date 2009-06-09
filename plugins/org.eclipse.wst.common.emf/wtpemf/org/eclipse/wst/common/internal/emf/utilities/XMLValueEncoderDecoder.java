@@ -34,6 +34,7 @@ public class XMLValueEncoderDecoder extends EncoderDecoderAdapter implements Enc
 	/**
 	 * Returns a decoded version of the value.
 	 */
+	@Override
 	public String decode(String value) {
 		// NOT_IMPLEMENTED
 		return value;
@@ -47,6 +48,7 @@ public class XMLValueEncoderDecoder extends EncoderDecoderAdapter implements Enc
 	 * @param source
 	 *            The string to escape
 	 */
+	@Override
 	public String encode(String value) {
 		StringBuffer sbuf = new StringBuffer(value.length());
 		String charRef = null;

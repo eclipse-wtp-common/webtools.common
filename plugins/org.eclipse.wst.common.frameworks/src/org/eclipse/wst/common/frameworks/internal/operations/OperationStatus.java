@@ -39,6 +39,7 @@ public class OperationStatus extends MultiStatus {
 	/**
 	 * Overridden to expose as public instead of protected
 	 */
+	@Override
 	public void setCode(int code) {
 		super.setCode(code);
 	}
@@ -46,6 +47,7 @@ public class OperationStatus extends MultiStatus {
 	/**
 	 * Overridden to expose as public instead of protected
 	 */
+	@Override
 	public void setException(Throwable exception) {
 		super.setException(exception);
 	}
@@ -53,6 +55,7 @@ public class OperationStatus extends MultiStatus {
 	/**
 	 * Overridden to expose as public instead of protected
 	 */
+	@Override
 	public void setMessage(String message) {
 		super.setMessage(message);
 	}
@@ -60,10 +63,12 @@ public class OperationStatus extends MultiStatus {
 	/**
 	 * Overridden to expose as public instead of protected
 	 */
+	@Override
 	public void setSeverity(int severity) {
 		super.setSeverity(severity);
 	}
 
+	@Override
 	public void add(IStatus status) {
 		int newSev = status.getSeverity();
 		if (newSev > getSeverity()) {

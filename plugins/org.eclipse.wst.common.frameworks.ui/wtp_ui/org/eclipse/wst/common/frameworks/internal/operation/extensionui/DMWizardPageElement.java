@@ -63,6 +63,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor {
 	/**
 	 * @see Identifiable#getID()
 	 */
+	@Override
 	public String getID() {
 		String id = wizardID;
 		if (factoryElement != null) {

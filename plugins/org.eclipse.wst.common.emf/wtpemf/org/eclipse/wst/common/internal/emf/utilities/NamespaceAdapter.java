@@ -57,6 +57,7 @@ public class NamespaceAdapter extends AdapterImpl implements CloneablePublic {
 		 * 
 		 * @see org.eclipse.emf.common.notify.impl.NotificationImpl#getFeature()
 		 */
+		@Override
 		public Object getFeature() {
 			return NOTIFICATION_FEATURE;
 		}
@@ -169,6 +170,7 @@ public class NamespaceAdapter extends AdapterImpl implements CloneablePublic {
 	 * 
 	 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#isAdapterForType(java.lang.Object)
 	 */
+	@Override
 	public boolean isAdapterForType(Object type) {
 		return ADAPTER_TYPE.equals(type);
 	}
@@ -191,6 +193,7 @@ public class NamespaceAdapter extends AdapterImpl implements CloneablePublic {
 	 * 
 	 * @see com.ibm.etools.emf.ecore.utilities.CloneablePublic#clone()
 	 */
+	@Override
 	public Object clone() {
 		NamespaceAdapter result = new NamespaceAdapter();
 		if (hasNamespaces()) {

@@ -34,6 +34,7 @@ class StaticResourceFactoryDescriptor extends ResourceFactoryDescriptor {
 		this.factory = factory;
 	}  
 
+	@Override
 	public boolean isEnabledFor(URI fileURI) {
 		/* shortSegment must be non-null for the descriptor to be created, 
 		 * a validation check in init() verifies this requirement */
@@ -42,10 +43,12 @@ class StaticResourceFactoryDescriptor extends ResourceFactoryDescriptor {
 		return false;
 	} 
 	
+	@Override
 	public Resource.Factory createFactory() {
 		 return factory;			
 	}
 
+	@Override
 	public String getShortSegment() {
 		return shortSegment;
 	}  

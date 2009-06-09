@@ -62,6 +62,7 @@ public class ErrorDialog extends MessageDialog {
 
 	//Workaround. SWT does not seem to set rigth the default button if
 	//there is not control with focus. Bug: 14668
+	@Override
 	public int open() {
 		create();
 		Button b = getButton(defaultButtonIndex);
@@ -80,6 +81,7 @@ public class ErrorDialog extends MessageDialog {
 	/*
 	 * (non-Javadoc) Method declared on Dialog.
 	 */
+	@Override
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == detailButtonID) {
 			toggleDetailsArea();
@@ -157,6 +159,7 @@ public class ErrorDialog extends MessageDialog {
 		return dialog.open() == 0;
 	}
 
+	@Override
 	protected Control createDialogArea(Composite parent) {
 		// create a composite with standard margins and spacing
 		Composite composite = new Composite(parent, SWT.NONE);

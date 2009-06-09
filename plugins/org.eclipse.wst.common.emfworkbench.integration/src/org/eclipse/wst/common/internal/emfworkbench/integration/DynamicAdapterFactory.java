@@ -620,6 +620,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 					 * 
 					 * @see org.eclipse.emf.common.notify.impl.NotificationImpl#getNotifier()
 					 */
+					@Override
 					public Object getNotifier() {
 						return null; // notifier;
 					}

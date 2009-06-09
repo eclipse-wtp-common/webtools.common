@@ -43,7 +43,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	 * @see org.eclipse.wst.common.Environment.ILog#isEnabled(java.lang.String)
 	 */
 	public boolean isEnabled(String option) {
-		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/"
+		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/" //$NON-NLS-1$ //$NON-NLS-2$
 				+ option));
 	}
 	
@@ -58,10 +58,10 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 			switch (severity) {
 				case ILog.ERROR :
 				{
-					if (isEnabled("error"))
+					if (isEnabled("error")) //$NON-NLS-1$
 					{
-						String message = getMessageNumString(messageNum) + "E "
-							+ caller + "::" + method + ": object="
+						String message = getMessageNumString(messageNum) + "E " //$NON-NLS-1$
+							+ caller + "::" + method + ": object=" //$NON-NLS-1$ //$NON-NLS-2$
 							+ object;
 						log( severity, message, null );
 					}
@@ -70,11 +70,11 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 				
 				case ILog.WARNING :
 				{
-					if (isEnabled("warning"))
+					if (isEnabled("warning")) //$NON-NLS-1$
 					{
 						String message = getMessageNumString(messageNum)
-								+ "W " + caller + "::" + method
-								+ ": object=" + object;
+								+ "W " + caller + "::" + method //$NON-NLS-1$ //$NON-NLS-2$
+								+ ": object=" + object; //$NON-NLS-1$
 						log( severity, message, null );
 					}
 					break;
@@ -82,10 +82,10 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 				
 				case ILog.INFO :
 				{
-					if (isEnabled("info"))
+					if (isEnabled("info")) //$NON-NLS-1$
 					{
-						String message = getMessageNumString(messageNum) + "I "
-								+ caller + "::" + method + ": object="
+						String message = getMessageNumString(messageNum) + "I " //$NON-NLS-1$
+								+ caller + "::" + method + ": object=" //$NON-NLS-1$ //$NON-NLS-2$
 								+ object;
 						log( severity, message, null );
 					}
@@ -120,8 +120,8 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	{
 		if (isEnabled(option))
 		{
-			String message = getMessageNumString(messageNum) + "I " + caller
-					+ "::" + method + ": object=" + object;
+			String message = getMessageNumString(messageNum) + "I " + caller //$NON-NLS-1$
+					+ "::" + method + ": object=" + object; //$NON-NLS-1$ //$NON-NLS-2$
 			log(severity, message, null );
 		}	
 	}
@@ -134,8 +134,8 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	{
 		if (isEnabled(option)) 
 		{
-			String message = getMessageNumString(messageNum) + "I " + caller
-					+ "::" + method;
+			String message = getMessageNumString(messageNum) + "I " + caller //$NON-NLS-1$
+					+ "::" + method; //$NON-NLS-1$
 			log( severity, message, throwable );
 		}
 	}
@@ -150,7 +150,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	private String getMessageNumString(int messageNum) {
-		String messageNumString = "IWAB";
+		String messageNumString = "IWAB"; //$NON-NLS-1$
 		if (messageNum > 9999 || messageNum < 0)
 			messageNum = 9999; //default message number
 		messageNumString += (new Integer(messageNum)).toString();
@@ -159,7 +159,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	
 	private void log( int severity, String message, Throwable exc )
 	{
-		Status status = new Status( severity, "id", 0, message, exc );
+		Status status = new Status( severity, "id", 0, message, exc ); //$NON-NLS-1$
 		logger.log( status );
 	}
 }

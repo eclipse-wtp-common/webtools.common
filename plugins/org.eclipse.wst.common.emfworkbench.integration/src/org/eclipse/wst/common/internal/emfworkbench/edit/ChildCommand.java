@@ -32,6 +32,7 @@ public class ChildCommand extends EditModelCommand {
 		modelRetriever = retriever;
 	}
 
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
@@ -43,6 +44,7 @@ public class ChildCommand extends EditModelCommand {
 		//does nothing
 	}
 
+	@Override
 	protected void executeInModel(AbstractEditModelCommand cmd) {
 		EditModel model = modelRetriever.getEditModelForWrite(this);
 		try {
@@ -86,6 +88,7 @@ public class ChildCommand extends EditModelCommand {
 		}
 	}
 
+	@Override
 	public void undo() {
 		undoInModel();
 		getParent().undoFrom(this);

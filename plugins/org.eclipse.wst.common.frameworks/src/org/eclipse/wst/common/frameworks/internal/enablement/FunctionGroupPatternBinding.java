@@ -56,6 +56,7 @@ public class FunctionGroupPatternBinding {
 		return compareTo;
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof FunctionGroupPatternBinding))
 			return false;
@@ -75,6 +76,7 @@ public class FunctionGroupPatternBinding {
 		return pattern;
 	}
 
+	@Override
 	public int hashCode() {
 		if (!hashCodeComputed) {
 			hashCode = HASH_INITIAL;
@@ -86,6 +88,7 @@ public class FunctionGroupPatternBinding {
 		return hashCode;
 	}
 
+	@Override
 	public String toString() {
 		if (string == null) {
 			final StringBuffer stringBuffer = new StringBuffer();

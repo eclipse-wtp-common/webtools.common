@@ -81,6 +81,7 @@ public class ModifierHelperRegistry {
 			return null;
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (super.equals(obj)) {
 				return true;

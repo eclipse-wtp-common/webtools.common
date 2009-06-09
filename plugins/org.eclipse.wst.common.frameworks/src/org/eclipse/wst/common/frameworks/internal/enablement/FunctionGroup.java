@@ -91,6 +91,7 @@ public class FunctionGroup implements Comparable {
 		return groupInterface;
 	}
 
+	@Override
 	public String toString() {
 		return "\"" + getName() + "\" (" + getGroupID() + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}

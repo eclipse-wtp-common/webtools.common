@@ -134,6 +134,7 @@ public final class DataModelPropertyDescriptor {
 		return (null != str) ? str : ""; //$NON-NLS-1$
 	}
 	
+	@Override
 	public String toString(){
 		return getPropertyDescription();
 	}

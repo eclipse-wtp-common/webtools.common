@@ -35,6 +35,7 @@ public class ComposedAccessorKey {
 		this.addonKey = addonKey;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (other == null || !(other instanceof ComposedAccessorKey))
 			return false;
@@ -48,6 +49,7 @@ public class ComposedAccessorKey {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		return accessorKey.hashCode() ^ addonKey.hashCode();
 	}

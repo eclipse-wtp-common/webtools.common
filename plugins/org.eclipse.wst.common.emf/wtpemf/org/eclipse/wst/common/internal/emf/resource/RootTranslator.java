@@ -30,6 +30,7 @@ public class RootTranslator extends Translator {
 	/**
 	 * @see com.ibm.etools.emf2xml.impl.Translator#setMOFValue(Notifier, Object, int)
 	 */
+	@Override
 	public void setMOFValue(Notifier owner, Object value, int newIndex) {
 		((Resource) owner).getContents().add(newIndex, (EObject)value);
 	}
@@ -37,6 +38,7 @@ public class RootTranslator extends Translator {
 	/**
 	 * @see com.ibm.etools.emf2xml.impl.Translator#removeMOFValue(Notifier, Object)
 	 */
+	@Override
 	public void removeMOFValue(Notifier owner, Object value) {
 		((Resource) owner).getContents().remove(value);
 	}
@@ -47,6 +49,7 @@ public class RootTranslator extends Translator {
 	 * @see com.ibm.etools.emf2xml.impl.Translator#setMOFValue(org.eclipse.emf.ecore.EObject,
 	 *      java.lang.Object)
 	 */
+	@Override
 	public void setMOFValue(Resource res, Object value) {
 		if (res != null && value != null)
 			res.getContents().add((EObject)value);
@@ -57,6 +60,7 @@ public class RootTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#isMultiValued()
 	 */
+	@Override
 	public boolean isMultiValued() {
 		return true;
 	}

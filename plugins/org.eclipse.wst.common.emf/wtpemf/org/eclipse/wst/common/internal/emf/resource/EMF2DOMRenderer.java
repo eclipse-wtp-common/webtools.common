@@ -241,6 +241,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 		}
 	}
 
+	@Override
 	public void preUnload() {
 		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getAdapter(resource.eAdapters(), EMF2DOMAdapter.ADAPTER_CLASS);
 		if (adapter != null) {

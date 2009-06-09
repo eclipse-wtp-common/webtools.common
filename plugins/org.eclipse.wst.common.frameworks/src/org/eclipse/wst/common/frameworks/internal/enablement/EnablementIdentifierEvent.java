@@ -72,6 +72,7 @@ public class EnablementIdentifierEvent {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "EnablementIdentifierEvent [identifier=" + identifier.toString() + ", functionGroupIdsChanged=" + hasFunctionGroupIdsChanged() + ", enabledChanged=" + hasEnabledChanged() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}

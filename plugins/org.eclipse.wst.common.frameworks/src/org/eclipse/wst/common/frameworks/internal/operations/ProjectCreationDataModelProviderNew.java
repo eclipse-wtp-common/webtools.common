@@ -32,14 +32,17 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvider implements IProjectCreationPropertiesNew {
 
+	@Override
 	public IDataModelOperation getDefaultOperation() {
 		return new ProjectCreationOperationNew(model);
 	}
 
+	@Override
 	public void init() {
 		super.init();
 	}
 
+	@Override
 	public Set getPropertyNames() {
 		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(PROJECT);
@@ -54,6 +57,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		return propertyNames;
 	}
 
+	@Override
 	public Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(PROJECT_LOCATION)) {
 			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
@@ -81,6 +85,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		return path.toOSString();
 	}
 
+	@Override
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(DEFAULT_LOCATION) || propertyName.equals(PROJECT_DESCRIPTION)) {
 			throw new RuntimeException();
@@ -117,6 +122,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		return (null != projectName && projectName.length() > 0) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
 	}
 
+	@Override
 	public IStatus validate(String propertyName) {
 		if (propertyName.equals(PROJECT_NAME)) {
 			String name = model.getStringProperty(PROJECT_NAME);

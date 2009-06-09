@@ -68,6 +68,7 @@ public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IM
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception  {
 		super.start(context);
 	}

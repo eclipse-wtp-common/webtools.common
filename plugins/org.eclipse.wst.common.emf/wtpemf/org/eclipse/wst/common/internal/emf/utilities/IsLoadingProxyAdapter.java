@@ -43,6 +43,7 @@ public class IsLoadingProxyAdapter extends AdapterImpl {
 	 * 
 	 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
 	 */
+	@Override
 	public void notifyChanged(Notification msg) {
 		if (resource != null) {
 			//listen for the remove of the loading adapter

@@ -41,6 +41,7 @@ public class IDTranslator extends Translator {
 		super("id", ID_FEATURE, DOM_ATTRIBUTE); //$NON-NLS-1$
 	}
 
+	@Override
 	public void setMOFValue(EObject emfObject, Object value) {
 		XMIResource res = (XMIResource) emfObject.eResource();
 		if (res == null)
@@ -52,6 +53,7 @@ public class IDTranslator extends Translator {
 			res.setID(emfObject, (String) value);
 	}
 
+	@Override
 	public Object getMOFValue(EObject emfObject) {
 		if (emfObject == null)
 			throw new NoResourceException();
@@ -62,10 +64,12 @@ public class IDTranslator extends Translator {
 	}
 
 
+	@Override
 	public boolean featureExists(EObject emfObject) {
 		return true;
 	}
 
+	@Override
 	public boolean isIDMap() {
 		return true;
 	}

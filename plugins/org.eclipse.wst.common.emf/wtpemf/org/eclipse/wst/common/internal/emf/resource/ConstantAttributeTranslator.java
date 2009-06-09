@@ -37,6 +37,7 @@ public class ConstantAttributeTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#getMOFValue(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public Object getMOFValue(EObject mofObject) {
 		return attributeValue;
 	}
@@ -46,6 +47,7 @@ public class ConstantAttributeTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#isSetMOFValue(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public boolean isSetMOFValue(EObject emfObject) {
 		return true;
 	}

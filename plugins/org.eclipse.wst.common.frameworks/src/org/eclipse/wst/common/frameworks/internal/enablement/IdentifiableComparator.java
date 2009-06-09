@@ -60,6 +60,7 @@ public class IdentifiableComparator implements java.util.Comparator {
 	 * 
 	 * @see java.util.Comparator#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof IdentifiableComparator;
 	}

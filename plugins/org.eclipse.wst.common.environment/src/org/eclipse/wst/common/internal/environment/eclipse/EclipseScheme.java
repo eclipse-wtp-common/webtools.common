@@ -32,7 +32,8 @@ public class EclipseScheme implements IURIScheme
     environment_ = environment;
   }
   
-  public String toString()
+  @Override
+public String toString()
   {
     return "platform";  
   }

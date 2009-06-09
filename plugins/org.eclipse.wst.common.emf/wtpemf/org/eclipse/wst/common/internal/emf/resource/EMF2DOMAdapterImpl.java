@@ -72,6 +72,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 		static final String KEY = "EMF2DOMDependencyAdapter"; //$NON-NLS-1$
 
+		@Override
 		public void notifyChanged(Notification msg) {
 			EMF2DOMAdapterImpl.this.notifyChanged(msg);
 		}
@@ -79,6 +80,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		/**
 		 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#isAdapterForType(Object)
 		 */
+		@Override
 		public boolean isAdapterForType(Object type) {
 			return KEY.equals(type);
 		}
@@ -203,6 +205,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		fNotificationEnabled = isEnabled;
 	}
 
+	@Override
 	public boolean isAdapterForType(Object type) {
 		return EMF2DOMAdapter.ADAPTER_CLASS == type;
 	}
@@ -211,6 +214,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		target.eAdapters().add(this);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(shortClassName(this));
@@ -1011,6 +1015,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			resource.setDoctypeValues(publicId, systemId);
 	}
 
+	@Override
 	public void notifyChanged(Notification msg) {
 
 		if (isRoot) {

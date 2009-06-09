@@ -74,10 +74,12 @@ public abstract class ResourceFactoryDescriptor {
 	 */
 	public abstract Resource.Factory createFactory();
 	
+	@Override
 	public int hashCode() {
 		return getShortSegment().hashCode();
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if(o instanceof ResourceFactoryDescriptor)
 			return getShortSegment().equals(((ResourceFactoryDescriptor)o).getShortSegment());

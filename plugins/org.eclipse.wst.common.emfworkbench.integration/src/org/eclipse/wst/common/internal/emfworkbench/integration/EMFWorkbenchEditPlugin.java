@@ -56,6 +56,7 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		ExtendedEcoreUtil.setFileNotFoundDetector(new ExtendedEcoreUtil.FileNotFoundDetector() {

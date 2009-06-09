@@ -87,6 +87,7 @@ public class ClientAccessRegistry {
 		throw new ClientAccessRegistryException(EMFWorkbenchResourceHandler.getString("ClientAccessRegistry_ERROR_1"), accessorKey); //$NON-NLS-1$
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer("ClientAccessRegistry: ["); //$NON-NLS-1$
 		result.append((isStable()) ? "STABLE" : "OUT OF SYNC"); //$NON-NLS-1$ //$NON-NLS-2$

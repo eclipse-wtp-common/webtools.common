@@ -380,6 +380,7 @@ public class Translator {
 		return (String[]) results.toArray(new String[results.size()]);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		String cn = getClass().getName();
@@ -410,6 +411,7 @@ public class Translator {
 	/*
 	 * @see Object#equals(Object)
 	 */
+	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof Translator))
 			return false;

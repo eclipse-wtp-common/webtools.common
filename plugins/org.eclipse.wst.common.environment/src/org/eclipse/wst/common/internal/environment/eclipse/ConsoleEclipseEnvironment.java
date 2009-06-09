@@ -37,8 +37,8 @@ public class ConsoleEclipseEnvironment implements IEnvironment
 	  uriFactory_      = new SimpleURIFactory();
 	  statusHandler_   = statusHandler;
 	    
-	  uriFactory_.registerScheme( "platform", new EclipseScheme( this ) );
-	  uriFactory_.registerScheme( "file", new FileScheme() );
+	  uriFactory_.registerScheme( "platform", new EclipseScheme( this ) ); //$NON-NLS-1$
+	  uriFactory_.registerScheme( "file", new FileScheme() ); //$NON-NLS-1$
 	}
 			
 	/* (non-Javadoc)

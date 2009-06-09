@@ -265,6 +265,7 @@ public class DMWizardPageGroupElement extends AbstractRegistryDescriptor impleme
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
 	 */
+	@Override
 	public String getID() {
 		return getPageID();
 	}

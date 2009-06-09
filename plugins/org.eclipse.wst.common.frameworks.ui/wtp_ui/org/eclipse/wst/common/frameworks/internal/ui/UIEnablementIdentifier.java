@@ -69,6 +69,7 @@ class UIEnablementIdentifier extends EnablementIdentifier implements IIdentifier
 	 * 
 	 * @see org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifier#getNewEnabled()
 	 */
+	@Override
 	protected boolean getNewEnabled() {
 		IIdentifier identifier = getActivityIdentifier();
 		if (identifier != null)

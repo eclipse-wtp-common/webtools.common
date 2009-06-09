@@ -75,6 +75,7 @@ public class TranslatorPath {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		String cn = getClass().getName();

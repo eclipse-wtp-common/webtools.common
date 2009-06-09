@@ -19,6 +19,7 @@ import org.eclipse.wst.common.frameworks.internal.SimpleValidateEditContextHeadl
 
 public class SimpleValidateEditContextUI extends SimpleValidateEditContextHeadless implements ISimpleValidateEditContext {
 
+	@Override
 	protected IStatus validateEditImpl(final IFile[] filesToValidate) {
 		final IStatus [] status = new IStatus[1];
 		Display.getDefault().syncExec(new Runnable() {

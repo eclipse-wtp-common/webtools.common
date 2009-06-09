@@ -354,6 +354,7 @@ public class ModelModifier {
 			this.resource = eObject.eResource();
 		}
 
+		@Override
 		public boolean canExecute() {
 			return baseCommand.canExecute();
 		}
@@ -363,10 +364,12 @@ public class ModelModifier {
 			baseCommand.execute();
 		}
 
+		@Override
 		public boolean canUndo() {
 			return baseCommand.canUndo();
 		}
 
+		@Override
 		public void undo() {
 			baseCommand.undo();
 			ExtendedEcoreUtil.removeProxy(eObject, resource);
@@ -377,22 +380,27 @@ public class ModelModifier {
 			baseCommand.redo();
 		}
 
+		@Override
 		public Collection getResult() {
 			return baseCommand.getResult();
 		}
 
+		@Override
 		public Collection getAffectedObjects() {
 			return baseCommand.getAffectedObjects();
 		}
 
+		@Override
 		public String getLabel() {
 			return baseCommand.getLabel();
 		}
 
+		@Override
 		public String getDescription() {
 			return baseCommand.getDescription();
 		}
 
+		@Override
 		public void dispose() {
 			super.dispose();
 			baseCommand.dispose();

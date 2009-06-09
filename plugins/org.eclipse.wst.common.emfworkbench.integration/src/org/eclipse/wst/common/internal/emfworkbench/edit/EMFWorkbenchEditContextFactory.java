@@ -46,10 +46,12 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 		super();
 	}
 
+	@Override
 	protected EMFWorkbenchContextBase primCreateEMFContext(IProject aProject) {
 		return new EMFWorkbenchContext(aProject);
 	}
 
+	@Override
 	public ResourceSetWorkbenchSynchronizer createSynchronizer(ResourceSet aResourceSet, IProject aProject) {
 		return new ResourceSetWorkbenchEditSynchronizer(aResourceSet, aProject);
 	}
@@ -72,6 +74,7 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 		}
 	}
 	
+	@Override
 	public EMFWorkbenchContextBase createEMFContext(IProject aProject, IEMFContextContributor contributor) {
 		ILock lock = getProjectLockObject(aProject);
 		try{
@@ -86,6 +89,7 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 		}
 	}
 	
+	@Override
 	protected EMFWorkbenchContextBase getCachedEMFContext(IProject aProject) {
 		ILock lock = getProjectLockObject(aProject);
 		try{

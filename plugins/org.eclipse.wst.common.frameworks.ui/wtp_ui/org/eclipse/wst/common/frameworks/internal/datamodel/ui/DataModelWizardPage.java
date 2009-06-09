@@ -128,6 +128,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		}
 	}
 
+	@Override
 	public boolean canFlipToNextPage() {
 		// TODO why is that last getNextPage() call here???
 		return isPageComplete() && ((null != wizard && wizard.getPageGroupManager().hasNextPage() || null != getNextPage()));
@@ -136,6 +137,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	/*
 	 * (non-Javadoc) Method declared on IWizardPage.
 	 */
+	@Override
 	public void setWizard(IWizard newWizard) {
 		super.setWizard(newWizard);
 		if (newWizard instanceof DataModelWizard) {
@@ -143,10 +145,12 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		}
 	}
 
+	@Override
 	public IWizardPage getPreviousPage() {
 		return previousPage;
 	}
 
+	@Override
 	public void setPreviousPage(IWizardPage page) {
 		super.setPreviousPage(page);
 		previousPage = page;
@@ -301,6 +305,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * the control to the given visibility state. Subclasses may extend.
 	 */
 
+	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		if (visible) {
@@ -468,6 +473,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		return model;
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (model != null) {

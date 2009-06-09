@@ -66,7 +66,8 @@ public class InfoDialog extends MessageDialog
   /*
    * (non-Javadoc) This should also be overwritten Method declared on Dialog.
    */
-  protected void createButtonsForButtonBar(Composite parent)
+  @Override
+protected void createButtonsForButtonBar(Composite parent)
   {
     // create OK and Details buttons
     createButton(
@@ -89,7 +90,8 @@ public class InfoDialog extends MessageDialog
    * This is one of the few methods that needs to be overwritten by the
    * subclasses. The image names can be found in the Dialog class
    */
-  protected Image getDialogImage()
+  @Override
+protected Image getDialogImage()
   {
     // create image
     return PlatformUI.getWorkbench().getDisplay().getSystemImage(SWT.ICON_INFORMATION);

@@ -123,10 +123,12 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		throw new RuntimeException();
 	}
 
+	@Override
 	public boolean canRedo() {
 		return (COMPLETE_UNDO == executionState) && super.canRedo();
 	}
 
+	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return cacheThreadAndContinue(monitor, info, REDO_IMPL);
 	}
@@ -160,10 +162,12 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		}
 	}
 
+	@Override
 	public boolean canUndo() {
 		return (executionState == COMPLETE_EXECUTE || executionState == COMPLETE_REDO) && super.canUndo();
 	}
 
+	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return cacheThreadAndContinue(monitor, info, UNDO_IMPL);
 	}
@@ -198,6 +202,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		}
 	}
 
+	@Override
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return cacheThreadAndContinue(monitor, info, EXECUTE_IMPL);
 	}
@@ -369,6 +374,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 
 	private IStatus runOperation(final IDataModelOperation operation, final IProgressMonitor monitor, final IAdaptable info, final int executionType) {
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(info) {
+			@Override
 			public void run(IProgressMonitor pm) throws CoreException {
 				try {
 					switch (executionType) {
@@ -485,6 +491,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 			return null;
 		}
 
+		@Override
 		public String toString() {
 			return getOperationID();
 		}

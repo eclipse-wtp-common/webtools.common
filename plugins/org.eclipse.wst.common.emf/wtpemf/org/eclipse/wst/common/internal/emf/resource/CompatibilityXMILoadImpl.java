@@ -41,6 +41,7 @@ public class CompatibilityXMILoadImpl extends XMILoadImpl {
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl#makeDefaultHandler()
 	 */
+	@Override
 	protected DefaultHandler makeDefaultHandler() {
 		return new SAXWrapper(new CompatibilitySAXXMIHandler(resource, helper, options));
 	}

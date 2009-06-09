@@ -35,6 +35,7 @@ public class ProjectCreationOperationNew extends AbstractDataModelOperation impl
 		super(dataModel);
 	}
 
+	@Override
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
 			IProgressMonitor subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
@@ -65,10 +66,12 @@ public class ProjectCreationOperationNew extends AbstractDataModelOperation impl
 		return OK_STATUS;
 	}
 
+	@Override
 	public boolean canUndo() {
 		return false;
 	}
 
+	@Override
 	public boolean canRedo() {
 		return false;
 	}

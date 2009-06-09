@@ -445,6 +445,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		IDataModelOperation providerOp = provider.getDefaultOperation();
 		if (null == providerOp) {
 			providerOp = new AbstractDataModelOperation(this) {
+				@Override
 				public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 					return OK_STATUS;
 				}
@@ -457,6 +458,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return new DataModelPausibleOperationImpl(getRawOperation());
 	}
 
+	@Override
 	public String toString() {
 		return "IDataModel, provider=" + provider.toString(); //$NON-NLS-1$
 	}

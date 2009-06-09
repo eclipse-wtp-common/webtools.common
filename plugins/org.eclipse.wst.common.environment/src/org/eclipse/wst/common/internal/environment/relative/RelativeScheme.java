@@ -21,7 +21,8 @@ import org.eclipse.wst.common.environment.uri.URIException;
 public class RelativeScheme implements IURIScheme
 {
 
-  public String toString()
+  @Override
+public String toString()
   {
     return "relative";  
   }

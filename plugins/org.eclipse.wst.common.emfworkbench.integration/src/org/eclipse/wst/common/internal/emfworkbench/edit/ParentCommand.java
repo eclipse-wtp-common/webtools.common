@@ -42,6 +42,7 @@ public class ParentCommand extends EditModelCommand {
 		children = new ArrayList(1);
 	}
 
+	@Override
 	public boolean canExecute() {
 		return getTarget().canExecute();
 	}
@@ -92,6 +93,7 @@ public class ParentCommand extends EditModelCommand {
 		pushChildrenForExecute();
 	}
 
+	@Override
 	protected void executeInModel(AbstractEditModelCommand cmd) {
 		getEditModel().getCommandStack().execute(cmd);
 	}
@@ -145,6 +147,7 @@ public class ParentCommand extends EditModelCommand {
 		invertFrom(child);
 	}
 
+	@Override
 	public void undo() {
 		getTarget().undo();
 		invertChildren();

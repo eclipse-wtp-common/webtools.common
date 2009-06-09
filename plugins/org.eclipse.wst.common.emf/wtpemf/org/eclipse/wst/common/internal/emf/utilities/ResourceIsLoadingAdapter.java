@@ -54,7 +54,8 @@ public class ResourceIsLoadingAdapter extends AdapterImpl implements Adapter {
      * 
      * @see org.eclipse.emf.common.notify.Adapter#notifyChanged(org.eclipse.emf.common.notify.Notification)
      */
-    public void notifyChanged(Notification notification) {
+    @Override
+	public void notifyChanged(Notification notification) {
 
         if (notification.getNotifier() != null) {
 
@@ -100,7 +101,8 @@ public class ResourceIsLoadingAdapter extends AdapterImpl implements Adapter {
      * 
      * @see org.eclipse.emf.common.notify.Adapter#isAdapterForType(java.lang.Object)
      */
-    public boolean isAdapterForType(Object type) {
+    @Override
+	public boolean isAdapterForType(Object type) {
         return type == RESOURCE_IS_LOADING_ADAPTER_CLASS;
     }
 

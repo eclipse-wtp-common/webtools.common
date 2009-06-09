@@ -45,6 +45,7 @@ public class CompatibilitySAXXMIHandler extends SAXXMIHandler {
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHandler#isNull()
 	 */
+	@Override
 	protected boolean isNull() {
 		boolean isnull = super.isNull();
 		if (!isnull)

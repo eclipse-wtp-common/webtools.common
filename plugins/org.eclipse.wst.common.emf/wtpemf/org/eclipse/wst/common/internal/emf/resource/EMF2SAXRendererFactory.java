@@ -33,6 +33,7 @@ public class EMF2SAXRendererFactory extends RendererFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.RendererFactory#createRenderer()
 	 */
+	@Override
 	public Renderer createRenderer() {
 		EMF2SAXRenderer renderer = new EMF2SAXRenderer();
 		renderer.setValidating(isValidating());

@@ -135,6 +135,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		browseButton.setFont(font);
 		browseButton.setText(defBrowseButtonLabel);
 		browseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				handleLocationBrowseButtonPressed();
 			}

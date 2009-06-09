@@ -54,6 +54,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl#createXMLHelper()
 	 */
+	@Override
 	protected final XMLHelper createXMLHelper() {
 		MappedXMIHelper helper = doCreateXMLHelper();
 		helper.setPackageURIsToPrefixes(getPackageURIsToPrefixes());
@@ -104,6 +105,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	/**
 	 * @see org.eclipse.emf.ecore.resource.Resource#getURIFragment(EObject)
 	 */
+	@Override
 	public String getURIFragment(EObject eObject) {
 		if (usesDefaultFormat())
 			return super.getURIFragment(eObject);
@@ -117,6 +119,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl#createXMLSave()
 	 */
+	@Override
 	protected XMLSave createXMLSave() {
 		if (usesDefaultFormat())
 			return super.createXMLSave();
@@ -126,6 +129,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doSave(OutputStream, Map)
 	 */
+	@Override
 	public void doSave(OutputStream outputStream, Map options) throws IOException {
 		super.doSave(outputStream, options);
 	}
@@ -142,6 +146,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	/**
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#getEObjectByID(String)
 	 */
+	@Override
 	protected EObject getEObjectByID(String id) {
 		if (idToEObjectMap != null) {
 			EObject eObject = (EObject) idToEObjectMap.get(id);
@@ -157,6 +162,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 * {@link InternalEObject#eSetProxyURI sets}the object to be a proxy and clears the
 	 * {@link #eAdapters adapters}.
 	 */
+	@Override
 	protected void unloaded(InternalEObject internalEObject) {
 		//overridden from the super class; call super.getURIFragment instead of the implementation
 		//at this level, to avoid ID generation during unload
@@ -171,6 +177,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doLoad(java.io.InputStream,
 	 *      java.util.Map)
 	 */
+	@Override
 	public final void doLoad(InputStream inputStream, Map options) throws IOException {
 		basicDoLoad(inputStream, options);
 	}
@@ -187,11 +194,13 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#init()
 	 */
+	@Override
 	protected void init() {
 		super.init();
 		setEncoding(DEFAULT_ENCODING);
 	}
 
+	@Override
 	protected XMLLoad createXMLLoad() {
 		return new CompatibilityXMILoadImpl(createXMLHelper());
 	}
@@ -226,6 +235,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#detachedHelper(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	protected void detachedHelper(EObject eObject) {
 		if (modificationTrackingAdapter != null) {
 			eObject.eAdapters().remove(modificationTrackingAdapter);
@@ -240,6 +250,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 		}
 	}
 	
+	@Override
 	public void load(Map options) throws IOException {
 
         ResourceIsLoadingAdapter adapter = null;
@@ -346,7 +357,8 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
      * 
      * @see org.eclipse.emf.ecore.resource.Resource#getContents()
      */
-    public EList getContents() {
+    @Override
+	public EList getContents() {
         waitForResourceToLoadIfNecessary();
         return super.getContents();
     }
@@ -356,7 +368,8 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
      * 
      * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#isLoaded()
      */
-    public boolean isLoaded() {
+    @Override
+	public boolean isLoaded() {
         waitForResourceToLoadIfNecessary();
         return super.isLoaded();
     }

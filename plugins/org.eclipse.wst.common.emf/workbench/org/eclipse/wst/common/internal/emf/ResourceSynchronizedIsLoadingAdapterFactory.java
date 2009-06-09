@@ -32,7 +32,8 @@ public class ResourceSynchronizedIsLoadingAdapterFactory extends ResourceIsLoadi
     /* (non-Javadoc)
      * @see com.ibm.wtp.internal.emf.utilities.ResourceIsLoadingAdapterFactory#createResourceIsLoadingAdapter()
      */
-    public ResourceIsLoadingAdapter createResourceIsLoadingAdapter() { 
+    @Override
+	public ResourceIsLoadingAdapter createResourceIsLoadingAdapter() { 
         return new ResourceSynchronizedIsLoadingAdapter();
     }
 }

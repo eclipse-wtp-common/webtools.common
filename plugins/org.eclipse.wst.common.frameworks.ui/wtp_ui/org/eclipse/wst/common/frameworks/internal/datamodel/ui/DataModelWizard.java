@@ -77,6 +77,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * This is finalized to handle the adding of extended pages. Clients should override
 	 * doAddPages() to add their pages.
 	 */
+	@Override
 	public final void addPages() {
 		init();
 		doAddPages();
@@ -89,6 +90,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	// TODO make this final
+	@Override
 	public IWizardPage getStartingPage() {
 		pageGroupManager.reset();
 		return getNextPage(null);
@@ -102,6 +104,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @link #getPreviousPage(String, String)
 	 */
 	// TODO make this final
+	@Override
 	public IWizardPage getNextPage(IWizardPage page) {
 
 		IWizardPage currentPage = pageGroupManager.getCurrentPage();
@@ -131,6 +134,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @link #getPreviousPage(String, String)
 	 */
 	// TODO make this final
+	@Override
 	public IWizardPage getPreviousPage(IWizardPage page) {
 		return page != null ? page.getPreviousPage() : null;
 	}
@@ -139,6 +143,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return expectedPreviousPageName;
 	}
 
+	@Override
 	public boolean canFinish() {
 		if (!super.canFinish() || !getDataModel().isValid()) {
 			return false;
@@ -176,6 +181,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * 
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
+	@Override
 	public final boolean performFinish() {
 		try {
 			executing = true;
@@ -236,6 +242,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return status[0];
 	}
 
+	@Override
 	public boolean performCancel() {
 		pageGroupManager.undoAllCurrentOperations();
 
@@ -313,6 +320,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return dataModel;
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (null != rootPageGroup) {
@@ -354,6 +362,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return new EclipseEnvironment();
 	}
 
+	@Override
 	public void addPage(IWizardPage page) {
 		rootPageGroup.addPage(page);
 	}
@@ -379,6 +388,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return false;
 	}
 
+	@Override
 	public boolean needsPreviousAndNextButtons() {
 		return super.needsPreviousAndNextButtons() || getPageGroupManager().hasMultiplePages();
 	}

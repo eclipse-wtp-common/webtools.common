@@ -14,10 +14,12 @@ public class PasswordEncoderDecoder extends EncoderDecoderAdapter implements Enc
 	public PasswordEncoderDecoder() {
 	}
 
+	@Override
 	public String decode(String s) {
 		return PasswordUtil.passwordDecode(s);
 	}
 
+	@Override
 	public String encode(String s) {
 		return PasswordUtil.passwordEncode(s);
 	}

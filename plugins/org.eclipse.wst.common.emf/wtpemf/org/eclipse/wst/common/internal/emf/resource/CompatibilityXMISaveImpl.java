@@ -47,6 +47,7 @@ public class CompatibilityXMISaveImpl extends XMISaveImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMISaveImpl#init(XMLResource, Map)
 	 */
+	@Override
 	protected void init(XMLResource resource, Map options) {
 		super.init(resource, options);
 		xmiType = true;
@@ -55,6 +56,7 @@ public class CompatibilityXMISaveImpl extends XMISaveImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMISaveImpl#addNamespaceDeclarations()
 	 */
+	@Override
 	public void addNamespaceDeclarations() {
 		doc.addAttribute(XMI_VER_NS, XMIResource.VERSION_VALUE);
 		doc.addAttribute(XMI_XMLNS, XMIResource.XMI_URI);
@@ -105,6 +107,7 @@ public class CompatibilityXMISaveImpl extends XMISaveImpl {
 		}
 	}
 
+	@Override
 	protected void saveHref(EObject remote, EStructuralFeature f) {
 		String name = helper.getQName(f);
 		String href = helper.getHREF(remote);

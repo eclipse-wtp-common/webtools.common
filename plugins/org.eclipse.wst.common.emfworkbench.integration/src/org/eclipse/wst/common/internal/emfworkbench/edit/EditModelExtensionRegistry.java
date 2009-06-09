@@ -53,6 +53,7 @@ class EditModelExtensionRegistry extends RegistryReader {
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 
 		boolean result = false;

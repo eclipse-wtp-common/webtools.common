@@ -46,6 +46,7 @@ public class NamespaceTranslator extends Translator {
 	 * @see com.ibm.etools.emf2xml.impl.Translator#setMOFValue(org.eclipse.emf.ecore.EObject,
 	 *      java.lang.Object)
 	 */
+	@Override
 	public void setMOFValue(EObject emfObject, Object value) {
 		NamespaceAdapter.addNamespace(prefix, (String) value, emfObject);
 	}
@@ -55,6 +56,7 @@ public class NamespaceTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#isSetMOFValue(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public boolean isSetMOFValue(EObject emfObject) {
 		return getMOFValue(emfObject) != null;
 	}
@@ -64,6 +66,7 @@ public class NamespaceTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#getMOFValue(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public Object getMOFValue(EObject mofObject) {
 		return NamespaceAdapter.getNamespaceURIAtThisLevel(prefix, mofObject);
 	}
@@ -73,6 +76,7 @@ public class NamespaceTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#unSetMOFValue(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public void unSetMOFValue(EObject emfObject) {
 		NamespaceAdapter.removeNamespace(prefix, emfObject);
 	}
@@ -82,6 +86,7 @@ public class NamespaceTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#featureExists(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public boolean featureExists(EObject emfObject) {
 		return true;
 	}
@@ -91,6 +96,7 @@ public class NamespaceTranslator extends Translator {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.Translator#isDataType()
 	 */
+	@Override
 	public boolean isDataType() {
 		return true;
 	}
@@ -101,6 +107,7 @@ public class NamespaceTranslator extends Translator {
 	 * @see com.ibm.etools.emf2xml.impl.Translator#isMapFor(java.lang.Object, java.lang.Object,
 	 *      java.lang.Object)
 	 */
+	@Override
 	public boolean isMapFor(Object aFeature, Object oldValue, Object newValue) {
 		if (aFeature == feature) {
 			Namespace namespace = (Namespace) (oldValue == null ? newValue : oldValue);

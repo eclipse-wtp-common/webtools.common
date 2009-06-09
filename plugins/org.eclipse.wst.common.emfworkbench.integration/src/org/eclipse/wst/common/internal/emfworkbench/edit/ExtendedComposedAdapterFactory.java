@@ -65,6 +65,7 @@ public class ExtendedComposedAdapterFactory extends ComposedAdapterFactory {
 	 * @see org.eclipse.emf.common.notify.AdapterFactory#adapt(org.eclipse.emf.common.notify.Notifier,
 	 *      java.lang.Object)
 	 */
+	@Override
 	public Adapter adapt(Notifier target, Object type) {
 		Adapter result = null;
 

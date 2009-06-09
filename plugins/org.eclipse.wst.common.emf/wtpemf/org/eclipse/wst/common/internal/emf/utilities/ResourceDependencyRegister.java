@@ -38,6 +38,7 @@ public class ResourceDependencyRegister {
 		 * 
 		 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#isAdapterForType(java.lang.Object)
 		 */
+		@Override
 		public boolean isAdapterForType(Object type) {
 			return RESOURCE_DEPENDENCY_TYPE.equals(type);
 		}
@@ -47,6 +48,7 @@ public class ResourceDependencyRegister {
 		 * 
 		 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
 		 */
+		@Override
 		public void notifyChanged(Notification msg) {
 			//Listen for unloads and removes
 			switch (msg.getFeatureID(null)) {
@@ -75,6 +77,7 @@ public class ResourceDependencyRegister {
 		 * 
 		 * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
 		 */
+		@Override
 		public void notifyChanged(Notification msg) {
 			if (msg.getEventType() == Notification.ADD)
 				proccessAddedResource((ResourceSet) msg.getNotifier(), (Resource) msg.getNewValue());

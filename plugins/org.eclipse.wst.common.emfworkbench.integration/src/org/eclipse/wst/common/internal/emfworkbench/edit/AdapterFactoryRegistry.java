@@ -79,6 +79,7 @@ public class AdapterFactoryRegistry extends RegistryReader {
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		try {
 			if (element.getName().equals(ADAPTER_FACTORY)) {

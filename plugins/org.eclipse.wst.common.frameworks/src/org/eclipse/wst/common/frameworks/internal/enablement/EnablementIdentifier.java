@@ -87,6 +87,7 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof EnablementIdentifier))
 			return false;
@@ -116,6 +117,7 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 		return id;
 	}
 
+	@Override
 	public int hashCode() {
 		if (!hashCodeComputed) {
 			hashCode = HASH_INITIAL;
@@ -189,6 +191,7 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		if (string == null) {
 			final StringBuffer stringBuffer = new StringBuffer();

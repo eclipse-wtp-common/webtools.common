@@ -67,7 +67,8 @@ public class FileResourceOutputStream extends OutputStream
   * and a file of the same name already exists, then an IOException will
   * be thrown either now or during an earlier {@link #write write}.
   */
-  public void close ()
+  @Override
+public void close ()
   throws IOException
   {
     if (!fOpen) return;
@@ -93,7 +94,8 @@ public class FileResourceOutputStream extends OutputStream
   * same name already exists, then an IOException may be thrown at
   * this point.
   */
-  public void flush ()
+  @Override
+public void flush ()
   throws IOException
   {
     fByteArrayOutputStream.flush();
@@ -107,7 +109,8 @@ public class FileResourceOutputStream extends OutputStream
   * same name already exists, then an IOException may be thrown at
   * this point.
   */
-  public void write ( byte[] b )
+  @Override
+public void write ( byte[] b )
   throws IOException
   {
     fByteArrayOutputStream.write(b);
@@ -124,7 +127,8 @@ public class FileResourceOutputStream extends OutputStream
   * same name already exists, then an IOException may be thrown at
   * this point.
   */
-  public void write ( byte[] b, int off, int len )
+  @Override
+public void write ( byte[] b, int off, int len )
   {
     fByteArrayOutputStream.write(b,off,len);
   }
@@ -137,7 +141,8 @@ public class FileResourceOutputStream extends OutputStream
   * same name already exists, then an IOException may be thrown at
   * this point.
   */
-  public void write ( int b )
+  @Override
+public void write ( int b )
   {
     fByteArrayOutputStream.write(b);
   }

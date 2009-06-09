@@ -44,6 +44,7 @@ public class ProjectResourceSetEditImpl extends ProjectResourceSetImpl {
 	 * 
 	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#createResource(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	public Resource createResource(URI uri, String contentType) {
 		Resource result = super.createResource(uri, contentType);
 		if (result != null && WorkbenchResourceHelper.isReferencedResource(result))
@@ -51,6 +52,7 @@ public class ProjectResourceSetEditImpl extends ProjectResourceSetImpl {
 		return result;
 	}
 
+	@Override
 	public Resource createResource(URI uri) {
 		return createResource(uri, ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 	}

@@ -141,6 +141,7 @@ public class WTPCommonPlugin extends WTPPlugin {
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.WTPPlugin#getPluginID()
 	 */
+	@Override
 	public String getPluginID() {
 		return PLUGIN_ID;
 	}

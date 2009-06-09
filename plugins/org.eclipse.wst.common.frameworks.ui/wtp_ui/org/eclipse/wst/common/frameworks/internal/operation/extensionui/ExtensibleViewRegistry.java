@@ -62,6 +62,7 @@ public class ExtensibleViewRegistry extends RegistryReader {
 	 * 
 	 * @see org.eclipse.ui.internal.registry.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		if (element.getName().equals(Elements.EXTENDED_VIEWER)) {
 			Descriptor descriptor = new Descriptor(element);
@@ -167,6 +168,7 @@ public class ExtensibleViewRegistry extends RegistryReader {
 			return viewerID;
 		}
 
+		@Override
 		public String toString() {
 			if (toStringCache == null)
 				toStringCache = "ExtensibleViewRegistry.Info [viewerID=\"" + getViewerID() + "\",parentViewerID=\"" + getParentViewerID() + "\",factoryClass=" + getFactoryClass() + "\",functionGroupID=\"" + getFunctionGroupID() + "\"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$

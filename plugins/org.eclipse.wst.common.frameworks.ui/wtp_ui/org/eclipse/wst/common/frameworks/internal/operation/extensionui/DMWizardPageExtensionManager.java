@@ -84,6 +84,7 @@ public class DMWizardPageExtensionManager {
 			super(CommonUIPluginConstants.PLUGIN_ID, DMWizardPageGroupElement.ELEMENT_PAGE_GROUP);
 		}
 
+		@Override
 		public boolean readElement(IConfigurationElement element) {
 			if (!DMWizardPageGroupElement.ELEMENT_PAGE_GROUP.equals(element.getName()))
 				return false;

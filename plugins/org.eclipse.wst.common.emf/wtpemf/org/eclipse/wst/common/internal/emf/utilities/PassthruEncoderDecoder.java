@@ -28,6 +28,7 @@ public class PassthruEncoderDecoder extends EncoderDecoderAdapter implements Enc
 	/**
 	 * Returns a decoded version of the value.
 	 */
+	@Override
 	public String decode(String value) {
 		return value;
 	}
@@ -35,6 +36,7 @@ public class PassthruEncoderDecoder extends EncoderDecoderAdapter implements Enc
 	/**
 	 * Returns an encoded version of the value.
 	 */
+	@Override
 	public String encode(String value) {
 		return value;
 	}

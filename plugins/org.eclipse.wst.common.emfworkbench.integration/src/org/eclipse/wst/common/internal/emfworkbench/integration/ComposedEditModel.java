@@ -109,6 +109,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * Return the CommandStack.
 	 */
+	@Override
 	protected BasicCommandStack createCommandStack() {
 		return new WrappingCommandStack(this);
 	}
@@ -121,6 +122,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 			notifyListeners(anEvent);
 	}
 
+	@Override
 	public Set getAffectedFiles() {
 		Set aSet = new HashSet();
 		List models = getChildren();
@@ -146,6 +148,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * Pass along to children.
 	 */
+	@Override
 	protected void handleSaveIfNecessaryDidNotSave(IProgressMonitor monitor) {
 		List list = getChildren();
 		EditModel editModel;
@@ -158,6 +161,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * Return whether a save is needed on the CommandStack
 	 */
+	@Override
 	public boolean isDirty() {
 		Iterator editModels = getChildren().iterator();
 		while (editModels.hasNext()) {
@@ -168,6 +172,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 		return false;
 	}
 
+	@Override
 	public boolean isReadOnly() {
 		return false;
 	}
@@ -175,6 +180,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * Return whether a save is needed on the CommandStack
 	 */
+	@Override
 	public boolean isInterrestedInResource(Resource aResource) {
 		Iterator editModels = getChildren().iterator();
 		while (editModels.hasNext()) {
@@ -185,6 +191,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 		return false;
 	}
 
+	@Override
 	public void primSave(IProgressMonitor monitor) {
 		List list = getChildren();
 		for (int i = 0; i < list.size(); i++)
@@ -195,6 +202,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	 * This only increments the reference count of the children and should only be called if you
 	 * know what you are doing.
 	 */
+	@Override
 	public void access(Object accessorKey) {
 		ComposedAccessorKey composedAccessorKey = ComposedAccessorKey.getComposedAccessorKey(accessorKey, this);
 		if (getChildren().size() == 0) {
@@ -216,6 +224,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	 * This method should be called from each client when they are finished working with the
 	 * EditModel.
 	 */
+	@Override
 	public void releaseAccess(Object accessorKey) {
 		List tempchildren = getChildren();
 		ComposedAccessorKey composedAccessorKey = ComposedAccessorKey.getComposedAccessorKey(accessorKey, this);
@@ -235,6 +244,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * If one should save, they all should save.
 	 */
+	@Override
 	protected boolean shouldSave() {
 		List list = getChildren();
 		EditModel editModel;
@@ -249,6 +259,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * If one should save, they all should save.
 	 */
+	@Override
 	protected boolean shouldSave(IOperationHandler operationHandler) {
 		List list = getChildren();
 		EditModel editModel;
@@ -263,6 +274,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 	/**
 	 * @see com.ibm.etools.j2ee.workbench.EditModel#getNonResourceFiles()
 	 */
+	@Override
 	public List getNonResourceFiles() {
 		List list = getChildren();
 		List result = new ArrayList();

@@ -68,6 +68,7 @@ public class OverlayIcon extends org.eclipse.jface.resource.CompositeImageDescri
 		}
 	}
 
+	@Override
 	protected void drawCompositeImage(int width, int height) {
 		ImageData bg = fBase.getImageData();
 		drawImage(bg, 0, 0);
@@ -115,6 +116,7 @@ public class OverlayIcon extends org.eclipse.jface.resource.CompositeImageDescri
 		}
 	}
 
+	@Override
 	protected Point getSize() {
 		return fSize;
 	}

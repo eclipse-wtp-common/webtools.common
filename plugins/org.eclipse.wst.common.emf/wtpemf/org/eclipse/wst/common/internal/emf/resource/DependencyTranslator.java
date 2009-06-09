@@ -48,45 +48,55 @@ public class DependencyTranslator extends Translator {
 		return child;
 	}
 
+	@Override
 	public List getMOFChildren(EObject mofObject) {
 		//return super.getMOFChildren(getChild(mofObject));
 		return super.getMOFChildren(mofObject);
 	}
 
+	@Override
 	public Object getMOFValue(EObject mofObject) {
 		return super.getMOFValue(getChild(mofObject));
 	}
 
+	@Override
 	public void setMOFValue(EObject emfObject, Object value) {
 		//super.setMOFValue(getChild(emfObject), value);
 		super.setMOFValue(getChild(emfObject), value, -1);
 	}
 
+	@Override
 	public void setMOFValue(Notifier owner, Object value, int newIndex) {
 		super.setMOFValue(getChild((EObject) owner), value, newIndex);
 	}
 
+	@Override
 	public void removeMOFValue(Notifier owner, Object value) {
 		super.removeMOFValue(getChild((EObject) owner), value);
 	}
 
+	@Override
 	public boolean isSetMOFValue(EObject emfObject) {
 		return super.isSetMOFValue(getChild(emfObject));
 	}
 
+	@Override
 	public void unSetMOFValue(EObject emfObject) {
 		super.unSetMOFValue(getChild(emfObject));
 	}
 
 
+	@Override
 	public boolean isDependencyChild() {
 		return true;
 	}
 
+	@Override
 	public boolean featureExists(EObject emfObject) {
 		return super.featureExists(getChild(emfObject));
 	}
 
+	@Override
 	public void clearList(EObject mofObject) {
 		super.clearList(getChild(mofObject));
 	}

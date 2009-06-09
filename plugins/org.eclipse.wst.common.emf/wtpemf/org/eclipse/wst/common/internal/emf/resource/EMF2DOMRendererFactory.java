@@ -20,6 +20,7 @@ public class EMF2DOMRendererFactory extends RendererFactory {
 	/**
 	 * @see com.ibm.etools.emf2xml.RendererFactory#createRenderer()
 	 */
+	@Override
 	public Renderer createRenderer() {
 		EMF2DOMRenderer renderer = new EMF2DOMRenderer();
 		renderer.setValidating(isValidating());

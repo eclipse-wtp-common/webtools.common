@@ -32,6 +32,7 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 		super(WTPUIPlugin.PLUGIN_ID, EXTENSION);
 	}
 
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		if (!element.getName().equals(ELEMENT))
 			return false;

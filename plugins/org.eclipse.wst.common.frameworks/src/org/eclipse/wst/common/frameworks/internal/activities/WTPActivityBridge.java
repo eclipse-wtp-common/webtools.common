@@ -58,8 +58,8 @@ public class WTPActivityBridge {
 	}
 
 	public Set getEnabledActivityIds() {
-		for (int i = 0; i < listeners.length; i++) {
-			return listeners[i].getEnabledActivityIds();
+		if(listeners.length > 0){
+			return listeners[0].getEnabledActivityIds();
 		}
 		return Collections.EMPTY_SET;
 	}
@@ -71,8 +71,8 @@ public class WTPActivityBridge {
 	}
 
 	public Set getActivityIDsFromContribution(String localID, String pluginID) {
-		for (int i = 0; i < listeners.length; i++) {
-			return listeners[i].getActivityIDsFromContribution(localID, pluginID);
+		if(listeners.length > 0) {
+			return listeners[0].getActivityIDsFromContribution(localID, pluginID);
 		}
 		return Collections.EMPTY_SET;
 	}

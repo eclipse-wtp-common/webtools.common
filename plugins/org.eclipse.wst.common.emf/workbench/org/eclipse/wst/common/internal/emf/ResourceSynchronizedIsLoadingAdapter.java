@@ -61,6 +61,7 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	 * 
 	 * @see com.ibm.wtp.internal.emf.utilities.ResourceIsLoadingAdapter#waitForResourceToLoad()
 	 */
+	@Override
 	public void waitForResourceToLoad() {
 
 		if (loadingLock == null)
@@ -101,6 +102,7 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	 * 
 	 * @see com.ibm.wtp.internal.emf.utilities.ResourceIsLoadingAdapter#notifyChanged(org.eclipse.emf.common.notify.Notification)
 	 */
+	@Override
 	public void notifyChanged(Notification notification) {
 
 		if (notification.getNotifier() != null) {
@@ -119,6 +121,7 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	 * 
 	 * @see com.ibm.wtp.internal.emf.utilities.ResourceIsLoadingAdapter#forceRelease()
 	 */
+	@Override
 	public void forceRelease() {
 		if (loadingLock != null && loadingLock.getDepth() > 0)
 			loadingLock.release();

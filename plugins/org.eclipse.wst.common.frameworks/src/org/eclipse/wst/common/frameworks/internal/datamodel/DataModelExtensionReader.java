@@ -44,6 +44,7 @@ public class DataModelExtensionReader extends RegistryReader {
 		super(WTPCommonPlugin.PLUGIN_ID, EXTENSION);
 	}
 
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		if (element.getName().equals(PROVIDER_ELEMENT)) {
 			String id = element.getAttribute(ATTRIBUTE_ID);

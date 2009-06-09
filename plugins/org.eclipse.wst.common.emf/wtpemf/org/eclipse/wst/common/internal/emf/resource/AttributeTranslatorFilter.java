@@ -23,6 +23,7 @@ public final class AttributeTranslatorFilter extends TranslatorFilter {
 		super(trans, version);
 	}
 
+	@Override
 	public final int scanNextTranslator(Translator[] children, int start) {
 		int found = start + 1;
 		for (; found < children.length; ++found) {

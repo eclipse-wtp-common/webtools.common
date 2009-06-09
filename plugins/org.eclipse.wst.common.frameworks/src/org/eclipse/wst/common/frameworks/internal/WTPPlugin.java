@@ -78,6 +78,7 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception  {
 		super.start(context);
 		WorkbenchUtil.setWorkbenchIsRunning(true);

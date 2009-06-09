@@ -36,31 +36,31 @@ public class DefaultOverridableResourceFactoryRegistry extends ResourceFactoryRe
 		super();
 	}
 
+	@Override
 	public Resource.Factory getFactory(URI uri) {
 		return getFactory(uri, null);
 	}
 
+	@Override
 	public Resource.Factory getFactory(URI uri, String contentType)
 	{
 		Object resourceFactory = null;
+		String protocol = uri.scheme();
+		resourceFactory = protocolToFactoryMap.get(protocol);
 		if (resourceFactory == null) {
-			String protocol = uri.scheme();
-			resourceFactory = protocolToFactoryMap.get(protocol);
+			String extension = uri.fileExtension();
+			resourceFactory = extensionToFactoryMap.get(extension);
 			if (resourceFactory == null) {
-				String extension = uri.fileExtension();
-				resourceFactory = extensionToFactoryMap.get(extension);
-				if (resourceFactory == null) {
-					resourceFactory = delegatedGetFactory(uri);
-					if (resourceFactory == GLOBAL_FACTORY) {
-						resourceFactory = extensionToFactoryMap.get(Resource.Factory.Registry.DEFAULT_EXTENSION);
-						if (resourceFactory == null)
-							resourceFactory = GLOBAL_FACTORY;
-					}
-
+				resourceFactory = delegatedGetFactory(uri);
+				if (resourceFactory == GLOBAL_FACTORY) {
+					resourceFactory = extensionToFactoryMap.get(Resource.Factory.Registry.DEFAULT_EXTENSION);
+					if (resourceFactory == null)
+						resourceFactory = GLOBAL_FACTORY;
 				}
+
 			}
 		}
-
+		
 		return resourceFactory instanceof Resource.Factory.Descriptor ? ((Resource.Factory.Descriptor) resourceFactory).createFactory() : (Resource.Factory) resourceFactory;
 	}
 
@@ -69,6 +69,7 @@ public class DefaultOverridableResourceFactoryRegistry extends ResourceFactoryRe
 	 * 
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl#delegatedGetFactory(org.eclipse.emf.common.util.URI)
 	 */
+	@Override
 	protected Factory delegatedGetFactory(URI uri) {
 		return Resource.Factory.Registry.INSTANCE.getFactory(uri);
 	}

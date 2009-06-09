@@ -72,6 +72,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext#initializeResourceSet(org.eclipse.wst.common.internal.emfworkbench.ProjectResourceSet)
 	 */
+	@Override
 	protected void initializeResourceSet(ProjectResourceSet aResourceSet) {
 		super.initializeResourceSet(aResourceSet);
 		Resource.Factory.Registry reg = new DefaultOverridableResourceFactoryRegistry();
@@ -301,6 +302,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 		 * @see Adapter#notifyChanged(new ENotificationImpl((InternalEObject)Notifier,
 		 *      int,(EStructuralFeature) EObject, Object, Object, int))
 		 */
+		@Override
 		public void notifyChanged(Notification notification) {
 			switch (notification.getEventType()) {
 				case Notification.ADD :
@@ -380,10 +382,12 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContextBase#createURIConverter(org.eclipse.wst.common.internal.emfworkbench.ProjectResourceSet)
 	 */
+	@Override
 	protected WorkbenchURIConverter createURIConverter(ProjectResourceSet aResourceSet) {
 		return new CompatibilityWorkbenchURIConverterImpl(getProject(), aResourceSet.getSynchronizer());
 	}
 
+	@Override
 	protected ProjectResourceSet createResourceSet() {
 		if (project == null)
 			throw new IllegalStateException("Attempt to create resource set with null project"); //$NON-NLS-1$
@@ -395,6 +399,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContextBase#deleteFile(org.eclipse.emf.ecore.resource.Resource)
 	 */
+	@Override
 	public void deleteFile(Resource resource) {
 		try {
 			WorkbenchResourceHelper.deleteResource(resource);

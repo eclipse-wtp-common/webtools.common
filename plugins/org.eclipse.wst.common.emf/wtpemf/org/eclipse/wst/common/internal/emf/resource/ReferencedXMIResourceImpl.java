@@ -47,53 +47,63 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 			super(notifier);
 		}
 
+		@Override
 		public synchronized boolean add(Object object)
 	    {
 	    return super.add(object);
 	    }
 
-	    public synchronized void add(int index, Object object)
+	    @Override
+		public synchronized void add(int index, Object object)
 	    {
 	    super.add(index, object);
 	    }
 
-	    public synchronized boolean addAll(Collection collection)
+	    @Override
+		public synchronized boolean addAll(Collection collection)
 	    {
 	    return super.addAll(collection);
 	    }
 
-	    public synchronized boolean remove(Object object)
+	    @Override
+		public synchronized boolean remove(Object object)
 	    {
 	    return super.remove(object);
 	    }
 
-	    public synchronized Object remove(int index)
+	    @Override
+		public synchronized Object remove(int index)
 	    {
 	    return super.remove(index);
 	    }
 
-	    public synchronized boolean removeAll(Collection collection)
+	    @Override
+		public synchronized boolean removeAll(Collection collection)
 	    {
 	    return super.removeAll(collection);
 	    }
 
-	    public synchronized void clear()
+	    @Override
+		public synchronized void clear()
 	    {
 	     super.clear();
 	    }
 
 
-	    public synchronized Object set(int index, Object object)
+	    @Override
+		public synchronized Object set(int index, Object object)
 	    {
 	    return super.set(index, object);
 	    }
 
-	    public synchronized void move(int newPosition, Object object)
+	    @Override
+		public synchronized void move(int newPosition, Object object)
 	    {
 	    super.move(newPosition, object);
 	    }
 
-	    public synchronized Object move(int newPosition, int oldPosition)
+	    @Override
+		public synchronized Object move(int newPosition, int oldPosition)
 	    {
 	    return super.move(newPosition, oldPosition);
 	    }
@@ -272,6 +282,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 			save(Collections.EMPTY_MAP);
 	}
 
+	@Override
 	public String toString() {
 		return TO_STRING + getURI().toString() + READ_COUNT_TO_STRING + new Integer(readReferenceCount) + WRITE_COUNT_TO_STRING + new Integer(editReferenceCount);
 	}
@@ -298,6 +309,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 		return forceRefresh;
 	}
 
+	@Override
 	protected void basicDoLoad(InputStream arg0, Map arg1) throws IOException {
 		boolean isTrackingMods = isTrackingModification();
 		try {
@@ -313,6 +325,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doUnload()
 	 */
+	@Override
 	protected void doUnload() {
 		
 		try {
@@ -352,6 +365,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * @see org.eclipse.emf.ecore.resource.Resource#save(Object)
 	 */
+	@Override
 	public void save(Map options) throws IOException {
 		notifyAboutToSave();
         try {
@@ -383,11 +397,13 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 		  Notification notification =
 			new NotificationImpl(eventType, this, this)
 			{
-			  public Object getNotifier()
+			  @Override
+			public Object getNotifier()
 			  {
 				return ReferencedXMIResourceImpl.this;
 			  }
-			  public int getFeatureID(Class expectedClass)
+			  @Override
+			public int getFeatureID(Class expectedClass)
 			  {
 				return eventType;
 			  }
@@ -403,6 +419,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 		return false;
 	}
 	
+	@Override
 	public EList eAdapters()
 	  {
 	    if (eAdapters == null)

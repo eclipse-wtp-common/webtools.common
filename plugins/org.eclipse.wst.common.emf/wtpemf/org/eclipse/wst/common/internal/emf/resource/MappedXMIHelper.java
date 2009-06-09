@@ -57,6 +57,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 
 	}
 
+	@Override
 	public URI resolve(URI relative, URI base) {
 		URI resolved = null;
 		boolean isMapped = false;
@@ -87,6 +88,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 		return ((CompatibilityXMIResource) resource).getFormat() == CompatibilityXMIResource.FORMAT_MOF5 || usingMaps;
 	}
 
+	@Override
 	public void addPrefix(String prefix, String uri) {
 		/*
 		 * problem - the incoming key value pair is ejbbnd->ejbbnd.xmi; however, the map already has
@@ -112,6 +114,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl#getHREF(EObject)
 	 */
+	@Override
 	public String getHREF(EObject obj) {
 		if (!getCompatibilityResource().usesDefaultFormat()) {
 			URIConverter conv = getURIConverter();
@@ -185,6 +188,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl#getID(EObject)
 	 */
+	@Override
 	public String getID(EObject obj) {
 		if (getCompatibilityResource().usesDefaultFormat())
 			return super.getID(obj);
@@ -230,6 +234,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 		this.packageURIsToPrefixes = packageURIsToPrefixes;
 	}
 
+	@Override
 	public String getQName(EClass c) {
 		String name = getName(c);
 
@@ -257,6 +262,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl#setValue(EObject, EStructuralFeature,
 	 *      Object, int)
 	 */
+	@Override
 	public void setValue(EObject object, EStructuralFeature feature, Object value, int position) {
 		if (feature == NULL_FEATURE)
 			return;
@@ -278,6 +284,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	 * @see org.eclipse.emf.ecore.xmi.XMLHelper#getFeature(org.eclipse.emf.ecore.EClass,
 	 *      java.lang.String, java.lang.String, boolean)
 	 */
+	@Override
 	public EStructuralFeature getFeature(EClass eClass, String namespaceURI, String name, boolean isElement) {
 		if (UnsupportedFeature.isUnsupported(eClass, name))
 			return NULL_FEATURE;
@@ -289,6 +296,7 @@ public class MappedXMIHelper extends XMLHelperImpl {
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.XMLHelper#getFeatureKind(org.eclipse.emf.ecore.EStructuralFeature)
 	 */
+	@Override
 	public int getFeatureKind(EStructuralFeature feature) {
 		if (feature == NULL_FEATURE)
 			return XMLHelper.DATATYPE_SINGLE;

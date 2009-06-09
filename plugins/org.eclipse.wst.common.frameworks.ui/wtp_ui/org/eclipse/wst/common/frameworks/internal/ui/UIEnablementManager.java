@@ -67,6 +67,7 @@ public class UIEnablementManager extends EnablementManager {
 	 * @see org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager#createIdentifier(java.lang.String,
 	 *      org.eclipse.core.resources.IProject)
 	 */
+	@Override
 	protected EnablementIdentifier createIdentifier(String identifierId, IProject project) {
 		return new UIEnablementIdentifier(identifierId, project);
 	}

@@ -58,6 +58,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
 	private static class FileAdapterFactory extends AdapterFactoryImpl {
 
+		@Override
 		public Adapter adaptNew(Notifier target, Object type) {
 			FileAdapter adapter = new FileAdapter();
 			adapter.setTarget(target);
@@ -80,6 +81,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		public static final int FILE_NOT_LOADED = 0;
 		public static final int FILE_INACCESSIBLE = -1;
 
+		@Override
 		public boolean isAdapterForType(Object type) {
 			return ADAPTER_KEY.equals(type);
 		}
@@ -87,6 +89,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		/*
 		 * Update the synchronization stamp where appropriate
 		 */
+		@Override
 		public void notifyChanged(Notification msg) {
 			switch (msg.getFeatureID(null)) {
 				case Resource.RESOURCE__IS_LOADED :

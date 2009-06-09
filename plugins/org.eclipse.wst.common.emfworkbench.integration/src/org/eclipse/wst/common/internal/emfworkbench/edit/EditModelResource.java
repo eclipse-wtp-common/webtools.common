@@ -68,6 +68,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
 	 */
+	@Override
 	public String getID() {
 		return extensionID;
 	}
@@ -77,6 +78,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getPriority()
 	 */
+	@Override
 	public int getPriority() {
 		if (isCore)
 			return 0;

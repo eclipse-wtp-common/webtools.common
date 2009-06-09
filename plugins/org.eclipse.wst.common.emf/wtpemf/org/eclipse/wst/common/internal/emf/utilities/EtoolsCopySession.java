@@ -46,6 +46,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	 * 
 	 * Copy Resources first and then copy RefObjects.
 	 */
+	@Override
 	public void copy(CopyGroup aGroup) {
 		if (aGroup != null) {
 			copyResources(aGroup);
@@ -60,6 +61,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	 * This method should be used if you are only going to copy <code>aRefObject</code> in this
 	 * copy execution.
 	 */
+	@Override
 	public EObject copy(EObject aRefObject, String idSuffix) {
 		EObject copied = containmentCopy(aRefObject, idSuffix);
 		executeDeferredCopyActions();
@@ -70,6 +72,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	 * This method should be used if you are only going to copy <code>aRefObject</code> in this
 	 * copy execution. This method only copies <code>aRefObject</code> attributes.
 	 */
+	@Override
 	public EObject copyObject(EObject aRefObject, String idSuffix) {
 		EObject copied = containmentCopyObject(aRefObject, idSuffix);
 		executeDeferredCopyActions();
@@ -80,6 +83,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	 * This method should be used if you are only going to copy <code>aResource</code> in this
 	 * copy execution. The copied Resource will have a URI equal to <code>newUri</code>.
 	 */
+	@Override
 	public Resource copy(Resource aResource, String newUri) {
 		Resource copied = containmentCopy(aResource, newUri);
 		executeDeferredCopyActions();
@@ -103,6 +107,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	 * @see com.ibm.etools.emf.ecore.utilities.copy.EtoolsCopyUtility#primCopyObject(EObject,
 	 *      String)
 	 */
+	@Override
 	protected EObject primCopyObject(EObject aRefObject, String idSuffix) {
 		EObject copy = super.primCopyObject(aRefObject, idSuffix);
 		copyIdIfNecessary(aRefObject, copy, idSuffix);
@@ -140,6 +145,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	/**
 	 * Return a cached copy.
 	 */
+	@Override
 	public EObject getCopy(EObject anObject) {
 		EObject copied = super.getCopy(anObject);
 		if (copied == null)
@@ -159,6 +165,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	/**
 	 * Return an instance of EObject that is the same type as <code>aRefObject</code>.
 	 */
+	@Override
 	public EObject newInstance(EObject aRefObject) {
 		EObject newType = super.newInstance(aRefObject);
 		newType.eSetDeliver(false);
@@ -168,6 +175,7 @@ public class EtoolsCopySession extends EtoolsCopyUtility {
 	/**
 	 * @see com.ibm.etools.emf.ecore.utilities.copy.EtoolsCopyUtility#newInstance(Resource, String)
 	 */
+	@Override
 	public Resource newInstance(Resource aResource, String newUri) {
 		Resource copy = super.newInstance(aResource, newUri);
 		if (aResource instanceof XMLResource) {

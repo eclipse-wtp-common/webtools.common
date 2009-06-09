@@ -77,6 +77,7 @@ public class TranslatorManager {
 		/**
 		 * Add the configuration element if it matchs the expected translator element name
 		 */
+		@Override
 		public boolean readElement(IConfigurationElement element) {
 			boolean result = false;
 			if (TRANSLATOR.equals(element.getName())) {

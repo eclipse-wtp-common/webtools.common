@@ -25,6 +25,7 @@ public class ReadOnlyClientAccessRegistry extends ClientAccessRegistry {
 		super();
 	}
 
+	@Override
 	public synchronized void access(Object accessorKey) {
 		if (!registry.containsKey(accessorKey)) {
 			this.registry.put(accessorKey, null);
@@ -32,6 +33,7 @@ public class ReadOnlyClientAccessRegistry extends ClientAccessRegistry {
 			throw new ClientAccessRegistryException(EMFWorkbenchEditResourceHandler.ClientAccessRegistry_ERROR_0, accessorKey);
 	}
 
+	@Override
 	public synchronized void release(Object accessorKey) {
 
 		/*
@@ -43,6 +45,7 @@ public class ReadOnlyClientAccessRegistry extends ClientAccessRegistry {
 			complain(accessorKey);
 	}
 
+	@Override
 	public void complain(Object accessorKey) {
 
 		throw new ClientAccessRegistryException(EMFWorkbenchResourceHandler.getString("ClientAccessRegistry_ERROR_1"), accessorKey); //$NON-NLS-1$

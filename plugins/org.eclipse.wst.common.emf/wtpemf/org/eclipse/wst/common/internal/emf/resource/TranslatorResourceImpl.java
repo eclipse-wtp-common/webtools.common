@@ -74,12 +74,14 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		setRenderer(aRenderer);
 	}
 
+	@Override
 	public java.lang.String getEncoding() {
 		if (super.getEncoding() == null)
 			setEncoding(DEFAULT_ENCODING);
 		return super.getEncoding();
 	}
 
+	@Override
 	public String getPublicId() {
 		return publicId;
 	}
@@ -93,6 +95,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		return (EObject) getContents().get(0);
 	}
 
+	@Override
 	public String getSystemId() {
 		return systemId;
 	}
@@ -103,10 +106,12 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		systemId = aSystemId;
 		if (changed) {
 			eNotify(new NotificationImpl(Notification.SET, null, null) {
+				@Override
 				public Object getFeature() {
 					return DOC_TYPE_FEATURE;
 				}
 
+				@Override
 				public Object getNotifier() {
 					return TranslatorResourceImpl.this;
 				}
@@ -119,6 +124,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @return String
 	 */
+	@Override
 	public String getXMLVersion() {
 		if (xmlVersion == null)
 			xmlVersion = DEFAULT_VERSION;
@@ -131,10 +137,12 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * @param xmlVersion
 	 *            The xmlVersion to set
 	 */
+	@Override
 	public void setXMLVersion(String xmlVersion) {
 		this.xmlVersion = xmlVersion;
 	}
 
+	@Override
 	protected void basicDoLoad(InputStream inputStream, Map options) throws IOException {
 		// long start = System.currentTimeMillis();
 		boolean isTrackingMods = isTrackingModification();
@@ -151,6 +159,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		// recordTime("Load", start, end);
 	}
 
+	@Override
 	public void save(Map options) throws IOException {
         if (renderer.useStreamsForIO()) {
             super.save(options);
@@ -175,6 +184,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * @see com.ibm.etools.xmi.helpers.CompatibilityXMIResourceImpl#doSave(OutputStream,
 	 *      Map)
 	 */
+	@Override
 	public void doSave(OutputStream outputStream, Map options) throws IOException {
 		// long start = System.currentTimeMillis();
 		renderer.doSave(outputStream, options);
@@ -194,11 +204,13 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doUnload()
 	 */
+	@Override
 	protected void doUnload() {
 		renderer.preUnload();
 		super.doUnload();
 	}
 
+	@Override
 	public String toString() {
 		return getClass().getName() + getURI().toString();
 	}
@@ -234,6 +246,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		return super.getContents();
 	}
 
+	@Override
 	public EList getContents() {
 		waitForResourceToLoadIfNecessary();
 		if (contents == null) {
@@ -244,11 +257,13 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 
 	protected void initializeContents() {
 		contents = new ResourceImpl.ContentsEList() {
+			@Override
 			public boolean add(Object object) {
 				renderer.prepareToAddContents();
 				return super.add(object);
 			}
 
+			@Override
 			public boolean addAll(Collection collection) {
 				renderer.prepareToAddContents();
 				return super.addAll(collection);
@@ -267,6 +282,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#init()
 	 */
+	@Override
 	protected void init() {
 		super.init();
 		setEncoding(DEFAULT_ENCODING);
@@ -316,6 +332,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.XMLResource#setID(EObject, String)
 	 */
+	@Override
 	public void setID(EObject eObject, String id) {
 		String oldId = getID(eObject);
 		super.setID(eObject, id);
@@ -328,6 +345,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @return boolean
 	 */
+	@Override
 	public boolean isModified() {
 		return super.isModified() || renderer.isModified();
 	}
@@ -337,6 +355,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see org.eclipse.wst.common.internal.emf.resource.ReferencedResource#accessForWrite()
 	 */
+	@Override
 	public void accessForWrite() {
 		renderer.accessForWrite();
 		super.accessForWrite();
@@ -347,16 +366,19 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see org.eclipse.wst.common.internal.emf.resource.ReferencedResource#accessForRead()
 	 */
+	@Override
 	public void accessForRead() {
 		renderer.accessForRead();
 		super.accessForRead();
 	}
 
+	@Override
 	public void releaseFromRead() {
 		renderer.releaseFromRead();
 		super.releaseFromRead();
 	}
 
+	@Override
 	public void releaseFromWrite() {
 		renderer.releaseFromWrite();
 		super.releaseFromWrite();
@@ -367,19 +389,23 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see com.ibm.etools.emf.workbench.ReferencedXMIResourceImpl#preDelete()
 	 */
+	@Override
 	public void preDelete() {
 		super.preDelete();
 		renderer.preDelete();
 	}
 
+	@Override
 	public boolean isShared() {
 		return super.isShared() || renderer.isShared();
 	}
 
+	@Override
 	public boolean isSharedForWrite() {
 		return super.isSharedForWrite() || renderer.isSharedForWrite();
 	}
 
+	@Override
 	public void load(Map options) throws IOException {
 		
 			if (isLoaded())

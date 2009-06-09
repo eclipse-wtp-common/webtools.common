@@ -66,6 +66,7 @@ public class FunctionGroupRegistry extends RegistryReader {
 	 * (non-Javadoc) Read all the elements first, then set the pattern bindings on the function
 	 * groups
 	 */
+	@Override
 	public void readRegistry() {
 		super.readRegistry();
 		setPatternBindings();
@@ -84,6 +85,7 @@ public class FunctionGroupRegistry extends RegistryReader {
 
 	}
 
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		if (element.getName().equals(GROUP_ELEMENT)) {
 			readGroup(element);

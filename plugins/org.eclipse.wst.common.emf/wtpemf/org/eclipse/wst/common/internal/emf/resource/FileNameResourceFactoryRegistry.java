@@ -46,10 +46,12 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 		
 	}
 
+	@Override
 	public synchronized Resource.Factory getFactory(URI uri) {
 		return getFactory(uri, null);
 	}
 
+	@Override
 	public Resource.Factory getFactory(URI uri, String contentType)
 	{
 		Resource.Factory resourceFactory = null;

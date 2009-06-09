@@ -145,7 +145,8 @@ public class MessageDialog extends Dialog
    * of the error details area. Note that the Details button will only be
    * visible if the error being displayed specifies child details.
    */
-  protected void buttonPressed(int id)
+  @Override
+protected void buttonPressed(int id)
   {
     if (id == StatusDialogConstants.DETAILS_ID)
     { // was the details button pressed?
@@ -159,7 +160,8 @@ public class MessageDialog extends Dialog
   /*
    * (non-Javadoc) Method declared in Window.
    */
-  protected void configureShell(Shell shell)
+  @Override
+protected void configureShell(Shell shell)
   {
     super.configureShell(shell);
     shell.setText(title);
@@ -167,7 +169,8 @@ public class MessageDialog extends Dialog
   /*
    * (non-Javadoc) This should also be overwritten Method declared on Dialog.
    */
-  protected void createButtonsForButtonBar(Composite parent)
+  @Override
+protected void createButtonsForButtonBar(Composite parent)
   {
     // create OK and Details buttons
     createButton(
@@ -202,7 +205,8 @@ public class MessageDialog extends Dialog
    * (non-Javadoc) Method declared on Dialog. Creates and returns the contents
    * of the upper part of the dialog (above the button bar).
    */
-  protected Control createDialogArea(Composite parent)
+  @Override
+protected Control createDialogArea(Composite parent)
   {
     this.parent = parent;
 
@@ -295,7 +299,8 @@ public class MessageDialog extends Dialog
    * children, the error dialog will only be displayed if there is at least one
    * child status matching the mask.
    */
-  public int open()
+  @Override
+public int open()
   {
     if (shouldDisplay(status, displayMask))
     {

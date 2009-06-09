@@ -54,6 +54,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("AdapterFactoryDescriptor"); //$NON-NLS-1$
@@ -148,6 +149,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
 	 */
+	@Override
 	public String getID() {
 		return id;
 	}

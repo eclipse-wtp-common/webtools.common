@@ -110,6 +110,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	private List resourcesTargetedForTermination;
 
 	protected class ResourceAdapter extends AdapterImpl {
+		@Override
 		public void notifyChanged(Notification notification) {
 			if (!isDisposing() && notification.getEventType() == Notification.SET && notification.getFeatureID(null) == Resource.RESOURCE__IS_LOADED) {
 				resourceIsLoadedChanged((Resource) notification.getNotifier(), notification.getOldBooleanValue(), notification.getNewBooleanValue());
@@ -1412,6 +1413,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		accessAsReadForUnKnownURIs = b;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer(getClass().getName());
 		buffer.append(": "); //$NON-NLS-1$
@@ -1460,6 +1462,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		 * 
 		 * @see java.lang.Object#toString()
 		 */
+		@Override
 		public String toString() {
 			if (tostring == null) {
 				StringBuffer result = new StringBuffer("EditModel.Reference ["); //$NON-NLS-1$
@@ -1478,6 +1481,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		 * 
 		 * @see java.lang.Object#hashCode()
 		 */
+		@Override
 		public int hashCode() {
 			return toString().hashCode();
 		}

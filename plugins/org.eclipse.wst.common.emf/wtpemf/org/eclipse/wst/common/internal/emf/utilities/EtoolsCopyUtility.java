@@ -51,6 +51,7 @@ public class EtoolsCopyUtility {
 			super(aReference, aValue, aSuffix, aCopyContainer);
 		}
 
+		@Override
 		public void performAction() {
 			EObject value = (EObject) getReferenceValue();
 			getCopyContainer().eSet(getReference(), getCopyIfFound(value));
@@ -62,6 +63,7 @@ public class EtoolsCopyUtility {
 			super(aReference, aValue, aSuffix, aCopyContainer);
 		}
 
+		@Override
 		public void performAction() {
 			List copyList = (List) getCopyContainer().eGet(getReference());
 			Iterator it = ((List) getReferenceValue()).iterator();

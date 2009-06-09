@@ -26,10 +26,12 @@ public class InvertedCommand extends AbstractEditModelCommand {
 		super(targetCommand);
 	}
 
+	@Override
 	public boolean canExecute() {
 		return getTarget().canUndo();
 	}
 
+	@Override
 	public boolean canUndo() {
 		return getTarget().canExecute();
 	}
@@ -44,6 +46,7 @@ public class InvertedCommand extends AbstractEditModelCommand {
 	/**
 	 * getEditModelCommand method comment.
 	 */
+	@Override
 	public EditModelCommand getEditModelCommand() {
 		return ((AbstractEditModelCommand) getTarget()).getEditModelCommand();
 	}
@@ -62,6 +65,7 @@ public class InvertedCommand extends AbstractEditModelCommand {
 		getTarget().undo();
 	}
 
+	@Override
 	public void undo() {
 		getTarget().redo();
 	}

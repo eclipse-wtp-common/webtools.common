@@ -48,6 +48,7 @@ public class TimedModifyListener extends TimedKeyListener implements ModifyListe
 	/*
 	 * Re/Start the timer
 	 */
+	@Override
 	public void modifyText(org.eclipse.swt.events.ModifyEvent e) {
 		monitoringTarget = (Widget) e.getSource();
 		restart();

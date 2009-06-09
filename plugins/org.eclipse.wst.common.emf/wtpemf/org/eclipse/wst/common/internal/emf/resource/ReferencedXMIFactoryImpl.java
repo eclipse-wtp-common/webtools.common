@@ -42,6 +42,7 @@ public class ReferencedXMIFactoryImpl extends ResourceFactoryImpl {
 	/**
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl#createResource(URI)
 	 */
+	@Override
 	public final Resource createResource(URI uri) {
 		Resource res = doCreateResource(uri);
 		adaptNew(res);

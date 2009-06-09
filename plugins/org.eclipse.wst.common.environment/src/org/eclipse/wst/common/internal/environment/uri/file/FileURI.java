@@ -45,7 +45,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#asFile()
    */
-  public File asFile() 
+  @Override
+public File asFile() 
   {
     return file_;
   }
@@ -53,7 +54,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#erase()
    */
-  public void erase() throws URIException
+  @Override
+public void erase() throws URIException
   {
     deleteFile( file_ );
   }
@@ -85,7 +87,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getInputStream()
    */
-  public InputStream getInputStream() throws URIException
+  @Override
+public InputStream getInputStream() throws URIException
   {
     FileInputStream stream = null;
     
@@ -107,7 +110,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getOutputStream()
    */
-  public OutputStream getOutputStream() throws URIException
+  @Override
+public OutputStream getOutputStream() throws URIException
   {
     FileOutputStream stream = null;
     
@@ -129,7 +133,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getURIScheme()
    */
-  public IURIScheme getURIScheme()
+  @Override
+public IURIScheme getURIScheme()
   {
     return new FileScheme();
   }
@@ -137,7 +142,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isAvailableAsFile()
    */
-  public boolean isAvailableAsFile()
+  @Override
+public boolean isAvailableAsFile()
   {
     return file_ != null;
   }
@@ -145,7 +151,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isAvailableAsURL()
    */
-  public boolean isAvailableAsURL()
+  @Override
+public boolean isAvailableAsURL()
   {
     return file_ != null;
   }
@@ -153,7 +160,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#asURL()
    */
-  public URL asURL() throws URIException
+  @Override
+public URL asURL() throws URIException
   {
     URL url = null;
     
@@ -172,7 +180,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isLeaf()
    */
-  public boolean isLeaf()
+  @Override
+public boolean isLeaf()
   {
     return file_.isFile();
   }
@@ -180,7 +189,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isPresent()
    */
-  public boolean isPresent()
+  @Override
+public boolean isPresent()
   {
     return file_.exists();
   }
@@ -188,7 +198,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isReadable()
    */
-  public boolean isReadable()
+  @Override
+public boolean isReadable()
   {
     return file_.canRead();
   }
@@ -196,7 +207,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isWritable()
    */
-  public boolean isWritable()
+  @Override
+public boolean isWritable()
   {
     return file_.canWrite();
   }
@@ -204,7 +216,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list()
    */
-  public IURI[] list() throws URIException
+  @Override
+public IURI[] list() throws URIException
   {
     File[] children = file_.listFiles();
     IURI[]  URIs     = new IURI[0];
@@ -227,7 +240,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list(org.eclipse.env.uri.URIFilter)
    */
-  public IURI[] list(IURIFilter uriFilter) throws URIException
+  @Override
+public IURI[] list(IURIFilter uriFilter) throws URIException
   {
     File[]   children = file_.listFiles();
     int      length   = children == null ? 0 : children.length;
@@ -249,7 +263,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#rename(org.eclipse.env.uri.URI)
    */
-  public void rename(IURI newURI) throws URIException
+  @Override
+public void rename(IURI newURI) throws URIException
   {
     try
     {
@@ -266,7 +281,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#touchFolder()
    */
-  public void touchFolder() throws URIException
+  @Override
+public void touchFolder() throws URIException
   {
     file_.mkdirs();
   }
@@ -274,7 +290,8 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#touchLeaf()
    */
-  public void touchLeaf() throws URIException
+  @Override
+public void touchLeaf() throws URIException
   {
     try
     {
@@ -290,7 +307,8 @@ public class FileURI extends RelativeURI
     }
   }
 
-  public boolean isRelative()
+  @Override
+public boolean isRelative()
   {
     return false;
   }    

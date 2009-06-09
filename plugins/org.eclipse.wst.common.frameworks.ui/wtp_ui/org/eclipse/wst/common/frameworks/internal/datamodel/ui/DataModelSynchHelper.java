@@ -546,6 +546,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 					setTextProperty(propertyName, (Text) w);
 				}
 			}) {
+				@Override
 				public void modifyText(ModifyEvent e) {
 					if (ignoreModifyEvent)
 						return;

@@ -77,6 +77,7 @@ public class EditModelRegistry extends RegistryReader {
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
+	@Override
 	public boolean readElement(IConfigurationElement element) {
 		/*
 		 * The EditModel Extension Point defines Configuration elements named "editModel" with
@@ -339,6 +340,7 @@ public class EditModelRegistry extends RegistryReader {
 				this.configurationElement = null;
 		}
 
+		@Override
 		public String toString() {
 			if (tostringCache == null)
 				tostringCache = "EditModelID: {" + this.editModelID + "}, Parent Model ID {" + this.parentModelID + "}, Configuration Element: [" + this.configurationElement + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$

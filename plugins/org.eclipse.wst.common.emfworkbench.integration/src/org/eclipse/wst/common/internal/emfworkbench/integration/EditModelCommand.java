@@ -28,16 +28,19 @@ public abstract class EditModelCommand extends AbstractEditModelCommand {
 		super(targetCommand);
 	}
 
+	@Override
 	public boolean canUndo() {
 		return getTarget().canUndo();
 	}
 
 	protected abstract void executeInModel(AbstractEditModelCommand cmd);
 
+	@Override
 	public EditModelCommand getEditModelCommand() {
 		return this;
 	}
 
+	@Override
 	public String getLabel() {
 		return getTarget().getLabel();
 	}
