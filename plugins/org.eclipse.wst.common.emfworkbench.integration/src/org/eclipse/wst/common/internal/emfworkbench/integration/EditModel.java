@@ -1497,7 +1497,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		Resource res = getPrimaryResource();
 		if (res == null || res.getContents().isEmpty())
 			return null;
-		return (EObject) res.getContents().get(0);
+		return res.getContents().get(0);
 	}
 
 	/**
@@ -1612,5 +1612,5 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 				listener.editModelChanged(event); 
 		}
 		
-	};
+	}
 }

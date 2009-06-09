@@ -42,6 +42,12 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	protected boolean isIsolated = false;
 
 	public class PassthruResourcesEList extends ResourceSetImpl.ResourcesEList {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2504207070244627980L;
+
+
 		@Override
 		public boolean add(Object object) {
 			if (object == null)

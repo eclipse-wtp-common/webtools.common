@@ -89,6 +89,11 @@ public class ModifierHelperRegistry {
 			FactoryHolder holder = (FactoryHolder) obj;
 			return getFactoryHash(element).equals(getFactoryHash(holder.element));
 		}
+		
+		@Override
+		public int hashCode() {
+			return super.hashCode() + getFactoryHash(element).hashCode();
+		}
 	}
 
 	private ModifierHelperRegistry() {

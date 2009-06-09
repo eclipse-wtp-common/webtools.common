@@ -258,6 +258,7 @@ public class ModelModifier {
 	}
 
 	protected Command createCommand(Command chainedCommand, List helpersArg) {
+		Command innerChainedCommand = chainedCommand;
 		if (null == extendedHelpers) {
 			extendedHelpers = new ArrayList();
 		}
@@ -267,33 +268,34 @@ public class ModelModifier {
 			Command nextCommand = null;
 			while (it.hasNext()) {
 				nextCommand = createCommand((ModifierHelper) it.next());
-				if (chainedCommand == null)
-					chainedCommand = nextCommand;
+				if (innerChainedCommand == null)
+					innerChainedCommand = nextCommand;
 				else if (nextCommand != null)
-					chainedCommand = chainedCommand.chain(nextCommand);
+					innerChainedCommand = innerChainedCommand.chain(nextCommand);
 			}
 		}
 		if (!extendedHelpers.isEmpty()) {
 			List copy = new ArrayList();
 			copy.addAll(extendedHelpers);
 			extendedHelpers.clear();
-			chainedCommand = createCommand(chainedCommand, copy);
+			innerChainedCommand = createCommand(innerChainedCommand, copy);
 		}
-		return chainedCommand;
+		return innerChainedCommand;
 	}
 
 	protected Command appendAdditionalCommands(Command chainedCommand) {
+		Command innerChainedCommand = chainedCommand;
 		if (additionalCommands != null && !additionalCommands.isEmpty()) {
 			Command command;
 			for (int i = 0; i < additionalCommands.size(); i++) {
 				command = (Command) additionalCommands.get(i);
-				if (chainedCommand == null)
-					chainedCommand = command;
+				if (innerChainedCommand == null)
+					innerChainedCommand = command;
 				else
-					chainedCommand = chainedCommand.chain(command);
+					innerChainedCommand = innerChainedCommand.chain(command);
 			}
 		}
-		return chainedCommand;
+		return innerChainedCommand;
 	}
 
 	/**
@@ -321,7 +323,7 @@ public class ModelModifier {
 
 	protected String createCommandLabel(String aPattern, EStructuralFeature feature) {
 		String replacement = feature == null ? DEFAULT_COMMAND_LABEL : feature.getName();
-		return java.text.MessageFormat.format(aPattern, new String[]{replacement});
+		return java.text.MessageFormat.format(aPattern, new Object[]{replacement});
 	}
 
 	/**

@@ -75,6 +75,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		public Resource getRes() {
 			return this.res == null ? null : (Resource)res.get();
 		}
+		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
@@ -83,6 +84,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			result = prime * result + ((savedFile == null) ? 0 : savedFile.hashCode());
 			return result;
 		}
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
@@ -132,6 +134,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ResourceSetWorkbenchSynchronizer#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
 	 */
+	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		super.resourceChanged(event);
 		try {
@@ -242,6 +245,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * The project is going away so we need to cleanup ourself and the ResourceSet. TODO Need to
 	 * push up this code to ResourceSetWorkbenchSynchronizer in next release.
 	 */
+	@Override
 	protected void release() {
 		if (JEMUtilPlugin.isActivated()) {
 			try {
@@ -430,7 +434,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
-			String resURIString = "";
+			String resURIString = ""; //$NON-NLS-1$
 			if (resURI.path() != null) {
 				IPath resURIPath;
 				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
@@ -439,7 +443,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
 				resURIString = resURIPath.toString();
 			}
-			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
+			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1) //$NON-NLS-1$
 				resources.add(res);
 		}
 		return resources;
@@ -449,6 +453,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	/**
 	 * This method should be called prior to writing to an IFile from a MOF resource.
 	 */
+	@Override
 	public void preSave(IFile aFile) {
 		if (aFile != null) {
 			recentlySavedFilesAdd(aFile,null);
@@ -579,6 +584,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ResourceSetWorkbenchSynchronizer#initialize()
 	 */
+	@Override
 	protected void initialize() {
 		getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
 	}
@@ -590,6 +596,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		autoloadResourcesExts.remove(extension);
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		currentProjectDelta = null;

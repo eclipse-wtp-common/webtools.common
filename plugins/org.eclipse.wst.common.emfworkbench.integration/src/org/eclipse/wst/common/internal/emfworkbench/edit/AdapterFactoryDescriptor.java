@@ -100,7 +100,6 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 			factory = (AdapterFactory) element.createExecutableExtension(AdapterFactoryRegistry.CLASS_NAME);
 		} catch (CoreException e) {
 			JEMUtilPlugin.getLogger().logError(e);
-			factory = null;
 		}
 		return factory;
 	}

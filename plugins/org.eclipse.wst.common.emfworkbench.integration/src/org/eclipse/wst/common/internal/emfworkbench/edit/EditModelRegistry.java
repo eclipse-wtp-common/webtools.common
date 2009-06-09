@@ -140,9 +140,7 @@ public class EditModelRegistry extends RegistryReader {
 		while(nextEditModelInfo != null && (parentModelID = nextEditModelInfo.getParentModelID()) != null) {
 			if(visitedEditModels.containsKey(parentModelID)) 
 				throw new IllegalStateException(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_0,new Object [] {editModelID})); 
-			else 
-				visitedEditModels.put(parentModelID, null);
-			
+			visitedEditModels.put(parentModelID, null);
 			extensions.addAll(getAllEditModelExtensions(parentModelID));
 			nextEditModelInfo = getEditModelInfoById(parentModelID);
 		}

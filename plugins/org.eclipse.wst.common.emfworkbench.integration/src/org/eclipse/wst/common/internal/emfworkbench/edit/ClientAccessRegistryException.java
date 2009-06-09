@@ -33,6 +33,10 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
  */
 public class ClientAccessRegistryException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9016827022289377292L;
 	public static final int UNKNOWN = 0;
 	public static final int DANGLING_REFERENCE = 1;
 	public static final int INVALID_ACCESS_KEY = 2;

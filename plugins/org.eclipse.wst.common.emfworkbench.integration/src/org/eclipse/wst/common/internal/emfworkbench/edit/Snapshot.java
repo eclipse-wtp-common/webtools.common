@@ -27,6 +27,11 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
  */
 public class Snapshot extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6041488000642757347L;
+
 	public Snapshot() {
 		super(EMFWorkbenchEditResourceHandler.Snapshot_ERROR_0);
 	}
