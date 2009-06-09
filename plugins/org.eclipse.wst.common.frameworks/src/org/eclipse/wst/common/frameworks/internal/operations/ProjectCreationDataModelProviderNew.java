@@ -183,7 +183,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		if (projectName.endsWith(" ")) //$NON-NLS-1$
 			return WTPCommonPlugin.createErrorStatus(WTPResourceHandler.getString("41")); //$NON-NLS-1$
 		//special FRAGMENT_SEPARATOR char in org.eclipse.emf.common.util.URI
-		if (projectName.indexOf('#') != -1) //$NON-NLS-1$
+		if (projectName.indexOf('#') != -1) 
 			return WTPCommonPlugin.createErrorStatus(WTPResourceHandler.getString("8")); //$NON-NLS-1$
 		return OK_STATUS;
 	}

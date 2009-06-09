@@ -96,7 +96,7 @@ public class DataModelFactory {
 	public static IDataModel createDataModel(Class aClass) {
 		if(aClass.isInterface()){
 				try{
-					Class clazz = (Class)aClass.getField("_provider_class").get(null);
+					Class clazz = (Class)aClass.getField("_provider_class").get(null); //$NON-NLS-1$
 					if(clazz != null){
 						IDataModelProvider provider = (IDataModelProvider)clazz.newInstance();
 						return createDataModel(provider);

@@ -334,42 +334,45 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 	}
 
 	protected OperationStatus addStatus(OperationStatus returnStatus, IStatus status) {
-		if (returnStatus == null) {
-			returnStatus = new OperationStatus(status.getMessage(), status.getException());
-			returnStatus.setSeverity(status.getSeverity());
-			returnStatus.add(status);
+		OperationStatus innerReturnStatus = returnStatus;
+		if (innerReturnStatus == null) {
+			innerReturnStatus = new OperationStatus(status.getMessage(), status.getException());
+			innerReturnStatus.setSeverity(status.getSeverity());
+			innerReturnStatus.add(status);
 		} else {
-			returnStatus.add(status);
+			innerReturnStatus.add(status);
 		}
-		return returnStatus;
+		return innerReturnStatus;
 	}
 
 	private OperationStatus addExtendedStatus(OperationStatus returnStatus, IStatus aStatus) {
-		if (returnStatus == null) {
-			returnStatus = new OperationStatus(new IStatus[]{WTPCommonPlugin.OK_STATUS});
+		OperationStatus innerReturnStatus = returnStatus;
+		if (innerReturnStatus == null) {
+			innerReturnStatus = new OperationStatus(new IStatus[]{WTPCommonPlugin.OK_STATUS});
 		}
-		returnStatus.addExtendedStatus(aStatus);
-		return returnStatus;
+		innerReturnStatus.addExtendedStatus(aStatus);
+		return innerReturnStatus;
 	}
 
 	private OperationStatus runOperation(final IDataModelOperation operation, final IProgressMonitor monitor, final IAdaptable info, final int executionType, OperationStatus returnStatus) {
+		OperationStatus innerReturnStatus = returnStatus;
 		if (rootOperation == operation) {
 			IStatus status = runOperation(operation, monitor, info, IDataModelPausibleOperationEvent.EXECUTE);
 			if (!status.isOK()) {
-				returnStatus = addStatus(returnStatus, status);
+				innerReturnStatus = addStatus(innerReturnStatus, status);
 			}
 		} else {
 			try {
 				IStatus status = runOperation(operation, monitor, info, IDataModelPausibleOperationEvent.EXECUTE);
 				if (!status.isOK()) {
-					returnStatus = addExtendedStatus(returnStatus, status);
+					innerReturnStatus = addExtendedStatus(innerReturnStatus, status);
 				}
 			} catch (Exception e) {
 				IStatus status = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{operation.getClass().getName()}), e); //$NON-NLS-1$
-				returnStatus = addExtendedStatus(returnStatus, status);
+				innerReturnStatus = addExtendedStatus(innerReturnStatus, status);
 			}
 		}
-		return returnStatus;
+		return innerReturnStatus;
 	}
 
 	private IStatus runOperation(final IDataModelOperation operation, final IProgressMonitor monitor, final IAdaptable info, final int executionType) {

@@ -148,12 +148,10 @@ public class FunctionGroup implements Comparable {
 	}
 
 	boolean setFunctionGroupPatternBindings(Set functionGroupPatternBindings) {
-		functionGroupPatternBindings = Util.safeCopy(functionGroupPatternBindings, FunctionGroupPatternBinding.class);
+		Set safeFunctionGroupPatternBindings = Util.safeCopy(functionGroupPatternBindings, FunctionGroupPatternBinding.class);
 
-		if (!Util.equals(functionGroupPatternBindings, this.functionGroupPatternBindings)) {
-			this.functionGroupPatternBindings = functionGroupPatternBindings;
-//			this.functionGroupPatternBindingsAsArray = (FunctionGroupPatternBinding[]) this.functionGroupPatternBindings.toArray(new FunctionGroupPatternBinding[this.functionGroupPatternBindings.size()]);
-
+		if (!Util.equals(safeFunctionGroupPatternBindings, this.functionGroupPatternBindings)) {
+			this.functionGroupPatternBindings = safeFunctionGroupPatternBindings;
 			return true;
 		}
 

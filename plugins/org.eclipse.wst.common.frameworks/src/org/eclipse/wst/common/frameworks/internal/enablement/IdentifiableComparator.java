@@ -64,6 +64,10 @@ public class IdentifiableComparator implements java.util.Comparator {
 	public boolean equals(Object obj) {
 		return obj instanceof IdentifiableComparator;
 	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
 	private int compareLoadOrder(Identifiable lvalue, Identifiable rvalue) {
 		/* R - L implies 0 is the highest priority */
@@ -75,4 +79,6 @@ public class IdentifiableComparator implements java.util.Comparator {
 			return FunctionGroupRegistry.getInstance().getFunctionPriority(identifiable.getID());
 		return DEFAULT_PRIORITY;
 	}
+
+	
 }

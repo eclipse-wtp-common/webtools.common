@@ -327,14 +327,15 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return descriptor == null ? new DataModelPropertyDescriptor(getProperty(propertyName)) : descriptor;
 	}
 
-	public void notifyPropertyChange(String propertyName, int flag) {
-		if (flag == DEFAULT_CHG) {
+	public void notifyPropertyChange(final String propertyName, final int flag) {
+		int innerFlag = flag;
+		if (innerFlag == DEFAULT_CHG) {
 			if (isPropertySet(propertyName)) {
 				return;
 			}
-			flag = VALUE_CHG;
+			innerFlag = VALUE_CHG;
 		}
-		notifyListeners(new DataModelEvent(this, propertyName, flag));
+		notifyListeners(new DataModelEvent(this, propertyName, innerFlag));
 	}
 
 	private void notifyListeners(DataModelEvent event) {
@@ -375,19 +376,19 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 				propName = (String) it.next();
 				propStatus = provider.validate(propName);
 				if (propStatus != null) {
-					if (status == null || status.isOK())
+					if (status == null || status.isOK()) {
 						status = propStatus;
-					else {
-						if (status.isMultiStatus())
+					} else {
+						if (status.isMultiStatus()) {
 							((MultiStatus) status).merge(propStatus);
-						else {
+						} else {
 							MultiStatus multi = new MultiStatus("org.eclipse.wst.common.frameworks.internal", 0, "", null); //$NON-NLS-1$ //$NON-NLS-2$
 							multi.merge(status);
 							multi.merge(propStatus);
 							status = multi;
 						}
 					}
-					if (stopOnFirstFailure && status != null && !status.isOK() && status.getSeverity() == IStatus.ERROR)
+					if (stopOnFirstFailure && !status.isOK() && status.getSeverity() == IStatus.ERROR)
 						return status;
 				}
 			}

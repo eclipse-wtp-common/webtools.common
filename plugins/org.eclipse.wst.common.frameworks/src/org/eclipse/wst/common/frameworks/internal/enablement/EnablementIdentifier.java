@@ -144,10 +144,10 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 	}
 
 	protected boolean setFunctionGroupIds(Set functionGroupIds) {
-		functionGroupIds = Util.safeCopy(functionGroupIds, String.class);
+		Set safeFunctionGroupIds = Util.safeCopy(functionGroupIds, String.class);
 
-		if (!Util.equals(functionGroupIds, this.functionGroupIds)) {
-			this.functionGroupIds = functionGroupIds;
+		if (!Util.equals(safeFunctionGroupIds, this.functionGroupIds)) {
+			this.functionGroupIds = safeFunctionGroupIds;
 			this.functionGroupIdsAsArray = (String[]) this.functionGroupIds.toArray(new String[this.functionGroupIds.size()]);
 
 			hashCodeComputed = false;

@@ -220,13 +220,13 @@ public final class Util {
 		if (list == null || c == null)
 			throw new NullPointerException();
 
-		list = Collections.unmodifiableList(new ArrayList(list));
-		Iterator iterator = list.iterator();
+		List safeList = Collections.unmodifiableList(new ArrayList(list));
+		Iterator iterator = safeList.iterator();
 
 		while (iterator.hasNext())
 			assertInstance(iterator.next(), c, allowNullElements);
 
-		return list;
+		return safeList;
 	}
 
 	public static Map safeCopy(Map map, Class keyClass, Class valueClass) {
@@ -237,8 +237,8 @@ public final class Util {
 		if (map == null || keyClass == null || valueClass == null)
 			throw new NullPointerException();
 
-		map = Collections.unmodifiableMap(new HashMap(map));
-		Iterator iterator = map.entrySet().iterator();
+		Map safeMap = Collections.unmodifiableMap(new HashMap(map));
+		Iterator iterator = safeMap.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Map.Entry) iterator.next();
@@ -246,7 +246,7 @@ public final class Util {
 			assertInstance(entry.getValue(), valueClass, allowNullValues);
 		}
 
-		return map;
+		return safeMap;
 	}
 
 	public static Set safeCopy(Set set, Class c) {
@@ -257,13 +257,13 @@ public final class Util {
 		if (set == null || c == null)
 			throw new NullPointerException();
 
-		set = Collections.unmodifiableSet(new HashSet(set));
-		Iterator iterator = set.iterator();
+		Set safeSet = Collections.unmodifiableSet(new HashSet(set));
+		Iterator iterator = safeSet.iterator();
 
 		while (iterator.hasNext())
 			assertInstance(iterator.next(), c, allowNullElements);
 
-		return set;
+		return safeSet;
 	}
 
 	public static SortedMap safeCopy(SortedMap sortedMap, Class keyClass, Class valueClass) {
@@ -274,8 +274,8 @@ public final class Util {
 		if (sortedMap == null || keyClass == null || valueClass == null)
 			throw new NullPointerException();
 
-		sortedMap = Collections.unmodifiableSortedMap(new TreeMap(sortedMap));
-		Iterator iterator = sortedMap.entrySet().iterator();
+		SortedMap safeSortedMap = Collections.unmodifiableSortedMap(new TreeMap(sortedMap));
+		Iterator iterator = safeSortedMap.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Map.Entry) iterator.next();
@@ -283,7 +283,7 @@ public final class Util {
 			assertInstance(entry.getValue(), valueClass, allowNullValues);
 		}
 
-		return sortedMap;
+		return safeSortedMap;
 	}
 
 	public static SortedSet safeCopy(SortedSet sortedSet, Class c) {
@@ -294,13 +294,13 @@ public final class Util {
 		if (sortedSet == null || c == null)
 			throw new NullPointerException();
 
-		sortedSet = Collections.unmodifiableSortedSet(new TreeSet(sortedSet));
-		Iterator iterator = sortedSet.iterator();
+		SortedSet safeSortedSet = Collections.unmodifiableSortedSet(new TreeSet(sortedSet));
+		Iterator iterator = safeSortedSet.iterator();
 
 		while (iterator.hasNext())
 			assertInstance(iterator.next(), c, allowNullElements);
 
-		return sortedSet;
+		return safeSortedSet;
 	}
 
 	public static boolean startsWith(List left, List right, boolean equals) {
