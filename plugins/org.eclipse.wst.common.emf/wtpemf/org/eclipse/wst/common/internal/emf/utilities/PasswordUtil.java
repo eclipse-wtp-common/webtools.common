@@ -201,7 +201,9 @@ public class PasswordUtil {
 
 	private static byte[] base64Decode(byte abyte0[]) {
 		int i;
-		for (i = abyte0.length; abyte0[--i] == 61;);
+		for (i = abyte0.length; abyte0[--i] == 61;){
+			//do nothing just finding index of 61
+		}
 		byte abyte1[] = new byte[(i + 1) - abyte0.length / 4];
 		for (int j = 0; j < abyte0.length; j++)
 			abyte0[j] = BASE64_DECODE_MAP[abyte0[j]];
