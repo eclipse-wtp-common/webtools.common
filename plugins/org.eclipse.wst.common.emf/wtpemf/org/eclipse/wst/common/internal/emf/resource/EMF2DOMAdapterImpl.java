@@ -369,7 +369,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 					indent(newNode, map);
 					addDOMAdapter(newNode); // Hook up listeners
 					domChildren.add(i, newNode);
-					inorderDOMChildren.add(newNode);
+					if(inorderDOMChildren != null){
+						inorderDOMChildren.add(newNode);
+					}
 					Text newText = parent.getOwnerDocument().createTextNode(map.convertValueToString(child, (EObject) owner));
 					DOMUtilities.insertBeforeNode(newNode, newText, null);
 				}
@@ -1206,7 +1208,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 					handleInvalidMultiNodes(nodeName);
 				node = (Node) nodes.get(0);
 				if (node != null) {
-					if (addAdapters && (map != null || map.isManagedByParent()))
+					if (addAdapters)
 						addDOMAdapter(curNode);
 					break;
 				}
@@ -1444,7 +1446,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 					// enum
 					// features
 
-					if (updateMOFAttAdapter)
+					if (updateMOFAttAdapter && attrAdapter != null)
 						attrAdapter.updateMOF();
 				}
 			}
@@ -1615,15 +1617,15 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * updated.
 	 */
 	protected void updateDOMSubtree(Translator map, Node node, EObject mofObject, Object attrValue) {
-
+		Object innerAttrValue = attrValue;
 		if (map.featureExists(mofObject)) {
 			if ((map.isEnumFeature() || map.isBooleanFeature()) && (map.isUnsettable() && !map.isSetMOFValue(mofObject)))
-				attrValue = null;
+				innerAttrValue = null;
 		} else
-			attrValue = map.extractStringValue(mofObject);
+			innerAttrValue = map.extractStringValue(mofObject);
 
 		// Create and/or update the DOM subtree
-		if (attrValue != null) {
+		if (innerAttrValue != null) {
 			Node parent = createDOMPath(node, map);
 			if (map.isManagedByParent()) {
 				// Handle the case where the mof value is not another
@@ -1633,10 +1635,10 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 				Element child = map.isDOMTextValue() ? (Element) parent : findOrCreateNode(parent, map, map.getDOMName(mofObject));
 
-				findOrCreateTextNode(child, map, map.convertValueToString(attrValue, mofObject));
+				findOrCreateTextNode(child, map, map.convertValueToString(innerAttrValue, mofObject));
 			} else {
 				// Handle the case were the mof value is a mof object.
-				EObject mofValue = (EObject) attrValue;
+				EObject mofValue = (EObject) innerAttrValue;
 				EMF2DOMAdapter valueAdapter = (EMF2DOMAdapter) EcoreUtil.getExistingAdapter(mofValue, EMF2DOMAdapter.ADAPTER_CLASS);
 				if (valueAdapter != null)
 					valueAdapter.updateDOM();

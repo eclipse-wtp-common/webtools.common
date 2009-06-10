@@ -22,6 +22,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapter;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 
 
 
@@ -91,9 +92,8 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 		Notifier target = getTarget();
 		if (target == null || !(target instanceof Resource)) {
 			Resource resource = (Resource) target;
-			System.err.println("[WARNING] Could not acquire Semaphore Lock for Resource: \"" + resource.getURI() + "\" in " + getClass());
+			EcoreUtilitiesPlugin.logError("[WARNING] Could not acquire Semaphore Lock for Resource: \"" + resource.getURI() + "\" in " + getClass());  //$NON-NLS-1$//$NON-NLS-2$
 		}
-
 	}
 
 

@@ -21,6 +21,11 @@ import org.eclipse.wst.common.internal.emf.ResourceSynchronizedIsLoadingAdapterF
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapterFactory;
 import org.osgi.framework.BundleContext;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import java.lang.Throwable;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author DABERG
@@ -29,6 +34,8 @@ import org.osgi.framework.BundleContext;
  * Generation>Code and Comments
  */
 public class EcoreUtilitiesPlugin extends Plugin {
+	//the ID for this plugin (added automatically by logging quickfix)
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.emf"; //$NON-NLS-1$
 	public static final String ID = "org.eclipse.wst.common.emf"; //$NON-NLS-1$
 	public static final String TRANSLATOR_EXTENSTION_POINT = "translatorExtension"; //$NON-NLS-1$
 
@@ -52,5 +59,25 @@ public class EcoreUtilitiesPlugin extends Plugin {
 		reader.processExtensions();
 		//use a synchronized loading adapter factory
 		ResourceIsLoadingAdapterFactory.INSTANCE = new ResourceSynchronizedIsLoadingAdapterFactory();
+	}
+
+	public static IStatus createStatus(int severity, String message, Throwable exception) {
+		return new Status(severity, PLUGIN_ID, message, exception);
+	}
+
+	public static IStatus createStatus(int severity, String message) {
+		return createStatus(severity, message, null);
+	}
+
+	public static void logError(Throwable exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, exception.getMessage(), exception));
+	}
+
+	public static void logError(CoreException exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( exception.getStatus() );
+	}
+
+	public static void logError(String message) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, message));
 	}
 }
