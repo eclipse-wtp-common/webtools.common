@@ -17,6 +17,7 @@ package org.eclipse.jem.util.logger.proxy;
 import java.util.logging.Level;
  
 /**
+ * @deprecated Plugin error logging should be used instead
  * Log renderer that provides more function. Basically it can handle
  * the logging of specific types in a different manner than the default
  * conversion to string supplied by Logger.

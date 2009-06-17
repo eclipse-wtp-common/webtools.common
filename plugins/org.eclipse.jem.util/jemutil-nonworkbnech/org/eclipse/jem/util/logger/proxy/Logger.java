@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * This is a base, UI independent logger.   It will
  * construct a consistent msg. body, and call an enfironment specific ILogRenderer.
  * By default, this logger will use a console based ILogRenderer,

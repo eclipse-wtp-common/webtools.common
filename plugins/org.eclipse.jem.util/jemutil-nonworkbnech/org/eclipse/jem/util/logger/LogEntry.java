@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * This class should be used when logging information which should be grouped together. Instead of creating a new instance of this class every time it
  * is needed, for performance reasons, create an instance and reuse it.
  * <p>

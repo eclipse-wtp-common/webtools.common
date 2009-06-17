@@ -15,6 +15,7 @@
 package org.eclipse.jem.util.logger.proxy;
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * Basic log renderer interface. It is replaced by the extension <code>ILogRenderer2.</code>
  * 
  * @since 1.0.0

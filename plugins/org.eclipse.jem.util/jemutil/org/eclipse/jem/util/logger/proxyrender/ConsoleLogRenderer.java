@@ -21,6 +21,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * Log renderer to the console.
  * 
  * @since 1.0.0

@@ -23,6 +23,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * Logger that also logs to a trace file in the plugin's metadata area.
  * 
  * @since 1.0.0

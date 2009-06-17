@@ -17,6 +17,7 @@ package org.eclipse.jem.util.logger.proxy;
 import java.util.logging.Level;
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * Default log renderer to use when not running under Eclipse. It logs to sysout and syserr.
  * 
  * @since 1.1.0

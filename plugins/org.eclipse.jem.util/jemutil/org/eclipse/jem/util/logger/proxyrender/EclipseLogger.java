@@ -25,6 +25,7 @@ import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
  
 /**
+ * @deprecated Plugin error logging should be used instead
  * Get an Eclipse logger. This gets a logger that knows it is for a plugin. 
  * 
  * For each plugin, the following can be specified in the .option file:

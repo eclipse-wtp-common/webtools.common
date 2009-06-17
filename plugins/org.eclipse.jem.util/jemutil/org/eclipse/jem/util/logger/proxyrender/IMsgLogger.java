@@ -17,6 +17,7 @@ package org.eclipse.jem.util.logger.proxyrender;
 import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
+ * @deprecated Plugin error logging should be used instead
  * Interface for a message logger.
  * 
  * @since 1.0.0
