@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -90,7 +90,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		try {
 			ProjectUtilities.removeReferenceProjects(sourceComp.getProject(),targetprojectList);
 		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
+			ModulecorePlugin.logError(e);
 		}		
 		
 	}

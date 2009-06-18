@@ -23,10 +23,10 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.internal.emf.utilities.Assert;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 
 public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor implements Comparable {
@@ -99,7 +99,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 		try {
 			factory = (AdapterFactory) element.createExecutableExtension(AdapterFactoryRegistry.CLASS_NAME);
 		} catch (CoreException e) {
-			JEMUtilPlugin.getLogger().logError(e);
+			EMFWorkbenchEditPlugin.logError(e);
 		}
 		return factory;
 	}

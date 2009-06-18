@@ -47,7 +47,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
@@ -174,7 +173,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			try {
 				resourceSet.getResource(uri, true);
 			} catch (WrappedException ex) {
-				Logger.getLogger().logError(ex);
+				EMFWorkbenchEditPlugin.logError(ex);
 			}
 
 		}
@@ -202,7 +201,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		try {
 			hasLocked = aquireLock();
 		} catch (InterruptedException e) {
-			Logger.getLogger().write(e);
+			EMFWorkbenchEditPlugin.logError(e);
 		}		
 		
 		try{
@@ -236,7 +235,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 				currentProjectDelta = null;
 				delta.accept(ResourceSetWorkbenchEditSynchronizer.this);
 			} catch (Exception e) {
-				Logger.getLogger().logError(e);
+				EMFWorkbenchEditPlugin.logError(e);
 			}
 		}
 	}

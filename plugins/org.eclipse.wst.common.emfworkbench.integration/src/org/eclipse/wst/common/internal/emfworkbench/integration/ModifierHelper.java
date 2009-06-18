@@ -19,7 +19,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.edit.command.SetCommand;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConversionException;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConverter;
 
@@ -320,7 +319,7 @@ public class ModifierHelper {
 		try {
 			primSetValue(convertValue(newValue));
 		} catch (FeatureValueConversionException featureException) {
-			Logger.getLogger().logError(featureException);
+			EMFWorkbenchEditPlugin.logError(featureException);
 			primSetValue(null);
 		}
 	}

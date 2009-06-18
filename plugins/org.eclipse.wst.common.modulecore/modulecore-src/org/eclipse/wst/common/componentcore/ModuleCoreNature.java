@@ -613,7 +613,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			cachedReadHandle = getModuleStructuralModelForRead(this);
 	}
 
-	protected String getPluginID() {
+	public String getPluginID() {
 		return MODULE_PLUG_IN_ID;
 	}
 

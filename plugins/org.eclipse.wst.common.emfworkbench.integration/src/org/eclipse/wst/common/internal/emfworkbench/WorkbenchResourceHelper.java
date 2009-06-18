@@ -40,11 +40,11 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverter;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 /**
  * @author schacher
@@ -212,7 +212,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
             try {
                 hasLocked = aquireSaveLock(delay);
             } catch (InterruptedException e) {
-                Logger.getLogger().write(e);
+            	EMFWorkbenchEditPlugin.logError(e);
             }
             boolean result = false;
             try {
@@ -227,7 +227,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
                     }
                 }
             } catch (Exception e) {
-                Logger.getLogger().write(e);
+            	EMFWorkbenchEditPlugin.logError(e);
             } finally {
                 if (hasLocked)
                     releaseSaveLock();

@@ -41,7 +41,6 @@ import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifier;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
@@ -211,7 +210,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 				else
 					addAdapterFactory(aProject, aPackage, factory);
 			} catch (RuntimeException re) {
-				Logger.getLogger().logError(re);
+				EMFWorkbenchEditPlugin.logError(re);
 			}
 		}
 		return factory;
@@ -409,7 +408,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 					try {
 						result = delegateAdapterFactory.adapt(target, type);
 					} catch (RuntimeException re) {
-						Logger.getLogger().logError(re);
+						EMFWorkbenchEditPlugin.logError(re);
 						removeFactoryForTypes(p, types);
 						attemptAdaptAgain = true;
 					}

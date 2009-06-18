@@ -48,7 +48,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.ISaveHandler;
 import org.eclipse.wst.common.frameworks.internal.SaveFailedException;
 import org.eclipse.wst.common.frameworks.internal.SaveHandlerHeadless;
@@ -73,6 +72,7 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateIn
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorImpl;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 
 public class EditModel implements CommandStackListener, ResourceStateInputProvider, ResourceStateValidator, IEnablementIdentifierListener {
@@ -175,7 +175,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			releaseIdentifiers();
 			doDispose();
 		} catch (RuntimeException re) {
-			Logger.getLogger().logError(re);
+			EMFWorkbenchEditPlugin.logError(re);
 		} finally {
 			emfContext = null;
 			resources = null;
@@ -535,7 +535,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 				enabled = identifier.isEnabled();
 			}
 		} catch (RuntimeException re) {
-			Logger.getLogger().logWarning(re);
+			EMFWorkbenchEditPlugin.logWarning(re);
 		}
 		if (enabled) {
 			URI uri = res.getURI();
@@ -1231,7 +1231,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @aResource.
 	 */
 	protected void primHandleSaveFailed(Resource aResource, Exception e) {
-		org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(e);
+		EMFWorkbenchEditPlugin.logError(e);
 		Exception nested = null;
 		if (e instanceof IWFTWrappedException)
 			nested = ((IWFTWrappedException) e).getNestedException();

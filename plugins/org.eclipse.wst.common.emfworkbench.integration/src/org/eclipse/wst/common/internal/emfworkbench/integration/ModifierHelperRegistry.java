@@ -31,7 +31,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author jsholl
@@ -73,7 +72,7 @@ public class ModifierHelperRegistry {
 						factory = (ModifierHelperFactory) element.createExecutableExtension(FACTORY_CLASS);
 						factoryHash.put(hashKey, factory);
 					} catch (CoreException e) {
-						Logger.getLogger().logError(e);
+						EMFWorkbenchEditPlugin.logError(e);
 					}
 				}
 				return factory;
@@ -224,7 +223,7 @@ public class ModifierHelperRegistry {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Plugin " + extension.getNamespace() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("\n" + text); //$NON-NLS-1$
-		Logger.getLogger().logError(buf.toString());
+		EMFWorkbenchEditPlugin.logError(buf.toString());
 	}
 
 	public static ModifierHelperRegistry getInstance() {

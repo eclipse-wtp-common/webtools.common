@@ -25,9 +25,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
@@ -106,10 +106,10 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			}
 
 		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
+			ModulecorePlugin.logError(e);
 			throw new ExecutionException(e.getMessage(), e);
 		} catch (Exception e) {
-			Logger.getLogger().logError(e);
+			ModulecorePlugin.logError(e);
 		}
 		return OK_STATUS;
 	}
@@ -127,7 +127,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			if (!actions.isEmpty())
 				facetProj.modify(actions, null);
 		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
+			ModulecorePlugin.logError(e);
 		}
 	}
 

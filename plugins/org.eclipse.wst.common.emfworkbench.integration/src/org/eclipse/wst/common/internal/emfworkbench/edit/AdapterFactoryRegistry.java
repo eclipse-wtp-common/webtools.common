@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 /**
@@ -88,7 +87,7 @@ public class AdapterFactoryRegistry extends RegistryReader {
 				return true;
 			}
 		} catch (RuntimeException re) {
-			Logger.getLogger().logError(re);
+			EMFWorkbenchEditPlugin.logError(re);
 		}
 		return false;
 	}

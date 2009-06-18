@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 
 public class EditModelExtension extends ConfigurationElementWrapper {
@@ -40,7 +40,7 @@ public class EditModelExtension extends ConfigurationElementWrapper {
 	private void init() {
 		id = element.getAttribute(ID_ATTR);
 		if (id == null) {
-			Logger.getLogger().logError("Incorrect usage of editModelExtension extension point.  Element must contain id attribute.  Plugin: " + getPluginId()); //$NON-NLS-1$
+			EMFWorkbenchEditPlugin.logError("Incorrect usage of editModelExtension extension point.  Element must contain id attribute.  Plugin: " + getPluginId()); //$NON-NLS-1$
 			return;
 		}
 

@@ -35,11 +35,11 @@ import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.jem.util.emf.workbench.ISynchronizerExtender;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverter;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
 import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceFactoryRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.internal.emfworkbench.integration.ProjectResourceSetEditImpl;
@@ -277,7 +277,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 			try {
 				editModel.resourceChanged(anEvent);
 			} catch (Exception e) {
-				Logger.getLogger().logError(e);
+				EMFWorkbenchEditPlugin.logError(e);
 			}
 		}
 	}
@@ -404,7 +404,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 		try {
 			WorkbenchResourceHelper.deleteResource(resource);
 		} catch (CoreException ex) {
-			Logger.getLogger().logError(ex);
+			EMFWorkbenchEditPlugin.logError(ex);
 		}
 
 	}

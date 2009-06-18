@@ -24,9 +24,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.operation.FacetProjectCreationOperation;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
@@ -329,7 +329,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 								facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
 							}
 						} catch (CoreException e) {
-							Logger.getLogger().logError(e);
+							ModulecorePlugin.logError(e);
 						}
 					}
 				}
