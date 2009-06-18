@@ -27,7 +27,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -74,12 +74,12 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 				reader.setFeature("http://apache.org/xml/features/validation/schema", isValidating()); //$NON-NLS-1$
 			} catch (SAXNotRecognizedException e) {
 				reader.setFeature("http://xml.org/sax/features/validation", false); //$NON-NLS-1$
-				Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/validation/schema\". Validation will be disabled."); //$NON-NLS-1$
+				EcoreUtilitiesPlugin.logWarning("Warning: Parser does not support \"http://apache.org/xml/features/validation/schema\". Validation will be disabled."); //$NON-NLS-1$
 			}
 			try {
 				reader.setFeature("http://apache.org/xml/features/allow-java-encodings", true); //$NON-NLS-1$
 			} catch (SAXNotRecognizedException e) {
-				Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/allow-java-encodings\"."); //$NON-NLS-1$
+				EcoreUtilitiesPlugin.logWarning("Warning: Parser does not support \"http://apache.org/xml/features/allow-java-encodings\"."); //$NON-NLS-1$
 			}
 			/*
 			 * try { reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler); }
@@ -133,12 +133,12 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 					transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, getResource().getSystemId());
 
 			} catch (TransformerConfigurationException e) {
-				Logger.getLogger().logError(e);
+				EcoreUtilitiesPlugin.logError(e);
 			} catch (TransformerFactoryConfigurationError e) {
-				Logger.getLogger().logError(e);
+				EcoreUtilitiesPlugin.logError(e);
 			}
 			if (handler == null) {
-				Logger.getLogger("SAX Writer is null"); //$NON-NLS-1$
+				EcoreUtilitiesPlugin.logError("SAX Writer is null"); //$NON-NLS-1$
 				return;
 			}
 			EMF2SAXWriter writer = new EMF2SAXWriter();

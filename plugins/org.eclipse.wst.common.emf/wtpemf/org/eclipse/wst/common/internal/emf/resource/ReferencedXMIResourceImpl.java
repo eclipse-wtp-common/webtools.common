@@ -26,7 +26,7 @@ import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
 public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl implements ReferencedResource {
@@ -379,7 +379,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
             notifySaveFailed();
             if (e instanceof IOException)
                 throw (IOException) e;
-            Logger.getLogger().write(e);
+            EcoreUtilitiesPlugin.logError(e);
         }
         notifySaved();
 	}

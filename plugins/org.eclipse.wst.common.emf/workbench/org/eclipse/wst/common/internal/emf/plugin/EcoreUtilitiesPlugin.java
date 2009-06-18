@@ -80,4 +80,13 @@ public class EcoreUtilitiesPlugin extends Plugin {
 	public static void logError(String message) {
 		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, message));
 	}
+
+	public static void logWarning(String message) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log(createStatus(IStatus.WARNING, message));
+	}
+	
+	public static void logWarning(Throwable exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.WARNING, exception.getMessage(), exception));
+	}
+
 }

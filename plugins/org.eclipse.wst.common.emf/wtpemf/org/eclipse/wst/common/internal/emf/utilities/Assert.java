@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.internal.emf.utilities;
 
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 
 
 
@@ -93,7 +93,7 @@ public final class Assert {
 	 */
 	public static void isNotNull(Object object, String message) {
 		if (object == null) {
-			Logger.getLogger().logError("null_argument: " + message);//$NON-NLS-1$
+			EcoreUtilitiesPlugin.logError("null_argument: " + message);//$NON-NLS-1$
 			throw new AssertionFailedException();
 		}
 	}
@@ -123,7 +123,7 @@ public final class Assert {
 	 */
 	public static boolean isTrue(boolean expression, String message) {
 		if (!expression) {
-			Logger.getLogger().logError("assertion failed: " + message);//$NON-NLS-1$
+			EcoreUtilitiesPlugin.logError("assertion failed: " + message);//$NON-NLS-1$
 			throw new AssertionFailedException();
 		}
 		return expression;

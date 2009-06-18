@@ -17,7 +17,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
 
@@ -135,7 +134,7 @@ public class TranslatorManager {
 			try {
 				instance = (Translator) configElement.createExecutableExtension(CLASSNAME);
 			} catch (CoreException e) {
-				Logger.getLogger().logError(e);
+				EcoreUtilitiesPlugin.logError(e);
 			}
 			return instance;
 		}

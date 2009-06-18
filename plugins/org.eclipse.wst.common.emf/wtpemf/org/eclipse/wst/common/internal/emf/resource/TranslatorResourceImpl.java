@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
 import org.xml.sax.EntityResolver;
 
@@ -172,7 +172,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
                  notifySaveFailed();
                 if (e instanceof IOException)
                     throw (IOException) e;
-                Logger.getLogger().write(e);
+                EcoreUtilitiesPlugin.logError(e);
             }
             notifySaved();
         }

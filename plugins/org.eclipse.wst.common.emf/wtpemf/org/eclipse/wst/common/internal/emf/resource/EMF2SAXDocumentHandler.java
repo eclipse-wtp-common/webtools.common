@@ -13,7 +13,7 @@ package org.eclipse.wst.common.internal.emf.resource;
 
 import java.io.IOException;
 
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -153,7 +153,7 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	 */
 	@Override
 	public void warning(SAXParseException ex) throws SAXException {
-		Logger.getLogger().logWarning(ex);
+		EcoreUtilitiesPlugin.logWarning(ex);
 	}
 
 	/**

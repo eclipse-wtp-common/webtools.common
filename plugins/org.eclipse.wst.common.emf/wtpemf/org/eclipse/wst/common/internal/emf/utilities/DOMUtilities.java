@@ -26,7 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -494,13 +494,13 @@ public class DOMUtilities {
 		try {
 			dbf.setAttribute("http://apache.org/xml/features/allow-java-encodings", new Boolean(options.isAllowJavaEncodings())); //$NON-NLS-1$	        
 		} catch (IllegalArgumentException ignore) {
-			Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/allow-java-encodings\"."); //$NON-NLS-1$
+			EcoreUtilitiesPlugin.logWarning("Warning: Parser does not support \"http://apache.org/xml/features/allow-java-encodings\"."); //$NON-NLS-1$
 		}
 		try {
 			dbf.setAttribute("http://apache.org/xml/features/validation/schema", new Boolean(options.isValidate())); //$NON-NLS-1$
 		} catch (IllegalArgumentException ignore) {
 			dbf.setValidating(false);
-			Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/validation/schema\". Validation will be disabled."); //$NON-NLS-1$
+			EcoreUtilitiesPlugin.logWarning("Warning: Parser does not support \"http://apache.org/xml/features/validation/schema\". Validation will be disabled."); //$NON-NLS-1$
 		}
 		dbf.setExpandEntityReferences(options.isExpandEntityRefererences());
 		DocumentBuilder result = dbf.newDocumentBuilder();
@@ -524,7 +524,7 @@ public class DOMUtilities {
 			}
 
 			public void warning(SAXParseException arg0) throws SAXException {
-				Logger.getLogger().logWarning(arg0);
+				EcoreUtilitiesPlugin.logWarning(arg0);
 			}
 
 		});

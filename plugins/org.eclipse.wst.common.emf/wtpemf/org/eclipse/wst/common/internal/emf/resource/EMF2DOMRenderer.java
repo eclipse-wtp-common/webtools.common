@@ -28,7 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
 import org.eclipse.wst.common.internal.emf.utilities.DOMLoadOptions;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
 import org.eclipse.wst.common.internal.emf.utilities.Revisit;
@@ -191,11 +191,11 @@ public class EMF2DOMRenderer extends AbstractRendererImpl {
 			/* source.setSystemId(getResource().getSystemId()); */
 			transformer.transform(source, new StreamResult(out));
 		} catch (TransformerConfigurationException e) {
-			Logger.getLogger().logError(e);
+			EcoreUtilitiesPlugin.logError(e);
 		} catch (TransformerFactoryConfigurationError e) {
-			Logger.getLogger().logError(e);
+			EcoreUtilitiesPlugin.logError(e);
 		} catch (TransformerException e) {
-			Logger.getLogger().logError(e);
+			EcoreUtilitiesPlugin.logError(e);
 		} finally {
 		}
 	}
