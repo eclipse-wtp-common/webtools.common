@@ -1,4 +1,4 @@
-#Tue Jun 09 17:48:54 EDT 2009
+#Wed Jun 24 10:13:16 EDT 2009
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenImplementingAbstract=disabled
 org.eclipse.jdt.core.compiler.problem.comparingIdentical=error
 org.eclipse.jdt.core.compiler.problem.unnecessaryElse=error
@@ -66,7 +66,7 @@ org.eclipse.jdt.core.compiler.debug.sourceFile=generate
 org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionIncludeUncheckedExceptions=disabled
 org.eclipse.jdt.core.compiler.problem.missingDeprecatedAnnotation=warning
 org.eclipse.jdt.core.codeComplete.fieldPrefixes=
-org.eclipse.jdt.core.compiler.problem.fallthroughCase=error
+org.eclipse.jdt.core.compiler.problem.fallthroughCase=warning
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.5
 org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=error
 org.eclipse.jdt.core.compiler.problem.autoboxing=warning
