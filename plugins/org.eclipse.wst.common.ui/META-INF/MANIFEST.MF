@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.ui; singleton:=true
-Bundle-Version: 1.1.402.qualifier
+Bundle-Version: 1.1.500.qualifier
 Bundle-Activator: org.eclipse.wst.common.ui.internal.UIPlugin
 Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
@@ -11,8 +11,7 @@ Export-Package: org.eclipse.wst.common.ui.internal;x-internal:=true,
  org.eclipse.wst.common.ui.internal.dnd;x-internal:=true,
  org.eclipse.wst.common.ui.internal.search;x-internal:=true,
  org.eclipse.wst.common.ui.internal.search.dialogs,
- org.eclipse.wst.common.ui.internal.viewers;x-internal:=true,
- org.eclipse.wst.common.ui.provisional.editors
+ org.eclipse.wst.common.ui.internal.viewers;x-internal:=true
 Import-Package: com.ibm.icu.text; version="3.8"
 Require-Bundle: org.eclipse.ui.ide;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.ui;bundle-version="[3.4.0,4.0.0)",
