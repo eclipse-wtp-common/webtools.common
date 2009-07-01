@@ -37,7 +37,6 @@ import java.util.SortedSet;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -121,13 +120,6 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
-    private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
-    private static final String CW_VERSION = "cw.version"; //$NON-NLS-1$
-    private static final String SASH1W1 = "sash.1.weight.1"; //$NON-NLS-1$
-    private static final String SASH1W2 = "sash.1.weight.2"; //$NON-NLS-1$
-    private static final String SASH2W1 = "sash.2.weight.1"; //$NON-NLS-1$
-    private static final String SASH2W2 = "sash.2.weight.2"; //$NON-NLS-1$
-    
     private static final String IMG_DOWN_ARROW = "##down-arrow##"; //$NON-NLS-1$
     
     private final Composite topComposite;
@@ -151,9 +143,7 @@ public final class FacetsSelectionPanel
     private final TabItem runtimesTabItem;
     private final RuntimesPanel runtimesPanel;
     
-    private final IDialogSettings settings;
     private boolean showToolTips;
-    
     
     private final IFacetedProjectWorkingCopy fpjwc;
     private final List<IFacetedProjectListener> registeredWorkingCopyListeners;
@@ -194,27 +184,12 @@ public final class FacetsSelectionPanel
         URL url = bundle.getEntry( "images/down-arrow.gif" ); //$NON-NLS-1$
         this.imageRegistry.put( IMG_DOWN_ARROW, ImageDescriptor.createFromURL( url ) );
 
-        // Read the dialog settings.
-
-        final IDialogSettings root
-            = FacetUiPlugin.getInstance().getDialogSettings();
-
-        IDialogSettings temp = root.getSection( getClass().getName() );
-
-        if( temp == null )
-        {
-            temp = root.addNewSection( getClass().getName() );
-        }
-        
-        this.settings = temp;
-
         // Layout the panel.
 
         setLayout( glmargins( gl( 1 ), 0, 0 ) );
         
         this.topComposite = new Composite( this, SWT.NONE );
         this.topComposite.setLayout( glmargins( gl( 4 ), 0, 0 ) );
-        this.topComposite.setLayoutData( gdfill() );
         
         this.presetsLabel = new Label( this.topComposite, SWT.NONE );
         this.presetsLabel.setText( Resources.presetsLabel );
@@ -275,50 +250,14 @@ public final class FacetsSelectionPanel
         this.colFacet.getColumn().setText( Resources.facetColumnLabel );
         this.colFacet.getColumn().setResizable( true );
         this.colFacet.setLabelProvider( new FacetColumnLabelProvider() );
-        
-        if( this.settings.get( CW_FACET ) == null )
-        {
-            this.settings.put( CW_FACET, computeDefaultFacetColumnWidth() );
-        }
-        
-        this.colFacet.getColumn().setWidth( this.settings.getInt( CW_FACET ) );
-        
-        this.colFacet.getColumn().addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    FacetsSelectionPanel.this.settings.put( CW_FACET, FacetsSelectionPanel.this.colFacet.getColumn().getWidth() );
-                }
-            }
-        );
+        this.colFacet.getColumn().setWidth( computeDefaultFacetColumnWidth() );
 
         this.colVersion = new TreeViewerColumn( this.treeViewer, SWT.NONE );
         this.colVersion.getColumn().setText( Resources.versionColumnLabel );
         this.colVersion.getColumn().setResizable( true );
         this.colVersion.setLabelProvider( new FacetVersionColumnLabelProvider() );
         this.colVersion.setEditingSupport( new FacetVersionColumnEditingSupport( this.treeViewer ) );
-        
-        if( this.settings.get( CW_VERSION ) == null )
-        {
-            this.settings.put( CW_VERSION, computeDefaultVersionColumnWidth() );
-        }
-
-        this.colVersion.getColumn().setWidth( this.settings.getInt( CW_VERSION ) );
-        
-        this.colVersion.getColumn().addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    FacetsSelectionPanel.this.settings.put( CW_VERSION, FacetsSelectionPanel.this.colVersion.getColumn().getWidth() );
-                }
-            }
-        );
+        this.colVersion.getColumn().setWidth( computeDefaultVersionColumnWidth() );
         
         this.popupMenu = new Menu( getShell(), SWT.POP_UP );
         
@@ -414,56 +353,11 @@ public final class FacetsSelectionPanel
         this.runtimesTabItem.setControl( this.runtimesPanel );
         this.runtimesTabItem.setText( Resources.runtimesTabLabel );
         
-        this.runtimesPanel.addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    final int[] weights = FacetsSelectionPanel.this.sform1.getWeights();
-                    FacetsSelectionPanel.this.settings.put( SASH1W1, weights[ 0 ] );
-                    FacetsSelectionPanel.this.settings.put( SASH1W2, weights[ 1 ] );
-                }
-            }
-        );
-
         this.problemsView = new TableViewer( this.sform1, SWT.BORDER );
         this.problemsView.setContentProvider( new ProblemsContentProvider() );
         this.problemsView.setLabelProvider( new ProblemsLabelProvider() );
         this.problemsView.setInput( new Object() );
 
-        this.problemsView.getTable().addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    final int[] weights = FacetsSelectionPanel.this.sform2.getWeights();
-                    FacetsSelectionPanel.this.settings.put( SASH2W1, weights[ 0 ] );
-                    FacetsSelectionPanel.this.settings.put( SASH2W2, weights[ 1 ] );
-                }
-            }
-        );
-        
-        if( this.settings.get( SASH1W1 ) == null ) this.settings.put( SASH1W1, 70 );
-        if( this.settings.get( SASH1W2 ) == null ) this.settings.put( SASH1W2, 30 );
-        if( this.settings.get( SASH2W1 ) == null ) this.settings.put( SASH2W1, 60 );
-        if( this.settings.get( SASH2W2 ) == null ) this.settings.put( SASH2W2, 40 );
-        
-        final int[] weights1
-            = new int[] { this.settings.getInt( SASH1W1 ),
-                          this.settings.getInt( SASH1W2 ) };
-
-        this.sform1.setWeights( weights1 );
-
-        final int[] weights2
-            = new int[] { this.settings.getInt( SASH2W1 ),
-                          this.settings.getInt( SASH2W2 ) };
-
-        this.sform2.setWeights( weights2 );
-        
         addDisposeListener
         (
             new DisposeListener()
@@ -548,6 +442,18 @@ public final class FacetsSelectionPanel
             IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED,
             IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED
         );
+        
+        // Set the preferred dimensions of the panel.
+        
+        final int prefWidthTree = getPreferredWidth( this.tree );
+        int prefWidthRuntimesPanel = getPreferredWidth( this.runtimesPanel );
+        prefWidthRuntimesPanel = max( prefWidthRuntimesPanel, 300 );
+        final int prefWidth = prefWidthTree + prefWidthRuntimesPanel + 80;
+        
+        this.topComposite.setLayoutData( gdwhint( gdhhint( gdfill(), 500 ), prefWidth ) );
+        
+        this.sform1.setWeights( new int[] { 70, 30 } );
+        this.sform2.setWeights( new int[] { prefWidthTree, prefWidthRuntimesPanel } );
         
         // Select the first item in the table.
         
