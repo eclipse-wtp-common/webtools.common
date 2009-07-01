@@ -108,7 +108,6 @@ public final class ProjectFacetPreferencesGroup
         
     {
         ProjectFacetPreferences prefs;
-        boolean saveNeeded = false;
         
         synchronized( this )
         {
@@ -119,13 +118,7 @@ public final class ProjectFacetPreferencesGroup
             {
                 prefs = new ProjectFacetPreferences( this, facetId, this.project );
                 this.preferences.put( facetId, prefs );
-                saveNeeded = true;
             }
-        }
-        
-        if( saveNeeded )
-        {
-            save();
         }
         
         return prefs;
