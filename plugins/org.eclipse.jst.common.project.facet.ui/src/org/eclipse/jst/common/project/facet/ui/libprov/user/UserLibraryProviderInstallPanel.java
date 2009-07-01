@@ -139,18 +139,6 @@ public class UserLibraryProviderInstallPanel
         final Image manageLibrariesImage = getImageDescriptor( IMG_PATH_BUTTON_MANAGE_LIBRARIES ).createImage();
         final Image downloadLibraryImage = getImageDescriptor( IMG_PATH_BUTTON_DOWNLOAD ).createImage();
         
-        libsTable.addDisposeListener
-        (
-            new DisposeListener()
-            {
-                public void widgetDisposed( final DisposeEvent event )
-                {
-                    manageLibrariesImage.dispose();
-                    downloadLibraryImage.dispose();
-                }
-            }
-        );
-        
         final Menu menu = new Menu( libsTable );
         libsTable.setMenu( menu );
         
@@ -226,6 +214,19 @@ public class UserLibraryProviderInstallPanel
         {
             footerControl.setLayoutData( gdhfill() );
         }
+        
+        this.rootComposite.addDisposeListener
+        (
+            new DisposeListener()
+            {
+                public void widgetDisposed( final DisposeEvent event )
+                {
+                    cfg.removeListener( listener );
+                    manageLibrariesImage.dispose();
+                    downloadLibraryImage.dispose();
+                }
+            }
+        );
         
         return this.rootComposite;
     }
