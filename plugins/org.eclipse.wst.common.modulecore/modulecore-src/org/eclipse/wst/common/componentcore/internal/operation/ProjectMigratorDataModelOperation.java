@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectMigratorDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.IComponentProjectMigrator;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.ProjectMigratorRegistry;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -37,7 +38,7 @@ public class ProjectMigratorDataModelOperation extends AbstractDataModelOperatio
 				migrator.migrateProject(proj);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		return OK_STATUS;
 	}

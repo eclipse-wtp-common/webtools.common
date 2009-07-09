@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
@@ -201,7 +202,7 @@ public class ComponentCore {
 				}
 			}
 		} catch (UnresolveableURIException e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		} finally {
 			if (se != null) {
 				se.dispose();

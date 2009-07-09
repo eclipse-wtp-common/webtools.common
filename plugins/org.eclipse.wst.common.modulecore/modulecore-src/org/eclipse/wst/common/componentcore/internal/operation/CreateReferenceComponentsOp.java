@@ -29,6 +29,7 @@ import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -90,7 +91,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		try {
 			ProjectUtilities.addReferenceProjects(sourceComp.getProject(), targetprojectList);
 		} catch (CoreException e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 
 	}

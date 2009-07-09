@@ -229,14 +229,14 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 				description.setNatureIds(newNatureIds);
 				aProject.setDescription(description, aMonitor);
 			} catch (CoreException e) {
-				e.printStackTrace(); 				
+				ModulecorePlugin.logError(e);
 			} finally {
 				manager.endRule(root);
 			} 			
 			if (aMonitor != null)
 				aMonitor.done();
 		} catch (CoreException e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		/* Return the new nature */
 		return getModuleCoreNature(aProject);

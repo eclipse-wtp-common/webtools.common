@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.resource.impl.URIMappingRegistryImpl;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -79,8 +80,8 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) { 		
 			try {
 				normalizedURI = PlatformURLModuleConnection.resolve(aURI);
-			} catch(IOException ioe) {
-				ioe.printStackTrace();
+			} catch(IOException e) {
+				ModulecorePlugin.logError(e);
 			} 
 		} else {
 			normalizedURI = super.normalize(aURI);
@@ -109,7 +110,7 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			return URI.createPlatformResourceURI(newFile.getWorkspaceRelativePath().toString());
 			 
 		} catch(Exception e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		return null;
 	}

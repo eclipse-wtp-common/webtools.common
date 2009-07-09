@@ -432,7 +432,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			return URI.createPlatformResourceURI(newFile.getWorkspaceRelativePath().toString());
 			 
 		} catch(Exception e) {
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		return null;
 	}
