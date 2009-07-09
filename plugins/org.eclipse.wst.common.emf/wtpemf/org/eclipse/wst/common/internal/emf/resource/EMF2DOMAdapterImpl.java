@@ -664,7 +664,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			removeDOMChild(parentNode, childNode, false);
 			parentNode.insertBefore(childNode, insertBeforeNode);
 		} catch (Exception e) {
-			e.printStackTrace();
+			EcoreUtilitiesPlugin.logError(e);
 		}
 	}
 
@@ -701,7 +701,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 				removeAdapters(childNode);
 			parentNode.removeChild(childNode);
 		} catch (Exception e) { 
-			e.printStackTrace();
+			EcoreUtilitiesPlugin.logError(e);
 		}
 	}
 

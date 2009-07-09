@@ -377,7 +377,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		} catch (SaveFailedException ex) {
 			getSaveHandler().handleSaveFailed(ex, monitor);
 		} catch (Exception ex) {
-			EMFWorkbenchEditPlugin.logError(e);
+			EMFWorkbenchEditPlugin.logError(ex);
 		} finally {
 			getSaveHandler().release();
 		}

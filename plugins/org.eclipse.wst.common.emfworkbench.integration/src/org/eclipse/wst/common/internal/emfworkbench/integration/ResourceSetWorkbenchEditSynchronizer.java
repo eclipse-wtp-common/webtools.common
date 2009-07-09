@@ -142,7 +142,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			notifyExtendersIfNecessary();
 			processDeferredResources();
 		} catch (Exception e) {
-			e.printStackTrace();
+			EMFWorkbenchEditPlugin.logError(e);
 		} finally {
 			deferredRemoveResources.clear();
 			deferredUnloadResources.clear();
