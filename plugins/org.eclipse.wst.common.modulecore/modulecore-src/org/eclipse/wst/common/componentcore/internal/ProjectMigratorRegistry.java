@@ -59,8 +59,7 @@ public class ProjectMigratorRegistry extends RegistryReader {
 		try {
 			migrator = (IComponentProjectMigrator) element.createExecutableExtension(MIGRATOR_CLASS);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		if (migrator != null)
 			addModuleExtension(migrator);

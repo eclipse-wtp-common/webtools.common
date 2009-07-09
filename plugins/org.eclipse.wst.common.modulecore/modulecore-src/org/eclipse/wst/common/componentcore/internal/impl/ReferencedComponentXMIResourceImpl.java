@@ -20,12 +20,10 @@ public class ReferencedComponentXMIResourceImpl extends
 
 	public ReferencedComponentXMIResourceImpl() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ReferencedComponentXMIResourceImpl(URI uri) {
 		super(uri);
-		// TODO Auto-generated constructor stub
 	}
 	protected MappedXMIHelper doCreateXMLHelper() {
 		return new MappedComponentXMIHelper(this, getPrefixToPackageURIs());

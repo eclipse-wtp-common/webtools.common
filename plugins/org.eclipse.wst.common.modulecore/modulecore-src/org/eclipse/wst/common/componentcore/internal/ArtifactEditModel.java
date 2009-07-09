@@ -34,6 +34,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 
 /**
  * 
@@ -148,12 +149,10 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 			facetProj = ProjectFacetsManager.create(project);
 			if (facetProj != null)
 				facetProj.addListener(this);
-		} catch (UnresolveableURIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (UnresolveableURIException e){
+			ModulecorePlugin.logError(e);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}finally {
 			componentProject = aProject;
 		}
@@ -324,8 +323,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 		try {
 			EnablementManager.INSTANCE.notifyFunctionGroupChanged(null,getComponentProject());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		
 	}

@@ -118,8 +118,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			if (res == null)
 				return null;
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 		EObject modelRoot = null;
 		modelRoot = super.getPrimaryRootObject();

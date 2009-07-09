@@ -61,8 +61,7 @@ public class ModuleMigratorManager {
 		try {
 			dm.getDefaultOperation().execute(null,null);
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ModulecorePlugin.logError(e);
 		}
 	}
 	public synchronized void migrateOldMetaData(IProject aProject, final boolean multiComps) throws CoreException {

@@ -19,7 +19,6 @@ public class ReferencedComponentXMIResourceFactory extends
 
 	public ReferencedComponentXMIResourceFactory() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * This is the method that subclasses can override to actually instantiate a new Resource

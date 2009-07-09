@@ -424,8 +424,7 @@ public class StructureEdit implements IEditModelHandler {
 				try {
 					structuralModel.prepareProjectModulesIfNecessary();
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					ModulecorePlugin.logError(e);
 				}
 			}
 		}

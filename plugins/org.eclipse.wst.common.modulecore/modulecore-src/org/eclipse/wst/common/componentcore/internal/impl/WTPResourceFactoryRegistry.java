@@ -453,8 +453,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			try {
 				description = file.getContentDescription();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ModulecorePlugin.logError(e);
 			}
 		}
 		if (description == null) {//Check for optional embedded uri segment, then normalize
@@ -465,15 +464,13 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 					try {
 						componentProject = StructureEdit.getContainingProject(uri);
 					} catch (UnresolveableURIException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						ModulecorePlugin.logError(e);
 					}
 					uri = PlatformURLModuleConnection.resolve(uri);
 					uri = newPlatformURI(uri,componentProject);
 				} 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ModulecorePlugin.logError(e);
 			}
 		}
 		

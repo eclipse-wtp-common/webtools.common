@@ -36,7 +36,6 @@ public class ModuleCoreValidator implements IValidatorJob {
 
 		public ModuleCoreValidator() {
 			super();
-			// TODO Auto-generated constructor stub
 		}
 		
 		public Resource getPrimaryResource(IProject project) {
@@ -92,8 +91,7 @@ public class ModuleCoreValidator implements IValidatorJob {
 								"NEEDSMIGRATING", null, proj));
 				}
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ModulecorePlugin.logError(e);
 			}
 			
 			return Status.OK_STATUS;

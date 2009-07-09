@@ -40,7 +40,6 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 
 	public ArtifactEditProviderOperation() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ArtifactEditProviderOperation(IDataModel model) {

@@ -28,36 +28,30 @@ public class HRefTranslator extends Translator {
 
 	public HRefTranslator(String domNameAndPath, EClass eClass) {
 		super(domNameAndPath, eClass);
-		// TODO Auto-generated constructor stub
 	}
 
 	public HRefTranslator(String domNameAndPath, EStructuralFeature aFeature) {
 		super(domNameAndPath, aFeature);
-		// TODO Auto-generated constructor stub
 	}
 
 	public HRefTranslator(String domNameAndPath, EStructuralFeature aFeature,
 			EClass eClass) {
 		super(domNameAndPath, aFeature, eClass);
-		// TODO Auto-generated constructor stub
 	}
 
 	public HRefTranslator(String domNameAndPath, EStructuralFeature aFeature,
 			TranslatorPath path) {
 		super(domNameAndPath, aFeature, path);
-		// TODO Auto-generated constructor stub
 	}
 
 	public HRefTranslator(String domNameAndPath, EStructuralFeature aFeature,
 			TranslatorPath[] paths) {
 		super(domNameAndPath, aFeature, paths);
-		// TODO Auto-generated constructor stub
 	}
 
 	public HRefTranslator(String domNameAndPath, EStructuralFeature aFeature,
 			int style) {
 		super(domNameAndPath, aFeature, style);
-		// TODO Auto-generated constructor stub
 	}
 	/*
 	 * (non-Javadoc)
