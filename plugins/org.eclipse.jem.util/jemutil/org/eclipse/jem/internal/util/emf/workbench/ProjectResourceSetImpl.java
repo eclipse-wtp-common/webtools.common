@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.22 $$  $$Date: 2009/05/14 00:58:23 $$ 
+ *  $$Revision: 1.23 $$  $$Date: 2009/07/09 20:13:28 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -769,7 +769,6 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	}
 	
 	protected Resource demandCreateResource(URI uri, Factory resourceFactory) {
-		// TODO Auto-generated method stub
 		return createResource(uri,resourceFactory);
 	}
 	
