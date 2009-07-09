@@ -45,7 +45,6 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#getValidateEditContext()
 	 */
 	public Object getValidateEditContext() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -55,7 +54,6 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#promptForInconsistentFileOverwrite(java.util.List)
 	 */
 	public boolean promptForInconsistentFileOverwrite(List inconsistentFiles) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -65,7 +63,6 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#promptForInconsistentFileRefresh(java.util.List)
 	 */
 	public boolean promptForInconsistentFileRefresh(List inconsistentFiles) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
