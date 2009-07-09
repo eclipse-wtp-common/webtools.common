@@ -24,7 +24,6 @@ public class B extends AbstractDataModelProvider {
 	}
 
 	public String getID() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

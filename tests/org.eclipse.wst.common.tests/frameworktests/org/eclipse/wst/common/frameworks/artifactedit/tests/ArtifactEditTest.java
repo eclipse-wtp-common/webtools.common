@@ -124,7 +124,6 @@ public class ArtifactEditTest extends TestCase {
 			url = new URL(url.toString() + zipFilePath);
 
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

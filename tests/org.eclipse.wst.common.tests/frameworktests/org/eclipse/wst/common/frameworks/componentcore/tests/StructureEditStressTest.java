@@ -99,10 +99,8 @@ public class StructureEditStressTest extends TestCase {
 		try {
 			Platform.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -134,10 +132,8 @@ public void testMultiThreadComponentAccess() {
 		try {
 			Platform.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

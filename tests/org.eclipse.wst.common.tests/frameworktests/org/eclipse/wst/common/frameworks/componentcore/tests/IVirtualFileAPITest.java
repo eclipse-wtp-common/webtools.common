@@ -31,7 +31,6 @@ public class IVirtualFileAPITest extends BaseVirtualTest {
 		
 	}
 	protected void setUp() throws Exception {
-		// TODO Auto-generated method stub
 		super.setUp();
 		IVirtualFolder rootFolder = component.getRootFolder();
 		testFile1 = rootFolder.getFile(TESTDATA_FOLDER_RUNTIME_PATH); 

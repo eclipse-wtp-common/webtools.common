@@ -98,7 +98,6 @@ public class ComponentCoreTest extends TestCase {
 	}
 
 	protected int getNextSeed() {
-		// TODO Auto-generated method stub
 		return seed++;
 	}
 

@@ -14,9 +14,6 @@ import org.eclipse.core.runtime.Platform;
 
 /**
  * @author jsholl
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class AutomatedBVTEclipse extends AutomatedBVT {
 	
@@ -27,7 +24,6 @@ public class AutomatedBVTEclipse extends AutomatedBVT {
         try {
         	AutomatedBVT.baseDirectory = Platform.asLocalURL(url).getFile() + "TestData"+ java.io.File.separatorChar;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

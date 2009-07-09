@@ -161,7 +161,6 @@ public class ModuleCoreNatureAPITest extends TestCase {
 		try {
 			project.getDescription().setNatureIds(new String[0]);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ModuleCoreNature.addModuleCoreNatureIfNecessary(project, new NullProgressMonitor());

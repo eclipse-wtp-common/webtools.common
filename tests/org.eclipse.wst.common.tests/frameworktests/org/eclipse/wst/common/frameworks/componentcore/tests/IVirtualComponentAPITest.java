@@ -21,7 +21,6 @@ public class IVirtualComponentAPITest extends BaseVirtualTest {
 
 	public IVirtualComponentAPITest(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
 	public void testGetName() {
