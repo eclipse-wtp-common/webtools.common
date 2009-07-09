@@ -49,7 +49,6 @@ public class Test2DataModelWizardFactory extends DMWizardExtensionFactory {
 	public DataModelWizardPage[] createPageGroup(IDataModel dataModel, String pageGroupID) {
 		return new DataModelWizardPage[]{new DataModelWizardPage(DataModelFactory.createDataModel(getProvider()), getPageName()) {
 			protected String[] getValidationPropertyNames() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
