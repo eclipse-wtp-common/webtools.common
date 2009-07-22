@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.23 $$  $$Date: 2009/07/09 20:13:28 $$ 
+ *  $$Revision: 1.24 $$  $$Date: 2009/07/22 15:49:22 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -20,6 +20,8 @@ import java.util.*;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.jobs.ILock;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.EList;
@@ -50,197 +52,290 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private final Object lock = new Object();
+		private final ILock lock = Job.getJobManager().newLock();
 
 		public void move(int newPosition, E object) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				super.move(newPosition, object);
+			} finally {
+				lock.release();
 			}
-
 		}
 
 		public E move(int newPosition, int oldPosition) {
 
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.move(newPosition, oldPosition);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean add(E o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.add(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public void add(int index, E element) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				super.add(index, element);
+			} finally {
+				lock.release();
 			}
-
 		}
 
 		public boolean addAll(Collection<? extends E> c) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.addAll(c);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean addAll(int index, Collection<? extends E> c) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.addAll(index, c);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public void clear() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				super.clear();
+			} finally {
+				lock.release();
 			}
-
 		}
 
 		public boolean contains(Object o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.contains(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean containsAll(Collection<?> c) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.containsAll(c);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean equals(Object o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.equals(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public E get(int index) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.get(index);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public int hashCode() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.hashCode();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public int indexOf(Object o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.indexOf(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean isEmpty() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.isEmpty();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public Iterator<E> iterator() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.iterator();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public int lastIndexOf(Object o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.lastIndexOf(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public ListIterator<E> listIterator() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.listIterator();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public ListIterator<E> listIterator(int index) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.listIterator(index);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean remove(Object o) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.remove(o);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public E remove(int index) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.remove(index);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean removeAll(Collection<?> c) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.removeAll(c);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public boolean retainAll(Collection<?> c) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.retainAll(c);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public E set(int index, E element) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.set(index, element);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public int size() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.size();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public List<E> subList(int fromIndex, int toIndex) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.subList(fromIndex, toIndex);
+			} finally {
+				lock.release();
 			}
 		}
 
 		public Object[] toArray() {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.toArray();
+			} finally {
+				lock.release();
 			}
 		}
 
 		public <T> T[] toArray(T[] a) {
 			
-			synchronized(lock) {
+			try {
+				lock.acquire();
 				return super.toArray(a);
+			} finally {
+				lock.release();
+			}
+		}
+
+		// release lock during notifications
+		protected void dispatchNotification(Notification notification) {
+
+			int lockDepth;
+			lockDepth = lock.getDepth();
+			try {
+				for(int i=0; i<lockDepth; i++)
+                    lock.release();
+				super.dispatchNotification(notification);
+			} finally {
+				for(int i=0; i<lockDepth; i++)
+                    lock.acquire();  // Re-acquire lock after notify
 			}
 		}
 
