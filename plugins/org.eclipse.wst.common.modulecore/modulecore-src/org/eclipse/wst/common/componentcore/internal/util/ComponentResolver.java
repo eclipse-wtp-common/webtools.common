@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2007 IBM Corporation and others.
+ * Copyright (c) 2001, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,7 +31,7 @@ import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtens
 import org.osgi.framework.Bundle;
 
 public class ComponentResolver implements URIResolverExtension {
-	private static boolean _DEBUG = "true".equals(Platform.getDebugOption("org.eclipse.wst.common.modulecore/ComponentResolver")); //$NON-NLS-1$ //$NON-NLS-2$ 
+	private static boolean _DEBUG = Boolean.valueOf(Platform.getDebugOption("org.eclipse.wst.common.modulecore/ComponentResolver")).booleanValue(); //$NON-NLS-1$ 
 	private static final String FILE_PROTOCOL = "file:///"; //$NON-NLS-1$
 	private static final String FILE_PROTOCOL2 = "file://"; //$NON-NLS-1$
 	private static final String ROOT_PATH_STRING = Path.ROOT.toString();
@@ -191,6 +191,10 @@ public class ComponentResolver implements URIResolverExtension {
 				IPath resolvedRuntimePath = null;
 				if (systemId.startsWith(ROOT_PATH_STRING)) {
 					resolvedRuntimePath = new Path(systemId);
+					/* https://bugs.eclipse.org/284017 - ComponentResolver does not resolve absolute references to the context root */
+					if (resolvedRuntimePath.segmentCount() > 1 && resolvedRuntimePath.segment(0).equals(ComponentUtilities.getServerContextRoot(file.getProject()))) {
+						resolvedRuntimePath = resolvedRuntimePath.removeFirstSegments(1);
+					}
 				}
 				else {
 					resolvedRuntimePath = new Path(virtualResources[i].getRuntimePath().removeLastSegments(1).append(systemId).toString());
