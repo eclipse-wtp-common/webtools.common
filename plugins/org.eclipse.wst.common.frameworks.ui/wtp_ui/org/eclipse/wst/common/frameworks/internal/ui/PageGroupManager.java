@@ -228,7 +228,7 @@ public class PageGroupManager {
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(CommonUIPluginConstants.PLUGIN_ID, ELEMENT_PAGE_GROUP);
 		IConfigurationElement[] allElements = point.getConfigurationElements();
 		for (int i = 0; i < allElements.length; i++) {
-			IConfigurationElement element = (IConfigurationElement) allElements[i];
+			IConfigurationElement element = allElements[i];
 			if (ELEMENT_PAGE_GROUP.equals(element.getName())) {
 				result.add(element);
 			}
@@ -276,9 +276,11 @@ public class PageGroupManager {
 						WTPUIPlugin.logError(e);
 					}
 					nextStackEntry.ranOperations = true;
-
-					if (status.getSeverity() == IStatus.ERROR) {
-						// TODO need a better error feedback mechanism here.
+					
+					// TODO need a better error feedback mechanism here.
+					if(status == null){
+						throw new IllegalArgumentException();
+					} else if (status.getSeverity() == IStatus.ERROR) {
 						throw new IllegalArgumentException(status.getMessage());
 					}
 				}
@@ -494,13 +496,6 @@ public class PageGroupManager {
 				init();
 
 			return pageGroup.getPages(dataModel);
-		}
-
-		public PageGroupEntry(PageGroupEntry originalEntry) {
-			pageGroup = originalEntry.pageGroup;
-			groupsThatFollow = originalEntry.groupsThatFollow;
-			pageHandler = originalEntry.pageHandler;
-			pageGroupHandler = originalEntry.pageGroupHandler;
 		}
 
 		private void init() {
