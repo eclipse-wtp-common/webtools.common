@@ -75,15 +75,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		public Resource getRes() {
 			return this.res == null ? null : (Resource)res.get();
 		}
-		public void setRes(Resource res) {
-			this.res = new WeakReference(res);
-		}
-		public IFile getSavedFile() {
-			return savedFile;
-		}
-		public void setSavedFile(IFile savedFile) {
-			this.savedFile = savedFile;
-		}
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
@@ -439,7 +430,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
-			String resURIString = "";
+			String resURIString = ""; //$NON-NLS-1$
 			if (resURI.path() != null) {
 				IPath resURIPath;
 				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
@@ -448,7 +439,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
 				resURIString = resURIPath.toString();
 			}
-			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
+			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1) //$NON-NLS-1$
 				resources.add(res);
 		}
 		return resources;
