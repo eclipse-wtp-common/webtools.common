@@ -337,6 +337,7 @@ public class ValidatorMetaData {
 				return true;
 			IContainer[] outputContainers = helper.getOutputContainers(project);
 			IContainer[] sourceContainers = helper.getSourceContainers(project);
+			if(outputContainers != null && sourceContainers != null){
 			for (int i=0; i<outputContainers.length; i++) {
 				String outputPath = outputContainers[i].getProjectRelativePath().makeAbsolute().toString();
                 String filePath = file.getProjectRelativePath().makeAbsolute().toString();
@@ -351,6 +352,7 @@ public class ValidatorMetaData {
 					}
 				}
 			}
+		}
 		}
 		return true;
 	}
