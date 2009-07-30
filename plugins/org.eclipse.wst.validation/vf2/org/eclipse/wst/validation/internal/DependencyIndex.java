@@ -12,6 +12,7 @@ package org.eclipse.wst.validation.internal;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -156,6 +157,9 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 					}					
 				}				
 			}
+			catch (EOFException e){
+				Tracing.log("Unable to read the dependency index file because of EOF exception"); 
+			}
 			catch (IOException e){
 				error = true;
 				ValidationPlugin.getPlugin().handleException(e);
@@ -247,10 +251,11 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	public synchronized void saving(ISaveContext context) throws CoreException {
 		if (!_dirty)return;
 		_dirty = false;
-		
+		boolean error = false;
 		DataOutputStream out = null;
+		File f = null;
 		try {
-			File f = getIndexLocation();
+			f = getIndexLocation();
 			out = new DataOutputStream(new FileOutputStream(f));
 			out.writeInt(CurrentVersion);
 			Map<String, Set<DependsResolved>> map = compress(_dependsOn);
@@ -269,10 +274,12 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			}
 		}
 		catch (IOException e){
+			error = true;
 			ValidationPlugin.getPlugin().handleException(e);
 		}
-		finally {
+		finally {		
 			Misc.close(out);
+			if (error)f.delete();
 		}
 	}
 
