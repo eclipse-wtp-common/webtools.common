@@ -1,4 +1,4 @@
-package org.eclipse.jem.util;
+package org.eclipse.wst.common.core.util;
 /*******************************************************************************
  * Copyright (c) 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials 
@@ -12,10 +12,17 @@ package org.eclipse.jem.util;
 
 /**
  * Interface for a UITester. The "classname" attribute on the "uiTester" extension point should implement this class.
- *
- * @deprecated Replaced by {@link org.eclipse.wst.common.core.util.UITester)
+ * 
  * @since 1.0.0
  */
-public interface UITester extends org.eclipse.wst.common.core.util.UITester {
+public interface UITester {
 
+	/**
+	 * Answer if the current context is an UI context.
+	 * 
+	 * @return <code>true</code> if an UI context.
+	 * 
+	 * @since 1.0.0
+	 */
+	public boolean isCurrentContextUI();
 }

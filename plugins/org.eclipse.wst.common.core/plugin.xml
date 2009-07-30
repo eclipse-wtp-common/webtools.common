@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="searchParticipants" name="%searchParticipants" />      
+   <extension-point id="searchParticipants" name="%searchParticipants" />
+   <extension-point id="uiTester" name="UI Tester" schema="schema/uiTester.exsd"/>
+   <extension-point id="uiContextSensitiveClass" name="UI Context Sensitive Class" schema="schema/uiContextSensitiveClass.exsd"/>
 </plugin>
 
 

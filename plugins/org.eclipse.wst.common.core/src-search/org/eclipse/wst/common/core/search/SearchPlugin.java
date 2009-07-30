@@ -13,7 +13,11 @@ package org.eclipse.wst.common.core.search;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.core.search.internal.SearchParticipantRegistry;
 import org.eclipse.wst.common.core.search.internal.SearchParticipantRegistryReader;
 import org.eclipse.wst.common.core.search.pattern.SearchPattern;
@@ -30,6 +34,21 @@ import org.osgi.framework.BundleContext;
  */
 public class SearchPlugin extends Plugin implements ISearchOptions
 {
+	//the ID for this plugin (added automatically by logging quickfix)
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.core"; //$NON-NLS-1$
+
+	/**
+	 * UI Context extension point.
+	 * 
+	 * @since 1.0.0
+	 */
+	public static final String UI_CONTEXT_EXTENSION_POINT = "uiContextSensitiveClass"; //$NON-NLS-1$
+	/**
+	 * UITester element name.
+	 * 
+	 * @since 1.0.0
+	 */
+	public static final String UI_TESTER_EXTENSION_POINT = "uiTester"; //$NON-NLS-1$
 
 	private SearchParticipantRegistry searchParticipantRegistry;
 
@@ -100,4 +119,31 @@ public class SearchPlugin extends Plugin implements ISearchOptions
 		return getSearchParticipantRegistry().getParticipants(pattern, searchOptions);
 	}
 
+	public static IStatus createStatus(int severity, String message, Throwable exception) {
+		return new Status(severity, PLUGIN_ID, message, exception);
+	}
+
+	public static IStatus createStatus(int severity, String message) {
+		return createStatus(severity, message, null);
+	}
+
+	public static void logError(Throwable exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, exception.getMessage(), exception));
+	}
+
+	public static void logError(CoreException exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( exception.getStatus() );
+	}
+
+	public static void logWarning(String message) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log(createStatus(IStatus.WARNING, message));
+	}
+
+	public static void logWarning(Throwable exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.WARNING, exception.getMessage(), exception));
+	}
+
+	public static void logError(String message) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, message));
+	}
 }
