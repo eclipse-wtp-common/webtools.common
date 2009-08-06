@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension
+          point="org.eclipse.wst.common.modulecore.ui.referenceWizardFragment">
+       <referenceFragment
+             class="org.eclipse.jst.common.ui.assembly.wizard.JarReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
+             id="org.eclipse.jst.common.ui.jarReference"
+             name="Jar">
+       </referenceFragment>
+       <referenceFragment
+             class="org.eclipse.jst.common.ui.assembly.wizard.ExternalJarReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
+             id="org.eclipse.jst.common.ui.externalJarReference"
+             name="External Jar">
+       </referenceFragment>
+       <referenceFragment
+             class="org.eclipse.jst.common.ui.assembly.wizard.VariableReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
+             id="org.eclipse.jst.common.ui.variableReference"
+             name="Variable">
+       </referenceFragment>
+    </extension>
+
+</plugin>
