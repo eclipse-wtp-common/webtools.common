@@ -3,11 +3,10 @@
 <plugin>
    <extension-point id="moduleDependencyPropertyPage" name="org.jboss.ide.eclipse.as.wtp.override.moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
-    <extension point="org.eclipse.ui.propertyPages">
- 
-     
-<!-- =========== org.eclipse.jst.j2ee.internal.J2EEDependencyPage ============ -->
-      <page
+   <!-- =========== org.eclipse.jst.j2ee.internal.J2EEDependencyPage ============ -->
+   <extension
+   		point="org.eclipse.ui.propertyPages">
+ 	<page
       		name="%module_assembly_"
             class="org.eclipse.wst.common.componentcore.ui.propertypage.ModuleAssemblyRootPage"
             id="org.eclipse.wst.common.componentcore.ui.J2EEDependenciesPage">
