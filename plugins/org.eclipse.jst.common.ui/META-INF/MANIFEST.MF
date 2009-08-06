@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ui
+Bundle-Name: %Bundle-Name.0
+Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.jst.common.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.jst.common.ui.JstCommonUIPlugin
