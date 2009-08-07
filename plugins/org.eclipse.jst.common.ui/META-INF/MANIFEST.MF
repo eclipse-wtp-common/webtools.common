@@ -4,7 +4,7 @@ Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.jst.common.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.jst.common.ui.JstCommonUIPlugin
+Bundle-Activator: org.eclipse.jst.common.ui.internal.JstCommonUIPlugin
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.wst.server.ui;bundle-version="1.1.102",
@@ -16,5 +16,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.5.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.jst.common.ui,
- org.eclipse.jst.common.ui.assembly.wizard
+Export-Package: org.eclipse.jst.common.ui.assembly.wizard

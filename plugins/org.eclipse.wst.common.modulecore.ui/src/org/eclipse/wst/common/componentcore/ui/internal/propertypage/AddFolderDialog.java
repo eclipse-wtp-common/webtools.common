@@ -8,7 +8,7 @@
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
  ******************************************************************************/
-package org.eclipse.wst.common.componentcore.ui.propertypage.internal;
+package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

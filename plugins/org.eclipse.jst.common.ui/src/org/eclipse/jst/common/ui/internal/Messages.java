@@ -1,4 +1,4 @@
-package org.eclipse.jst.common.ui;
+package org.eclipse.jst.common.ui.internal;
 
 import org.eclipse.osgi.util.NLS;
 

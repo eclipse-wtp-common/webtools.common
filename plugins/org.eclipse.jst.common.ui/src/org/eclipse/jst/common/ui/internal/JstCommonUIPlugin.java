@@ -1,4 +1,4 @@
-package org.eclipse.jst.common.ui;
+package org.eclipse.jst.common.ui.internal;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

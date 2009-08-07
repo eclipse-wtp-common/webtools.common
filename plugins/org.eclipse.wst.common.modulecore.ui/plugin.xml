@@ -25,7 +25,7 @@
     <extension
           point="org.eclipse.wst.common.modulecore.ui.referenceWizardFragment">
        <referenceFragment
-             class="org.eclipse.wst.common.componentcore.ui.propertypage.internal.ProjectReferenceWizardFragment"
+             class="org.eclipse.wst.common.componentcore.ui.internal.propertypage.ProjectReferenceWizardFragment"
              icon="icons/prj_obj.gif"
              id="org.eclipse.wst.common.componentcore.ui.newProjectReference"
              name="Project">

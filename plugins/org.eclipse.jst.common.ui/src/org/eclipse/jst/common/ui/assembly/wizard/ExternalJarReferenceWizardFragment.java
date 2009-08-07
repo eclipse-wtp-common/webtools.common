@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.ui.wizards.BuildPathDialogAccess;
-import org.eclipse.jst.common.ui.Messages;
+import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;

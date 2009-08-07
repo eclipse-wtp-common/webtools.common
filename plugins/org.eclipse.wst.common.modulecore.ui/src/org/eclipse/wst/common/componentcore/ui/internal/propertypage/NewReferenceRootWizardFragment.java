@@ -8,7 +8,7 @@
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
  ******************************************************************************/
-package org.eclipse.wst.common.componentcore.ui.propertypage.internal;
+package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.Messages;
-import org.eclipse.wst.common.componentcore.ui.propertypage.internal.DependencyPageExtensionManager.ReferenceExtension;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 
 public class NewReferenceRootWizardFragment extends WizardFragment {
 	protected Map<String, WizardFragment> fragmentMap = 
