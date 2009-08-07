@@ -7,7 +7,7 @@
    <extension
    		point="org.eclipse.ui.propertyPages">
  	<page
-      		name="%module_assembly_"
+      		name="%Module_assembly.name"
             class="org.eclipse.wst.common.componentcore.ui.propertypage.ModuleAssemblyRootPage"
             id="org.eclipse.wst.common.componentcore.ui.J2EEDependenciesPage">
            <enabledWhen>
