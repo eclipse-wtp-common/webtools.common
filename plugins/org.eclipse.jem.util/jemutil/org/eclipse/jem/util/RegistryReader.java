@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: RegistryReader.java,v $$
- *  $$Revision: 1.6 $$  $$Date: 2009/07/30 22:11:24 $$ 
+ *  $$Revision: 1.7 $$  $$Date: 2009/08/11 15:30:32 $$ 
  */
 package org.eclipse.jem.util;
 import org.eclipse.core.runtime.*;
@@ -39,6 +39,20 @@ public abstract class RegistryReader extends org.eclipse.wst.common.core.util.Re
 	 */
 	public static String getPluginId(IConfigurationElement configurationElement) {
 		return org.eclipse.wst.common.core.util.RegistryReader.getPluginId(configurationElement);
+	}
+
+	/**
+	 * Constructor for RegistryReader taking a registry, plugin id, and extension point id.
+	 * 
+	 * @param registry
+	 * @param pluginID
+	 * @param extensionPoint
+	 * 
+	 * @deprecated Use RegistryReader(plugin, extensionPoint) instead. The registry passed in is ignored.
+	 * @since 1.0.0
+	 */
+	public RegistryReader(IPluginRegistry registry, String pluginID, String extensionPoint) {
+		this(pluginID, extensionPoint);
 	}
 
 	/**
