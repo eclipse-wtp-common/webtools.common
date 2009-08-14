@@ -10,13 +10,12 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ResourceSetWorkbenchSynchronizer.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2006/05/17 20:13:45 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2009/08/14 19:20:47 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -37,7 +36,7 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	protected ResourceSet resourceSet;
 
 	/** Extenders that will be notified after a pre build resource change */
-	protected List extenders;
+	protected Set extenders;
 
 	/** The delta for this project that will be broadcast to the extenders */
 	protected IResourceDelta currentProjectDelta;
@@ -88,16 +87,16 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	protected void notifyExtendersIfNecessary() {
 		if (currentEventType != IResourceChangeEvent.POST_CHANGE || extenders == null || currentProjectDelta == null)
 			return;
-		for (int i = 0; i < extenders.size(); i++) {
-			ISynchronizerExtender extender = (ISynchronizerExtender) extenders.get(i);
-			extender.projectChanged(currentProjectDelta);
+		for (Iterator iterator = extenders.iterator(); iterator.hasNext();) {
+			ISynchronizerExtender extender = (ISynchronizerExtender) iterator.next();
+			extender.projectChanged(currentProjectDelta);	
 		}
 	}
 
 	protected void notifyExtendersOfClose() {
 		if (extenders != null && !extenders.isEmpty()) {
-			for (int i = 0; i < extenders.size(); i++) {
-				ISynchronizerExtender extender = (ISynchronizerExtender) extenders.get(i);
+			for (Iterator iterator = extenders.iterator(); iterator.hasNext();) {
+				ISynchronizerExtender extender = (ISynchronizerExtender) iterator.next();
 				extender.projectClosed();
 			}
 		}
@@ -148,7 +147,7 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	 */
 	public void addExtender(ISynchronizerExtender extender) {
 		if (extenders == null)
-			extenders = new ArrayList(3);
+			extenders = new HashSet(3);
 		extenders.add(extender);
 	}
 
