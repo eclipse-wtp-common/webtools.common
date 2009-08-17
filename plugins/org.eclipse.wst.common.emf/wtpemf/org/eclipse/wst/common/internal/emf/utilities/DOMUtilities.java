@@ -503,7 +503,7 @@ public class DOMUtilities {
 			Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/validation/schema\". Validation will be disabled."); //$NON-NLS-1$
 		}
 		try {
-			dbf.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+			dbf.setAttribute("http://apache.org/xml/features/dom/defer-node-expansion", Boolean.FALSE);
 		} catch (IllegalArgumentException ignore) {
 			Logger.getLogger().log("Warning: Parser does not support \"http://apache.org/xml/features/dom/defer-node-expansion\"."); //$NON-NLS-1$
 		}
