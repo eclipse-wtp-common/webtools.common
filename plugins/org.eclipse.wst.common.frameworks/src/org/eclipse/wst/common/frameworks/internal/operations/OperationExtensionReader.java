@@ -8,12 +8,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Nov 3, 2003
- * 
- * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
- * Generation&gt;Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.util.ArrayList;
@@ -21,7 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.core.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class OperationExtensionReader extends RegistryReader {

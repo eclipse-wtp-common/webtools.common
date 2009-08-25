@@ -24,7 +24,7 @@
    </extension>
    
       <extension
-         point="org.eclipse.jem.util.uiContextSensitiveClass">
+         point="org.eclipse.wst.common.core.uiContextSensitiveClass">
       <uiContextSensitiveClass
             context="Headless"
             key="rendererFactory"

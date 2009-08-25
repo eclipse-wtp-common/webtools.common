@@ -8,29 +8,16 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Dec 10, 2003
- * 
- * To change the template for this generated file go to Window - Preferences - Java - Code
- * Generation - Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal;
 
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.jem.util.logger.proxyrender.DefaultPluginTraceRenderer;
-import org.eclipse.jem.util.logger.proxyrender.IMsgLogger;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WorkbenchUtil;
 import org.osgi.framework.BundleContext;
 
-public abstract class WTPPlugin extends Plugin implements IMsgLogger {
-	/**
-	 * {@link Deprecated}
-	 */
-	protected static Logger logger = null;
+public abstract class WTPPlugin extends Plugin {
 	protected static WTPPlugin instance = null; 
 	public ResourceBundle resourceBundle;
 
@@ -42,30 +29,6 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 		instance = this;
 	}
 
-	/**
-	 * {@link Deprecated}
-	 */
-	public Logger getMsgLogger() {
-		if (logger == null) {
-			logger = Logger.getLogger(getPluginID());
-			setRenderer(logger);
-		}
-		return logger;
-	}
-
-	/**
-	 * {@link Deprecated}
-	 */
-	protected void setRenderer(Logger aLogger) {
-		new DefaultPluginTraceRenderer(aLogger);
-	}
-
-	/**
-	 * {@link Deprecated}
-	 */
-	public Logger getLogger() {
-		return getMsgLogger();
-	}
 	public static boolean isPlatformCaseSensitive() {
 		return Platform.OS_MACOSX.equals(Platform.getOS()) ? false : new
 				java.io.File("a").compareTo(new java.io.File("A")) != 0;  //$NON-NLS-1$//$NON-NLS-2$

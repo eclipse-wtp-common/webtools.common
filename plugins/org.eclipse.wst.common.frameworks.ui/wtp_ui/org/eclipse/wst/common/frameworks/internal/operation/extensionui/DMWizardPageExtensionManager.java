@@ -22,7 +22,7 @@ import java.util.TreeSet;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.core.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;

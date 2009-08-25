@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -73,10 +72,6 @@ public class WTPUIPlugin extends AbstractUIPlugin {
 	 */
 	public static WTPUIPlugin getDefault() {
 		return plugin;
-	}
-
-	public static Logger getLogger() {
-		return Logger.getLogger(PLUGIN_ID);
 	}
 
 	/**

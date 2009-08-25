@@ -8,12 +8,6 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Oct 29, 2003
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal.plugin;
 
 import java.text.MessageFormat;
@@ -29,12 +23,6 @@ import org.eclipse.core.runtime.Platform;
 import java.lang.Throwable;
 import org.eclipse.core.runtime.CoreException;
 
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class WTPCommonPlugin extends WTPPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks"; //$NON-NLS-1$

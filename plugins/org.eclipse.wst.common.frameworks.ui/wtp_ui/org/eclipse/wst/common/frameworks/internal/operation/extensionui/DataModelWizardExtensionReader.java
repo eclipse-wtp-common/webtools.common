@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.core.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;

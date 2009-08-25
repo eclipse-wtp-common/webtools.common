@@ -18,17 +18,10 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 
 import java.util.ResourceBundle;
 
-import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.jem.util.logger.proxyrender.DefaultPluginTraceRenderer;
-import org.eclipse.jem.util.logger.proxyrender.IMsgLogger;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IMsgLogger {
-	/**
-	 * @deprecated
-	 */
-	protected static Logger logger = null;
+public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin {
 	public ResourceBundle resourceBundle;
 	protected static AbstractWTPUIPlugin instance = null; 
 
@@ -40,28 +33,7 @@ public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IM
 		instance = this;
 	}
 
-	/**
-	 * @deprecated
-	 * @return
-	 */
-	public Logger getMsgLogger() {
-		if (logger == null) {
-			logger = Logger.getLogger(getPluginID());
-			setRenderer(logger);
-		}
-		return logger;
-	}
-
 	public abstract String getPluginID();
-
-	/**
-	 * @deprecated
-	 * @param aLogger
-	 */
-	protected void setRenderer(Logger aLogger) {
-		new DefaultPluginTraceRenderer(aLogger);
-	}
-	
 
 	/*
 	 * (non-Javadoc)

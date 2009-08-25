@@ -8,26 +8,14 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Feb 12, 2004
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal.enablement;
 
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.UIContextDetermination;
+import org.eclipse.wst.common.core.util.UIContextDetermination;
 
-/**
- * @author schacher
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public interface IEnablementManager {
 	String INTERNAL_ENABLEMENT_DETERMINATION_ID = "org.eclipse.wst.common.frameworks.internal.EnablementDetermination"; //$NON-NLS-1$
 

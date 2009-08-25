@@ -10,7 +10,7 @@
    <extension
          id="context.Sensitive.Class.saveHandler"
          name="Save Handler - Headless Context Class"
-         point="org.eclipse.jem.util.uiContextSensitiveClass">
+         point="org.eclipse.wst.common.core.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="saveHandler"
             context="Headless"
@@ -19,7 +19,7 @@
    </extension>
    <extension
          id="org.eclipse.wst.common.frameworks.internal.enablement"
-         point="org.eclipse.jem.util.uiContextSensitiveClass">
+         point="org.eclipse.wst.common.core.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="Headless"
@@ -27,7 +27,7 @@
       </uiContextSensitiveClass>
    </extension>
    <extension 
-       point="org.eclipse.jem.util.uiContextSensitiveClass">
+       point="org.eclipse.wst.common.core.uiContextSensitiveClass">
        <uiContextSensitiveClass
           key="ISimpleValidateEditContext"
           className="org.eclipse.wst.common.frameworks.internal.SimpleValidateEditContextHeadless"

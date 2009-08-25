@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal;
 
-import org.eclipse.jem.util.UIContextDetermination;
-
+import org.eclipse.wst.common.core.util.UIContextDetermination;
 
 /**
  * A registry for the default ISaveHandler to use when saving edit models

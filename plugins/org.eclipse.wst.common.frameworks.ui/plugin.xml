@@ -10,7 +10,7 @@
 
    <extension
          id="UITester"
-         point="org.eclipse.jem.util.uiTester">
+         point="org.eclipse.wst.common.core.uiTester">
       <uiTester
             className="org.eclipse.wst.common.frameworks.internal.ui.UITesterImpl">
       </uiTester>
@@ -18,7 +18,7 @@
    <extension
          id="context.Sensitive.Class.saveHandler"
          name="Save Handler - Headless Context Class"
-         point="org.eclipse.jem.util.uiContextSensitiveClass">
+         point="org.eclipse.wst.common.core.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="saveHandler"
             context="UI"
@@ -28,7 +28,7 @@
    <extension
          id="org.eclipse.wst.common.frameworks.internal.ui.EnablementDetermination"
          name="UI Enablement Determination"
-         point="org.eclipse.jem.util.uiContextSensitiveClass">
+         point="org.eclipse.wst.common.core.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="UI"
@@ -50,7 +50,7 @@
    </extension>
    -->
    <extension 
-       point="org.eclipse.jem.util.uiContextSensitiveClass">
+       point="org.eclipse.wst.common.core.uiContextSensitiveClass">
        <uiContextSensitiveClass
           key="ISimpleValidateEditContext"
           className="org.eclipse.wst.common.frameworks.internal.ui.SimpleValidateEditContextUI"

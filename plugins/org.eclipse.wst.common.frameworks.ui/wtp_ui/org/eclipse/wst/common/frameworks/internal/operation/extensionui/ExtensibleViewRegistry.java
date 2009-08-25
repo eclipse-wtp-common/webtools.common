@@ -15,13 +15,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.core.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
-
-/**
- * @author mdelder
- */
 public class ExtensibleViewRegistry extends RegistryReader {
 
 	private static ExtensibleViewRegistry INSTANCE = null;

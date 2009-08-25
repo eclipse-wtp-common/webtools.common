@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jem.util.UIContextDetermination;
+import org.eclipse.wst.common.core.util.UIContextDetermination;
 
 public class SimpleValidateEdit {
 
