@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -34,10 +35,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
-import org.eclipse.jst.common.ui.internal.Messages;
-import org.eclipse.wst.server.ui.wizard.IWizardHandle;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
 
 public class JarReferenceWizardFragment extends WizardFragment {
 	protected LabelProvider labelProvider = null;
