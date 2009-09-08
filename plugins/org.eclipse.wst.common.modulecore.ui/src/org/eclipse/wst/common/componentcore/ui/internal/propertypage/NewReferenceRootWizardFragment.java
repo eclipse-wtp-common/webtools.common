@@ -27,10 +27,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.server.ui.wizard.IWizardHandle;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
+import org.eclipse.wst.common.componentcore.ui.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.taskwizard.WizardFragment;
 
 public class NewReferenceRootWizardFragment extends WizardFragment {
 	protected Map<String, WizardFragment> fragmentMap = 

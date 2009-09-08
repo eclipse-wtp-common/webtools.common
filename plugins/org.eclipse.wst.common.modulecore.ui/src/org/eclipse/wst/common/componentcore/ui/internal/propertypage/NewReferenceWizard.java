@@ -16,17 +16,18 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
-import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.ui.taskwizard.TaskWizard;
+import org.eclipse.wst.common.componentcore.ui.taskwizard.WizardFragment;
 
 public class NewReferenceWizard extends TaskWizard implements IReferenceWizardConstants {
-
+	private static final Object REFERENCE_FAMILY = new Object();
 	public NewReferenceWizard() {
 		super(Messages.NewReferenceWizard, new WizardFragment() {
 			protected void createChildFragments(List<WizardFragment> list) {
 				list.add(new NewReferenceRootWizardFragment());
 			}
 		});
+		setFinishJobFamily(REFERENCE_FAMILY);
 	}
 
 	public void init(IWorkbench newWorkbench, IStructuredSelection newSelection) {

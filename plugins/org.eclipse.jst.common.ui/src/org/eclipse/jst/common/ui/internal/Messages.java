@@ -3,7 +3,7 @@ package org.eclipse.jst.common.ui.internal;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.eclipse.jst.common.ui.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.jst.common.ui.internal"; //$NON-NLS-1$
 	public static String JarTitle;
 	public static String JarDescription;
 	public static String ExternalJarTitle;
@@ -14,7 +14,7 @@ public class Messages extends NLS {
 	
 	static {
 		// initialize resource bundle
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+		NLS.initializeMessages(BUNDLE_NAME + ".messages", Messages.class);
 	}
 
 	private Messages() {

@@ -27,6 +27,7 @@ public class Messages extends NLS {
 	public static String ProjectReferenceDescription;
 	public static String VariableReferenceTitle;
 	public static String VariableReferenceDescription;
+	public static String WizardError;
 	
 	static {
 		// initialize resource bundle

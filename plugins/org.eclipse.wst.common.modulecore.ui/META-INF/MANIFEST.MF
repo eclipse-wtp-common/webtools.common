@@ -22,4 +22,6 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.emf.ecore;bundle-version="[2.5.0,3.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.wst.common.componentcore.ui.propertypage
+Export-Package: org.eclipse.wst.common.componentcore.internal.impl,
+ org.eclipse.wst.common.componentcore.ui.propertypage,
+ org.eclipse.wst.common.componentcore.ui.taskwizard
