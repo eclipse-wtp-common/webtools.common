@@ -84,8 +84,11 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		List targetprojectList = new ArrayList();
 		for (int i = 0; i < modList.size(); i++) {
-			IVirtualComponent IVirtualComponent = (IVirtualComponent) modList.get(i);
-			IProject targetProject = IVirtualComponent.getProject();
+			IVirtualComponent virtualComponent = (IVirtualComponent) modList.get(i);
+			if(virtualComponent.isBinary()){
+				continue;
+			}
+			IProject targetProject = virtualComponent.getProject();
 			targetprojectList.add(targetProject);
 		}
 		try {
