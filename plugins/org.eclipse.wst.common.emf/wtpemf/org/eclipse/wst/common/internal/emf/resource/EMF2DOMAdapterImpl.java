@@ -292,6 +292,49 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		}
 		return null;
 	}
+	
+	/**
+	 * Checks to ensure that only one MOF node has been removed and will remove the dom equivalent.
+	 * If multiple differences are found, will return the index of the first difference.
+	 * 
+	 * @param parent
+	 * @param mofChildren
+	 * @param domChildren
+	 * @return
+	 */
+	private int updateDOMSingleRemove(Node parent, List mofChildren, List domChildren){
+		int domIndex = 0;
+		int firstDifference = -1;
+		for (Object mofChild : mofChildren){
+			EMF2DOMAdapter adapter = getExistingAdapter((EObject)mofChild);
+			if(adapter.getNode() != domChildren.get(domIndex)){
+				if(firstDifference != -1){
+					//second difference; return
+					return firstDifference;
+				}
+				//we found something that is different
+				firstDifference = domIndex;
+				//skip over one index and check against next
+				domIndex ++;
+				if(adapter.getNode() != domChildren.get(domIndex)){
+					//if these are different then there are multiple changes
+					return firstDifference;
+				}
+			}
+			domIndex++;
+		}
+		if(firstDifference != -1){
+			removeDOMChild(parent, (Element) domChildren.get(firstDifference));
+			//if we are here, and firstDifference is not -1, that means we have iterated
+			//through the entire mof list, and all elements have been processed. Return
+			//domchildren.size, so that no more processing is done in calling method.
+			return domChildren.size();
+		}
+		//if we are here, then firstDifference was -1. Our algo has failed. Let original algo run.
+		return 0;
+	}
+
+	
 
 	/**
 	 * Update all the children of the target MOF object in the relationship described by
@@ -304,18 +347,23 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 */
 	protected void primUpdateDOMMultiFeature(Translator map, Node node, List mofChildren, List domChildren, Notifier owner) {
 
+		int i = 0;
+		Node parent = findDOMPath(node, map, false);
+		if(domChildren.size() - mofChildren.size() == 1){
+			//an emf object has been deleted. Remove it from the dom as well
+			i = updateDOMSingleRemove(parent, mofChildren, domChildren);
+		}
 		//Used for inserting primitives
 		List inorderDOMChildren = null;
-		if (!map.isObjectMap() || map.isManagedByParent()) {
-			inorderDOMChildren = new ArrayList();
-			inorderDOMChildren.addAll(domChildren);
+		if(i < mofChildren.size()){
+			if (!map.isObjectMap() || map.isManagedByParent()) {
+				inorderDOMChildren = new ArrayList();
+				inorderDOMChildren.addAll(domChildren);
+			}
 		}
-		Node parent = findDOMPath(node, map, false);
-
 		// Go though the MOF children checking to see if the corresponding
 		// MOF Adapter children exists. If not, create the adapter.
 		// Also handles reordering children that have moved.
-		int i = 0;
 		for (; i < mofChildren.size(); i++) {
 			Object child = mofChildren.get(i);
 			EObject mofChild = null;
