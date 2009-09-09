@@ -35,9 +35,9 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.server.ui.wizard.IWizardHandle;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
 
 public class ProjectReferenceWizardFragment extends WizardFragment {
 	private LabelProvider labelProvider = null;

@@ -15,9 +15,9 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.TaskWizard;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.WizardFragment;
 
 public class NewReferenceWizard extends TaskWizard implements IReferenceWizardConstants {
 	private static final Object REFERENCE_FAMILY = new Object();

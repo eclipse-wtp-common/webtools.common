@@ -29,8 +29,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.IWizardHandle;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 
 public class NewReferenceRootWizardFragment extends WizardFragment {
 	protected Map<String, WizardFragment> fragmentMap = 

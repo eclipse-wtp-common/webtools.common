@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.ui.taskwizard;
+package org.eclipse.wst.common.componentcore.ui.internal.taskwizard;
 
 import java.util.ArrayList;
 import java.util.List;

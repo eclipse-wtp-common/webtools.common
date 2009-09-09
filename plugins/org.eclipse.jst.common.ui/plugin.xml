@@ -5,19 +5,19 @@
     <extension
           point="org.eclipse.wst.common.modulecore.ui.referenceWizardFragment">
        <referenceFragment
-             class="org.eclipse.jst.common.ui.assembly.wizard.JarReferenceWizardFragment"
+             class="org.eclipse.jst.common.ui.internal.assembly.wizard.JarReferenceWizardFragment"
              icon="icons/jar_obj.gif"
              id="org.eclipse.jst.common.ui.jarReference"
              name="Jar">
        </referenceFragment>
        <referenceFragment
-             class="org.eclipse.jst.common.ui.assembly.wizard.ExternalJarReferenceWizardFragment"
+             class="org.eclipse.jst.common.ui.internal.assembly.wizard.ExternalJarReferenceWizardFragment"
              icon="icons/jar_obj.gif"
              id="org.eclipse.jst.common.ui.externalJarReference"
              name="External Jar">
        </referenceFragment>
        <referenceFragment
-             class="org.eclipse.jst.common.ui.assembly.wizard.VariableReferenceWizardFragment"
+             class="org.eclipse.jst.common.ui.internal.assembly.wizard.VariableReferenceWizardFragment"
              icon="icons/jar_obj.gif"
              id="org.eclipse.jst.common.ui.variableReference"
              name="Variable">

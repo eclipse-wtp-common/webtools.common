@@ -8,7 +8,7 @@
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
  ******************************************************************************/
-package org.eclipse.jst.common.ui.assembly.wizard;
+package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
 import java.util.ArrayList;
 
@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.IWizardHandle;
 
 public class VariableReferenceWizardFragment extends JarReferenceWizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {

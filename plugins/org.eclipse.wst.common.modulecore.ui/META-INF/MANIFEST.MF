@@ -15,13 +15,11 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.wst.common.frameworks.ui;bundle-version="[1.1.300,2.0.0)",
  org.eclipse.jst.common.frameworks;bundle-version="[1.1.300,2.0.0)",
  org.eclipse.wst.common.project.facet.core;bundle-version="[1.4.0,2.0.0)",
- org.eclipse.wst.server.ui;bundle-version="[1.1.102,2.0.0)",
- org.eclipse.wst.server.core;bundle-version="[1.1.101,2.0.0)",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="[1.1.300,2.0.0)",
  org.eclipse.jem.util;bundle-version="[2.0.200,3.0.0)",
  org.eclipse.emf.ecore;bundle-version="[2.5.0,3.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.wst.common.componentcore.internal.impl,
- org.eclipse.wst.common.componentcore.ui.propertypage,
- org.eclipse.wst.common.componentcore.ui.taskwizard
+ org.eclipse.wst.common.componentcore.ui.internal.taskwizard,
+ org.eclipse.wst.common.componentcore.ui.propertypage

@@ -22,8 +22,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IDependencyPageProvider;
-import org.eclipse.wst.common.componentcore.ui.taskwizard.WizardFragment;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 public class DependencyPageExtensionManager {
