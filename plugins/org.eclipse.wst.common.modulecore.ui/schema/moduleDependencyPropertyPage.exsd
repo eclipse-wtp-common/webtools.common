@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.componentcore.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.wst.common.componentcore.ui" id="moduleDependencyPropertyPage" name="org.jboss.ide.eclipse.as.wtp.override.moduleDependencyPropertyPage"/>
+         <meta.schema plugin="org.eclipse.wst.common.componentcore.ui" id="moduleDependencyPropertyPage" name="moduleDependencyPropertyPage"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -13,7 +13,6 @@
    <element name="extension">
       <annotation>
          <appinfo>
-            <meta.element />
          </appinfo>
       </annotation>
       <complexType>

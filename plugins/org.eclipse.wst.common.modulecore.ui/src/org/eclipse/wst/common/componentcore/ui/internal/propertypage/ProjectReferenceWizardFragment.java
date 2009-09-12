@@ -29,8 +29,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -99,7 +99,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		if( labelProvider == null ) {
 			labelProvider = new LabelProvider() {
 				public Image getImage(Object element) {
-					return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
+					return PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
 				}
 				public String getText(Object element) {
 					if( element instanceof IProject )
@@ -127,7 +127,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 						else if( p.equals(root))
 							i.remove();
 					}
-					return (IProject[]) list.toArray(new IProject[list.size()]);
+					return list.toArray(new IProject[list.size()]);
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}

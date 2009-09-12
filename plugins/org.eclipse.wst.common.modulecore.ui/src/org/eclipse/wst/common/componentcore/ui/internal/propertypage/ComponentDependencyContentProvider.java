@@ -96,9 +96,8 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 					return new Path(PATH_SEPARATOR).toString();
 				}
 				return runtimePaths.get(element);
-			} else {
-				return ((IProject)element).getName();
 			}
+			return ((IProject)element).getName();
 		}
 		return null;
 	}

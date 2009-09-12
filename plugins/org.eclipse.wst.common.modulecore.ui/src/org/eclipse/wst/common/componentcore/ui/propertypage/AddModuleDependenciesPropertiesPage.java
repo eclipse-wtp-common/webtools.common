@@ -550,7 +550,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			String archiveName = refs[i].getArchiveName();
 			String val = (archiveName != null) ? refs[i].getRuntimePath().append(archiveName).toString() : refs[i].getRuntimePath().toString();
 			objectToRuntimePath.put(comp, val);
-			oldComponentToRuntimePath.put((IVirtualComponent) comp, val);
+			oldComponentToRuntimePath.put(comp, val);
 		}
 
 		ComponentResource[] allMappings = findAllMappings();
@@ -641,7 +641,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		return true;
 	}
 	protected boolean addNewResourceMappings() {
-		ComponentResourceProxy[] proxies = (ComponentResourceProxy[]) resourceMappings.toArray(new ComponentResourceProxy[resourceMappings.size()]);
+		ComponentResourceProxy[] proxies = resourceMappings.toArray(new ComponentResourceProxy[resourceMappings.size()]);
 		IVirtualFolder rootFolder = rootComponent.getRootFolder();
 		for( int i = 0; i < proxies.length; i++ ) {
 			try {
@@ -785,7 +785,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		IVirtualComponent o;
 		while(i.hasNext()) {
 			o = i.next();
-			components.add((IVirtualComponent)o);
+			components.add(o);
 		}
 		
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable(){
@@ -838,56 +838,56 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		}	
 	}
 	
-	/**
-	 * [Bug 238264]
-	 * determines a unique URI mapping name for a given component
-	 * this is in case two components have the same name.
-	 * 
-	 * @return returns a valid (none duplicate) uri mapping name for the given component\
-	 */
-	private String getURIMappingName(IVirtualComponent archive) {
-		
-		//get the default uri map name for the given archive
-		IPath componentPath = Path.fromOSString(archive.getName());
-		String uriMapName = componentPath.lastSegment().replace(' ', '_');
-		
-		
-		//check to be sure this uri mapping is not already in use by another reference
-		boolean dupeArchiveName;
-		String refedCompName;
-		int lastDotIndex;
-		String increment;
-		IVirtualReference [] existingRefs = rootComponent.getReferences();
-		for(int i=0;i<existingRefs.length;i++){
-			refedCompName = existingRefs[i].getReferencedComponent().getName();
-			
-			//if uri mapping names of the refed component and the given archive are the same
-			//  find a new uri map name for the given archive
-			if(existingRefs[i].getArchiveName().equals(uriMapName)){
-				dupeArchiveName = true;
-				//find a new uriMapName for the given component
-				for(int j=1; dupeArchiveName; j++){
-					lastDotIndex = uriMapName.lastIndexOf('.');
-					increment = "_"+j; //$NON-NLS-1$
-					
-					//create the new potential name
-					if(lastDotIndex != -1){
-						uriMapName = uriMapName.substring(0, lastDotIndex) + increment + uriMapName.substring(lastDotIndex);
-					} else {
-						uriMapName = uriMapName.substring(0)+increment;
-					}
-					
-					//determine if the new potential name is valid
-					for(int k=0; k<existingRefs.length; k++) {
-						dupeArchiveName = existingRefs[k].getArchiveName().equals(uriMapName);
-						if(dupeArchiveName) {
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		return uriMapName;
-	}
+//	/**
+//	 * [Bug 238264]
+//	 * determines a unique URI mapping name for a given component
+//	 * this is in case two components have the same name.
+//	 * 
+//	 * @return returns a valid (none duplicate) uri mapping name for the given component\
+//	 */
+//	private String getURIMappingName(IVirtualComponent archive) {
+//		
+//		//get the default uri map name for the given archive
+//		IPath componentPath = Path.fromOSString(archive.getName());
+//		String uriMapName = componentPath.lastSegment().replace(' ', '_');
+//		
+//		
+//		//check to be sure this uri mapping is not already in use by another reference
+//		boolean dupeArchiveName;
+//		String refedCompName;
+//		int lastDotIndex;
+//		String increment;
+//		IVirtualReference [] existingRefs = rootComponent.getReferences();
+//		for(int i=0;i<existingRefs.length;i++){
+//			refedCompName = existingRefs[i].getReferencedComponent().getName();
+//			
+//			//if uri mapping names of the refed component and the given archive are the same
+//			//  find a new uri map name for the given archive
+//			if(existingRefs[i].getArchiveName().equals(uriMapName)){
+//				dupeArchiveName = true;
+//				//find a new uriMapName for the given component
+//				for(int j=1; dupeArchiveName; j++){
+//					lastDotIndex = uriMapName.lastIndexOf('.');
+//					increment = "_"+j; //$NON-NLS-1$
+//					
+//					//create the new potential name
+//					if(lastDotIndex != -1){
+//						uriMapName = uriMapName.substring(0, lastDotIndex) + increment + uriMapName.substring(lastDotIndex);
+//					} else {
+//						uriMapName = uriMapName.substring(0)+increment;
+//					}
+//					
+//					//determine if the new potential name is valid
+//					for(int k=0; k<existingRefs.length; k++) {
+//						dupeArchiveName = existingRefs[k].getArchiveName().equals(uriMapName);
+//						if(dupeArchiveName) {
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		return uriMapName;
+//	}
 }

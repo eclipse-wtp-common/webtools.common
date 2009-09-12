@@ -84,8 +84,7 @@ public class DependencyPageExtensionManager {
 		for( int i = 0; i < cf.length; i++ ) {
 			list.add(new ReferenceExtension(cf[i]));
 		}
-		return (ReferenceExtension[]) list
-				.toArray(new ReferenceExtension[list.size()]);
+		return list.toArray(new ReferenceExtension[list.size()]);
 	}
 	
 	public class ReferenceExtension {
