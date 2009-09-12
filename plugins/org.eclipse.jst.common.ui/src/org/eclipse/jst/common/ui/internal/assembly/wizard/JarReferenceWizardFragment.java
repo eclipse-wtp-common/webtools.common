@@ -112,8 +112,8 @@ public class JarReferenceWizardFragment extends WizardFragment {
 				compList.add(archive);
 				paths.add(selected[i].lastSegment());
 			}
-			IVirtualComponent[] components = (IVirtualComponent[]) compList.toArray(new IVirtualComponent[compList.size()]);
-			String[] paths2 = (String[]) paths.toArray(new String[paths.size()]);
+			IVirtualComponent[] components = compList.toArray(new IVirtualComponent[compList.size()]);
+			String[] paths2 = paths.toArray(new String[paths.size()]);
 			getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, components);
 			getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, paths2);
 		}
