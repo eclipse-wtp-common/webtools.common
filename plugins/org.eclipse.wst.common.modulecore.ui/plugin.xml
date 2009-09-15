@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="moduleDependencyPropertyPage" name="org.jboss.ide.eclipse.as.wtp.override.moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
+   <extension-point id="moduleDependencyPropertyPage" name="moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
    <!-- =========== org.eclipse.jst.j2ee.internal.J2EEDependencyPage ============ -->
    <extension
