@@ -1224,6 +1224,7 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 	}
 
 	public void handleEvent(IFacetedProjectEvent event) {
+		_configNumber.incrementAndGet();
 		projectChanged(event.getProject().getProject());
 	}
 
