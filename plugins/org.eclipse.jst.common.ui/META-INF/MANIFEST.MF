@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.5.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.jst.common.ui.internal.assembly.wizard
+Export-Package: org.eclipse.jst.common.ui.internal.assembly.wizard;x-internal:=true
