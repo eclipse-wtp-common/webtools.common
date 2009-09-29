@@ -77,6 +77,7 @@ import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.AddFolderDialog;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -97,7 +98,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected Text componentNameText;
 	protected Label availableModules;
 	protected TableViewer availableComponentsViewer;
-	protected Button addMappingButton, addReferenceButton, removeButton;
+	protected Button addMappingButton, addReferenceButton, editReferenceButton, removeButton;
 	protected Composite buttonColumn;
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 	protected Listener tableListener;
@@ -191,6 +192,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void createPushButtons() {
 		addMappingButton = createPushButton(Messages.AddFolderElipses);
 		addReferenceButton = createPushButton(Messages.AddReference);
+		editReferenceButton = createPushButton(Messages.EditReference);
 		removeButton = createPushButton(Messages.RemoveSelected);
 	}
 
@@ -368,9 +370,17 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void viewerSelectionChanged() {
+		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
 		removeButton.setEnabled(getSelectedObject() != null && canEdit(getSelectedObject()));
 	}
 	
+	protected boolean hasEditWizardPage(Object o) {
+		if( o == null || !(o instanceof IVirtualComponent)) 
+			return false;
+		WizardFragment wf = NewReferenceWizard.getFirstEditingFragment((IVirtualComponent)o);
+		return wf != null;
+	}
+
 	protected Object getSelectedObject() {
 		IStructuredSelection sel = (IStructuredSelection)availableComponentsViewer.getSelection();
 		return sel.getFirstElement();
@@ -423,6 +433,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			handleAddMappingButton();
 		else if( event.widget == addReferenceButton) 
 			handleAddReferenceButton();
+		else if( event.widget == editReferenceButton) 
+			handleEditReferenceButton();
 		else if( event.widget == removeButton ) 
 			handleRemoveSelectedButton();
 	}
@@ -441,13 +453,34 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void handleAddReferenceButton() {
+		showReferenceWizard(false);
+	}
+	
+	protected void handleEditReferenceButton() {
+		showReferenceWizard(true);
+	}
+	
+	protected void showReferenceWizard(boolean editing) {
 		NewReferenceWizard wizard = new NewReferenceWizard();
 		// fill the task model
 		wizard.getTaskModel().putObject(NewReferenceWizard.PROJECT, project);
 		wizard.getTaskModel().putObject(NewReferenceWizard.ROOT_COMPONENT, rootComponent);
+
+		IVirtualComponent selected = null;
+		if( editing ) {
+			Object o = ((IStructuredSelection)availableComponentsViewer.getSelection()).getFirstElement();
+			if( o instanceof IVirtualComponent ) {
+				selected = (IVirtualComponent)o;
+				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT, selected);
+				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, objectToRuntimePath.get(selected));
+			}
+		}
 		
 		WizardDialog wd = new WizardDialog(addReferenceButton.getShell(), wizard);
 		if( wd.open() != Window.CANCEL) {
+			if( editing && selected != null) {
+				objectToRuntimePath.remove(selected); // remove old
+			}
 			Object c1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT);
 			Object p1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
 			IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
@@ -457,10 +490,28 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 							new String[] { (String)p1 } : 
 								(String[])p1;
 			for( int i = 0; i < compArr.length; i++ ) {
-				objectToRuntimePath.put(compArr[i], pathArr[i]);
+				objectToRuntimePath.put(compArr[i], 
+						getRuntimePath(compArr[i], pathArr[i]));
 			}
 			refresh();
 		}
+	}
+	
+	/**
+	 * Subclasses are encouraged to override this method if 
+	 * they have some specific place (webinf/lib etc) where certain
+	 * types of references should default to. 
+	 * 
+	 * If the subclass does not understand or know about the 
+	 * this component type, or if it has no customizations to perform,
+	 * it should return the provided wizardPath unchanged
+	 * 
+	 * @param addedComp The component being added as a reference
+	 * @param addedPath The path that the wizard suggests as the path
+	 * @return The runtime path that should be added to the properties page
+	 */
+	protected String getRuntimePath(IVirtualComponent addedComp, String wizardPath) {
+		return wizardPath;
 	}
 	
 	protected void handleRemoveSelectedButton() {
@@ -559,6 +610,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
 			));
 		}
+		editReferenceButton.setEnabled(false);
+		removeButton.setEnabled(false);
 		hasInitialized = true;
 	}
 

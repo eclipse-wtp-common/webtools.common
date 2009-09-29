@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
@@ -22,14 +23,37 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardCons
 public class NewReferenceWizard extends TaskWizard implements IReferenceWizardConstants {
 	private static final Object REFERENCE_FAMILY = new Object();
 	public NewReferenceWizard() {
-		super(Messages.NewReferenceWizard, new WizardFragment() {
-			protected void createChildFragments(List<WizardFragment> list) {
-				list.add(new NewReferenceRootWizardFragment());
-			}
-		});
+		super(Messages.NewReferenceWizard, new RootWizardFragment());
 		setFinishJobFamily(REFERENCE_FAMILY);
+		getRootFragment().setTaskModel(getTaskModel());
+	}
+	
+	protected static class RootWizardFragment extends WizardFragment {
+		protected void createChildFragments(List<WizardFragment> list) {
+			IVirtualComponent component = (IVirtualComponent)getTaskModel().getObject(COMPONENT);
+			if( component == null )
+				list.add(new NewReferenceRootWizardFragment());
+			else {
+				WizardFragment fragment = getFirstEditingFragment(component);
+				if( fragment != null )
+					list.add(fragment);
+			}
+		}
 	}
 
+	public static WizardFragment getFirstEditingFragment(IVirtualComponent component) {
+		WizardFragment[] frags = DependencyPageExtensionManager.getManager().loadAllReferenceWizardFragments();
+		for( int i = 0; i < frags.length; i++ ) {
+			if( frags[i] instanceof IReferenceEditor ) {
+				if( ((IReferenceEditor)frags[i]).canEdit(component)) {
+					// accept first one
+					return frags[i];
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void init(IWorkbench newWorkbench, IStructuredSelection newSelection) {
 		// do nothing
 	}
