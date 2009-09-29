@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ResourceSetWorkbenchSynchronizer.java,v $$
- *  $$Revision: 1.5 $$  $$Date: 2009/08/14 19:20:47 $$ 
+ *  $$Revision: 1.6 $$  $$Date: 2009/09/29 19:48:49 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -84,7 +84,7 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	}
 
 
-	protected void notifyExtendersIfNecessary() {
+	protected synchronized void notifyExtendersIfNecessary() {
 		if (currentEventType != IResourceChangeEvent.POST_CHANGE || extenders == null || currentProjectDelta == null)
 			return;
 		for (Iterator iterator = extenders.iterator(); iterator.hasNext();) {
@@ -93,7 +93,7 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 		}
 	}
 
-	protected void notifyExtendersOfClose() {
+	protected synchronized void notifyExtendersOfClose() {
 		if (extenders != null && !extenders.isEmpty()) {
 			for (Iterator iterator = extenders.iterator(); iterator.hasNext();) {
 				ISynchronizerExtender extender = (ISynchronizerExtender) iterator.next();
