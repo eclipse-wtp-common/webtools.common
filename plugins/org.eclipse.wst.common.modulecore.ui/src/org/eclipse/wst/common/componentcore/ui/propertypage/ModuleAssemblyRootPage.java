@@ -157,7 +157,8 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 				provider = DependencyPageExtensionManager.getManager().getProvider(facetedProject);
 				if( provider != null ) {
 					controls = provider.createPages(facetedProject, this);
-					return provider.createRootControl(controls, parent);
+					controls = controls == null ? new IModuleDependenciesControl[]{} : controls;
+					return provider.createRootControl(facetedProject, controls, parent);
 				}
 				
 				if( ComponentCore.createComponent(project) == null )

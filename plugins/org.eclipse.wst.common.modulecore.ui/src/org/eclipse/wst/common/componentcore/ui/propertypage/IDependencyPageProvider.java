@@ -49,5 +49,5 @@ public interface IDependencyPageProvider {
 	 * @param parent
 	 * @return
 	 */
-	public Composite createRootControl(IModuleDependenciesControl[] pages, Composite parent);
+	public Composite createRootControl(IFacetedProject project, IModuleDependenciesControl[] pages, Composite parent);
 }
