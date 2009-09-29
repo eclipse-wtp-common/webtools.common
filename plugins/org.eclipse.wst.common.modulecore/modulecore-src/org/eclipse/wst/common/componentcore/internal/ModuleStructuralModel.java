@@ -277,7 +277,6 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	private void checkSync(IFile compFile) {
 		synchronized(needsSync) {
 			if (needsSync.booleanValue()) { //Only check sync once for life of this model
-				System.out.println("Checking sync for file: " + compFile.getLocation());
 				if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
 						File iofile = compFile.getFullPath().toFile();
 						if (iofile.exists() || compFile.exists()) {
