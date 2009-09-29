@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +22,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -83,6 +84,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
 	private static final String PROJECT_VERSION_1_5 = "1.5.0";
 	private boolean useOldFormat = false;
+	private Boolean needsSync = new Boolean(true);
 	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
@@ -236,10 +238,6 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		XMIResource res;
-		if (!isComponentSynchronizedOrNull()) {
-			//Return if component file is out of sync from workspace
-			return null;
-		}
 		res = (XMIResource) getPrimaryResource();
 		if (res != null && resNeedsMigrating(res) && !useOldFormat)
 			return null;
@@ -253,43 +251,51 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return res;
 	}
 	
-	/**
-	 * This methods checks the status of the component file, and first checks for existance, then if its locally synchronized
-	 * @return boolean
-	 */
-	private boolean isComponentSynchronizedOrNull() {
-		IFile componentFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
-		IPath componentFileLocation = componentFile.getLocation();
-		if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
-			componentFile = getProject().getFile(R1_MODULE_META_FILE_NAME);
-			componentFileLocation = componentFile.getLocation();
-			if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
-				componentFile = getProject().getFile(R0_7_MODULE_META_FILE_NAME);
-				componentFileLocation = componentFile.getLocation();
-				if (componentFileLocation != null && !componentFileLocation.toFile().exists()) 
-					return true;
-			}
-		}
-		if (componentFileLocation == null)
-			return true;
-		else return componentFile.isSynchronized(IResource.DEPTH_ZERO);
-	}
 	
 	public IFile getComponentFile() {
+		
 		IFile compFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
-		if (compFile.isAccessible())
+		if (compFile.isAccessible()) {
+			checkSync(compFile);	
 			return compFile;
+		}
 		else { //Need to check for legacy file locations also....
 			compFile = getProject().getFile(ModuleStructuralModel.R1_MODULE_META_FILE_NAME);
-			if (compFile.isAccessible())
+			if (compFile.isAccessible()) {
+				checkSync(compFile);	
 				return compFile;
+			}
 			else {
 				compFile = getProject().getFile(ModuleStructuralModel.R0_7_MODULE_META_FILE_NAME);
-				if (compFile.isAccessible())
+				if (compFile.isAccessible()) {
+					checkSync(compFile);	
 					return compFile;
+				}
 			}
 		}
 		return getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
+	}
+	private void checkSync(IFile compFile) {
+		synchronized(needsSync) {
+			if (needsSync.booleanValue()) { //Only check sync once for life of this model
+				if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
+						File iofile = compFile.getFullPath().toFile();
+						if (iofile.exists() || compFile.exists()) {
+							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+							try {
+							//OK wait to get workspace root before refreshing
+							Job.getJobManager().beginRule(root, null);
+							compFile.refreshLocal(IResource.DEPTH_ONE, null);
+							} catch (CoreException ce) {
+								//ignore
+							} finally {
+								Job.getJobManager().endRule(root);
+							}
+						}
+				}
+				needsSync = new Boolean(false);
+			}
+		}
 	}
 	
 	public WTPModulesResource  makeWTPModulesResource() {

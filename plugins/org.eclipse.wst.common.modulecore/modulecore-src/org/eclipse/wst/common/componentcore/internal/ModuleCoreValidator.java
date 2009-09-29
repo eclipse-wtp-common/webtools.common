@@ -49,6 +49,8 @@ public class ModuleCoreValidator implements IValidatorJob {
 			if (structureEdit != null) {
 				ModuleStructuralModel structuralModel = structureEdit.getModuleStructuralModel();
 				if (structuralModel != null) {
+					// First touch the model File to make sure is synched before getting the lock
+					structuralModel.getComponentFile();
 					// acquiring the ModuleStructuralModel lock here first because the call to getPrimaryResource()
 					// will cause this lock to be acquired later resulting in a potential deadlock
 					ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(structuralModel.getProject());
