@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +22,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -83,6 +84,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
 	private static final String PROJECT_VERSION_1_5 = "1.5.0";
 	private boolean useOldFormat = false;
+	private Boolean needsSync = new Boolean(true);
 	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
@@ -235,10 +237,6 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		XMIResource res;
-		if (!isComponentSynchronizedOrNull()) {
-			//Return if component file is out of sync from workspace
-			return null;
-		}
 		res = (XMIResource) getPrimaryResource();
 		if (res != null && resNeedsMigrating(res) && !useOldFormat)
 			return null;
@@ -252,43 +250,52 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return res;
 	}
 	
-	/**
-	 * This methods checks the status of the component file, and first checks for existance, then if its locally synchronized
-	 * @return boolean
-	 */
-	private boolean isComponentSynchronizedOrNull() {
-		IFile componentFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
-		IPath componentFileLocation = componentFile.getLocation();
-		if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
-			componentFile = getProject().getFile(R1_MODULE_META_FILE_NAME);
-			componentFileLocation = componentFile.getLocation();
-			if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
-				componentFile = getProject().getFile(R0_7_MODULE_META_FILE_NAME);
-				componentFileLocation = componentFile.getLocation();
-				if (componentFileLocation != null && !componentFileLocation.toFile().exists()) 
-					return true;
-			}
-		}
-		if (componentFileLocation == null)
-			return true;
-		else return componentFile.isSynchronized(IResource.DEPTH_ZERO);
-	}
 	
 	public IFile getComponentFile() {
+		
 		IFile compFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
-		if (compFile.isAccessible())
+		if (compFile.isAccessible()) {
+			checkSync(compFile);	
 			return compFile;
+		}
 		else { //Need to check for legacy file locations also....
 			compFile = getProject().getFile(ModuleStructuralModel.R1_MODULE_META_FILE_NAME);
-			if (compFile.isAccessible())
+			if (compFile.isAccessible()) {
+				checkSync(compFile);	
 				return compFile;
+			}
 			else {
 				compFile = getProject().getFile(ModuleStructuralModel.R0_7_MODULE_META_FILE_NAME);
-				if (compFile.isAccessible())
+				if (compFile.isAccessible()) {
+					checkSync(compFile);	
 					return compFile;
+				}
 			}
 		}
 		return getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
+	}
+	private void checkSync(IFile compFile) {
+		synchronized(needsSync) {
+			if (needsSync.booleanValue()) { //Only check sync once for life of this model
+				System.out.println("Checking sync for file: " + compFile.getLocation());
+				if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
+						File iofile = compFile.getFullPath().toFile();
+						if (iofile.exists() || compFile.exists()) {
+							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+							try {
+							//OK wait to get workspace root before refreshing
+							Job.getJobManager().beginRule(root, null);
+							compFile.refreshLocal(IResource.DEPTH_ONE, null);
+							} catch (CoreException ce) {
+								//ignore
+							} finally {
+								Job.getJobManager().endRule(root);
+							}
+						}
+				}
+				needsSync = new Boolean(false);
+			}
+		}
 	}
 	
 	public WTPModulesResource  makeWTPModulesResource() {
@@ -314,25 +321,14 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @return
 	 */
 	public Resource getPrimaryResource() {
-		// Overriden to handle loading the .component resource in new and old forms
-		// First will try to load from .settings/org.eclipse.wst.common.component
-		// Second will try to load from the old location(s) .settings/.component or .component
+		// Will always go through the getFile method that searches for all possible locations.
+		IFile compFile = getComponentFile();
 		
-		URI uri = URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
+		URI uri = URI.createURI(compFile.getProjectRelativePath().toPortableString());
 		WTPModulesResource res = (WTPModulesResource)getResource(uri);
 		if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
 			removeResource(res);
-			uri = URI.createURI(R1_MODULE_META_FILE_NAME);
-			res = (WTPModulesResource)getResource(uri);
-			if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
-				removeResource(res);
-				uri = URI.createURI(R0_7_MODULE_META_FILE_NAME);
-				res = (WTPModulesResource)getResource(uri);
-				if (res == null || !res.isLoaded() || res.getContents().isEmpty()) {
-					removeResource(res);
-					res = null;
-				}
-			}
+			res = null;
 		}
 		return res;
 	}
@@ -393,33 +389,21 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	@Override
 	public void access(Object accessorKey) {
-		
-		super.access(accessorKey);
-//		StringBuffer buffer = new StringBuffer("Access Module model (");
-//		buffer.append(this.hashCode());
-//		buffer.append(") Project: ");
-//		buffer.append(this.getProject());
-//		if (isReadOnly())
-//			buffer.append(" R = "); //$NON-NLS-1$
-//		else
-//			buffer.append(" W = "); //$NON-NLS-1$
-//		buffer.append(getRegistry().size());
-//		System.out.println(buffer.toString());
+		//Not bothering with ref counting model access - always allow save/access
 				
 	}
 	@Override
 	public void releaseAccess(Object accessorKey) {
 		
-		super.releaseAccess(accessorKey);
-//		StringBuffer buffer = new StringBuffer("Release Module model (");
-//		buffer.append(this.hashCode());
-//		buffer.append(") Project: ");
-//		buffer.append(this.getProject());
-//		if (isReadOnly())
-//			buffer.append(" R = "); //$NON-NLS-1$
-//		else
-//			buffer.append(" W = "); //$NON-NLS-1$
-//		buffer.append(getRegistry().size());
-//		System.out.println(buffer.toString());
+		//Not bothering with ref counting model access - always allow save/access
+	}
+	@Override
+	protected void assertPermissionToSave(Object accessorKey) {
+		//Not bothering with ref counting model access - always allow save/access
+	}
+	@Override
+	public boolean isShared() {
+		//Not bothering with ref counting model access - always allow save/access
+		return false;
 	}
 }

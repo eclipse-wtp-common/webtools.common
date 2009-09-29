@@ -11,7 +11,6 @@
 
 package org.eclipse.wst.common.componentcore.internal;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -318,10 +317,8 @@ public class StructureEdit implements IEditModelHandler {
 	}
 
 	protected StructureEdit(ModuleCoreNature aNature, boolean toAccessAsReadOnly) {
-		if (toAccessAsReadOnly)
-			structuralModel = aNature.getModuleStructuralModelForRead(this);
-		else
-			structuralModel = aNature.getModuleStructuralModelForWrite(this);
+		// always get the write editmodel - one instance only
+		structuralModel = aNature.getModuleStructuralModelForWrite(this);
 		aProject = aNature.getProject();
 		isReadOnly = toAccessAsReadOnly;
 		isStructuralModelSelfManaged = true;
@@ -446,15 +443,7 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ProjectComponents getComponentModelRoot() {
 		IFile file = structuralModel.getComponentFile();
-		if (!file.isSynchronized(IResource.DEPTH_ONE)) {
-			try {
-				File iofile = file.getFullPath().toFile();
-				if (iofile.exists() || file.exists())
-					file.refreshLocal(IResource.DEPTH_ONE, null);
-			} catch (CoreException ce) {
-				//ignore
-			}
-		}	
+		if (file == null) return null;
 		ProjectComponents comps = null;
 		ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(structuralModel.getProject());
 		try{
@@ -470,8 +459,7 @@ public class StructureEdit implements IEditModelHandler {
 				lock.release();
 			}
 		}
-		
-		return comps;
+		return comps;		
 	}
 
 	/**

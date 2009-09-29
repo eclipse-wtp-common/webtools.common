@@ -609,8 +609,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	private void cacheModuleStructuralModels() {
 		if (cachedWriteHandle == null)
 			cachedWriteHandle = getModuleStructuralModelForWrite(this);
-		if (cachedReadHandle == null)
-			cachedReadHandle = getModuleStructuralModelForRead(this);
+		//if (cachedReadHandle == null)
+		//	cachedReadHandle = getModuleStructuralModelForRead(this);
 	}
 
 	public String getPluginID() {
@@ -646,8 +646,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		if (delta.getKind() == IResourceDelta.OPEN) {
 			if (cachedWriteHandle == null)
 				cachedWriteHandle = getModuleStructuralModelForWrite(this);
-			if (cachedReadHandle == null)
-				cachedReadHandle = getModuleStructuralModelForRead(this);
+			//if (cachedReadHandle == null)
+			//	cachedReadHandle = getModuleStructuralModelForRead(this);
 		}
 	
 	}
