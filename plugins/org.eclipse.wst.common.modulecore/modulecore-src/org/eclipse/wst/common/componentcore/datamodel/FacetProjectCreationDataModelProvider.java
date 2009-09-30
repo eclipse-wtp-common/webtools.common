@@ -429,7 +429,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getLocalizedName());
 			}
 			if(descriptors.length > 2){
-				Arrays.sort(descriptors, 0, descriptors.length - 2, new Comparator() {
+				Arrays.sort(descriptors, 0, descriptors.length - 1, new Comparator() {
 					public int compare(Object arg0, Object arg1) {
 						DataModelPropertyDescriptor d1 = (DataModelPropertyDescriptor)arg0;
 						DataModelPropertyDescriptor d2 = (DataModelPropertyDescriptor)arg1;
