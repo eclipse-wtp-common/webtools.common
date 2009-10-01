@@ -269,15 +269,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		ModuleStructuralModel editModel = (ModuleStructuralModel)getEmfContext().getExistingEditModel(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, null,true);
 		if (editModel == null) {
 			editModel = (ModuleStructuralModel)EditModelRegistry.getInstance().createEditModelForRead(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, getEmfContext(), null);
-			synchronized (editModel) {
-				getEmfContext().cacheEditModel(editModel, null);
-				editModel.access(anAccessorKey);
-			}
-		} else {
-			synchronized (editModel) {
-				editModel.access(anAccessorKey);
-			}
-		}
+			getEmfContext().cacheEditModel(editModel, null);
+			editModel.access(anAccessorKey);
+		} else 
+			editModel.access(anAccessorKey);
 		return editModel;
 	}
 
@@ -308,15 +303,12 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		ModuleStructuralModel editModel = (ModuleStructuralModel)getEmfContext().getExistingEditModel(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, null,false);
 		if (editModel == null) {
 			editModel = (ModuleStructuralModel)EditModelRegistry.getInstance().createEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, getEmfContext(), null);
-			synchronized (editModel) {
-				getEmfContext().cacheEditModel(editModel, null);
-				editModel.access(anAccessorKey);
-			}
-		} else {
-			synchronized (editModel) {
-				editModel.access(anAccessorKey);
-			}
-		}
+			getEmfContext().cacheEditModel(editModel, null);
+			editModel.access(anAccessorKey);
+			
+		} else 
+			editModel.access(anAccessorKey);
+		
 		return editModel;
 	}
 
@@ -663,8 +655,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 //		System.out.println(buffer.toString());
 		this.emfContext = null;
 		if (cachedWriteHandle != null) {
-			if (cachedWriteHandle.isDirty())
-				cachedWriteHandle.saveIfNecessary(this);
+//			if (cachedWriteHandle.isDirty())
+//				cachedWriteHandle.saveIfNecessary(this);
 			cachedWriteHandle.dispose();
 			cachedWriteHandle = null;
 		}

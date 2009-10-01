@@ -302,7 +302,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(runnable, null,IWorkspace.AVOID_UPDATE,monitor);
+			ResourcesPlugin.getWorkspace().run(runnable, getComponentFile(),IWorkspace.AVOID_UPDATE,monitor);
 		} catch (CoreException e) {
 			throw new SaveFailedException(e);
 		}

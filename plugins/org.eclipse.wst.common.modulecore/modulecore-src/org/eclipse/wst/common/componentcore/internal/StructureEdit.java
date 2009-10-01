@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -28,6 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ILock;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.UIContextDetermination;
@@ -325,9 +327,17 @@ public class StructureEdit implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 		else if (validateEdit().isOK()) { 
+			// Make sure we obtain workspace rule before saving
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			try {
+			//OK wait to get workspace root before refreshing
+			Job.getJobManager().beginRule(root, null);
 			synchronized (structuralModel) {
 				if (!structuralModel.isDisposed())
 					structuralModel.save(aMonitor, this);
+			}
+			} finally {
+				Job.getJobManager().endRule(root);
 			}
 		}
 	}
