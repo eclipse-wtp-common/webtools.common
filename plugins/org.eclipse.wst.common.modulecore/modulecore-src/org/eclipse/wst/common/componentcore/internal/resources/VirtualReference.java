@@ -16,13 +16,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
-import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
+import org.eclipse.wst.common.componentcore.resolvers.ReferenceResolverUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -59,14 +59,8 @@ public class VirtualReference implements IVirtualReference {
 			core = StructureEdit.getStructureEditForWrite(enclosingComponent.getProject());
 			WorkbenchComponent component = core.getComponent();
 			List referencedComponents = component.getReferencedComponents();
-			ReferencedComponent refComp = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createReferencedComponent();
-			if( !referencedComponent.isBinary())
-				refComp.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject()));
-			else
-				refComp.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName())); 
-			refComp.setRuntimePath(runtimePath);
-			refComp.setDependencyType(DependencyType.get(dependencyType));
-			refComp.setArchiveName(archiveName);
+			IReferenceResolver resolver = ReferenceResolverUtil.getDefault().getResolver(this);
+			ReferencedComponent refComp = resolver.resolve(this);
 			if(!referencedComponents.contains(refComp)){
 				referencedComponents.add(refComp);
 			}
@@ -123,10 +117,9 @@ public class VirtualReference implements IVirtualReference {
 			ReferencedComponent actualReferencedComponent = enclosingCore.findReferencedComponent(enclosingComp, refComp);
 			if (actualReferencedComponent != null) {
 				referencedComponent = aReferencedComponent;
-				if(!referencedComponent.isBinary())
-					actualReferencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject()));
-				else
-					actualReferencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName()));
+				IReferenceResolver resolver = ReferenceResolverUtil.getDefault().getResolver(this);
+				URI uri = resolver.resolve(this).getHandle();
+				actualReferencedComponent.setHandle(uri);
 				actualReferencedComponent.setDependentObject(dependentObject);
 			}
 		} finally {

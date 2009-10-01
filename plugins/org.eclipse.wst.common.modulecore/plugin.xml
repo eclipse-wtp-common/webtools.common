@@ -55,6 +55,7 @@
 	<extension-point id="artifactedit" name="Component Artifact Edit" schema="schema/artifactedit.exsd"/>
     <extension-point id="componentimpl" name="componentimpl" schema="schema/componentimpl.exsd"/>
 	<extension-point id="resourceFactories" name="Resource Factory Association (Internal)" schema="schema/resourceFactories.exsd"/>
+ <extension-point id="referenceResolver" name="referenceResolver" schema="schema/referenceResolver.exsd"/>
 	
 	<!-- Contribute a URIResolverExtension for flexible projects -->
 	<extension point="org.eclipse.wst.common.uriresolver.resolverExtensions">

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -24,18 +25,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
-import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.builder.DependencyGraphManager;
-import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.componentcore.internal.builder.IDependencyGraph;
+import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
+import org.eclipse.wst.common.componentcore.resolvers.ReferenceResolverUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -286,9 +288,6 @@ public class VirtualComponent implements IVirtualComponent {
 						if (referencedComponent==null) 
 							continue;
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
-						if( vReference != null ){
-							vReference.setArchiveName( referencedComponent.getArchiveName() );
-						}
 						if (vReference != null && vReference.getReferencedComponent() != null && vReference.getReferencedComponent().exists())
 							references.add(vReference); 
 					}
@@ -312,21 +311,14 @@ public class VirtualComponent implements IVirtualComponent {
 			WorkbenchComponent component = core.getComponent();
 			ReferencedComponent referencedComponent = null;
 			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
+			IReferenceResolver resolver = null;
 			for (int i=0; i<references.length; i++) {
 				if (references[i] == null)
 					continue;
-				referencedComponent = factory.createReferencedComponent();				
-				referencedComponent.setDependencyType(DependencyType.get(references[i].getDependencyType()));
-				referencedComponent.setRuntimePath(references[i].getRuntimePath());
-
-				IVirtualComponent comp = references[i].getReferencedComponent();
-				if(comp!=null && !comp.isBinary())
-					referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(comp.getProject()));
-				else if (comp!=null)
-					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(comp.getName()));
+				resolver = ReferenceResolverUtil.getDefault().getResolver(references[i]);
+				referencedComponent = resolver.resolve(references[i]);
 				if (component != null)
 					component.getReferencedComponents().add(referencedComponent);
-				referencedComponent.setArchiveName(references[i].getArchiveName());
 			}
 			//clean up any old obsolete references
 			if (component != null){
@@ -362,19 +354,12 @@ public class VirtualComponent implements IVirtualComponent {
 			  
 			component.getReferencedComponents().clear();
 			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
+			IReferenceResolver resolver = null;
 			for (int i=0; i<references.length; i++) {
-				referencedComponent = factory.createReferencedComponent();				
-				referencedComponent.setDependencyType(DependencyType.get(references[i].getDependencyType()));
-				referencedComponent.setRuntimePath(references[i].getRuntimePath());
-
-				IVirtualComponent comp = references[i].getReferencedComponent();
-				if( !comp.isBinary())
-					referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(references[i].getReferencedComponent().getProject()));
-				else
-					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(references[i].getReferencedComponent().getName()));
-				
-				referencedComponent.setArchiveName(references[i].getArchiveName());
-				component.getReferencedComponents().add(referencedComponent);
+				resolver = ReferenceResolverUtil.getDefault().getResolver(references[i]);
+				referencedComponent = resolver.resolve(references[i]);
+				if( referencedComponent != null)
+					component.getReferencedComponents().add(referencedComponent);
 			}
 			 
 		} finally {
@@ -434,10 +419,11 @@ public class VirtualComponent implements IVirtualComponent {
 	 * @return array of components
 	 */
 	public IVirtualComponent[] getReferencingComponents() {
-		IProject[] handles =  DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(getProject());
-		IVirtualComponent[] result = new IVirtualComponent[handles.length];
-		for (int i=0; i<handles.length; i++)
-			result[i] = ComponentCore.createComponent(handles[i]);
+		Set<IProject> projects = IDependencyGraph.INSTANCE.getReferencingComponents(getProject());
+		IVirtualComponent[] result = new IVirtualComponent[projects.size()];
+		Iterator<IProject> i = projects.iterator();
+		for (int j=0; j<projects.size(); j++)
+			result[j] = ComponentCore.createComponent(i.next());
 		return result;
 	}
 	
@@ -477,16 +463,11 @@ public class VirtualComponent implements IVirtualComponent {
 		if (aReference == null || aReference.getReferencedComponent() == null || component == null)
 			return null;
 		List referencedComponents = component.getReferencedComponents();
+		URI uri = ReferenceResolverUtil.getDefault().getResolver(aReference).resolve(aReference).getHandle(); 
 		for (int i=0; i<referencedComponents.size(); i++) {
 			ReferencedComponent ref = (ReferencedComponent) referencedComponents.get(i);
-			if (!aReference.getReferencedComponent().isBinary()) {
-				if (ref.getHandle().equals(ModuleURIUtil.fullyQualifyURI(aReference.getReferencedComponent().getProject())))
-					return ref;	
-			} 
-			else {
-				if (ref.getHandle().equals(ModuleURIUtil.archiveComponentfullyQualifyURI(aReference.getReferencedComponent().getName())))
-					return ref;
-			}	
+			if( ref.getHandle().equals(uri))
+				return ref;
 		}
 		return null;
 	}
