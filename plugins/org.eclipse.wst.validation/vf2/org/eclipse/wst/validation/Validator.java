@@ -57,6 +57,7 @@ import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorExtender;
 
 /**
  * Represents a validator. This gets instantiated through one of the validator extension points.
@@ -650,6 +651,17 @@ public static class V1 extends Validator {
 		resetChangeCounters();
 	}
 	
+	@Override
+	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor) {
+		if (project != null) {
+			IValidator v = asIValidator();
+			if (v instanceof IValidatorExtender) {
+				IValidatorExtender vExt = (IValidatorExtender) v;
+				vExt.validationFinishing(project, state, monitor);
+			}	
+		}
+	}
+
 	@Override
 	public IValidator asIValidator() {
 		IValidator v = null;
