@@ -312,7 +312,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		}
 		finally {
 			if (moduleCore != null) {
-				if (component != null)
+				if (getComponent() != null)
 					moduleCore.saveIfNecessary(monitor);
 				moduleCore.dispose();
 			}
