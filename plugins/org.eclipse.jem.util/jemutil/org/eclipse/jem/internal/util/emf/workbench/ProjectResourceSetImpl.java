@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.21.2.1.2.1 $$  $$Date: 2009/08/06 22:48:54 $$ 
+ *  $$Revision: 1.21.2.1.2.2 $$  $$Date: 2009/10/05 22:27:47 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -344,6 +344,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	private boolean isReleasing = false;
 	private IProject project;
 	protected List resourceHandlers = new ArrayList();
+	private Object resourcesLock = new Object();
 	protected ResourceSetWorkbenchSynchronizer synchronizer;
 	protected ProjectResourceSetImpl() {
 		setURIResourceMap(new HashMap(10));	// Tell it to cache uri->resource access.
@@ -388,7 +389,9 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    if (resourceFactory != null)
 		    {//We got the right factory, now use the right URI
 		      result = resourceFactory.createResource(converted);
-		      getResources().add(result);
+		      synchronized (resourcesLock) {
+		    	  getResources().add(result);
+		      }
 		    }
 		}
 			
@@ -433,8 +436,10 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    if (resourceFactory != null)
 		    {
 		      result = resourceFactory.createResource(converted);
-		      getResources().add(result);
-		      getURIResourceMap().put(uri, result);
+		      synchronized (resourcesLock) {
+		    	  getResources().add(result);
+		          getURIResourceMap().put(uri, result);
+		      }
 		      return result;
 		    }
 		    else
@@ -513,9 +518,12 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	}
 	protected void removeAndUnloadAllResources() {
 		boolean caughtException = false;
-		if (getResources().isEmpty()) return;
-		List list = new ArrayList(getResources());
-		getResources().clear();
+		List list = null;
+		synchronized (resourcesLock) {
+			if (getResources().isEmpty()) return;
+			list = new ArrayList(getResources());	
+			getResources().clear();
+		}
 		Resource res;
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
@@ -647,59 +655,31 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    URIConverter theURIConverter = getURIConverter();
 	    URI normalizedURI = theURIConverter.normalize(uri);
 	    List resourcesToRemove = new ArrayList();
-	    for (Resource resource : getResources())
-	    {
-	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
-	    		  
-	    	if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
-		        if (loadOnDemand && !resource.isLoaded())
-		        {
-		          demandLoadHelper(resource);
-		        }
-		        
-		        if (map != null)
-		        {
-		          map.put(uri, resource);
-		        } 
-		        return resource;
-	    	} else  {// content type is known
-	    		boolean resourceExists = false;
-	    		IFile file = getPlatformFile(resource);
-	    		if (file != null)
-	    			resourceExists = file.exists();
-	    		String resourceContentTypeID = getContentTypeID(resource);
-	    		String uriContentTypeID = getContentTypeName(uri);
-	    		String existingMapKeyType = (findKey(resource) != null) ? getContentTypeName(findKey(resource)) : null;
-	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
-	    			||  ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
+	    synchronized (resourcesLock) {
+			for (Resource resource : getResources()) {
+				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
+
+					if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
 						if (loadOnDemand && !resource.isLoaded()) {
 							demandLoadHelper(resource);
-						} // if embedded uri content type is different than resource content type, continue searching
-						if (resourceContentTypeID != null
-								&& uriContentTypeID != null) {
-							if ((resourceContentTypeID.equals(uriContentTypeID)) && existingMapKeyType == null) continue;
-							if ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
-									.equals(uriContentTypeID)))
-								continue;
-							else if (existingMapKeyType == null && !resourceExists) {
-								resourcesToRemove.add(resource);
-								continue;
-							}
-						} else if (uriContentTypeID != null && resourceContentTypeID == null && !resourceExists) {
-							resourcesToRemove.add(resource);
-							continue;
 						}
-								
-						if (map != null && (map.get(uri) == null)) {
+
+						if (map != null) {
 							map.put(uri, resource);
 						}
 						return resource;
+					} else {
+						Resource loadedRes = loadWithContentType(resource, uri, map, loadOnDemand, resourcesToRemove);
+						if (loadedRes != null)
+							return loadedRes;
 					}
-	    	}
-	      }
-	    }
+				}
+			}
+		}
+	    synchronized (resourcesLock) {
 	    // Cleanup invalid resources
-	    getResources().removeAll(resourcesToRemove);
+	    	getResources().removeAll(resourcesToRemove);
+	    }
 	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
 	    if (delegatedResource != null)
 	    {
@@ -732,6 +712,41 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    return null;
 	  
 	}
+	private Resource loadWithContentType(Resource resource, URI uri, Map<URI, Resource> map, boolean loadOnDemand, List resourcesToRemove) {
+		// content type is known
+		boolean resourceExists = false;
+		IFile file = getPlatformFile(resource);
+		if (file != null)
+			resourceExists = file.exists();
+		String resourceContentTypeID = getContentTypeID(resource);
+		String uriContentTypeID = getContentTypeName(uri);
+		String existingMapKeyType = (findKey(resource) != null) ? getContentTypeName(findKey(resource)) : null;
+		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
+			||  ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
+				if (loadOnDemand && !resource.isLoaded()) {
+					demandLoadHelper(resource);
+				} // if embedded uri content type is different than resource content type, continue searching
+				if (resourceContentTypeID != null
+						&& uriContentTypeID != null) {
+					if ((resourceContentTypeID.equals(uriContentTypeID)) && existingMapKeyType == null) return null;
+					if ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
+							.equals(uriContentTypeID)))
+						return null;
+					else if (existingMapKeyType == null && !resourceExists) {
+						resourcesToRemove.add(resource);
+						return null;
+					}
+				} else if (uriContentTypeID != null && resourceContentTypeID == null && !resourceExists) {
+					resourcesToRemove.add(resource);
+					return null;
+				}		
+				if (map != null && (map.get(uri) == null)) {
+					map.put(uri, resource);
+				}
+				return resource;
+			}
+		return null;
+	}
 	private IFile getPlatformFile(Resource res) {
 		IFile file = null;
 		file = getPlatformFile(res.getURI());
@@ -757,6 +772,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 			return desc.getContentType().getId();
 		return null;
 	}
+	
 	private URI findKey(Resource resource) {
 		Map aMap = getURIResourceMap();
 		Set keys = aMap.keySet();
@@ -806,22 +822,20 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    
 	    URIConverter theURIConverter = getURIConverter();
 	    URI normalizedURI = theURIConverter.normalize(uri);
-	    for (Resource resource : getResources())
-	    {
-	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI))
-	      {
-	        if (loadOnDemand && !resource.isLoaded())
-	        {
-	          demandLoadHelper(resource);
-	        }
-	        
-	        if (map != null)
-	        {
-	          map.put(uri, resource);
-	        } 
-	        return resource;
-	      }
-	    }
+	    synchronized (resourcesLock) {
+			for (Resource resource : getResources()) {
+				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
+					if (loadOnDemand && !resource.isLoaded()) {
+						demandLoadHelper(resource);
+					}
+
+					if (map != null) {
+						map.put(uri, resource);
+					}
+					return resource;
+				}
+			}
+		}
 	    
 	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
 	    if (delegatedResource != null)
