@@ -64,6 +64,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
@@ -109,6 +110,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 	// Mappings that are current
 	protected HashMap<IVirtualComponent, String> objectToRuntimePath = new HashMap<IVirtualComponent, String>();
+
+	protected ArrayList<IVirtualComponent> consumedReferences = new ArrayList<IVirtualComponent>();
 
 	// A single list of wb-resource mappings. If there's any change, 
 	// all old will be removed and new ones added
@@ -463,26 +466,32 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void showReferenceWizard(boolean editing) {
 		NewReferenceWizard wizard = new NewReferenceWizard();
 		// fill the task model
-		wizard.getTaskModel().putObject(NewReferenceWizard.PROJECT, project);
-		wizard.getTaskModel().putObject(NewReferenceWizard.ROOT_COMPONENT, rootComponent);
+		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
+		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
 
 		IVirtualComponent selected = null;
 		if( editing ) {
 			Object o = ((IStructuredSelection)availableComponentsViewer.getSelection()).getFirstElement();
 			if( o instanceof IVirtualComponent ) {
 				selected = (IVirtualComponent)o;
-				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT, selected);
-				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, objectToRuntimePath.get(selected));
+				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, selected);
+				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, objectToRuntimePath.get(selected));
 			}
 		}
 		
 		WizardDialog wd = new WizardDialog(addReferenceButton.getShell(), wizard);
 		if( wd.open() != Window.CANCEL) {
 			if( editing && selected != null) {
-				objectToRuntimePath.remove(selected); // remove old
+				// remove old
+				objectToRuntimePath.remove(selected); 
+				consumedReferences.remove(selected);
 			}
-			Object c1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT);
-			Object p1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
+			
+			Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT);
+			Object p1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT_PATH);
+			DependencyType type = (DependencyType)wizard.getTaskModel().getObject(IReferenceWizardConstants.DEPENDENCY_TYPE);
+			boolean consumed = type == null ? false : type.equals(DependencyType.CONSUMES_LITERAL);
+			
 			IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
 					new IVirtualComponent[] { (IVirtualComponent)c1 } : 
 						(IVirtualComponent[])c1;
@@ -492,6 +501,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			for( int i = 0; i < compArr.length; i++ ) {
 				objectToRuntimePath.put(compArr[i], 
 						getRuntimePath(compArr[i], pathArr[i]));
+				if( consumed ) 
+					consumedReferences.add(compArr[i]);
 			}
 			refresh();
 		}
@@ -602,6 +613,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			String val = (archiveName != null) ? refs[i].getRuntimePath().append(archiveName).toString() : refs[i].getRuntimePath().toString();
 			objectToRuntimePath.put(comp, val);
 			oldComponentToRuntimePath.put(comp, val);
+			if( refs[i].getDependencyType() == DependencyType.CONSUMES)
+				consumedReferences.add(comp);
 		}
 
 		ComponentResource[] allMappings = findAllMappings();
@@ -798,9 +811,14 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected IDataModelOperation getRemoveComponentOperation(IVirtualComponent component) {
 		String path, archiveName;
-		path = new Path(oldComponentToRuntimePath.get(component)).removeLastSegments(1).toString();
-		archiveName = new Path(oldComponentToRuntimePath.get(component)).lastSegment(); 
-
+		path = archiveName = null;
+		
+		if( !consumedReferences.contains(component)) {
+			path = new Path(oldComponentToRuntimePath.get(component)).removeLastSegments(1).toString();
+			archiveName = new Path(oldComponentToRuntimePath.get(component)).lastSegment(); 
+		} else {
+			path = oldComponentToRuntimePath.get(component);
+		}
 		IDataModelProvider provider = getRemoveReferenceDataModelProvider(component);
 		IDataModel model = DataModelFactory.createDataModel(provider);
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, rootComponent);
