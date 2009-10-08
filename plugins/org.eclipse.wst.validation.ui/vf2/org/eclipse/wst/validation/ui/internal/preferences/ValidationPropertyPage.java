@@ -275,6 +275,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 			addOverride(validatorGroup);
 			addConfigLink(validatorGroup);
+			//
+			addLine(validatorGroup);
 			addSuspend(validatorGroup);
 			addValidationBuilder(validatorGroup);
 			new Label(validatorGroup, SWT.NONE).setLayoutData(new GridData());
@@ -400,6 +402,16 @@ public class ValidationPropertyPage extends PropertyPage  {
 					_validatorList.refresh();
 				}
 			});
+		}
+		
+		//Add a line separator
+		private void addLine(Composite validatorGroup) {
+			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+			gd.horizontalSpan = 2;
+			Label line = new Label(validatorGroup,SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL);
+			line.setLayoutData(gd);
+			
+			
 		}
 		
 		private void addConfigLink(Composite validatorGroup){
