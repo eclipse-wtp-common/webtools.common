@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.25 $$  $$Date: 2009/09/29 19:48:49 $$ 
+ *  $$Revision: 1.26 $$  $$Date: 2009/10/16 18:56:43 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -376,16 +376,51 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
 		boolean isMapped = detectURIMapping(uri);
-		boolean hasContentType = (getContentTypeName(uri) != null);
+		String contentTypeName = getContentTypeName(uri);
+		boolean hasContentType = (contentTypeName != null);
 		URI converted = uri;
 		if (!isMapped)
 			converted = getURIConverter().normalize(uri);
 		else if (hasContentType)
 			converted = getURIConverter().normalize(uri);
 		
+		if (!hasContentType) {// Check if actual project file exists, and can determine contenttype
+			IContentDescription description = null;
+			IFile file = WorkbenchResourceHelperBase.getIFile(uri);
+			if (file != null && file.exists()) {
+				try {
+					description = file.getContentDescription();
+					if (description != null)
+						contentTypeName = description.getContentType().getId();
+				} catch (CoreException e) {
+					JEMUtilPlugin.getLogger().logError(e);
+				}
+			} else {// Now check if uri contains project, then add if needed
+				URIConverter converter = getURIConverter();
+				URI convertedUri = converter.normalize(uri);
+				if (!uri.equals(convertedUri)) {
+					file = WorkbenchResourceHelperBase.getIFile(convertedUri);
+					if (file != null && file.exists()) {
+						try {
+							description = file.getContentDescription();
+							if (description != null)
+								contentTypeName = description.getContentType().getId();
+						} catch (CoreException e) {
+							JEMUtilPlugin.getLogger().logError(e);
+						}
+					}
+				}
+			}
+		}
+			
+		
+		
 		Resource result = createResourceFromHandlers(converted);
 		if (result == null) {
-		    Resource.Factory resourceFactory = getResourceFactoryRegistry().getFactory(uri);
+			Resource.Factory resourceFactory = (contentTypeName == null) ? 
+					getResourceFactoryRegistry().getFactory(uri):
+					getResourceFactoryRegistry().getFactory(uri,contentTypeName);
+						
 		    if (resourceFactory != null)
 		    {//We got the right factory, now use the right URI
 		      result = resourceFactory.createResource(converted);

@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Factory;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
@@ -482,5 +483,12 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		else{
 			return super.getDescriptor(uri);
 		}
+	}
+
+	public Factory getFactory(URI uri, String contentType) {
+		IContentType type = Platform.getContentTypeManager().getContentType(contentType);
+		if (type != null)
+			return getFactory(uri, type.getDefaultDescription());
+		return super.getFactory(uri, contentType);
 	}
 }
