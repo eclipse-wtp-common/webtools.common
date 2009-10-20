@@ -274,24 +274,29 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		}
 		return getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
 	}
+	
 	private void checkSync(IFile compFile) {
-		synchronized(needsSync) {
-			if (needsSync.booleanValue()) { //Only check sync once for life of this model
-				if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
-						File iofile = compFile.getFullPath().toFile();
-						if (iofile.exists() || compFile.exists()) {
-							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-							try {
-							//OK wait to get workspace root before refreshing
-							Job.getJobManager().beginRule(root, null);
-							compFile.refreshLocal(IResource.DEPTH_ONE, null);
-							} catch (CoreException ce) {
-								//ignore
-							} finally {
-								Job.getJobManager().endRule(root);
-							}
-						}
+		boolean localNeedsSync = false;
+		synchronized (needsSync) {
+			localNeedsSync = needsSync;
+		}
+		if (localNeedsSync) { // Only check sync once for life of this model
+			if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
+				File iofile = compFile.getFullPath().toFile();
+				if (iofile.exists() || compFile.exists()) {
+					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+					try {
+						// OK wait to get workspace root before refreshing
+						Job.getJobManager().beginRule(root, null);
+						compFile.refreshLocal(IResource.DEPTH_ONE, null);
+					} catch (CoreException ce) {
+						// ignore
+					} finally {
+						Job.getJobManager().endRule(root);
+					}
 				}
+			}
+			synchronized (needsSync) {
 				needsSync = new Boolean(false);
 			}
 		}
