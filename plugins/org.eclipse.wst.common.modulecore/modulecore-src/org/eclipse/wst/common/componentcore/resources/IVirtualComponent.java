@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.resources;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -36,6 +37,12 @@ public interface IVirtualComponent extends IAdaptable {
 	 */
 	public static final int BINARY = 0x1;
 	
+	/**
+	 * An option key to ignore derived references. 
+	 * The default is false
+	 */
+	String IGNORE_DERIVED_REFERENCES = "IGNORE_DERIVED_REFERENCES";
+
 	
 	/**
 	 * The name of the component must be unique within its enclosing project.
@@ -144,6 +151,19 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @return A by-value copy of the virtual reference array
 	 */
 	IVirtualReference[] getReferences();
+
+	/**
+	 * Virtual components may reference other virtual components to build logical dependency trees. 
+	 * <p>
+	 * Each virtual reference will indicate how the content of the reference will be absorbed 
+	 * by this component. Each virtual reference will always specify an enclosing component that will
+	 * be this component.  
+	 * </p>
+	 * @param options A hashmap full of options
+	 * @return
+	 */
+	IVirtualReference[] getReferences(Map<String, Object> options);
+
 	/**
 	 * Virtual components may reference other virtual components to build logical dependency trees. 
 	 * <p>
@@ -154,6 +174,8 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @return A by-value copy of the virtual reference with given name, or null if none exist matching this name
 	 */
 	IVirtualReference getReference(String aComponentName);
+	
+
 	
 	/**
 	 * Virtual components may reference other virtual components to build logical dependency trees. 

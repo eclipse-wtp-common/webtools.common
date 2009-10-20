@@ -107,4 +107,12 @@ public interface IVirtualReference {
 	 */
 	public void setArchiveName(String archiveName);
 	
+	/**
+	 * Is this reference a 'derived' reference? A derived reference
+	 * is a reference that's not persisted in the primary model 
+	 * inside the org.eclipse.wst.component file. 
+	 * 
+	 * @return isDerived false if persisted, true otherwise 
+	 */
+	public boolean isDerived();
 }

@@ -33,24 +33,31 @@ public class VirtualReference implements IVirtualReference {
 	private IPath runtimePath;
 	private int dependencyType;
 	private String archiveName;
-
+	private boolean derived;
 	public VirtualReference() {
 		
 	} 
 	
 	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent) {
-		this(anEnclosingComponent, aReferencedComponent, new Path(String.valueOf(IPath.SEPARATOR)), DEPENDENCY_TYPE_USES); 
+		this(anEnclosingComponent, aReferencedComponent, new Path(String.valueOf(IPath.SEPARATOR)), DEPENDENCY_TYPE_USES, false); 
 	}
 	
 	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, IPath aRuntimePath) {
-		this(anEnclosingComponent, aReferencedComponent, aRuntimePath, DEPENDENCY_TYPE_USES);
+		this(anEnclosingComponent, aReferencedComponent, aRuntimePath, DEPENDENCY_TYPE_USES, false);
 	}
 
-	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, IPath aRuntimePath, int aDependencyType) {
+	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, 
+			IPath aRuntimePath, int aDependencyType) {
+		this(anEnclosingComponent, aReferencedComponent, aRuntimePath, aDependencyType, false);
+	}
+	
+	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, 
+			IPath aRuntimePath, int aDependencyType, boolean isDerived) {
 		enclosingComponent = anEnclosingComponent;
 		referencedComponent = aReferencedComponent;
 		runtimePath = aRuntimePath;
 		dependencyType = aDependencyType;
+		derived = isDerived;
 	}
 
 	public void create(int updateFlags, IProgressMonitor aMonitor) { 
@@ -140,5 +147,13 @@ public class VirtualReference implements IVirtualReference {
 
 	public void setArchiveName(String archiveName) {
 		this.archiveName = archiveName;
+	}
+	
+	public boolean isDerived() {
+		return derived;
+	}
+	
+	public void setDerived(boolean val) {
+		derived = val;
 	}
 }

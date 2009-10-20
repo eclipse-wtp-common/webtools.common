@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 
 
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
@@ -151,6 +152,10 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public void create(int updateFlags, IProgressMonitor aMonitor) throws CoreException {
 
 	}
+	
+	public IVirtualReference[] getReferences(Map<String, Object> options) {
+		return NO_REFERENCES;
+	}
 
 	public IVirtualReference[] getReferences() {
 		return NO_REFERENCES;
@@ -266,5 +271,5 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		}
 		return super.toString();
 	}
-	
+
 }

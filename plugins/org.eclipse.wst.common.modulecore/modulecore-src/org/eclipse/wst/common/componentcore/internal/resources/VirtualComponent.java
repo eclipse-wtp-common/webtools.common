@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -271,10 +272,6 @@ public class VirtualComponent implements IVirtualComponent {
 	}	
 
 	public IVirtualReference[] getReferences(Map<String, Object> options) {
-		return getReferences();
-	}
-	
-	public IVirtualReference[] getReferences() { 
 		StructureEdit core = null;
 		List references = new ArrayList();
 		try {
@@ -298,6 +295,12 @@ public class VirtualComponent implements IVirtualComponent {
 			if(core != null)
 				core.dispose();
 		}		
+	}
+	
+	public IVirtualReference[] getReferences() { 
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put(IVirtualComponent.IGNORE_DERIVED_REFERENCES, new Boolean(false));
+		return getReferences(map);
 	}
 
 	public void addReferences(IVirtualReference[] references) {
