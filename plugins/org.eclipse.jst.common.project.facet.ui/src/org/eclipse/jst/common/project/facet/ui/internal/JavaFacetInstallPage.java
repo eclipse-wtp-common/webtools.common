@@ -25,12 +25,15 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.ResourceStatus;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -58,7 +61,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 import org.eclipse.wst.common.project.facet.core.util.internal.ObjectReference;
 import org.eclipse.wst.common.project.facet.ui.AbstractFacetWizardPage;
@@ -249,8 +251,26 @@ public final class JavaFacetInstallPage
 
                     try
                     {
-                        final String newValue = defaultOutputFolderTextField.getText();
-                        installConfig.setDefaultOutputFolder( new Path( newValue ) );
+                        final  String newValue = defaultOutputFolderTextField.getText();
+                        
+                        //validate 
+                        IStatus status = validateFolders(newValue);
+                        if( status.isOK() ){
+                        	status = validateSourceAndOutputFolderCase( getConfig().getSourceFolders(), newValue);
+                        }
+                        if( !status.isOK() )
+                        {
+                        	setErrorMessage(status.getMessage());
+                        	setPageComplete( false );
+                        }
+                        else
+                        {
+                        	setErrorMessage( null );
+                        	setPageComplete( true );
+                        }
+                        
+                        if( status.isOK() )
+                        	installConfig.setDefaultOutputFolder( new Path( newValue ) );
                     }
                     finally
                     {
@@ -289,7 +309,6 @@ public final class JavaFacetInstallPage
 	        modelEventListener,
 	        JavaFacetInstallConfig.ChangeEvent.Type.DEFAULT_OUTPUT_FOLDER_CHANGED
 	    );
-        
         modelEventListener.handleEvent( null );
 	}
 	
@@ -364,18 +383,19 @@ public final class JavaFacetInstallPage
 
     private IInputValidator createSourceFolderInputValidator()
     {
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        final IFacetedProjectWorkingCopy fpjwc = this.installConfig.getFacetedProjectWorkingCopy();
-        final String projectName = fpjwc.getProjectName();
         
         final IInputValidator validator = new IInputValidator()
         {
             public String isValid( final String newText ) 
             {
-                final String fullPath = "/" + projectName + "/" + newText; //$NON-NLS-1$ //$NON-NLS-2$
-                final IStatus result = ws.validatePath( fullPath, IResource.FOLDER );
-                
-                if( result.getSeverity() == IStatus.ERROR )
+
+                IStatus result = validateFolders( newText );
+                if( result.isOK() )
+                {
+                	final String outputFolder = JavaFacetInstallPage.this.defaultOutputFolderTextField.getText();
+                	result = validateSourceAndOutputFolderCase( newText,  outputFolder );
+                }
+                if( !result.isOK() )
                 {
                     return result.getMessage();
                 }
@@ -446,6 +466,69 @@ public final class JavaFacetInstallPage
         public void removeListener( ILabelProviderListener listener ) {}
     }
     
+	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.jst.common.project.facet.ui", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	public static IStatus validateFolders(String folderName){
+		
+		if (folderName == null || folderName.length() == 0 || folderName.equals("/") || folderName.equals("\\")) {  //$NON-NLS-1$//$NON-NLS-2$
+			return new Status(IStatus.ERROR, "org.eclipse.jst.common.project.facet.ui", -1, //$NON-NLS-1$
+					Resources.FOLDER_EMPTY , null); 
+		} else {
+			IStatus status = validateFolderName(folderName);
+			if (status.isOK()){
+				status = validateFolderForCharacters(folderName);
+			}
+			return status;
+		}
+	}
+	
+	public static IStatus validateFolderName(String folderName) {
+		// the directory is not required, but if the name is entered ensure that it 
+		// contains only valid characters.
+		if (folderName == null || folderName.length() == 0) {
+			return OK_STATUS;
+		}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPath path = new Path(folderName);
+		for (int i = 0, max = path.segmentCount(); i < max; i++) {
+			IStatus status = workspace.validateName(path.segment(i), IResource.FOLDER);
+			if (! status.isOK())
+				return status;
+		}
+
+		// all of the potential segments of the folder have been verified
+		return OK_STATUS;
+	}
+	
+	public static IStatus validateFolderForCharacters(String folderName){
+		/* bug 223072 test invalid character - URI.FRAGMENT_SEPARATOR */
+		if (folderName.indexOf('#') != -1) { 
+			String message = NLS.bind(org.eclipse.core.internal.utils.Messages.resources_invalidCharInName, "#", folderName); //$NON-NLS-1$
+			return  new ResourceStatus(IResourceStatus.INVALID_VALUE, null, message);
+		}
+		return OK_STATUS;
+	}
+	
+	public static IStatus validateSourceAndOutputFolderCase(List<IPath> sourceFolders, String outputFolder){
+		for( IPath srcFolder : sourceFolders ){
+			String sourceFolder = srcFolder.toString();
+			IStatus status = validateSourceAndOutputFolderCase( sourceFolder, outputFolder );
+			if( !status.isOK() ){
+				return status;
+			}
+		}
+		return OK_STATUS;
+	}
+	
+	public static IStatus validateSourceAndOutputFolderCase(String sourceFolder, String outputFolder){
+		if( sourceFolder.equalsIgnoreCase(outputFolder) && !sourceFolder.equals(outputFolder)){
+			return new Status(IStatus.ERROR, "org.eclipse.jst.common.project.facet.ui", -1, //$NON-NLS-1$
+					Resources.SOURCE_OUPUT_FOLDER_DIFF_BYCASE_ONLY , null); 
+		}
+		return OK_STATUS;
+	}
+	
+	
     private static final class Resources 
     
         extends NLS 
@@ -462,6 +545,8 @@ public final class JavaFacetInstallPage
         public static String addSourceFolderDialogMessage;
         public static String editSourceFolderDialogTitle;
         public static String editSourceFolderDialogMessage;
+        public static String FOLDER_EMPTY;
+        public static String SOURCE_OUPUT_FOLDER_DIFF_BYCASE_ONLY;
 
         static 
         {

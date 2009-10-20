@@ -27,6 +27,7 @@ public final class FacetCorePlugin
     public static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$    
     private static final String PROD_PROP_SOURCE_FOLDER = "defaultJavaSourceFolder"; //$NON-NLS-1$
     public static final String DEFAULT_SOURCE_FOLDER = "src"; //$NON-NLS-1$
+    public static final String DEFUALT_OUTPUT_FOLDER ="build/classes"; //$NON-NLS-1$
     
     private static FacetCorePlugin inst;
 
