@@ -12,8 +12,10 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -490,5 +492,24 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		if (type != null)
 			return getFactory(uri, type.getDefaultDescription());
 		return super.getFactory(uri, contentType);
+	}
+	
+	
+	/**
+	 *  Returns true if the uri is found in the WTPResourceFactoryRegistry descriptor.
+	 *  This will not load any extension points
+	 */
+	public synchronized boolean shortNameRegistered(URI uri) {
+		Map m = getDescriptors();
+		Collection c = m.values();
+		Iterator iter = c.iterator();
+		String uriLastSegment = uri.lastSegment();
+		while(iter.hasNext()) {
+			ResourceFactoryDescriptor descriptor = (ResourceFactoryDescriptor) iter.next();
+			if(descriptor.getShortSegment() != null && descriptor.getShortSegment().equals(uriLastSegment)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
