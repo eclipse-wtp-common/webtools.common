@@ -51,7 +51,6 @@
         enabled="true"
         pattern=".deployables"/>
 	</extension>
-	<extension-point id="ComponentProjectMigrator" name="ComponentProjectMigrator" schema="schema/ComponentProjectMigrator.exsd"/>
 	<extension-point id="artifactedit" name="Component Artifact Edit" schema="schema/artifactedit.exsd"/>
     <extension-point id="componentimpl" name="componentimpl" schema="schema/componentimpl.exsd"/>
 	<extension-point id="resourceFactories" name="Resource Factory Association (Internal)" schema="schema/resourceFactories.exsd"/>
@@ -75,63 +74,6 @@
     </factory>
   </extension>
   
-  <extension
-         id="ModuleCoreValidator"
-         name="%Validator.name"
-         point="org.eclipse.wst.validation.validator">
-      <validator>
-      	<projectNature
-               id="org.eclipse.wst.common.modulecore.ModuleCoreNature">
-         </projectNature>
-         <filter
-               objectClass="org.eclipse.core.resources.IFile"
-               caseSensitive="false"
-               nameFilter="*.wtpmodules">
-         </filter>
-         <filter
-               objectClass="org.eclipse.core.resources.IFile"
-               caseSensitive="false"
-               nameFilter="*.component">
-         </filter>
-		   <markerId
-               	   markerIdValue="ModuleCoreValidatorMarker">
-         </markerId>
-         <helper      
-               class="org.eclipse.wst.common.componentcore.internal.ModuleCoreValidatorHelper">
-         </helper>
-         <run
-               class="org.eclipse.wst.common.componentcore.internal.ModuleCoreValidator">
-         </run>
-      </validator>
-   </extension>
-
-<extension
-         id="ModuleCoreValidatorMarker"
-         name="%ValidationMarker.name"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.wst.validation.problemmarker">
-      </super>
-      <persistent
-            value="true">
-      </persistent>
-      <attribute
-            name="owner">
-      </attribute>
-      <attribute
-            name="validationSeverity">
-      </attribute>
-      <attribute
-            name="targetObject">
-      </attribute>
-      <attribute
-            name="groupName">
-      </attribute>
-      <attribute
-            name="messageId">
-      </attribute>
-</extension> 
-
    <!-- Register the nature id with the EMFNature -->
    <extension
          point="org.eclipse.jem.util.nature_registration">
