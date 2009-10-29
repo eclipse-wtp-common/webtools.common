@@ -1,16 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.modulecore">
+<schema targetNamespace="org.eclipse.wst.common.modulecore" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.wst.common.modulecore" id="ComponentProjectMigrator" name="Component Project Migrator"/>
       </appInfo>
       <documentation>
-         This allows specific implementations of components to contribute migrators Those plugins have dependencies on the modulecore plugin, but not vice versa. In order for code defined within the modulecore plugin to execute these actions, we need this extension point.
+         This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+@deprecated
+
+This allows specific implementations of components to contribute migrators Those plugins have dependencies on the modulecore plugin, but not vice versa. In order for code defined within the modulecore plugin to execute these actions, we need this extension point.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="migratorExtension"/>
@@ -53,10 +62,25 @@
 
    <annotation>
       <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+@deprecated
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
+         This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+@deprecated
+
+&lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
       </documentation>
    </annotation>
 
@@ -65,16 +89,9 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
+         This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+@deprecated
       </documentation>
    </annotation>
 
@@ -83,7 +100,9 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         
+         This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+@deprecated
       </documentation>
    </annotation>
 

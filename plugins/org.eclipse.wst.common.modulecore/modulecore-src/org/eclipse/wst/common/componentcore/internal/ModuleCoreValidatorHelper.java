@@ -13,7 +13,12 @@ package org.eclipse.wst.common.componentcore.internal;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 
-
+/**
+ * This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+ * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+ * @deprecated 
+ * @author jsholl
+ */
 public class ModuleCoreValidatorHelper extends WorkbenchContext {
 
 		public static final String MODULECORE = "MODULECORE";

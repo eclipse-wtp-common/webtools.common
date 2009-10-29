@@ -24,8 +24,10 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 
 /**
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This has been deprecated since WTP 3.1.2 and will be deleted post WTP 3.2.
+ * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=292934
+ * @deprecated 
+ * @author jsholl
  */
 public class ProjectMigratorRegistry extends RegistryReader {
 
