@@ -51,6 +51,7 @@
         enabled="true"
         pattern=".deployables"/>
 	</extension>
+	<extension-point id="ComponentProjectMigrator" name="ComponentProjectMigrator" schema="schema/ComponentProjectMigrator.exsd"/>
 	<extension-point id="artifactedit" name="Component Artifact Edit" schema="schema/artifactedit.exsd"/>
     <extension-point id="componentimpl" name="componentimpl" schema="schema/componentimpl.exsd"/>
 	<extension-point id="resourceFactories" name="Resource Factory Association (Internal)" schema="schema/resourceFactories.exsd"/>
