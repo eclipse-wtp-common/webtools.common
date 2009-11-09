@@ -134,8 +134,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
                     prop.equals( IProjectCreationPropertiesNew.PROJECT_NAME ) )
                 {
                     final String projectName = (String) event.getProperty();
-					getDataModel().setProperty(FACET_PROJECT_NAME, projectName);
-					fpjwc.setProjectName( projectName );
+                    IStatus status = getDataModel().validateProperty(FACET_PROJECT_NAME);
+                    if( status.isOK() ){
+						getDataModel().setProperty(FACET_PROJECT_NAME, projectName);
+						fpjwc.setProjectName( projectName );
+                    }
 				}
                 else if( prop.equals( IProjectCreationPropertiesNew.PROJECT_LOCATION ) )
                 {
