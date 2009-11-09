@@ -928,9 +928,15 @@ public final class FacetsSelectionPanel
             {
                 final IProjectFacet f = fv.getProjectFacet();
                 final boolean checked = fpjwc.hasProjectFacet( fv );
-                this.treeViewer.setChecked( f, checked );
-                this.treeViewer.update( f, null );
                 
+                final CheckboxTreeViewer treeViewer = this.treeViewer;
+                Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            treeViewer.setChecked( f, checked );
+                            treeViewer.update( f, null );
+                        }
+                });
+
                 final ICategory category = f.getCategory();
                 
                 if( category != null )
