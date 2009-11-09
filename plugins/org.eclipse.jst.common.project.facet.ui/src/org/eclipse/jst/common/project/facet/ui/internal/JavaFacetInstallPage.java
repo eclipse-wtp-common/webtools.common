@@ -268,9 +268,7 @@ public final class JavaFacetInstallPage
                         	setErrorMessage( null );
                         	setPageComplete( true );
                         }
-                        
-                        if( status.isOK() )
-                        	installConfig.setDefaultOutputFolder( new Path( newValue ) );
+                       installConfig.setDefaultOutputFolder( new Path( newValue ) );
                     }
                     finally
                     {
@@ -348,6 +346,18 @@ public final class JavaFacetInstallPage
             final String path = dialog.getValue();
             this.installConfig.addSourceFolder( new Path( path ) );
         }
+      
+    	//revalidate source and ouput folders
+        if( this.installConfig.getSourceFolders().isEmpty() ||   this.installConfig.getDefaultOutputFolder() == null || 
+        		this.installConfig.getDefaultOutputFolder().toString().isEmpty() ){    		
+        	setErrorMessage( Resources.FOLDER_EMPTY );
+        	setPageComplete( false );
+    	}else{
+        	setErrorMessage( null );
+        	setPageComplete( true );    		
+    	}
+    	validateSourceAndOutputFolderCase(this.installConfig.getSourceFolders(), this.installConfig.getDefaultOutputFolder().toString());
+
     }
 
     private void handleEditButtonPressed() 
@@ -374,6 +384,12 @@ public final class JavaFacetInstallPage
     {
         final IPath selectedSourceFolder = getSelectedSourceFolder();
         this.installConfig.removeSourceFolder( selectedSourceFolder );
+
+        List<IPath> srcFolders = this.installConfig.getSourceFolders();
+        if( srcFolders!= null && srcFolders.isEmpty()){
+        	setErrorMessage( Resources.FOLDER_EMPTY );
+        	setPageComplete( false );
+        }
     }
 
     private void handleDisposeEvent()
@@ -388,7 +404,6 @@ public final class JavaFacetInstallPage
         {
             public String isValid( final String newText ) 
             {
-
                 IStatus result = validateFolders( newText );
                 if( result.isOK() )
                 {
