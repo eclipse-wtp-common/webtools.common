@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.26 $$  $$Date: 2009/10/16 18:56:43 $$ 
+ *  $$Revision: 1.27 $$  $$Date: 2009/11/10 21:50:15 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -424,9 +424,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    if (resourceFactory != null)
 		    {//We got the right factory, now use the right URI
 		      result = resourceFactory.createResource(converted);
-		      synchronized (resourcesLock) {
-		    	  getResources().add(result);
-		      }
+		      getResources().add(result);
 		    }
 		}
 			
@@ -471,8 +469,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    if (resourceFactory != null)
 		    {
 		      result = resourceFactory.createResource(converted);
+		      getResources().add(result);
 		      synchronized (resourcesLock) {
-		    	  getResources().add(result);
 		          getURIResourceMap().put(uri, result);
 		      }
 		      return result;
