@@ -356,7 +356,7 @@ public class StructureEdit implements IEditModelHandler {
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		else if (validateEdit().isOK()) { 
+		else if (structuralModel.isDirty() && validateEdit().isOK()) { 
 				if (!structuralModel.isDisposed())
 					structuralModel.saveIfNecessary(aMonitor, this);
 		}
