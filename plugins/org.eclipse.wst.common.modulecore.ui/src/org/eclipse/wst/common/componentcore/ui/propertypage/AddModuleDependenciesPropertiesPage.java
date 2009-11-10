@@ -142,11 +142,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		composite.setLayout(layout);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ModuleAssemblyRootPage.createDescriptionComposite(composite,
-				Messages.ModuleAssemblyRootPageDescription);
+				getModuleAssemblyRootPageDescription());
 		createListGroup(composite);
 		refresh();
 		Dialog.applyDialogFont(parent);
 		return composite;
+	}
+
+	protected String getModuleAssemblyRootPageDescription() {
+		return Messages.ModuleAssemblyRootPageDescription;
 	}
 
 	protected void createListGroup(Composite parent) {
@@ -193,10 +197,26 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createPushButtons() {
-		addMappingButton = createPushButton(Messages.AddFolderElipses);
-		addReferenceButton = createPushButton(Messages.AddReference);
-		editReferenceButton = createPushButton(Messages.EditReference);
-		removeButton = createPushButton(Messages.RemoveSelected);
+		addMappingButton = createPushButton(getAddFolderLabel());
+		addReferenceButton = createPushButton(getAddReferenceLabel());
+		editReferenceButton = createPushButton(getEditReferenceLabel());
+		removeButton = createPushButton(getRemoveSelectedLabel());
+	}
+
+	protected String getRemoveSelectedLabel() {
+		return Messages.RemoveSelected;
+	}
+
+	protected String getEditReferenceLabel() {
+		return Messages.EditReference;
+	}
+
+	protected String getAddReferenceLabel() {
+		return Messages.AddReference;
+	}
+
+	protected String getAddFolderLabel() {
+		return Messages.AddFolderElipses;
 	}
 
 	protected Button createPushButton(String label) {

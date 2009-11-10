@@ -50,4 +50,10 @@ public interface IDependencyPageProvider {
 	 * @return
 	 */
 	public Composite createRootControl(IFacetedProject project, IModuleDependenciesControl[] pages, Composite parent);
+
+	/**
+	 * 
+	 * @return String - page title string or null if default title is desired
+	 */
+	public String getPageTitle();
 }

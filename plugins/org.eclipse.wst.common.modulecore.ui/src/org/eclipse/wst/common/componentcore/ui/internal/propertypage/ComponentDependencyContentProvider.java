@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
 
@@ -64,6 +65,15 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	}
 	
 	public Image getColumnImage(Object element, int columnIndex) {
+		if( element instanceof ComponentResourceProxy) {
+			return ModuleCoreUIPlugin.getInstance().getImage("folder");
+		}
+		if (element instanceof IVirtualComponent) {
+			return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+		} 
+		if (element instanceof IProject){
+			return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
+		}
 		return null;
 	}
 
