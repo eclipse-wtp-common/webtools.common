@@ -12,9 +12,8 @@ package org.eclipse.wst.common.internal.emf.resource;
 
 
 
-import org.eclipse.emf.ecore.resource.Resource;
 
-public interface ReferencedResource extends Resource, CompatibilityXMIResource {
+public interface ReferencedResource extends CompatibilityXMIResource {
 	//TODO - rename packaged
 
 	public static final String DELETED_ERROR_MSG = "This resource has been deleted and can no longer be used."; //$NON-NLS-1$
