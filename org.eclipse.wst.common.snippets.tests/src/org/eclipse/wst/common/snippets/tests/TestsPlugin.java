@@ -9,6 +9,7 @@ import org.osgi.framework.BundleContext;
  */
 public class TestsPlugin extends AbstractUIPlugin {
 
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.snippets.tests";
 	//The shared instance.
 	private static TestsPlugin plugin;
 	

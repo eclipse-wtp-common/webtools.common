@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.actions;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.ui.palette.customize.PaletteCustomizerDialog;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
@@ -25,32 +25,34 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.wst.common.snippets.core.ISnippetProvider;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
-import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactory;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
-import org.eclipse.wst.common.snippets.internal.util.StringUtils;
+import org.eclipse.wst.common.snippets.internal.util.SnippetProviderManager;
 import org.eclipse.wst.common.snippets.internal.util.UserDrawerSelector;
 
 
 public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate, IViewActionDelegate {
 
-	private IAction fAction;
 	private IEditorPart fEditorPart;
-	private IViewPart fViewPart = null;
+	private ISnippetProvider snippetProvider;
 
-	/**
-	 * 
-	 */
 	public AddToSnippetsEditorActionDelegate() {
 		super();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public IDocument getDocument() {
 		return getTextEditor().getDocumentProvider().getDocument(fEditorPart.getEditorInput());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected ITextSelection getSelection() {
 		ITextEditor editor = getTextEditor();
 		if (editor != null) {
@@ -62,9 +64,12 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 		return new TextSelection(0, 0);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected ITextEditor getTextEditor() {
 		ITextEditor editor = null;
-		IWorkbenchPart activePart = fViewPart;
+		IWorkbenchPart activePart = fEditorPart;
 		if (activePart == null) {
 			activePart = fEditorPart;
 		}
@@ -76,6 +81,7 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 		}
 		return editor;
 	}
+
 
 	/**
 	 * Prompts the user as needed to obtain a category to contain the new
@@ -90,14 +96,9 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 		return drawer;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-	 */
 	public void init(IViewPart view) {
-		fViewPart = view;
 	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -108,25 +109,25 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 		PaletteDrawer drawer = getUserDrawer();
 
 		if (drawer != null) {
-			ITextSelection selection = getSelection();
-			String selectedText = null;
+			if (snippetProvider == null) {
+				snippetProvider = SnippetProviderManager.getApplicableProvider(fEditorPart);
+				if (snippetProvider == null) {
+					return;
+				}
+			}
+
 			try {
-				selectedText = getDocument().get(selection.getOffset(), selection.getLength());
-
-				SnippetPaletteItem item = (SnippetPaletteItem) new SnippetPaletteItemFactory().createNewEntry(fEditorPart.getSite().getShell(), drawer);
-				item.setDescription(StringUtils.firstLineOf(selectedText).trim() + "..."); //$NON-NLS-1$
-				item.setContentString(selectedText);
-
-				IViewPart snippets = fEditorPart.getEditorSite().getPage().showView(SnippetsPlugin.NAMES.VIEW_ID); //$NON-NLS-1$
+				SnippetPaletteItem item = snippetProvider.createSnippet(drawer);
+				IViewPart snippets = fEditorPart.getEditorSite().getPage().showView(SnippetsPlugin.NAMES.VIEW_ID);
 				PaletteCustomizerDialog dialog = ((SnippetsView) snippets).getViewer().getCustomizerDialog();
 				dialog.setDefaultSelection(item);
 				dialog.open();
 			}
-			catch (BadLocationException e) {
+			catch (PartInitException e) {
 				Logger.logException(e);
 			}
-			catch (PartInitException e1) {
-				Logger.logException(e1);
+			catch (CoreException e) {
+				Logger.logException(e);
 			}
 		}
 	}
@@ -138,8 +139,12 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		fAction = action;
-		updateWith(selection);
+		if (selection != null && fEditorPart != null && snippetProvider != null) {
+			action.setEnabled(snippetProvider.isActionEnabled(selection));
+		}
+		else {
+			action.setEnabled(false);
+		}
 	}
 
 	/*
@@ -150,26 +155,13 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 	 */
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		fEditorPart = targetEditor;
-		fAction = action;
-		if (targetEditor != null && targetEditor.getEditorSite() != null && targetEditor.getEditorSite().getSelectionProvider() != null) {
-			updateWith(targetEditor.getEditorSite().getSelectionProvider().getSelection());
+		action.setEnabled(fEditorPart != null);
+		if (fEditorPart != null) {
+			snippetProvider = SnippetProviderManager.getApplicableProvider(fEditorPart);
+		}
+		else {
+			snippetProvider = null;
 		}
 	}
 
-	public void updateWith(ISelection selection) {
-		if (fAction != null) {
-			boolean enable = false;
-			if (selection != null) {
-				if (selection instanceof ITextSelection) {
-					if (((ITextSelection) selection).getLength() > 0) {
-						enable = true;
-					}
-				}
-				else {
-					enable = !selection.isEmpty();
-				}
-			}
-			fAction.setEnabled(enable);
-		}
-	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,11 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.ui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
@@ -31,8 +33,10 @@ import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactor
 
 
 public class SnippetsCustomizer extends PaletteCustomizer {
+	
 	protected List activeEditors = new ArrayList();
 	protected List factories = null;
+	private List deletedIds = new ArrayList();
 
 	public SnippetsCustomizer() {
 		super();
@@ -117,6 +121,13 @@ public class SnippetsCustomizer extends PaletteCustomizer {
 				Logger.logException(e);
 			}
 		}
+		
+		for (int i = 0; i < deletedIds.size(); i++) {
+			IPath path = SnippetManager.getInstance().getStorageLocation(deletedIds.get(i).toString());
+			File folder = new File(path.toOSString());
+			deleteFolders(folder);
+		}
+		deletedIds.clear();
 
 		activeEditors = new ArrayList(0);
 
@@ -127,4 +138,26 @@ public class SnippetsCustomizer extends PaletteCustomizer {
 			Logger.logException(e);
 		}
 	}
+
+	private void deleteFolders(File folder) {
+		if (!folder.exists()) {
+			return;
+		}
+		File[] listFiles = folder.listFiles();
+		for (int i = 0; i < listFiles.length; i++) {
+			if (listFiles[i].isDirectory()) {
+				deleteFolders(listFiles[i]);
+			}
+			else {
+				listFiles[i].delete();
+			}
+		}
+		folder.delete();
+	}
+
+	public void performDelete(PaletteEntry entry) {
+		deletedIds.add(entry.getId());
+		super.performDelete(entry);
+	}
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,7 @@ public class SnippetsPlugin extends AbstractUIPlugin {
 		String VARIABLES = "variables"; //$NON-NLS-1$
 		String VERSION = "version"; //$NON-NLS-1$
 		String VIEW_ID = "org.eclipse.wst.common.snippets.internal.ui.SnippetsView"; //$NON-NLS-1$
+		String PROVIDER_ID = "snippetProvider";//$NON-NLS-1$
 	}
 
 	public static final String BUNDLE_ID = "org.eclipse.wst.common.snippets"; //$NON-NLS-1$

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,12 +16,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetProvider;
 import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
 
 public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippetItem {
 
@@ -38,6 +41,7 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 	protected Object fSourceDescriptor;
 	protected Object fSourceType = SNIPPET_SOURCE_USER;
 	protected List fVariables;
+	private ISnippetProvider provider;
 
 	/**
 	 * @param label
@@ -218,5 +222,18 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 	protected void setVariables(ISnippetVariable[] variables) {
 		fVariables = new ArrayList(variables.length);
 		fVariables.addAll(Arrays.asList(variables));
+	}
+
+	public IPath getStorageLocation() {
+		return SnippetManager.getInstance().getStorageLocation(getId());
+	}
+
+
+	public ISnippetProvider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(ISnippetProvider provider) {
+		this.provider = provider;
 	}
 }

@@ -29,5 +29,33 @@
 			</item>
 		</category>
 	</extension>
+ <extension
+       point="org.eclipse.wst.common.snippets.SnippetProvider">
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.TextSnippetProvider2"
+          priority="101">
+       <enablement>
+          <instanceof
+                value="org.eclipse.ui.texteditor.ITextEditor">
+          </instanceof></enablement>
+    </provider>
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.DummyProvider"
+          priority="2">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.common.snippets.tests.helpers.CommonApplicableInterface">
+          </instanceof>
+       </enablement>
+    </provider>
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.ComplexProvider"
+          priority="20">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.common.snippets.tests.helpers.SApplicableEditor">
+          </instanceof></enablement>
+    </provider>
+ </extension>
 
 </plugin>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -219,9 +219,45 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 
 		return definitions;
 	}
-
+	
 	public SnippetDefinitions loadCurrent() {
 		return load(getFilename());
+	}
+
+	public SnippetDefinitions load(InputStream in) {
+		SnippetDefinitions definitions = new SnippetDefinitions();
+		Document document = null;
+		try {
+			DocumentBuilder builder = CommonXML.getDocumentBuilder();
+			if (builder != null) {
+				document = builder.parse(new InputSource(in));
+			}
+			else {
+				Logger.log(Logger.ERROR, "Couldn't obtain a DocumentBuilder"); //$NON-NLS-1$
+			}
+		}
+		catch (FileNotFoundException e) {
+			// typical of new workspace, don't log it
+			document = null;
+		}
+		catch (IOException e) {
+			Logger.logException("Could not load user items", e); //$NON-NLS-1$
+			return definitions;
+		}
+		catch (SAXException e) {
+			Logger.logException("Could not load user items", e); //$NON-NLS-1$
+			return definitions;
+		}
+		if (document == null)
+			return definitions;
+		Element library = document.getDocumentElement();
+		if (library == null || !library.getNodeName().equals(SnippetsPlugin.NAMES.SNIPPETS))
+			return definitions;
+		loadDefinitions(definitions, library);
+
+		connectItemsAndCategories(definitions);
+
+		return definitions;
 	}
 
 	protected void loadDefinitions(SnippetDefinitions definitions, Node library) {
@@ -313,6 +349,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 		setProperty(item, SnippetsPlugin.NAMES.ID, element.getAttribute(SnippetsPlugin.NAMES.ID));
 		setProperty(item, SnippetsPlugin.NAMES.LABEL, element.getAttribute(SnippetsPlugin.NAMES.LABEL));
 		setProperty(item, SnippetsPlugin.NAMES.LARGEICON, element.getAttribute(SnippetsPlugin.NAMES.LARGEICON));
+		setProperty(item, SnippetsPlugin.NAMES.PROVIDER_ID, element.getAttribute(SnippetsPlugin.NAMES.PROVIDER_ID));
 
 		NodeList children = element.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {

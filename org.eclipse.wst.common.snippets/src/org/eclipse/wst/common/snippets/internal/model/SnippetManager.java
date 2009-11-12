@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,9 +13,12 @@ package org.eclipse.wst.common.snippets.internal.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +26,15 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
@@ -40,6 +52,7 @@ import org.eclipse.wst.common.snippets.internal.palette.UserModelDumper;
 import org.eclipse.wst.common.snippets.internal.palette.WorkspaceModelDumper;
 import org.eclipse.wst.common.snippets.internal.team.CategoryFileInfo;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
+import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,6 +68,8 @@ import org.xml.sax.SAXException;
  */
 public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 
+	private static final String STORAGE_FOLDER_NAME = "storage"; //$NON-NLS-1$
+
 	private static File hiddenStateFile = new File("/hidden.xml"); //$NON-NLS-1$
 
 	private static SnippetManager instance = null;
@@ -63,10 +78,18 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		if (instance == null) {
 			instance = new SnippetManager();
 			try {
-				hiddenStateFile = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toFile(); //$NON-NLS-1$
+				hiddenStateFile = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toFile();
 			}
 			catch (Exception e) {
 				hiddenStateFile = new File("/hidden.xml"); //$NON-NLS-1$
+			}
+			
+			try {
+				File storageLocation = SnippetsPlugin.getDefault().getStateLocation().append(STORAGE_FOLDER_NAME).toFile();
+				storageLocation.mkdirs();
+			}
+			catch (SecurityException e) {
+				Logger.logException(e);
 			}
 			// hook resource listener and load categories from workspace
 			// nsd_TODO: disable in-workspace support until fully stabilized
@@ -407,5 +430,92 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			Logger.logException(e);
 		}
 	}
+	
+	/**
+	 * @param id
+	 * @return the computed storage location for a snippet with this ID
+	 */
+	public IPath getStorageLocation(String id) {
+		Bundle bundle = Platform.getBundle(SnippetsPlugin.BUNDLE_ID);
+		return Platform.getStateLocation(bundle).append(STORAGE_FOLDER_NAME).addTrailingSeparator().append(id);
+	}
+	
+	/**
+	 * Helper method for saving resources in designated snippet resource folder.
+	 * 
+	 * @param snippetId - UID of the snippet that is saving content.
+	 * @param pathList - Project relative path list. The resources are copied in the same structure 
+	 * 					 in the storage path. e.g. having test.jsp file in project root will result in
+	 * 					 test.jsp in the storage root. If the jsp  is in [Project Root]/resources/test.jsp
+	 * 					 this will result in [Snippet Storage Root]/resources/test.jsp 
+	 * @return
+	 */
+	public IStatus moveFilesInStorageFolder(IPath snippetStorage, IPath[] pathList, IProject project){
+		File storageFolder = new File(snippetStorage.toOSString());
+		if (!storageFolder.exists()){
+			if (!storageFolder.mkdirs()){
+				return createErrorStatus("Could not create snippet storage folder.", null);
+			}
+		}
+		for (int i = 0; i < pathList.length; i++) {
+			IFile file = project.getFile(pathList[i]);
+			IPath destPath = snippetStorage.append(pathList[i]);
+			File destination = new File(destPath.toOSString());
+			if (!destination.getParentFile().exists()){
+				if (!destination.getParentFile().mkdirs()){
+					return createErrorStatus("Could not create snippet storage folder.", null);
+				}
+			}	
+			try {
+				copy(file, destination);
+			} catch (FileNotFoundException e) {
+				return createErrorStatus(e.getLocalizedMessage(), e);
+			} catch (IOException e) {
+				return createErrorStatus(e.getLocalizedMessage(), e);
+			} catch (CoreException e) {
+				return e.getStatus();
+			}
+		}
+		
+		return Status.OK_STATUS;
+	}
+	
+	public IStatus moveFilesInWorkspace(File[] fileList, IProject target, IPath storagePath) {
+		for (int i = 0; i < fileList.length; i++) {
+			String fileRelativePath = fileList[i].getAbsolutePath().substring(storagePath.toOSString().length());
+			IFile ifile = target.getFile(new Path(fileRelativePath));
+			try {
+				ifile.create(new FileInputStream(fileList[i]), true, new NullProgressMonitor());
+			} catch (FileNotFoundException e) {
+				return createErrorStatus(e.getLocalizedMessage(), e);
+			} catch (CoreException e) {
+				return createErrorStatus(e.getLocalizedMessage(), e);
+			}
+		}
+		
+		return Status.OK_STATUS;
+	}
+	
+	private void copy(IFile source, File destination) throws FileNotFoundException, IOException, CoreException{
+		copy(source.getContents(), new FileOutputStream(destination));
+	}	
+	
+	private void copy(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[4096];
+		try {
+			int n = in.read(buffer);
+			while (n > 0) {
+				out.write(buffer, 0, n);
+				n = in.read(buffer);
+			}
+		} finally {
+			in.close();
+			out.close();
+		}
+	}
+	
+	private IStatus createErrorStatus(String msg, Exception e) {
+		return new Status(IStatus.ERROR, SnippetsPlugin.BUNDLE_ID, msg, e);
+	}	
 
 }

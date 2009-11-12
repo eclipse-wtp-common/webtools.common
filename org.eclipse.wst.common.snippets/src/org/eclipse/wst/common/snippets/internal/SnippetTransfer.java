@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal;
 
-
-
 import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.TransferData;
 
 /**
  * Transfer type used for clipboard operations
@@ -28,6 +27,7 @@ public class SnippetTransfer extends ByteArrayTransfer {
 
 	private static String[] names = null;
 	private static int types[] = null;
+
 
 	/**
 	 * @return the registered Transfer instance
@@ -55,6 +55,37 @@ public class SnippetTransfer extends ByteArrayTransfer {
 
 	protected String[] getTypeNames() {
 		return names;
+	}
+	
+	/**
+	 * This records the time at which the transfer data was recorded.
+	 */
+	protected long startTime;
+	
+	/**
+	 * This records the data being transferred.
+	 */
+	protected Object object;
+	
+	/**
+	 * This records the object and current time and encodes only the current
+	 * time into the transfer data.
+	 */
+	public void javaToNative(Object object, TransferData transferData) {
+		startTime = System.currentTimeMillis();
+		this.object = object;
+		if (transferData != null) {
+			super.javaToNative(String.valueOf(startTime).getBytes(), transferData);
+		}
+	}
+
+	/**
+	 * This decodes the time of the transfer and returns the recorded the
+	 * object if the recorded time and the decoded time match.
+	 */
+	public Object nativeToJava(TransferData transferData) {
+		long startTime = Long.valueOf(new String((byte[]) super.nativeToJava(transferData))).longValue();
+		return this.startTime == startTime ? object : null;
 	}
 
 }

@@ -6,6 +6,11 @@
 		id="SnippetContributions"
 		name="%Snippets_View_Contributions_Extension.name"
 		schema="schema/SnippetContributions.exsd" />
+		
+ <extension-point 
+ 	id="SnippetProvider" 
+ 	name="%extension-point.name.0" 
+ 	schema="schema/SnippetProvider.exsd"/>
 
 	<!-- the view itself -->
 	<extension point="org.eclipse.ui.views">
@@ -175,4 +180,17 @@
 			</action>
 		</viewerContribution>
 	</extension>
+	
+ <extension point="org.eclipse.wst.common.snippets.SnippetProvider">
+    <provider
+          class="org.eclipse.wst.common.snippets.ui.TextSnippetProvider"
+          priority="100">
+       <enablement>
+          <or>
+             <adapt type="org.eclipse.ui.texteditor.ITextEditor"/>
+             <instanceof value="org.eclipse.ui.texteditor.ITextEditor"/>
+          </or>
+       </enablement>
+    </provider>
+ </extension>
 </plugin>

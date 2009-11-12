@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2008 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -199,8 +199,13 @@ public class SnippetsView extends ViewPart {
 					}
 				}
 			}
+			 
 			if (insertion == null) {
-				insertion = new DefaultSnippetInsertion();
+				if (item.getProvider()!= null){
+					insertion = item.getProvider().getSnippetInsertion();
+				} else {
+					insertion = new DefaultSnippetInsertion();
+				}
 			}
 			return insertion;
 		}
@@ -829,6 +834,9 @@ public class SnippetsView extends ViewPart {
 				insertion.setEditorPart(getSite().getPage().getActiveEditor());
 				supportedTypes = insertion.getTransfers();
 			}
+			else {
+				supportedTypes = new Transfer[]{TextTransfer.getInstance()};
+			}
 		}
 		else {
 			// Keep a transfer registered so that GEF doesn't unhook the drag
@@ -841,9 +849,11 @@ public class SnippetsView extends ViewPart {
 			supportedTypes = new Transfer[]{TextTransfer.getInstance()};
 		}
 
-		// TRH suggested use of the event's doit field by the fListeners, but
-		// there's
-		// no other way to guarantee that TextTransfer is considered last
+		/*
+		 * TRH suggested use of the event's doit field by the fListeners, but
+		 * there's no other way to guarantee that TextTransfer is considered
+		 * last
+		 */
 		Iterator iterator = getTransferDragSourceListeners().iterator();
 		ArrayList oldListeners = new ArrayList();
 		while (iterator.hasNext()) {

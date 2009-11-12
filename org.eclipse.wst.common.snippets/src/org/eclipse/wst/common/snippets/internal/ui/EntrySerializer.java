@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -116,6 +116,8 @@ public class EntrySerializer {
 			element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, item.getClassName());
 		if (item.getEditorClassName() != null)
 			element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, item.getEditorClassName());
+		if (item.getProvider() != null)
+			element.setAttribute(SnippetsPlugin.NAMES.PROVIDER_ID, item.getProvider().getId());
 		if (item.getContentString() != null)
 			element.appendChild(createContent(doc, item));
 		ISnippetVariable[] variables = item.getVariables();

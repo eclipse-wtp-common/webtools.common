@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,16 +38,22 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 			editor.addModifyListener(this);
 			editor.setItem((SnippetPaletteItem) entry);
 			editor.createContents((Composite) getControl());
-			// it can't be known in advance since the editor is unknown as
-			// well
+			/*
+			 * Can't be known in advance since the editor content is unknown
+			 */
 			((Composite) getControl()).setTabList(null);
 		}
 	}
 
 	protected ISnippetEditor getEditor(SnippetPaletteItem item) {
 		ISnippetEditor snippetEditor = null;
-		if (item.getSourceType() != ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
-			snippetEditor = new VariableItemEditor();
+		if (item.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_USER || item.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE) {
+			if (item.getProvider() == null) {
+				snippetEditor = new VariableItemEditor();
+			}
+			else {
+				snippetEditor = item.getProvider().getSnippetEditor();
+			}
 		}
 		return snippetEditor;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -178,6 +178,8 @@ public class UserModelDumper {
 			element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, ((SnippetPaletteItem) item).getClassName());
 		if (((SnippetPaletteItem) item).getEditorClassName() != null)
 			element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, ((SnippetPaletteItem) item).getEditorClassName());
+		if (((SnippetPaletteItem) item).getProvider() != null)
+			element.setAttribute(SnippetsPlugin.NAMES.PROVIDER_ID, ((SnippetPaletteItem) item).getProvider().getId());
 		element.appendChild(createContent(doc, item));
 		ISnippetVariable[] variables = item.getVariables();
 		for (int i = 0; i < variables.length; i++) {
@@ -279,13 +281,8 @@ public class UserModelDumper {
 			Logger.log(Logger.ERROR, "could not save " + stream, e); //$NON-NLS-1$
 		}
 		finally {
-			try {
-				stream.close();
-				document = null;
-			}
-			catch (IOException e) {
-				// nothing to be done while closing
-			}
+			//				stream.close();
+			document = null;
 		}
 	}
 

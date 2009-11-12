@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
+import org.eclipse.wst.common.snippets.internal.util.SnippetProviderManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -72,6 +73,7 @@ public class EntryDeserializer {
 		item.setCategoryName(element.getAttribute(SnippetsPlugin.NAMES.CATEGORY));
 		item.setClassName(element.getAttribute(SnippetsPlugin.NAMES.CLASSNAME));
 		item.setEditorClassName(element.getAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME));
+		item.setProvider(SnippetProviderManager.findProvider(element.getAttribute(SnippetsPlugin.NAMES.PROVIDER_ID)));
 		NodeList children = element.getChildNodes();
 		int length = children.getLength();
 		for (int i = 0; i < length; i++) {

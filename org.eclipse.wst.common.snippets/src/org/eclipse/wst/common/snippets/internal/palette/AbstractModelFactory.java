@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.util.SnippetProviderManager;
 
 public abstract class AbstractModelFactory {
 
@@ -73,6 +74,7 @@ public abstract class AbstractModelFactory {
 		setProperties(item, source);
 
 		migrate50to51(item);
+		
 		return item;
 	}
 
@@ -176,6 +178,8 @@ public abstract class AbstractModelFactory {
 			item.setContentString(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.EDITORCLASSNAME))
 			item.setEditorClassName(propertyValue.toString());
+		else if (property.equals(SnippetsPlugin.NAMES.PROVIDER_ID))
+			item.setProvider(SnippetProviderManager.findProvider(propertyValue.toString()));
 		else
 			setEntryProperty(item, property, propertyValue);
 	}
