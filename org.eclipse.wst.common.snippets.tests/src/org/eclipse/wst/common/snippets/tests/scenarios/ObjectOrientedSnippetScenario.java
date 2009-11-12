@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2009 by SAP AG, Walldorf. 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.snippets.tests.scenarios;
 
 import java.io.BufferedReader;
@@ -13,7 +23,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
@@ -58,7 +67,7 @@ public class ObjectOrientedSnippetScenario extends TestCase {
 		if (view != null) {
 			anchor = view.getRoot();
 		}
-		Shell activeShell = Display.getDefault().getActiveShell();
+		Shell activeShell = SnippetsPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();//Display.getDefault().getActiveShell();
 		assertNotNull(activeShell);
 		PaletteDrawer drawer = (PaletteDrawer) new SnippetPaletteDrawerFactory().createNewEntry(activeShell, anchor);
 		drawer.setLabel("testName");
@@ -85,7 +94,7 @@ public class ObjectOrientedSnippetScenario extends TestCase {
 		if (view != null) {
 			anchor = view.getRoot();
 		}
-		Shell activeShell = Display.getDefault().getActiveShell();
+		Shell activeShell = SnippetsPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();//Display.getDefault().getActiveShell();
 		assertNotNull(activeShell);
 		PaletteDrawer drawer = (PaletteDrawer) new SnippetPaletteDrawerFactory().createNewEntry(activeShell, anchor);
 		drawer.setLabel(getName());
