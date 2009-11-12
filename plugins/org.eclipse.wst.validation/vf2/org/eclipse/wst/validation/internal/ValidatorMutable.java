@@ -215,6 +215,10 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 	public Map<String, MessageSeveritySetting> getMessageSettings() {
 		return _messageSettings;
 	}
+
+	public int getChangeCountMessages(){
+		return _changeCountMessages;
+	}
 	
 	public void bumpChangeCountMessages(){
 		_changeCountMessages++;

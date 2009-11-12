@@ -173,6 +173,18 @@ public final class ValPrefManagerGlobal {
 				while(des.hasNext())list.add(FilterGroup.create(des));
 				v2.setGroups(list);
 			}
+			
+			String settings = vp.get(PrefConstants.msgs, ""); //$NON-NLS-1$
+			if (settings.length() >0)
+			{
+				Map<String, MessageSeveritySetting.Severity> map = Msgs.deserialize(settings);
+				Map<String, MessageSeveritySetting> msg = base.getMessageSettings();
+			
+				for (Map.Entry<String, MessageSeveritySetting.Severity> me : map.entrySet()){
+					MessageSeveritySetting ms = msg.get(me.getKey());
+					if (ms != null)ms.setCurrent(me.getValue());
+				}	
+			}
 		}					
 		return base;
 	}
@@ -365,6 +377,13 @@ public final class ValPrefManagerGlobal {
 				vp.put(PrefConstants.groups, ser.toString());
 			}
 		}
+		if (validator.getChangeCountMessages() > 0){
+			Collection<MessageSeveritySetting> msgs = validator.getMessageSettings().values();
+			if (msgs.size() > 0){
+				vp.put(PrefConstants.msgs, Msgs.serialize(msgs));
+			}
+		}
+		
 	}
 	
 	public void saveAsPrefs(Validator[] val) {
