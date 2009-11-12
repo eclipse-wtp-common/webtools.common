@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
@@ -53,24 +52,24 @@ public class TextProviderTests extends TestCase {
 		if (view != null) {
 			anchor = view.getRoot();
 		}
-		Shell activeShell = Display.getDefault().getActiveShell();
-		assertNotNull(activeShell);
+		Shell activeShell = SnippetsPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(); //Display.getDefault().getActiveShell();
+		assertNotNull("no active shell", activeShell);
 		PaletteDrawer drawer = (PaletteDrawer) new SnippetPaletteDrawerFactory().createNewEntry(activeShell, anchor);
 		drawer.setLabel("testName");
 		TextSnippetProvider textSnippetProvider = new TextSnippetProvider();
 		IEditorPart openEditor = IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file);
-		assertNotNull(openEditor);
+		assertNotNull("no editor opened", openEditor);
 		textSnippetProvider.setEditor(openEditor);
 		
 		
 		SnippetPaletteItem createSnippet = textSnippetProvider.createSnippet(drawer);
-		assertNotNull(createSnippet);
+		assertNotNull("no SnippetPaletteItem created", createSnippet);
 		ITextEditor editor = (ITextEditor) openEditor;
 		editor.selectAndReveal(0, 5);
 		
-		assertFalse(textSnippetProvider.isActionEnabled(null));
-		assertTrue(textSnippetProvider.isActionEnabled(editor.getSelectionProvider().getSelection()));
+		assertFalse("textSnippetProvider action is enabled with no selection", textSnippetProvider.isActionEnabled(null));
+		assertTrue("textSnippetProvider action is not enabled with text selection", textSnippetProvider.isActionEnabled(editor.getSelectionProvider().getSelection()));
 		editor.selectAndReveal(0, 0);
-		assertFalse(textSnippetProvider.isActionEnabled(editor.getSelectionProvider().getSelection()));
+		assertFalse("textSnippetProvider action is not enabled with text selection", textSnippetProvider.isActionEnabled(editor.getSelectionProvider().getSelection()));
 	}
 }
