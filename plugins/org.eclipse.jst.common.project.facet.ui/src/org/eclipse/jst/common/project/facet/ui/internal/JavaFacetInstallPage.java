@@ -349,7 +349,7 @@ public final class JavaFacetInstallPage
       
     	//revalidate source and ouput folders
         if( this.installConfig.getSourceFolders().isEmpty() ||   this.installConfig.getDefaultOutputFolder() == null || 
-        		this.installConfig.getDefaultOutputFolder().toString().isEmpty() ){    		
+        		this.installConfig.getDefaultOutputFolder().toString().length() == 0 ){    		
         	setErrorMessage( Resources.FOLDER_EMPTY );
         	setPageComplete( false );
     	}else{
