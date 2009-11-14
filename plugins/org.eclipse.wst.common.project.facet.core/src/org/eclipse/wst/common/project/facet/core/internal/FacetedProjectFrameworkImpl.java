@@ -2368,6 +2368,7 @@ public final class FacetedProjectFrameworkImpl
         public void resourceChanged( final IResourceChangeEvent event )
         {
             final IResourceDelta delta = event.getDelta();
+            final List<FacetedProject> projectsToRefresh = new ArrayList<FacetedProject>();
             
             synchronized( FacetedProjectFrameworkImpl.this.projects )
             {
@@ -2397,15 +2398,20 @@ public final class FacetedProjectFrameworkImpl
                     
                     if( subdelta != null )
                     {
-                        try
-                        {
-                            fproj.refresh();
-                        }
-                        catch( CoreException e )
-                        {
-                            FacetCorePlugin.log( e );
-                        }
+                        projectsToRefresh.add( fproj );
                     }
+                }
+            }
+            
+            for( FacetedProject fproj : projectsToRefresh )
+            {
+                try
+                {
+                    fproj.refresh();
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
                 }
             }
         }
