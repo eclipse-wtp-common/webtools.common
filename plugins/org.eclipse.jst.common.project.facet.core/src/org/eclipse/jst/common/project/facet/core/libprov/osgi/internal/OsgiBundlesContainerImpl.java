@@ -51,8 +51,17 @@ public final class OsgiBundlesContainerImpl
                                       final IPath containerPath )
     {
         this.containerPath = containerPath;
-        
         final String fid = containerPath.segment( 1 );
+        
+        if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
+        {
+            this.facet = null;
+            this.description = NLS.bind( Resources.containerLabel, fid );
+            this.entries = new IClasspathEntry[ 0 ];
+            
+            return;
+        }
+        
         this.facet = ProjectFacetsManager.getProjectFacet( fid );
         
         final IProject pj = project.getProject();
