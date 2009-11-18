@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.ui.internal;x-internal:=true,
  org.eclipse.wst.common.ui.internal.dialogs;x-internal:=true,
  org.eclipse.wst.common.ui.internal.dnd;x-internal:=true,
+ org.eclipse.wst.common.ui.internal.navigator,
  org.eclipse.wst.common.ui.internal.search;x-internal:=true,
  org.eclipse.wst.common.ui.internal.search.dialogs,
  org.eclipse.wst.common.ui.internal.viewers;x-internal:=true
