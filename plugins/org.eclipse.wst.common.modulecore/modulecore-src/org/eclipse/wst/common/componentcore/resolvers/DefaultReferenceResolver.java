@@ -59,7 +59,9 @@ public class DefaultReferenceResolver implements IReferenceResolver {
 			}
 			targetComponent = ComponentCore.createArchiveComponent(context.getProject(), archiveType + IPath.SEPARATOR + archiveName ); 
 		}
-		return new VirtualReference(context, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue());
+		VirtualReference vRef = new VirtualReference(context, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue());
+		vRef.setArchiveName(referencedComponent.getArchiveName());
+		return vRef;
 	}
 
 	public ReferencedComponent resolve(IVirtualReference reference) {

@@ -33,9 +33,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -64,7 +66,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.DefaultModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
@@ -85,7 +89,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
-		IModuleDependenciesControl {
+		IModuleDependenciesControl, ILabelProviderListener {
 
 	private static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
 	private static final String SOURCE_PROPERTY = new Integer(1).toString();
@@ -119,6 +123,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	// keeps track if a change has occurred in wb-resource mappings
 	protected boolean resourceMappingsChanged = false;
+	
+	protected IModuleHandler moduleHandler;
 	
 	/**
 	 * Constructor for AddModulestoEARPropertiesControl.
@@ -255,6 +261,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			provider.setRuntimePaths(objectToRuntimePath);
 			provider.setResourceMappings(resourceMappings);
 			availableComponentsViewer.setContentProvider(provider);
+			//availableComponentsViewer.setLabelProvider(new DecoratingLabelProvider(
+	        //        new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
+	        //         getDecoratorManager().getLabelDecorator()));
 			availableComponentsViewer.setLabelProvider(provider);
 			addTableListeners();
 		}
@@ -264,7 +273,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 * Subclasses should over-ride this and extend the class
 	 */
 	protected ComponentDependencyContentProvider createProvider() {
-		return new ComponentDependencyContentProvider();
+		return new ComponentDependencyContentProvider(this);
 	}
 
 	/*
@@ -488,6 +497,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		// fill the task model
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
+		wizard.getTaskModel().putObject(IReferenceWizardConstants.MODULEHANDLER, getModuleHandler());
 
 		IVirtualComponent selected = null;
 		if( editing ) {
@@ -816,19 +826,45 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}	
 	protected void handleRemoved(ArrayList<IVirtualComponent> removed) {
 		// If it's removed it should *only* be a virtual component already
+		if(removed.isEmpty()) return;
+		final ArrayList<IVirtualComponent> components = new ArrayList<IVirtualComponent>();
 		Iterator<IVirtualComponent> i = removed.iterator();
-		IVirtualComponent component;
+		IVirtualComponent o;
 		while(i.hasNext()) {
-			try {
-				component = i.next();
-				IDataModelOperation operation = getRemoveComponentOperation(component);
-				operation.execute(null, null);
-			} catch( ExecutionException e) {
-				ModuleCoreUIPlugin.logError(e);
-			}
+			o = i.next();
+			components.add(o);
 		}
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable(){
+			public void run(IProgressMonitor monitor) throws CoreException{
+				removeComponents(components);
+			}
+		};
+		try {
+			ResourcesPlugin.getWorkspace().run(runnable, new NullProgressMonitor());
+		} catch( CoreException e ) {
+			ModuleCoreUIPlugin.logError(e);
+		}
+		
 	}
 	
+	protected void removeComponents(ArrayList<IVirtualComponent> removed) {
+		Iterator<IVirtualComponent> i = removed.iterator();
+		while(i.hasNext()) {
+			removeOneComponent(i.next());
+		}
+		
+	}
+
+	protected void removeOneComponent(IVirtualComponent comp) {
+		try {
+			IDataModelOperation operation = getRemoveComponentOperation(comp);
+			operation.execute(null, null);
+		} catch( ExecutionException e) {
+			ModuleCoreUIPlugin.logError(e);
+		}
+		
+	}
+
 	protected IDataModelOperation getRemoveComponentOperation(IVirtualComponent component) {
 		String path, archiveName;
 		path = archiveName = null;
@@ -927,6 +963,17 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		} catch (ExecutionException e) {
 			ModuleCoreUIPlugin.logError(e);
 		}	
+	}
+
+	public void labelProviderChanged(LabelProviderChangedEvent event) {
+		if(!availableComponentsViewer.getTable().isDisposed())
+			availableComponentsViewer.refresh(true);
+	}
+
+	protected IModuleHandler getModuleHandler() {
+		if(moduleHandler == null)
+			moduleHandler = new DefaultModuleHandler();
+		return moduleHandler;
 	}
 	
 //	/**

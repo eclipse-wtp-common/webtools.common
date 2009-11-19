@@ -33,6 +33,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
@@ -84,17 +85,21 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 			}
 		}
 		IVirtualComponent comp = ComponentCore.createComponent(selected);
-		String path = selected.getName();
-		
-		// TODO extension point? API? Something?!
-		//String extension = ComponentUtils.getDefaultProjectExtension(comp);
-		path += ".jar"; //extension; //$NON-NLS-1$
+		String path = getArchiveName(comp);
 
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, comp);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, path);
 	}
 
+	protected String getArchiveName(IVirtualComponent comp) {
+		return getModuleHandler().getArchiveName(comp);
+	}
+
 	
+	protected IModuleHandler getModuleHandler() {
+		return (IModuleHandler)getTaskModel().getObject(NewReferenceWizard.MODULEHANDLER);
+	}
+
 	protected LabelProvider getLabelProvider() {
 		if( labelProvider == null ) {
 			labelProvider = new LabelProvider() {

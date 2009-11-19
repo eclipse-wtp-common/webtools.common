@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
@@ -55,5 +56,6 @@ public interface IDependencyPageProvider {
 	 * 
 	 * @return String - page title string or null if default title is desired
 	 */
-	public String getPageTitle();
+	public String getPageTitle(IProject project);
+	
 }

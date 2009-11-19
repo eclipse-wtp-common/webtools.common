@@ -17,14 +17,18 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
+import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
 
@@ -42,8 +46,12 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	
 	private HashMap<IVirtualComponent, String> runtimePaths;
 	private ArrayList<ComponentResourceProxy> resourceMappings;
-	public ComponentDependencyContentProvider() {
+	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
+	                new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
+	                 getDecoratorManager().getLabelDecorator());
+	public ComponentDependencyContentProvider(AddModuleDependenciesPropertiesPage addModuleDependenciesPropertiesPage) {
 		super();
+		decProvider.addListener(addModuleDependenciesPropertiesPage);
 	}
 
 	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
@@ -69,10 +77,16 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			return ModuleCoreUIPlugin.getInstance().getImage("folder");
 		}
 		if (element instanceof IVirtualComponent) {
-			return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+			if (columnIndex == 0)
+				return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+			else
+				if(((IVirtualComponent)element).isBinary())
+					return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+				else return decProvider.getImage(((IVirtualComponent)element).getProject());
+					//return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
 		} 
 		if (element instanceof IProject){
-			return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
+			return decProvider.getImage(element);
 		}
 		return null;
 	}
@@ -113,5 +127,9 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		// TODO Auto-generated method stub
+		
 	}
+
+	
 }
