@@ -38,18 +38,24 @@ public class AddFolderDialog extends TitleAreaDialog {
 	private TreeViewer viewer;
 	private IContainer selected = null;
 	public AddFolderDialog(Shell parentShell, IProject project) {
-		super(parentShell);
+		super(parentShell);        
+        setShellStyle( getShellStyle() | SWT.RESIZE );
 		this.project = project;
 	}
 
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText(Messages.AddFolder);
+		
 		shell.setBounds(shell.getLocation().x, shell.getLocation().y, 400,300);
+		
 	}
 	
 	protected Control createDialogArea(Composite parent) {
 		Composite c = (Composite)super.createDialogArea(parent);
+		parent.getShell().setText(Messages.AddFolder);
+		setTitle(Messages.AddFolder);
+	    setMessage( "Add folder mappings" );
+	    //setTitleImage(  );
 		this.viewer = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());

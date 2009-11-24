@@ -12,7 +12,7 @@ package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -84,15 +84,17 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 				// TODO something
 			}
 		}
-		IVirtualComponent comp = ComponentCore.createComponent(selected);
-		String path = getArchiveName(comp);
+		String path = null;
+		IVirtualComponent comp = ComponentCore.createComponent(selected, false);
+		path = getArchiveName(selected,comp);
+		
 
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, comp);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, path);
 	}
 
-	protected String getArchiveName(IVirtualComponent comp) {
-		return getModuleHandler().getArchiveName(comp);
+	protected String getArchiveName(IProject proj, IVirtualComponent comp) {
+		return getModuleHandler().getArchiveName(proj,comp);
 	}
 
 	
@@ -123,16 +125,9 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 					IProject root = (IProject)getTaskModel().getObject(NewReferenceWizard.PROJECT);
 					IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 					ArrayList<IProject> list = new ArrayList<IProject>(Arrays.asList(projects));
-					Iterator<IProject> i = list.iterator();
-					IProject p;
-					while(i.hasNext()) {
-						p = i.next();
-						if( !p.isOpen())
-							i.remove();
-						else if( p.equals(root))
-							i.remove();
-					}
-					return list.toArray(new IProject[list.size()]);
+					IVirtualComponent comp = (IVirtualComponent)getTaskModel().getObject(NewReferenceWizard.ROOT_COMPONENT);
+					List filtered = getModuleHandler().getFilteredProjectListForAdd(comp, list);
+					return filtered.toArray(new IProject[filtered.size()]);
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}

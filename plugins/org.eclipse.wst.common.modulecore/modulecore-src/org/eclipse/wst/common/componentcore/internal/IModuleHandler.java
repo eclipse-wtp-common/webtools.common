@@ -14,6 +14,7 @@ package org.eclipse.wst.common.componentcore.internal;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
@@ -22,9 +23,30 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
  */
 public interface IModuleHandler {
 	
-	String getArchiveName(IVirtualComponent comp);
 	
-	List<IVirtualComponent> getFilteredListForAdd(IVirtualComponent sourceComponent, IVirtualComponent[] availableComponents);
+	/**
+	 * This is used to return a proper archive name based on the component type
+	 * @param proj 
+	 * @param comp
+	 * @return String archive name
+	 */
+	public String getArchiveName(IProject proj, IVirtualComponent comp);
+	
+	/**
+	 * Used to filter items displayed in Add dialog
+	 * @param sourceComponent
+	 * @param availableComponents
+	 * @return List of items that will not be shown in the add ref dialogs
+	 */
+	public List<IProject> getFilteredProjectListForAdd(IVirtualComponent sourceComponent, List<IProject> availableComponents);
+
+	/**
+	 * This call is meant to add IVirtualCompoonent infrastructure to any project passed if needed
+	 * Meant be overridden to include technology specific attributes
+	 * @param proj
+	 * @return boolean indicating operation success
+	 */
+	public boolean setComponentAttributes(IProject proj);
 	
 
 }
