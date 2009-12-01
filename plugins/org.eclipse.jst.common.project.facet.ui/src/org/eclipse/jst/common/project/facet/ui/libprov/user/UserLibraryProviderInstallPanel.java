@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Oracle
+ * Copyright (c) 2008, 2009 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,6 +74,9 @@ public class UserLibraryProviderInstallPanel
 {
     private Composite rootComposite = null;
     private CheckboxTableViewer libsTableViewer = null;
+    private MenuItem downloadLibraryMenuItem = null;
+    private ToolItem downloadLibraryButton = null;
+    private boolean downloadCommandEnabled = true;
     
     /**
      * Creates the panel control.
@@ -198,15 +201,17 @@ public class UserLibraryProviderInstallPanel
             }
         };
 
-        final MenuItem downloadLibraryMenuItem = new MenuItem( menu, SWT.PUSH );
-        downloadLibraryMenuItem.setText( Resources.downloadLibraryMenuItem );
-        downloadLibraryMenuItem.setImage( downloadLibraryImage );
-        downloadLibraryMenuItem.addSelectionListener( downloadLibraryListener );
+        this.downloadLibraryMenuItem = new MenuItem( menu, SWT.PUSH );
+        this.downloadLibraryMenuItem.setText( Resources.downloadLibraryMenuItem );
+        this.downloadLibraryMenuItem.setImage( downloadLibraryImage );
+        this.downloadLibraryMenuItem.setEnabled( this.downloadCommandEnabled );
+        this.downloadLibraryMenuItem.addSelectionListener( downloadLibraryListener );
 
-        final ToolItem downloadLibraryButton = new ToolItem( toolBar, SWT.PUSH );
-        downloadLibraryButton.setImage( downloadLibraryImage );
-        downloadLibraryButton.setToolTipText( Resources.downloadLibraryButtonToolTip );
-        downloadLibraryButton.addSelectionListener( downloadLibraryListener );
+        this.downloadLibraryButton = new ToolItem( toolBar, SWT.PUSH );
+        this.downloadLibraryButton.setImage( downloadLibraryImage );
+        this.downloadLibraryButton.setToolTipText( Resources.downloadLibraryButtonToolTip );
+        this.downloadLibraryButton.setEnabled( this.downloadCommandEnabled );
+        this.downloadLibraryButton.addSelectionListener( downloadLibraryListener );
         
         final Control footerControl = createFooter( this.rootComposite );
         
@@ -252,7 +257,32 @@ public class UserLibraryProviderInstallPanel
     {
         return null;
     }
+
+    /**
+     * Controls enablement of the download command. This can be useful to extenders
+     * of this class. The download command might be surfaced to users as a button,
+     * a menu item or via other means. This method controls enablement of all of these
+     * manifestations.
+     * 
+     * @param enabled <code>true</code>, if the download command should be enabled and
+     *   <code>false</code> otherwise
+     */
     
+    protected void setDownloadCommandEnabled( final boolean enabled )
+    {
+        this.downloadCommandEnabled = enabled;
+        
+        if( this.downloadLibraryButton != null )
+        {
+            this.downloadLibraryButton.setEnabled( enabled );
+        }
+        
+        if( this.downloadLibraryMenuItem != null )
+        {
+            this.downloadLibraryMenuItem.setEnabled( enabled );
+        }
+    }
+
     private void handleLibraryNamesChanged()
     {
         if( this.rootComposite.getDisplay().getThread() != Thread.currentThread() )
@@ -345,5 +375,4 @@ public class UserLibraryProviderInstallPanel
                                 Resources.class );
         }
     }
-
 }
