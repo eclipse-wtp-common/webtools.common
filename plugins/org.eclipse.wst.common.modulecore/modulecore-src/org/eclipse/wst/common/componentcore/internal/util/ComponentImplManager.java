@@ -187,15 +187,20 @@ public class ComponentImplManager  {
 	}
 
 	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
+		return createArchiveComponent(aProject, aComponentName, new Path("/"));
+	}
+	
+	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName, IPath path) {
+		path = path == null ? new Path("/") : path; //$NON-NLS-1$
 		try {
 			IComponentImplFactory factory = findFactoryForProject(aProject);
 			if(null != factory){
-				return factory.createArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+				return factory.createArchiveComponent(aProject, aComponentName, path); 
 			}
 		} catch (Exception e) {
 			// Just return a default archive component
 		}
-		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+		return new VirtualArchiveComponent(aProject, aComponentName, path);
 	}
 	
 	private class ComponentImplDescriptor {

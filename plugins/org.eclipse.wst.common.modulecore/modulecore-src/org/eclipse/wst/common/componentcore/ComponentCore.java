@@ -115,6 +115,21 @@ public class ComponentCore {
 	}
 
 	/**
+	 * Return an IVirtualComponent with the given name (aComponentName)
+	 * and the given runtime path (path)
+	 * 
+	 * @param aComponentName
+	 *            A name to identify the component, the name can be
+	 *            lib/&lt;Absolute path of a jar&gt; or
+	 *            var/&lt;CLASSPATH_VARIABLE/library namer&gt;
+	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName, IPath runtimePath) {
+		return ComponentImplManager.instance().createArchiveComponent(aProject, aComponentName, runtimePath);
+	}
+
+	/**
 	 * Return an IVirtualFolder with a runtime path specified by aRuntimePath
 	 * contained by aProject, in a component named aComponentName. The resultant
 	 * IVirtualFolder may or may not exist.

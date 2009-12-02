@@ -48,7 +48,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	private static final Properties NO_PROPERTIES = new Properties();
 	private static final IPath[] NO_PATHS = new Path[0];
 
-//	private IPath runtimePath;
+	private IPath runtimePath;
 	private IProject componentProject;
 //	private IVirtualFolder rootFolder;
 	private int flag = 1;
@@ -65,7 +65,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 			throw new NullPointerException();
 		}
 		componentProject = aComponentProject;
-//		runtimePath = aRuntimePath;
+		runtimePath = aRuntimePath;
 
 		String archivePathString = archiveLocation.substring(4, archiveLocation.length());
 		archiveType	= archiveLocation.substring(0, archiveLocation.length() - archivePathString.length() -1);
@@ -81,7 +81,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 	
 	public String getDeployedName() {
-		return getName();
+		return getArchivePath().lastSegment();
 	}
 
 	public void setComponentTypeId(String aComponentTypeId) {
@@ -134,9 +134,13 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public IPath getRuntimePath() {
-		return ROOT;
+		return runtimePath == null ? ROOT : runtimePath;
 	}
 
+	public IPath getArchivePath() {
+		return archivePath;
+	}
+	
 	public boolean isAccessible() {
 		return true;
 	}
