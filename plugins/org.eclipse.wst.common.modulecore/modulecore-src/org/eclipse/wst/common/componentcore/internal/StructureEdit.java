@@ -58,7 +58,7 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditCo
  * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) correctly. Each project has
  * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and
  * exactly one for write. Each of these is shared among all clients and reference counted as
- * necessary. Clients should use ModuleCore when working with the WTP Modules Strcutrual Model.
+ * necessary. Clients should use ModuleCore when working with the WTP Modules Structural Model.
  * </p>
  * 
  * <p>
