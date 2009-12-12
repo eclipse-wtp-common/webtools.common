@@ -43,18 +43,12 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	
 	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
 	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
-//	private static final IResource[] NO_RESOURCES = null;
 	private static final IVirtualResource[] NO_VIRTUAL_RESOURCES = null;
 	private static final Properties NO_PROPERTIES = new Properties();
 	private static final IPath[] NO_PATHS = new Path[0];
 
 	private IPath runtimePath;
 	private IProject componentProject;
-//	private IVirtualFolder rootFolder;
-	private int flag = 1;
-//	private String archiveLocation;
-
-
 	private IPath archivePath;
 	private String archiveType;
 
@@ -94,8 +88,8 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public boolean isBinary() {
-		boolean ret = (flag & BINARY) == 1 ? true : false;
-		return ret;
+		int x = BINARY;
+		return true;
 	}
 
 	public IPath[] getMetaResources() {
@@ -202,6 +196,17 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 
 	public Object getAdapter(Class adapterType) {
+		if( File.class.equals(adapterType))
+			return getUnderlyingDiskFile();
+		if( IFile.class.equals(adapterType)) {
+			IPath p = getWorkspaceRelativePath();
+			if( p != null && p.segmentCount() > 1) {
+				IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(p.segment(0));
+				if( proj != null && proj.exists()) {
+					return proj.getFile(p.removeFirstSegments(1));
+				}
+			}
+		}
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
 
