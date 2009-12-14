@@ -31,9 +31,6 @@
                                     	<attribute name="handle"
                                     		type="string" use="required">
                                     	</attribute>
-                                    	<attribute name="archiveName"
-                                    		type="string" use="optional">
-                                    	</attribute>
                                     	<attribute name="deploy-path"
                                     		type="string" use="required">
                                     	</attribute>
