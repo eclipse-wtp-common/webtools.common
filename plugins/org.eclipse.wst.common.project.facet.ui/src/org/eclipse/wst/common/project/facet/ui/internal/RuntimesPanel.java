@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Oracle
+ * Copyright (c) 2009 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,10 +16,8 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhalign;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getPreferredWidth;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,6 +32,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -249,13 +248,10 @@ public final class RuntimesPanel
         buttons.setLayoutData( gdhalign( gd(), GridData.END ) );
         buttons.setLayout( glmargins( gl( 2 ), 0, 0 ) );
         
-        GridData gd;
-        
         this.makePrimaryButton = new Button( buttons, SWT.PUSH );
         this.makePrimaryButton.setText( Resources.makePrimaryLabel );
-        gd = gdwhint( gd(), getPreferredWidth( this.makePrimaryButton ) + 15 );
-        this.makePrimaryButton.setLayoutData( gd );
         this.makePrimaryButton.setEnabled( false );
+        GridDataFactory.defaultsFor( this.makePrimaryButton ).applyTo( this.makePrimaryButton );
         
         this.makePrimaryButton.addSelectionListener
         (
@@ -270,8 +266,7 @@ public final class RuntimesPanel
         
         this.newRuntimeButton = new Button( buttons, SWT.PUSH );
         this.newRuntimeButton.setText( Resources.newRuntimeButtonLabel );
-        gd = gdwhint( gd(), getPreferredWidth( this.newRuntimeButton ) + 15 );
-        this.newRuntimeButton.setLayoutData( gd );
+        GridDataFactory.defaultsFor( this.newRuntimeButton ).applyTo( this.newRuntimeButton );
 
         this.newRuntimeButton.addSelectionListener
         (

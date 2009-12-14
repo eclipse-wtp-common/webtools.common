@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Oracle
+ * Copyright (c) 2009 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhspan;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -83,6 +84,7 @@ public final class PresetSelectionPanel
         
         this.modifyButton = new Button( this.group, SWT.PUSH );
         this.modifyButton.setText( Resources.modifyButtonLabel );
+        GridDataFactory.defaultsFor( this.modifyButton ).applyTo( this.modifyButton );
         
         this.modifyButton.addSelectionListener
         (

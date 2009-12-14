@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Oracle
+ * Copyright (c) 2009 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import static java.lang.Math.max;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gd;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
@@ -37,6 +36,7 @@ import java.util.SortedSet;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -199,6 +199,7 @@ public final class FacetsSelectionPanel
         
         this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.savePresetButton.setText( Resources.saveButtonLabel );
+        GridDataFactory.defaultsFor( this.savePresetButton ).applyTo( this.savePresetButton );
         
         this.savePresetButton.addSelectionListener
         (
@@ -213,6 +214,7 @@ public final class FacetsSelectionPanel
 
         this.deletePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.deletePresetButton.setText( Resources.deleteButtonLabel );
+        GridDataFactory.defaultsFor( this.deletePresetButton ).applyTo( this.deletePresetButton );
         
         this.deletePresetButton.addSelectionListener
         (
@@ -224,13 +226,6 @@ public final class FacetsSelectionPanel
                 }
             }
         );
-        
-        final int width 
-            = Math.max( getPreferredWidth( this.savePresetButton ), 
-                        getPreferredWidth( this.deletePresetButton ) ) + 15;
-                        
-        this.savePresetButton.setLayoutData( gdwhint( gd(), width ) );
-        this.deletePresetButton.setLayoutData( gdwhint( gd(), width ) );
         
         this.sform1 = new SashForm( this.topComposite, SWT.VERTICAL | SWT.SMOOTH );
         this.sform1.setLayoutData( gdhspan( gdfill(), 4 ) );

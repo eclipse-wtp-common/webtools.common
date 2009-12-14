@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -164,8 +165,8 @@ public final class JavaFacetInstallPage
         buttons.setLayout( glmargins( gl( 1 ), 0, 0 ) );
         
         this.addButton = new Button( buttons, SWT.PUSH );
-        this.addButton.setLayoutData( gdhfill() );
         this.addButton.setText( Resources.addFolderButton );
+        GridDataFactory.defaultsFor( this.addButton ).applyTo( this.addButton );
         
         this.addButton.addSelectionListener
         (
@@ -179,8 +180,8 @@ public final class JavaFacetInstallPage
         );
 
         this.editButton = new Button( buttons, SWT.PUSH );
-        this.editButton.setLayoutData( gdhfill() );
         this.editButton.setText( Resources.editButton );
+        GridDataFactory.defaultsFor( this.editButton ).applyTo( this.editButton );
         
         this.editButton.addSelectionListener
         (
@@ -194,8 +195,8 @@ public final class JavaFacetInstallPage
         );
         
         this.removeButton = new Button( buttons, SWT.PUSH );
-        this.removeButton.setLayoutData( gdhfill() );
         this.removeButton.setText( Resources.removeButton );
+        GridDataFactory.defaultsFor( this.removeButton ).applyTo( this.removeButton );
         
         this.removeButton.addSelectionListener
         (
