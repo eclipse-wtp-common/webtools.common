@@ -46,7 +46,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	
 	private ExportTaskModel dataModel;
 	private IVirtualComponent component;
-	private IExportUtilParticipant[] participants;
+	private IExportParticipant[] participants;
 
 	public ExportModel(IVirtualComponent component) {
 		this(component, new ExportTaskModel());
@@ -63,24 +63,24 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 * Kinda ugly but functional and allows the option
 	 * to be set as one or a list for convenience
 	 */
-	protected IExportUtilParticipant[] setParticipants() {
+	protected IExportParticipant[] setParticipants() {
 		Object o = dataModel.get(PARTICIPANT_LIST);
 		if( o != null ) {
-			if( o instanceof IExportUtilParticipant )
-				return new IExportUtilParticipant[] { (IExportUtilParticipant)o};
-			if( o instanceof IExportUtilParticipant[])
-				return (IExportUtilParticipant[])o;
+			if( o instanceof IExportParticipant )
+				return new IExportParticipant[] { (IExportParticipant)o};
+			if( o instanceof IExportParticipant[])
+				return (IExportParticipant[])o;
 			if( o instanceof List ) {
-				List<IExportUtilParticipant> l = (List<IExportUtilParticipant>)o;
-				return (IExportUtilParticipant[]) l
-						.toArray(new IExportUtilParticipant[l.size()]);
+				List<IExportParticipant> l = (List<IExportParticipant>)o;
+				return (IExportParticipant[]) l
+						.toArray(new IExportParticipant[l.size()]);
 			}
 		}
-		return new IExportUtilParticipant[]{};
+		return new IExportParticipant[]{};
 	}
 	
-	private List<ExportableResource> members = null;
-	private List<ChildModule> children = null;
+	private List<IExportableResource> members = null;
+	private List<IChildModule> children = null;
 	public ExportableResource[] fetchResources() throws CoreException {
 		if( members == null)
 			cacheResources();
@@ -105,8 +105,8 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	}
 	
 	protected void runInitializations() {
-		members = new ArrayList<ExportableResource>();
-		children = new ArrayList<ChildModule>();
+		members = new ArrayList<IExportableResource>();
+		children = new ArrayList<IChildModule>();
 		for( int i = 0; i < participants.length; i++ ) {
 			participants[i].initialize(component, dataModel, members);
 		}
@@ -120,7 +120,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 		return false;
 	}
 
-	protected void optimize(List<ExportableResource> resources) {
+	protected void optimize(List<IExportableResource> resources) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].canOptimize(component, dataModel)) {
 				participants[i].optimize(component, dataModel, resources);
@@ -129,7 +129,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 		}
 	}
 	
-	protected void runFinalizations(List<ExportableResource> resources) {
+	protected void runFinalizations(List<IExportableResource> resources) {
 		for( int i = 0; i < participants.length; i++ ) {
 			participants[i].finalize(component, dataModel, resources);
 		}
@@ -178,7 +178,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 * This checks to see if any exportable file is actually a child module,
 	 * which should be exposed differently
 	 */
-	public boolean shouldAddComponentFile(IVirtualComponent current, ExportableFile file) {
+	public boolean shouldAddComponentFile(IVirtualComponent current, IExportableFile file) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].isChildModule(component, dataModel, file)) {
 				ChildModule child = new ChildModule(file);
@@ -203,8 +203,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 					addUsedReference(vc, reference, root.append(reference.getRuntimePath()));
 				} else {
 					ChildModule cm = new ChildModule(reference, root);
-					for( ChildModule tmp : children ) {
-						System.out.println(tmp.getRelativeURI() + " : " + cm.getRelativeURI());
+					for( IChildModule tmp : children ) {
 						if( tmp.getRelativeURI().equals(cm.getRelativeURI()))
 							return;
 					}
@@ -256,13 +255,13 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 			}
 			
 			if( mf != null ) {
-				ExportableResource moduleParent = ExportModelUtil.getExistingModuleResource(members, mf.getModuleRelativePath());
+				IExportableResource moduleParent = ExportModelUtil.getExistingModuleResource(members, mf.getModuleRelativePath());
 				if (moduleParent != null && moduleParent instanceof ExportableFolder) {
 					ExportModelUtil.addMembersToModuleFolder((ExportableFolder)moduleParent, new ExportableResource[]{mf});
 				} else {
 					if( shouldAddComponentFile(virtualComp, mf)) {
 						if (mf.getModuleRelativePath().isEmpty()) {
-							for( ExportableResource tmp : members) 
+							for( IExportableResource tmp : members) 
 								if( tmp.getName().equals(mf.getName()))
 									return;
 							members.add(mf);

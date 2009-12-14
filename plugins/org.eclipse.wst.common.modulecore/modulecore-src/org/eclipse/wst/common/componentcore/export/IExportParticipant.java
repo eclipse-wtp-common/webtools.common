@@ -16,7 +16,16 @@ import org.eclipse.wst.common.componentcore.export.ExportModel.ExportTaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
-public interface IExportUtilParticipant {
+/**
+ * This class represents a participant in the process
+ * of traversing the virtual component and deciding which
+ * resources should be exposed by the model, and 
+ * in what fashion.
+ * 
+ * Clients should not implement this class directly, 
+ * but should rather extend AbstractExportParticipant. 
+ */
+public interface IExportParticipant {
 	
 	/**
 	 * Seed the list of resources with entries that must be present, 
@@ -28,7 +37,7 @@ public interface IExportUtilParticipant {
 	 * @return
 	 */
 	public void initialize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<ExportableResource> resources);
+			ExportTaskModel dataModel, List<IExportableResource> resources);
 	
 	/**
 	 * Can this participant return optimized members that
@@ -61,7 +70,7 @@ public interface IExportUtilParticipant {
 	 * @return
 	 */
 	public void optimize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<ExportableResource> resources);
+			ExportTaskModel dataModel, List<IExportableResource> resources);
 	
 	/**
 	 * Return true if this is a child module of the root component, false otherwise
@@ -71,7 +80,7 @@ public interface IExportUtilParticipant {
 	 * @return
 	 */
 	public boolean isChildModule(IVirtualComponent rootComponent,
-			ExportTaskModel dataModel, ExportableFile file);
+			ExportTaskModel dataModel, IExportableFile file);
 	
 	
 	/**
@@ -93,7 +102,7 @@ public interface IExportUtilParticipant {
 	 */
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
 			IVirtualComponent currentComponent, 
-			ExportTaskModel dataModel, ExportableFile file);
+			ExportTaskModel dataModel, IExportableFile file);
 	
 	
 	/**
@@ -129,6 +138,6 @@ public interface IExportUtilParticipant {
 	 * @return
 	 */
 	public void finalize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<ExportableResource> resources);
+			ExportTaskModel dataModel, List<IExportableResource> resources);
 
 }

@@ -18,7 +18,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 public class ExportResourceFilterParticipant extends AbstractExportParticipant {
 	public interface IExportableResourceFilter {
-		public boolean accepts(ExportableResource resource);
+		public boolean accepts(IExportableResource resource);
 	}
 	
 	public static class FilterExtensionsParticipant implements IExportableResourceFilter {
@@ -26,7 +26,7 @@ public class ExportResourceFilterParticipant extends AbstractExportParticipant {
 		public FilterExtensionsParticipant(String[] extensions) {
 			this.bannedExtensions = extensions;
 		}
-		public boolean accepts(ExportableResource resource) {
+		public boolean accepts(IExportableResource resource) {
 			IFile ifile = (IFile)resource.getAdapter(IFile.class);
 			String name = null;
 			if( ifile != null ) {
@@ -58,7 +58,7 @@ public class ExportResourceFilterParticipant extends AbstractExportParticipant {
 	
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
 			IVirtualComponent currentComponent, ExportTaskModel dataModel,
-			ExportableFile file) {
+			IExportableFile file) {
 		return filter.accepts(file);
 	}
 }

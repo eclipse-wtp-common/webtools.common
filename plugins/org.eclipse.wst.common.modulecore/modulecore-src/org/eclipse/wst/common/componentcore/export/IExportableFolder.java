@@ -10,21 +10,22 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.export;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
-
-public abstract class ExportableResource implements IExportableResource, IAdaptable {
+/**
+ * 
+ * This interface is not intended to be implemented by clients
+ *
+ */
+public interface IExportableFolder extends IExportableResource {
 	/**
-	 * Returns the module relative path to this resource.
+	 * Returns the members (contents) of this folder.
 	 * 
-	 * @return the module relative path to this resource
+	 * @return an array containing the module resources contained in this folder
 	 */
-	public abstract IPath getModuleRelativePath();
-
+	public IExportableResource[] members();
 	/**
-	 * Returns the name of this resource.
+	 * Sets the members (contents) of this folder.
 	 * 
-	 * @return the name of this resource
+	 * @param members the members
 	 */
-	public abstract String getName();
+	public void setMembers(IExportableResource[] members);
 }

@@ -20,10 +20,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * A simple abstract class with default values so clients
  * can extend and override only the method they care about
  */
-public class AbstractExportParticipant implements IExportUtilParticipant {
+public class AbstractExportParticipant implements IExportParticipant {
 
 	public void initialize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<ExportableResource> resources) {
+			ExportTaskModel dataModel, List<IExportableResource> resources) {
 	}
 
 	public boolean canOptimize(IVirtualComponent component,
@@ -32,15 +32,15 @@ public class AbstractExportParticipant implements IExportUtilParticipant {
 	}
 
 	public void optimize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<ExportableResource> resources) {
+			ExportTaskModel dataModel, List<IExportableResource> resources) {
 	}
 
 	public void finalize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<ExportableResource> resources) {
+			ExportTaskModel dataModel, List<IExportableResource> resources) {
 	}
 
 	public boolean isChildModule(IVirtualComponent rootComponent,
-			ExportTaskModel dataModel, ExportableFile file) {
+			ExportTaskModel dataModel, IExportableFile file) {
 		return false;
 	}
 
@@ -51,7 +51,7 @@ public class AbstractExportParticipant implements IExportUtilParticipant {
 
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
 			IVirtualComponent currentComponent, ExportTaskModel dataModel,
-			ExportableFile file) {
+			IExportableFile file) {
 		return true;
 	}
 	

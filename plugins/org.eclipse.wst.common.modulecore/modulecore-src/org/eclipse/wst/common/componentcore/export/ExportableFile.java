@@ -21,10 +21,8 @@ import org.eclipse.core.runtime.IPath;
 
 /**
  * A deployable file
- *
- * @since 1.1
  */
-public class ExportableFile extends ExportableResource {
+public class ExportableFile extends ExportableResource implements IExportableFile {
 	private InputStream stream;
 	private IFile file;
 	private File file2;

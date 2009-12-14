@@ -18,18 +18,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 /**
- * An implementation of {@link IModuleFolder} for physical folders on disk or in the
+ * An implementation of {@link IExportableFolder} for physical folders on disk or in the
  * workspace.
- *
- * @since 1.1
  */
-public class ExportableFolder extends ExportableResource {
+public class ExportableFolder extends ExportableResource implements IExportableFolder {
 	private static final ExportableResource[] EMPTY_RESOURCE_ARRAY = new ExportableResource[0];
 
 	private IContainer container;
 	private String name;
 	private IPath path;
-	private ExportableResource[] members;
+	private IExportableResource[] members;
 
 	/**
 	 * Creates a module folder.
@@ -51,7 +49,7 @@ public class ExportableFolder extends ExportableResource {
 	 * 
 	 * @param members the members
 	 */
-	public void setMembers(ExportableResource[] members) {
+	public void setMembers(IExportableResource[] members) {
 		this.members = members;
 	}
 
@@ -72,7 +70,7 @@ public class ExportableFolder extends ExportableResource {
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.server.core.model.IModuleFolder#members()
 	 */
-	public ExportableResource[] members() {
+	public IExportableResource[] members() {
 		if (members == null)
 			return EMPTY_RESOURCE_ARRAY;
 		return members;

@@ -9,7 +9,7 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.componentcore,
  org.eclipse.wst.common.componentcore.datamodel,
  org.eclipse.wst.common.componentcore.datamodel.properties,
- org.eclipse.wst.common.componentcore.export,
+ org.eclipse.wst.common.componentcore.export;x-internal:=true,
  org.eclipse.wst.common.componentcore.internal;x-internal:=true,
  org.eclipse.wst.common.componentcore.internal.builder;x-internal:=true,
  org.eclipse.wst.common.componentcore.internal.impl;x-internal:=true,

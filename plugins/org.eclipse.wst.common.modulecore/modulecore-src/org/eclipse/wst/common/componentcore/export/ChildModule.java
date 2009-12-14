@@ -38,12 +38,12 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * @author rob
  *
  */
-public class ChildModule {
+public class ChildModule implements IChildModule {
 	private File file;
 	private IVirtualComponent component;
 	private IVirtualReference reference;
 	private IPath uri;
-	public ChildModule(ExportableFile f) {
+	public ChildModule(IExportableFile f) {
 		this.file = f == null ? null : (File)f.getAdapter(File.class);
 		if( f != null && file != null ) {
 			this.uri = f.getModuleRelativePath().append(f.getName());
@@ -75,7 +75,7 @@ public class ChildModule {
 	}
 	
 	/**
-	 * Return the component if isBinary() == false
+	 * Return the component if it exists
 	 * @return
 	 */
 	public IVirtualComponent getComponent() {

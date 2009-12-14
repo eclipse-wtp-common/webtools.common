@@ -31,19 +31,16 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
  * This utility class is almost entirely copied from ComponentDeployable
  * and deals with the nuts and bolts of creating the model objects when
  * walking a portion of the tree
- * 
- * @author rob
- *
  */
 public class ExportModelUtil {
 	public static interface ShouldIncludeUtilityCallback {
-		public boolean shouldAddComponentFile(IVirtualComponent current, ExportableFile file);
+		public boolean shouldAddComponentFile(IVirtualComponent current, IExportableFile file);
 	}
 	
-	private List<ExportableResource> members;
+	private List<IExportableResource> members;
 	private ShouldIncludeUtilityCallback handler;
 	public ExportModelUtil(
-			List<ExportableResource> members, ShouldIncludeUtilityCallback handler) {
+			List<IExportableResource> members, ShouldIncludeUtilityCallback handler) {
 		this.members = members;
 		this.handler = handler;
 	}
@@ -71,17 +68,17 @@ public class ExportModelUtil {
 	
 	// Physically adds this container
 	protected void addContainerInternal(IContainer container, IPath path) throws CoreException {
-		ExportableFolder mf = (ExportableFolder) getExistingModuleResource(members,path.append(container.getName()).makeRelative());
+		IExportableFolder mf = (ExportableFolder) getExistingModuleResource(members,path.append(container.getName()).makeRelative());
 		if( mf == null ) {
 			mf = new ExportableFolder(container, container.getName(), path);
 		}
-		ExportableFolder parent = (ExportableFolder) getExistingModuleResource(members, path);
+		IExportableFolder parent = (ExportableFolder) getExistingModuleResource(members, path);
 		if (path.isEmpty())
 			members.add(mf);
 		else {
 			if (parent == null)
 				parent = ensureParentExists(members, path, container);
-			addMembersToModuleFolder(parent, new ExportableResource[] {mf});
+			addMembersToModuleFolder(parent, new IExportableResource[] {mf});
 		}
 		
 		// recurse
@@ -95,8 +92,8 @@ public class ExportModelUtil {
 		for (int j = 0; j < size2; j++) {
 			if (res[j] instanceof IVirtualContainer) {
 				IVirtualContainer cc = (IVirtualContainer) res[j];
-				ExportableFolder mf = addVirtualContainerInternal(cc, path);
-				ExportableResource[] mr = addMembersInternal(current, cc, path.append(cc.getName()));
+				IExportableFolder mf = addVirtualContainerInternal(cc, path);
+				IExportableResource[] mr = addMembersInternal(current, cc, path.append(cc.getName()));
 				addMembersToModuleFolder(mf, mr);
 			} else {
 				IFile f = (IFile) res[j].getUnderlyingResource();
@@ -110,7 +107,7 @@ public class ExportModelUtil {
 	
 	public void addFile(IVirtualComponent current, IPath path, IAdaptable file) {
 		IFile f = (IFile)file.getAdapter(IFile.class);
-		ExportableFile mf = null;
+		IExportableFile mf = null;
 		if( f != null )
 			 mf = createModuleFile(f, path.makeRelative());
 		else {
@@ -123,8 +120,8 @@ public class ExportModelUtil {
 				if( mf.getModuleRelativePath().isEmpty() )
 					members.add(mf);
 				else {
-					ExportableFolder moduleParent = ExportModelUtil.ensureParentExists(members, mf.getModuleRelativePath(), null);
-					ExportModelUtil.addMembersToModuleFolder((ExportableFolder)moduleParent, new ExportableResource[] {mf});
+					IExportableFolder moduleParent = ExportModelUtil.ensureParentExists(members, mf.getModuleRelativePath(), null);
+					ExportModelUtil.addMembersToModuleFolder((ExportableFolder)moduleParent, new IExportableResource[] {mf});
 				}
 			}
 		}
@@ -134,18 +131,18 @@ public class ExportModelUtil {
 		addFile(current, path, (IAdaptable)f);
 	}
 	
-	protected ExportableFolder addVirtualContainerInternal(IVirtualContainer cc, IPath path) {
+	protected IExportableFolder addVirtualContainerInternal(IVirtualContainer cc, IPath path) {
 		// Retrieve already existing module folder if applicable
-		ExportableFolder mf = (ExportableFolder) getExistingModuleResource(members,path.append(cc.getName()).makeRelative());
+		IExportableFolder mf = (ExportableFolder) getExistingModuleResource(members,path.append(cc.getName()).makeRelative());
 		if (mf == null) {
 			mf = new ExportableFolder((IContainer)cc.getUnderlyingResource(), cc.getName(), path);
-			ExportableFolder parent = (ExportableFolder) getExistingModuleResource(members, path);
+			IExportableFolder parent = (ExportableFolder) getExistingModuleResource(members, path);
 			if (path.isEmpty())
 				members.add(mf);
 			else {
 				if (parent == null)
 					parent = ensureParentExists(members, path, (IContainer)cc.getUnderlyingResource());
-				addMembersToModuleFolder(parent, new ExportableResource[] {mf});
+				addMembersToModuleFolder(parent, new IExportableResource[] {mf});
 			}
 		}
 		return mf;
@@ -207,8 +204,8 @@ public class ExportModelUtil {
 		return true;
 	}
 	
-	public static ExportableFolder ensureParentExists(List<ExportableResource> members, IPath path, IContainer cc) {
-		ExportableFolder parent = (ExportableFolder) getExistingModuleResource(members, path);
+	public static IExportableFolder ensureParentExists(List<IExportableResource> members, IPath path, IContainer cc) {
+		IExportableFolder parent = (IExportableFolder) getExistingModuleResource(members, path);
 		if (parent == null && path.segmentCount() > 0) {
 			String folderName = path.lastSegment();
 			IPath folderPath = Path.EMPTY;
@@ -216,7 +213,7 @@ public class ExportModelUtil {
 				folderPath = path.removeLastSegments(1);
 			parent = new ExportableFolder(cc, folderName, folderPath);
 			if (path.segmentCount()>1)
-				addMembersToModuleFolder(ensureParentExists(members, path.removeLastSegments(1),cc), new ExportableResource[] {parent});
+				addMembersToModuleFolder(ensureParentExists(members, path.removeLastSegments(1),cc), new IExportableResource[] {parent});
 			else
 				members.add(parent);
 		}
@@ -228,19 +225,19 @@ public class ExportModelUtil {
 	 * @param ModuleFolder mf
 	 * @param IModuleResource[] mr
 	 */
-	public static void addMembersToModuleFolder(ExportableFolder mf, ExportableResource[] mr) {
+	public static void addMembersToModuleFolder(IExportableFolder mf, IExportableResource[] mr) {
 		// If the folder is null or the resources to add are null or empty, bail and return
 		if (mf == null || mr == null || mr.length==0) 
 			return;
 		// Get the existing members in the module folder
-		ExportableResource[] mf_members = mf.members();
+		IExportableResource[] mf_members = mf.members();
 		int mf_size = 0;
 		// Get the length of the existing members in the module folder
 		if (mf_members != null)
 			mf_size = mf_members.length;
 		// Create a new array to set on the module folder which will combine the existing and
 		// new module resources
-		ExportableResource[] res = new ExportableResource[mf_size + mr.length];
+		IExportableResource[] res = new ExportableResource[mf_size + mr.length];
 		// Copy the existing members into the array if there are any
 		if (mf_members != null && mf_size > 0)
 			System.arraycopy(mf_members, 0, res, 0, mf_size);
