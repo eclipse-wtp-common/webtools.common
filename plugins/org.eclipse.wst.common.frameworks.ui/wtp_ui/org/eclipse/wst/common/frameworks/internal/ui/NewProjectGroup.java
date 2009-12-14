@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.io.File;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -105,13 +106,10 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		projectGroup.setText(InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_projectContentsLabel);
 
 		final Button useDefaultsButton = new Button(projectGroup, SWT.CHECK | SWT.RIGHT);
+		GridDataFactory.defaultsFor(useDefaultsButton).span(3,1).applyTo(useDefaultsButton);
 		useDefaultsButton.setText(InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_useDefaultLabel);
 		useDefaultsButton.setFont(font);
 		synchHelper.synchCheckbox(useDefaultsButton, USE_DEFAULT_LOCATION, null);
-
-		GridData buttonData = new GridData();
-		buttonData.horizontalSpan = 3;
-		useDefaultsButton.setLayoutData(buttonData);
 
 		createUserSpecifiedProjectLocationGroup(projectGroup);
 	}
@@ -132,6 +130,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 
 		// browse button
 		browseButton = new Button(projectGroup, SWT.PUSH);
+		GridDataFactory.defaultsFor(browseButton).applyTo(browseButton);
 		browseButton.setFont(font);
 		browseButton.setText(defBrowseButtonLabel);
 		browseButton.addSelectionListener(new SelectionAdapter() {
