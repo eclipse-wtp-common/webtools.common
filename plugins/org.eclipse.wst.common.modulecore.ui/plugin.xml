@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="moduleDependencyPropertyPage" name="moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
+   <extension-point id="virtualComponentLabelProvider" name="virtualComponentLabelProvider" schema="schema/virtualComponentLabelProvider.exsd"/>
    <!-- =========== org.eclipse.jst.j2ee.internal.J2EEDependencyPage ============ -->
    <extension
    		point="org.eclipse.ui.propertyPages">

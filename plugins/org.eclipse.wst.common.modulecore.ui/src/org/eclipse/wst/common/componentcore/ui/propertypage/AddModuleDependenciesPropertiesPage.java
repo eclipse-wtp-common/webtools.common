@@ -639,7 +639,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		IVirtualComponent comp;
 		for( int i = 0; i < refs.length; i++ ) { 
 			comp = refs[i].getReferencedComponent();
-			String archiveName = refs[i].getArchiveName();
+			String archiveName = refs[i].getDependencyType() == DependencyType.CONSUMES ? null : refs[i].getArchiveName();
 			String val = (archiveName != null) ? refs[i].getRuntimePath().append(archiveName).toString() : refs[i].getRuntimePath().toString();
 			objectToRuntimePath.put(comp, val);
 			oldComponentToRuntimePath.put(comp, val);

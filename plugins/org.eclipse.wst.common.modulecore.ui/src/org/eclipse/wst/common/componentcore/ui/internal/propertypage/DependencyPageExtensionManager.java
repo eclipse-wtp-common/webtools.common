@@ -11,8 +11,12 @@
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -128,4 +132,35 @@ public class DependencyPageExtensionManager {
 			}
 		}
 	}
+	
+	public static IVirtualComponentLabelProvider[] loadDelegates() {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
+				ModuleCoreUIPlugin.PLUGIN_ID, "virtualComponentLabelProvider"); //$NON-NLS-1$
+		List<IConfigurationElement> list = Arrays.asList(cf);
+		Comparator c = new Comparator<IConfigurationElement>() {
+			public int compare(IConfigurationElement o1,
+					IConfigurationElement o2) {
+				String o1String, o2String;
+				int o1int, o2int;
+				o1String=o1.getAttribute("weight");
+				o2String=o2.getAttribute("weight");
+				o1int = Integer.parseInt(o1String);
+				o2int = Integer.parseInt(o1String);
+				return o1int-o2int;
+			}
+		};
+		Collections.sort(list, c);
+		ArrayList<IVirtualComponentLabelProvider> retList = new ArrayList<IVirtualComponentLabelProvider>();
+		Iterator<IConfigurationElement> i = list.iterator();
+		while(i.hasNext()) {
+			try {
+				retList.add((IVirtualComponentLabelProvider)i.next().createExecutableExtension("class"));
+			} catch( CoreException ce) {
+				// log
+			}
+		}
+		return retList.toArray(new IVirtualComponentLabelProvider[retList.size()]);
+	}
+
 }

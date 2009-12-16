@@ -49,9 +49,11 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
 	                new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
 	                 getDecoratorManager().getLabelDecorator());
+	private IVirtualComponentLabelProvider[] delegates;
 	public ComponentDependencyContentProvider(AddModuleDependenciesPropertiesPage addModuleDependenciesPropertiesPage) {
 		super();
 		decProvider.addListener(addModuleDependenciesPropertiesPage);
+		delegates = DependencyPageExtensionManager.loadDelegates();
 	}
 
 	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
@@ -80,10 +82,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			if (columnIndex == 0)
 				return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
 			else
-				if(((IVirtualComponent)element).isBinary())
-					return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
-				else return decProvider.getImage(((IVirtualComponent)element).getProject());
-					//return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
+				return handleSourceImage((IVirtualComponent)element);
 		} 
 		if (element instanceof IProject){
 			return decProvider.getImage(element);
@@ -106,13 +105,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 				}
 				return runtimePaths.get(element);
 			} else if (columnIndex == 1) {
-				if( comp.isBinary() && comp instanceof VirtualArchiveComponent) {
-					IPath p = ((VirtualArchiveComponent)comp).getWorkspaceRelativePath();
-					if( p == null )
-						p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
-					return p.toString();
-				}
-				return comp.getProject().getName();
+				return handleSourceText(comp);
 			}
 		} else if (element instanceof IProject){
 			if (columnIndex == 0) {
@@ -126,6 +119,37 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		return null;
 	}
 
+	private String handleSourceText(IVirtualComponent component) {
+		if( delegates != null ) {
+			for( int i = 0; i < delegates.length; i++ )
+				if( delegates[i].canHandle(component))
+					return delegates[i].getSourceText(component);
+		}
+		
+		// default impl
+		if( component.isBinary() && component instanceof VirtualArchiveComponent) {
+			IPath p = ((VirtualArchiveComponent)component).getWorkspaceRelativePath();
+			if( p == null )
+				p = new Path(((VirtualArchiveComponent)component).getUnderlyingDiskFile().getAbsolutePath());
+			return p.toString();
+		}
+		return component.getProject().getName();
+	}
+
+	private Image handleSourceImage(IVirtualComponent component) {
+		if( delegates != null ) {
+			for( int i = 0; i < delegates.length; i++ )
+				if( delegates[i].canHandle(component))
+					return delegates[i].getSourceImage(component);
+		}
+		
+		// default impl
+		if(component.isBinary())
+			return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+		else return decProvider.getImage(component.getProject());
+	}
+	
+	
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// TODO Auto-generated method stub
 		
