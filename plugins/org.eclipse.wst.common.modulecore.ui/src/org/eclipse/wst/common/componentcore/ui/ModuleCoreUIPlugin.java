@@ -46,13 +46,12 @@ public class ModuleCoreUIPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static ModuleCoreUIPlugin plugin;
-	private static ModuleCoreUIPlugin singleton;
 	/**
 	 * The constructor for this plugin
 	 */
 	public ModuleCoreUIPlugin() {
 		super();
-		singleton = this;
+		plugin = this;
 	}
 
 	/**
@@ -61,7 +60,7 @@ public class ModuleCoreUIPlugin extends AbstractUIPlugin {
 	 * @return org.eclipse.wst.server.ui.internal.plugin.ServerUIPlugin
 	 */
 	public static ModuleCoreUIPlugin getInstance() {
-		return singleton;
+		return plugin;
 	}
 
 	/*
