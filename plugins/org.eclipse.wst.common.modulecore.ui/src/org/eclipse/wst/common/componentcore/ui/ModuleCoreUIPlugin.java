@@ -51,7 +51,6 @@ public class ModuleCoreUIPlugin extends AbstractUIPlugin {
 	 */
 	public ModuleCoreUIPlugin() {
 		super();
-		plugin = this;
 	}
 
 	/**
