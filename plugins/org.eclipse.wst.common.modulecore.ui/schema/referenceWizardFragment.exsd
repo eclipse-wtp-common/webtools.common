@@ -79,7 +79,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.wst.server.ui.wizard.WizardFragment:"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment:"/>
                </appinfo>
             </annotation>
          </attribute>
