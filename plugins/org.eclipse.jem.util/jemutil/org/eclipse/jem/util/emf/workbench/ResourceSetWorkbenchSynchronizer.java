@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ResourceSetWorkbenchSynchronizer.java,v $$
- *  $$Revision: 1.6 $$  $$Date: 2009/09/29 19:48:49 $$ 
+ *  $$Revision: 1.7 $$  $$Date: 2009/12/21 19:30:40 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -145,7 +145,7 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	 * 
 	 * @since 1.0.0
 	 */
-	public void addExtender(ISynchronizerExtender extender) {
+	public synchronized void addExtender(ISynchronizerExtender extender) {
 		if (extenders == null)
 			extenders = new HashSet(3);
 		extenders.add(extender);
