@@ -40,6 +40,12 @@ public interface IModuleConstants {
 	public final static String JST_CONNECTOR_MODULE = "jst.connector"; //$NON-NLS-1$
 	public final static String JST_JAVA = "jst.java"; //$NON-NLS-1$
 	
+	// Extensions
+	public final static String EAR_EXTENSION = ".ear"; //$NON-NLS-1$
+	public final static String WAR_EXTENSION = ".war"; //$NON-NLS-1$
+	public final static String RAR_EXTENSION = ".rar"; //$NON-NLS-1$
+	public final static String JAR_EXTENSION = ".jar"; //$NON-NLS-1$
+	
 	public final static String DEPENDENT_MODULE = "dependent"; //$NON-NLS-1$
     
     //Property Constants
