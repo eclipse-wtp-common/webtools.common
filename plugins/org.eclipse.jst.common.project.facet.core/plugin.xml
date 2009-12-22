@@ -113,6 +113,10 @@
       <facet id="jst.java"/>
     </validator>
   </extension>    
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.detectors">
+    <detector class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDetector"/>
+  </extension>
 
   <extension 
     point="org.eclipse.core.resources.markers"

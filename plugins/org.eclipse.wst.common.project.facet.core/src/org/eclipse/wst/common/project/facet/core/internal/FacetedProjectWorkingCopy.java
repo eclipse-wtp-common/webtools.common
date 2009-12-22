@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
@@ -52,6 +53,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.MinimalConfigurationPresetFactory;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetDetector;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
@@ -1634,6 +1636,62 @@ public final class FacetedProjectWorkingCopy
         finally
         {
             resumeEventNotification();
+        }
+    }
+    
+    public void detect( IProgressMonitor monitor )
+    {
+        if( monitor == null )
+        {
+            monitor = new NullProgressMonitor();
+        }
+        
+        monitor.beginTask( "", 1000 ); //$NON-NLS-1$
+        
+        try
+        {
+            final List<ProjectFacetDetector> detectors = ProjectFacetDetectorsExtensionPoint.getDetectors();
+            monitor.worked( 100 );
+            
+            if( ! detectors.isEmpty() )
+            {
+                final IProgressMonitor submon = new SubProgressMonitor( monitor, 900 );
+                submon.beginTask( "", detectors.size() ); //$NON-NLS-1$
+                
+                try
+                {
+                    for( ProjectFacetDetector detector : detectors )
+                    {
+                        if( monitor.isCanceled() )
+                        {
+                            return;
+                        }
+                        
+                        final IProgressMonitor detectorProgressMonitor = new SubProgressMonitor( submon, 1 );
+
+                        try
+                        {
+                            detector.detect( this, detectorProgressMonitor );
+                        }
+                        catch( Exception e )
+                        {
+                            FacetCorePlugin.log( e );
+                        }
+                        finally
+                        {
+                            detectorProgressMonitor.done();
+                        }
+                    }
+                }
+                finally
+                {
+                    submon.done();
+                }
+            }
+        }
+        finally
+        {
+            monitor.done();
         }
     }
     

@@ -71,8 +71,14 @@ public final class JavaFacetInstallDelegate
                 cp.add( JavaCore.newSourceEntry( folder.getFullPath() ) );
             }
             
-            final IFolder defOutputFolder = project.getFolder( config.getDefaultOutputFolder() );
-            mkdirs( defOutputFolder, true );
+            final IPath defOutputPath = config.getDefaultOutputFolder();
+            IFolder defOutputFolder = null;
+            
+            if( defOutputPath != null )
+            {
+                defOutputFolder = project.getFolder( config.getDefaultOutputFolder() );
+                mkdirs( defOutputFolder, true );
+            }
 
             // Add the java nature. This will automatically add the builder.
 
@@ -86,8 +92,15 @@ public final class JavaFacetInstallDelegate
 
             // Setup the classpath.
             
-            jproject.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), 
-                                      defOutputFolder.getFullPath(), null );
+            if( defOutputFolder == null )
+            {
+                jproject.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), null ); 
+            }
+            else
+            {
+                jproject.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), 
+                                          defOutputFolder.getFullPath(), null );
+            }
 
             JavaFacetUtil.resetClasspath( project, null, fv );
             JavaFacetUtil.setCompilerLevel( project, fv );

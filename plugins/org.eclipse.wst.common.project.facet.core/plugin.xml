@@ -38,6 +38,11 @@
     name="%extPointPresets" 
     schema="schemas/presets.exsd"/>
   
+  <extension-point 
+    id="detectors" 
+    name="%extPointDetectors" 
+    schema="schemas/detectors.exsd"/>
+  
   <extension
     id="nature"
     point="org.eclipse.core.resources.natures">

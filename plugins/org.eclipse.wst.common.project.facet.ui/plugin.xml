@@ -65,10 +65,6 @@
       id="org.eclipse.wst.common.project.facet.ui.FacetsPropertyPage"
       name="%project.facets"
       objectClass="org.eclipse.core.resources.IProject">
-      <filter
-        name="nature"
-        value="org.eclipse.wst.common.project.facet.core.nature">
-      </filter>
     </page>
     <page
       adaptable="true"

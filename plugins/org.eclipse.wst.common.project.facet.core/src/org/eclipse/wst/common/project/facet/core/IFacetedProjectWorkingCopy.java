@@ -113,7 +113,9 @@ public interface IFacetedProjectWorkingCopy
     Action getProjectFacetAction( IProjectFacet facet );
     
     void setProjectFacetActionConfig( IProjectFacet facet,
-                                      Object newActionConfig );    
+                                      Object newActionConfig );   
+    
+    void detect( IProgressMonitor monitor );
     
     /**
      * @since 1.4

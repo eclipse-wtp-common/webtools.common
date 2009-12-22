@@ -15,6 +15,7 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.runOnDisplayThread;
@@ -29,11 +30,11 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -48,16 +49,20 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFrameworkException;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
@@ -82,64 +87,25 @@ public final class FacetsPropertyPage
 	extends PropertyPage
 	
 {
-	private IFacetedProject project;
+    private IProject project;
+	private IFacetedProject fpj;
     private IFacetedProjectWorkingCopy fpjwc;
     private Composite topComposite;
     private Composite furtherConfigComposite;
     
+    @Override
     public void createControl( final Composite parent )
     {
         super.createControl( parent );
         getDefaultsButton().setText( Resources.revertButtonLabel );
     }
-    
-    protected Control createContents(Composite parent) 
-    {
-        final IAdaptable element = getElement();
 
-        if( ! ( element instanceof IProject ) )
-        {
-        	return null;
-        }
-        
-        final IProject project = (IProject) element;
-        
-        try 
-        {
-            this.project = ProjectFacetsManager.create( project );
-        }
-        catch( CoreException e )
-        {
-            return null;
-        }
-        
+    protected Control createContents( final Composite parent ) 
+    {
         this.topComposite = new Composite( parent, SWT.NONE );
 
         this.topComposite.setLayoutData( gdfill() );
         this.topComposite.setLayout( glmargins( gl( 1 ), 0, 0, 0, 5 ) );
-
-        this.fpjwc = SharedWorkingCopyManager.getWorkingCopy( this.project );
-        
-        final FacetsSelectionPanel facetsSelectionPanel 
-        	= new FacetsSelectionPanel( this.topComposite, this.fpjwc );
-        
-        facetsSelectionPanel.setLayoutData( gdfill() );
-        
-        this.fpjwc.addListener
-        (
-        	new IFacetedProjectListener()
-        	{
-				public void handleEvent( final IFacetedProjectEvent event ) 
-				{
-					handleProjectModifiedEvent();
-				}
-        	},
-        	IFacetedProjectEvent.Type.PROJECT_MODIFIED
-        );
-        
-        this.furtherConfigComposite = new Composite( this.topComposite, SWT.NONE );
-        
-        updateFurtherConfigHyperlink();
         
         this.topComposite.addDisposeListener
         (
@@ -154,7 +120,81 @@ public final class FacetsPropertyPage
         
         Dialog.applyDialogFont( parent );
         
+        resetContents();
+        
         return this.topComposite;
+    }
+    
+    private void resetContents()
+    {
+        for( Control control : this.topComposite.getChildren() )
+        {
+            control.dispose();
+        }
+        
+        this.project = (IProject) getElement();
+        
+        try 
+        {
+            this.fpj = ProjectFacetsManager.create( this.project );
+        }
+        catch( CoreException e )
+        {
+            throw new RuntimeException( e );
+        }
+        
+        if( this.fpj == null )
+        {
+            final StringBuilder buf = new StringBuilder();
+            buf.append( "<form><p>" ); //$NON-NLS-1$
+            buf.append( Resources.projectNotFacetedMessage );
+            buf.append( "</p></form>" ); //$NON-NLS-1$
+
+            final FormText messageControl = new FormText( this.topComposite, SWT.NONE );
+            messageControl.setLayoutData( gdwhint( gdhfill(), 200 ) );
+            messageControl.setText( buf.toString(), true, false );
+            
+            final Link convertLink = new Link( this.topComposite, SWT.NONE );
+            convertLink.setLayoutData( gdhfill() );
+            convertLink.setText( "<a>" + Resources.convertLink + "</a>" ); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            convertLink.addSelectionListener
+            (
+                new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected( final SelectionEvent event )
+                    {
+                        handleConvertProjectAction();
+                    }
+                }
+            );
+        }
+        else
+        {
+            this.fpjwc = SharedWorkingCopyManager.getWorkingCopy( this.fpj );
+            
+            final FacetsSelectionPanel facetsSelectionPanel 
+                = new FacetsSelectionPanel( this.topComposite, this.fpjwc );
+            
+            facetsSelectionPanel.setLayoutData( gdfill() );
+            
+            this.fpjwc.addListener
+            (
+                new IFacetedProjectListener()
+                {
+                    public void handleEvent( final IFacetedProjectEvent event ) 
+                    {
+                        handleProjectModifiedEvent();
+                    }
+                },
+                IFacetedProjectEvent.Type.PROJECT_MODIFIED
+            );
+            
+            this.furtherConfigComposite = new Composite( this.topComposite, SWT.NONE );
+            
+            updateFurtherConfigHyperlink();
+        }
     }
     
 	@Override
@@ -492,10 +532,33 @@ public final class FacetsPropertyPage
 		dialog.open();
 		updateFurtherConfigHyperlink();
 	}
+	
+	private void handleConvertProjectAction()
+	{
+	    final ConvertProjectAction action = new ConvertProjectAction( this.project );
+	    
+	    try
+	    {
+	        new ProgressMonitorDialog( getShell() ).run( true, true, action );
+	    }
+	    catch( InvocationTargetException e )
+	    {
+	        
+	    }
+	    catch( InterruptedException e )
+	    {
+	        
+	    }
+	    
+	    resetContents();
+	}
 
     private void handleDisposeEvent()
     {
-        SharedWorkingCopyManager.releaseWorkingCopy( this.project );
+        if( this.fpj != null )
+        {
+            SharedWorkingCopyManager.releaseWorkingCopy( this.fpj );
+        }
     }
     
     private void traceActionConfigValidation( final IProjectFacetVersion fv,
@@ -518,6 +581,57 @@ public final class FacetsPropertyPage
             }
         }
     }
+    
+    private static final class ConvertProjectAction
+    
+        implements IRunnableWithProgress
+        
+    {
+        private final IProject project;
+        
+        public ConvertProjectAction( final IProject project )
+        {
+            this.project = project;
+        }
+        
+        public void run( final IProgressMonitor monitor )
+        
+            throws InvocationTargetException, InterruptedException
+            
+        {
+            monitor.beginTask( Resources.taskConvertingProject, 1000 );
+            
+            try
+            {
+                final IProgressMonitor createProgressMonitor = new SubProgressMonitor( monitor, 100 );
+                final IFacetedProject fpj = ProjectFacetsManager.create( this.project, true, createProgressMonitor );
+                
+                if( monitor.isCanceled() )
+                {
+                    throw new InterruptedException();
+                }
+                
+                monitor.setTaskName( Resources.taskDetectingTechnologies );
+                
+                final IProgressMonitor detectProgressMonitor = new SubProgressMonitor( monitor, 800 );
+                final IFacetedProjectWorkingCopy fpjwc = SharedWorkingCopyManager.getWorkingCopy( fpj );
+                fpjwc.detect( detectProgressMonitor );
+                
+                monitor.setTaskName( Resources.taskInstallingFacets );
+                
+                final IProgressMonitor commitChangesProgressMonitor = new SubProgressMonitor( monitor, 100 );
+                fpjwc.commitChanges( commitChangesProgressMonitor );
+            }
+            catch( CoreException e )
+            {
+                throw new InvocationTargetException( e );
+            }
+            finally
+            {
+                monitor.done();
+            }
+        }
+    }
 
     private static final class Resources 
     
@@ -530,6 +644,11 @@ public final class FacetsPropertyPage
         public static String errDlgTitle;
         public static String warningDialogTitle;
         public static String modifyWithUnknownWarningMessage;
+        public static String projectNotFacetedMessage;
+        public static String convertLink;
+        public static String taskConvertingProject;
+        public static String taskDetectingTechnologies;
+        public static String taskInstallingFacets;
         
         static
         {
