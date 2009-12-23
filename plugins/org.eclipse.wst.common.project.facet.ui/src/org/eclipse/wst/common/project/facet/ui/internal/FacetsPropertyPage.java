@@ -132,7 +132,7 @@ public final class FacetsPropertyPage
             control.dispose();
         }
         
-        this.project = (IProject) getElement();
+        this.project = (IProject) getElement().getAdapter( IProject.class );
         
         try 
         {
@@ -200,6 +200,11 @@ public final class FacetsPropertyPage
 	@Override
 	public boolean performOk() 
 	{
+	    if( this.fpjwc == null )
+	    {
+	        return true;
+	    }
+	    
 	    for( IProjectFacetVersion fv : this.fpjwc.getFacetedProject().getProjectFacets() )
 	    {
 	        if( fv.getPluginId() == null || fv.getProjectFacet().getPluginId() == null )
