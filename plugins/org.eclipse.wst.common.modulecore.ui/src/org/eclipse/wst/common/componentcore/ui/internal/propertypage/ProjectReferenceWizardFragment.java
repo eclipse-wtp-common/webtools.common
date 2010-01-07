@@ -38,6 +38,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ProjectReferenceWizardFragment extends WizardFragment {
@@ -89,8 +90,8 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		path = getArchiveName(selected,comp);
 		
 
-		getTaskModel().putObject(NewReferenceWizard.COMPONENT, comp);
-		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, path);
+		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, comp);
+		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, path);
 	}
 
 	protected String getArchiveName(IProject proj, IVirtualComponent comp) {
@@ -99,7 +100,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 
 	
 	protected IModuleHandler getModuleHandler() {
-		return (IModuleHandler)getTaskModel().getObject(NewReferenceWizard.MODULEHANDLER);
+		return (IModuleHandler)getTaskModel().getObject(IReferenceWizardConstants.MODULEHANDLER);
 	}
 
 	protected LabelProvider getLabelProvider() {
@@ -122,10 +123,10 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		if( contentProvider == null ) {
 			contentProvider = new ITreeContentProvider() {
 				public Object[] getElements(Object inputElement) {
-					IProject root = (IProject)getTaskModel().getObject(NewReferenceWizard.PROJECT);
+					IProject root = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);
 					IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 					ArrayList<IProject> list = new ArrayList<IProject>(Arrays.asList(projects));
-					IVirtualComponent comp = (IVirtualComponent)getTaskModel().getObject(NewReferenceWizard.ROOT_COMPONENT);
+					IVirtualComponent comp = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
 					List filtered = getModuleHandler().getFilteredProjectListForAdd(comp, list);
 					return filtered.toArray(new IProject[filtered.size()]);
 				}
