@@ -81,7 +81,9 @@ import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.AddFolderDialog;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -492,8 +494,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		showReferenceWizard(true);
 	}
 	
+	protected ReferenceExtension[] filterReferenceTypes(ReferenceExtension[] defaults) {
+		return new ReferenceExtension[]{}; 
+	}
+	
 	protected void showReferenceWizard(boolean editing) {
-		NewReferenceWizard wizard = new NewReferenceWizard();
+		ReferenceExtension[] extensions = 
+			DependencyPageExtensionManager.getManager().getExposedReferenceExtensions();
+		extensions = filterReferenceTypes(extensions);
+		NewReferenceWizard wizard = new NewReferenceWizard(extensions);
 		// fill the task model
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);

@@ -37,6 +37,14 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		new HashMap<String, WizardFragment>();
 	private IWizardHandle wizard;
 	private TreeViewer viewer;
+	private ReferenceExtension[] extensions = null;
+	public NewReferenceRootWizardFragment(ReferenceExtension[] extensions) {
+		this.extensions = extensions != null ? extensions :
+				DependencyPageExtensionManager.getManager().getExposedReferenceExtensions();
+		if( this.extensions.length == 0 )
+			setComplete(false);
+	}
+	
 	public boolean hasComposite() {
 		return true;
 	}
@@ -130,13 +138,10 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		return labelProvider;
 	}
 	
-	private ReferenceExtension[] extensions = null;
 	protected ITreeContentProvider getContentProvider() {
 		if( contentProvider == null ) {
 			contentProvider = new ITreeContentProvider() {
 				public Object[] getElements(Object inputElement) {
-					if( extensions == null )
-						extensions = DependencyPageExtensionManager.getManager().getReferenceExtensions();
 					return extensions;
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {

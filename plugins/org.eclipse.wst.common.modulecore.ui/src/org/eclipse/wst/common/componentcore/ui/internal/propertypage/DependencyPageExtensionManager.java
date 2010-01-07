@@ -93,7 +93,17 @@ public class DependencyPageExtensionManager {
 		return null;
 	}
 	
-	public ReferenceExtension[] getReferenceExtensions() {
+	public ReferenceExtension[] getExposedReferenceExtensions() {
+		ArrayList<ReferenceExtension> list = new ArrayList<ReferenceExtension>();
+		list.addAll(Arrays.asList(getAllReferenceExtensions()));
+		for(Iterator<ReferenceExtension> i = list.iterator();i.hasNext();) {
+			if(i.next().isHidden())
+				i.remove();
+		}
+		return list.toArray(new ReferenceExtension[list.size()]);
+	}
+	
+	public ReferenceExtension[] getAllReferenceExtensions() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
 				ModuleCoreUIPlugin.PLUGIN_ID, "referenceWizardFragment"); //$NON-NLS-1$
@@ -104,18 +114,34 @@ public class DependencyPageExtensionManager {
 		return list.toArray(new ReferenceExtension[list.size()]);
 	}
 	
+	public ReferenceExtension findReferenceExtension(String id) {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
+				ModuleCoreUIPlugin.PLUGIN_ID, "referenceWizardFragment"); //$NON-NLS-1$
+		ArrayList<ReferenceExtension> list = new ArrayList<ReferenceExtension>();
+		for( int i = 0; i < cf.length; i++ ) {
+			if(cf[i].getAttribute("id").equals(id)) //$NON-NLS-1$
+				return new ReferenceExtension(cf[i]);
+		}
+		return null;
+	}
+	
 	public class ReferenceExtension {
 		private IConfigurationElement element;
 		private String id, name, imageLoc;
 		private Image image;
+		private boolean hidden;
 		public ReferenceExtension(IConfigurationElement element) {
 			this.element = element;
 			this.id = element.getAttribute("id"); //$NON-NLS-1$
 			this.name = element.getAttribute("name"); //$NON-NLS-1$
 			this.imageLoc = element.getAttribute("icon"); //$NON-NLS-1$
+			this.hidden = Boolean.parseBoolean(element.getAttribute("hidden")); //$NON-NLS-1$
 		}
+		
 		public String getId() { return this.id;}
 		public String getName() { return this.name; }
+		public boolean isHidden() { return this.hidden; }
 		public Image getImage() { 
 			if( image == null ) {
 				if( imageLoc != null && element.getContributor().getName() != null) {

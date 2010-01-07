@@ -73,7 +73,7 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="class" type="string">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -81,6 +81,13 @@
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="hidden" type="boolean">
+            <annotation>
+               <documentation>
+                  True if this reference type should be hidden and NOT exposed as a possible reference for all virtual components, false if it will be hidden and added manually to relevant components&apos; reference wizards.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

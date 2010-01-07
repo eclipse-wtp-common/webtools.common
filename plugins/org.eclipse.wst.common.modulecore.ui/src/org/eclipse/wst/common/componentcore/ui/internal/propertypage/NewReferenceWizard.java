@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
@@ -23,21 +24,31 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardCons
 public class NewReferenceWizard extends TaskWizard implements IReferenceWizardConstants {
 	private static final Object REFERENCE_FAMILY = new Object();
 	public NewReferenceWizard() {
-		super(Messages.NewReferenceWizard, new RootWizardFragment());
+		this(null);
+	}
+	public NewReferenceWizard(ReferenceExtension[] extensions) {
+		super(Messages.NewReferenceWizard, new RootWizardFragment(extensions));
 		setFinishJobFamily(REFERENCE_FAMILY);
 		getRootFragment().setTaskModel(getTaskModel());
 	}
-	
 	protected static class RootWizardFragment extends WizardFragment {
+		private ReferenceExtension[] extensions = null;
+		public RootWizardFragment() {}
+		public RootWizardFragment(ReferenceExtension[] extensions) {
+			this.extensions = extensions;
+		}
+
 		protected void createChildFragments(List<WizardFragment> list) {
 			IVirtualComponent component = (IVirtualComponent)getTaskModel().getObject(COMPONENT);
 			if( component == null )
-				list.add(new NewReferenceRootWizardFragment());
+				list.add(new NewReferenceRootWizardFragment(extensions));
 			else {
 				WizardFragment fragment = getFirstEditingFragment(component);
 				if( fragment != null )
 					list.add(fragment);
 			}
+			if( list.size() == 0 )
+				setComplete(false);
 		}
 	}
 
