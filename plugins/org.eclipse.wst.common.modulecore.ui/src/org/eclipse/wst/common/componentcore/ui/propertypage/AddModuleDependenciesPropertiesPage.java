@@ -495,7 +495,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected ReferenceExtension[] filterReferenceTypes(ReferenceExtension[] defaults) {
-		return new ReferenceExtension[]{}; 
+		return defaults;
 	}
 	
 	protected void showReferenceWizard(boolean editing) {
