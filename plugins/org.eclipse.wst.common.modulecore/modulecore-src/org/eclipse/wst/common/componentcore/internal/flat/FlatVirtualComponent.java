@@ -26,10 +26,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
-public class FlatVirtualComponent implements ShouldIncludeUtilityCallback {
+public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldIncludeUtilityCallback {
 	
 	public static class FlatComponentTaskModel extends HashMap<Object, Object> {
-		private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 	}
 	
 	/**
@@ -81,13 +81,13 @@ public class FlatVirtualComponent implements ShouldIncludeUtilityCallback {
 	
 	private List<IFlatResource> members = null;
 	private List<IChildModuleReference> children = null;
-	public FlatResource[] fetchResources() throws CoreException {
+	public IFlatResource[] fetchResources() throws CoreException {
 		if( members == null)
 			cacheResources();
 		return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
 	}
 	
-	public ChildModuleReference[] getChildModules() throws CoreException {
+	public IChildModuleReference[] getChildModules() throws CoreException {
 		if( members == null )
 			cacheResources();
 		return (ChildModuleReference[]) children.toArray(new ChildModuleReference[children.size()]);
