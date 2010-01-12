@@ -8,11 +8,11 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.util.List;
 
-import org.eclipse.wst.common.componentcore.export.ExportModel.ExportTaskModel;
+import org.eclipse.wst.common.componentcore.internal.flat.FlatVirtualComponent.FlatComponentTaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -20,43 +20,43 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * A simple abstract class with default values so clients
  * can extend and override only the method they care about
  */
-public class AbstractExportParticipant implements IExportParticipant {
+public class AbstractFlattenParticipant implements IFlattenParticipant {
 
 	public void initialize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<IExportableResource> resources) {
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources) {
 	}
 
 	public boolean canOptimize(IVirtualComponent component,
-			ExportTaskModel dataModel) {
+			FlatComponentTaskModel dataModel) {
 		return false;
 	}
 
 	public void optimize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<IExportableResource> resources) {
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources) {
 	}
 
 	public void finalize(IVirtualComponent component,
-			ExportTaskModel dataModel, List<IExportableResource> resources) {
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources) {
 	}
 
 	public boolean isChildModule(IVirtualComponent rootComponent,
-			ExportTaskModel dataModel, IExportableFile file) {
+			FlatComponentTaskModel dataModel, IFlatFile file) {
 		return false;
 	}
 
 	public boolean isChildModule(IVirtualComponent rootComponent,
-			IVirtualReference referenced, ExportTaskModel dataModel) {
+			IVirtualReference referenced, FlatComponentTaskModel dataModel) {
 		return false;
 	}
 
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
-			IVirtualComponent currentComponent, ExportTaskModel dataModel,
-			IExportableFile file) {
+			IVirtualComponent currentComponent, FlatComponentTaskModel dataModel,
+			IFlatFile file) {
 		return true;
 	}
 	
 	public boolean shouldIgnoreReference(IVirtualComponent rootComponent,
-			IVirtualReference referenced, ExportTaskModel dataModel) {
+			IVirtualReference referenced, FlatComponentTaskModel dataModel) {
 		return false;
 	}
 }

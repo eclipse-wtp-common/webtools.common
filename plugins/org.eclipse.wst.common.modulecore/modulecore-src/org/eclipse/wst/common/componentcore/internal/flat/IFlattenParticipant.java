@@ -8,11 +8,11 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.util.List;
 
-import org.eclipse.wst.common.componentcore.export.ExportModel.ExportTaskModel;
+import org.eclipse.wst.common.componentcore.internal.flat.FlatVirtualComponent.FlatComponentTaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -25,7 +25,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * Clients should not implement this class directly, 
  * but should rather extend AbstractExportParticipant. 
  */
-public interface IExportParticipant {
+public interface IFlattenParticipant {
 	
 	/**
 	 * Seed the list of resources with entries that must be present, 
@@ -37,7 +37,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public void initialize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<IExportableResource> resources);
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
 	
 	/**
 	 * Can this participant return optimized members that
@@ -54,7 +54,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public boolean canOptimize(IVirtualComponent component, 
-			ExportTaskModel dataModel);
+			FlatComponentTaskModel dataModel);
 	
 	/**
 	 * Return a full and complete list of members to be published.
@@ -70,7 +70,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public void optimize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<IExportableResource> resources);
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
 	
 	/**
 	 * Return true if this is a child module of the root component, false otherwise
@@ -80,7 +80,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public boolean isChildModule(IVirtualComponent rootComponent,
-			ExportTaskModel dataModel, IExportableFile file);
+			FlatComponentTaskModel dataModel, IFlatFile file);
 	
 	
 	/**
@@ -102,7 +102,7 @@ public interface IExportParticipant {
 	 */
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
 			IVirtualComponent currentComponent, 
-			ExportTaskModel dataModel, IExportableFile file);
+			FlatComponentTaskModel dataModel, IFlatFile file);
 	
 	
 	/**
@@ -116,7 +116,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public boolean isChildModule(IVirtualComponent rootComponent, 
-			IVirtualReference referenced, ExportTaskModel dataModel);
+			IVirtualReference referenced, FlatComponentTaskModel dataModel);
 	
 	/**
 	 * Should this reference be ignored, ie handled elsewhere
@@ -126,7 +126,7 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public boolean shouldIgnoreReference(IVirtualComponent rootComponent,
-			IVirtualReference referenced, ExportTaskModel dataModel);
+			IVirtualReference referenced, FlatComponentTaskModel dataModel);
 	/**
 	 * Finalize the list of resources by adding missed resources or 
 	 * removing files added by mistake. 
@@ -138,6 +138,6 @@ public interface IExportParticipant {
 	 * @return
 	 */
 	public void finalize(IVirtualComponent component, 
-			ExportTaskModel dataModel, List<IExportableResource> resources);
+			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
 
 }

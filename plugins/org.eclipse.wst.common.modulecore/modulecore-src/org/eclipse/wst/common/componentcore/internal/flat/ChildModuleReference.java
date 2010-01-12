@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 
@@ -38,19 +38,19 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * @author rob
  *
  */
-public class ChildModule implements IChildModule {
+public class ChildModuleReference implements IChildModuleReference {
 	private File file;
 	private IVirtualComponent component;
 	private IVirtualReference reference;
 	private IPath uri;
-	public ChildModule(IExportableFile f) {
+	public ChildModuleReference(IFlatFile f) {
 		this.file = f == null ? null : (File)f.getAdapter(File.class);
 		if( f != null && file != null ) {
 			this.uri = f.getModuleRelativePath().append(f.getName());
 		}
 	}
 	
-	public ChildModule(IVirtualReference reference, IPath root) {
+	public ChildModuleReference(IVirtualReference reference, IPath root) {
 		this.reference = reference;
 		this.component = reference.getReferencedComponent();
 		if( component.isBinary() ) {

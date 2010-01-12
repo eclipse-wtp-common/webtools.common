@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IPath;
 /**
  * A deployable file
  */
-public class ExportableFile extends ExportableResource implements IExportableFile {
+public class FlatFile extends FlatResource implements IFlatFile {
 	private InputStream stream;
 	private IFile file;
 	private File file2;
@@ -37,7 +37,7 @@ public class ExportableFile extends ExportableResource implements IExportableFil
 	 * @param name a name
 	 * @param path the path to the file
 	 */
-	public ExportableFile(IFile file, String name, IPath path) {
+	public FlatFile(IFile file, String name, IPath path) {
 		if (name == null)
 			throw new IllegalArgumentException();
 		this.file = file;
@@ -54,7 +54,7 @@ public class ExportableFile extends ExportableResource implements IExportableFil
 	 * @param name
 	 * @param path
 	 */
-	public ExportableFile(File file, String name, IPath path) {
+	public FlatFile(File file, String name, IPath path) {
 		if (name == null)
 			throw new IllegalArgumentException();
 		this.file2 = file;
@@ -71,7 +71,7 @@ public class ExportableFile extends ExportableResource implements IExportableFil
 	 * @param name
 	 * @param path
 	 */
-	public ExportableFile(InputStream is, String name, IPath path) {
+	public FlatFile(InputStream is, String name, IPath path) {
 		if (name == null)
 			throw new IllegalArgumentException();
 		this.stream = is;
@@ -89,7 +89,7 @@ public class ExportableFile extends ExportableResource implements IExportableFil
 	 * @param path
 	 * @param stamp
 	 */
-	public ExportableFile(String name, IPath path, long stamp) {
+	public FlatFile(String name, IPath path, long stamp) {
 		if (name == null)
 			throw new IllegalArgumentException();
 		this.name = name;
@@ -122,10 +122,10 @@ public class ExportableFile extends ExportableResource implements IExportableFil
 		if (obj == this)
 			return true;
 		
-		if (!(obj instanceof ExportableFile))
+		if (!(obj instanceof FlatFile))
 			return false;
 		
-		ExportableFile mf = (ExportableFile) obj;
+		FlatFile mf = (FlatFile) obj;
 		if (!name.equals(mf.getName()))
 			return false;
 		if (!path.equals(mf.getModuleRelativePath()))

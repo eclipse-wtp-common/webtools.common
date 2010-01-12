@@ -8,24 +8,23 @@
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
-/**
- * 
- * This interface is not intended to be implemented by clients
- *
- */
-public interface IExportableFolder extends IExportableResource {
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+
+public abstract class FlatResource implements IFlatResource, IAdaptable {
 	/**
-	 * Returns the members (contents) of this folder.
+	 * Returns the module relative path to this resource.
 	 * 
-	 * @return an array containing the module resources contained in this folder
+	 * @return the module relative path to this resource
 	 */
-	public IExportableResource[] members();
+	public abstract IPath getModuleRelativePath();
+
 	/**
-	 * Sets the members (contents) of this folder.
+	 * Returns the name of this resource.
 	 * 
-	 * @param members the members
+	 * @return the name of this resource
 	 */
-	public void setMembers(IExportableResource[] members);
+	public abstract String getName();
 }

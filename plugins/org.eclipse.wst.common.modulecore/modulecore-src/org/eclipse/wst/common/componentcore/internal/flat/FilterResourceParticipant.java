@@ -8,17 +8,17 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.wst.common.componentcore.export.ExportModel.ExportTaskModel;
+import org.eclipse.wst.common.componentcore.internal.flat.FlatVirtualComponent.FlatComponentTaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
-public class ExportResourceFilterParticipant extends AbstractExportParticipant {
+public class FilterResourceParticipant extends AbstractFlattenParticipant {
 	public interface IExportableResourceFilter {
-		public boolean accepts(IExportableResource resource);
+		public boolean accepts(IFlatResource resource);
 	}
 	
 	public static class FilterExtensionsParticipant implements IExportableResourceFilter {
@@ -26,7 +26,7 @@ public class ExportResourceFilterParticipant extends AbstractExportParticipant {
 		public FilterExtensionsParticipant(String[] extensions) {
 			this.bannedExtensions = extensions;
 		}
-		public boolean accepts(IExportableResource resource) {
+		public boolean accepts(IFlatResource resource) {
 			IFile ifile = (IFile)resource.getAdapter(IFile.class);
 			String name = null;
 			if( ifile != null ) {
@@ -47,18 +47,18 @@ public class ExportResourceFilterParticipant extends AbstractExportParticipant {
 		}
 	}
 	
-	public static ExportResourceFilterParticipant createSuffixFilterParticipant(String[] strings) {
-		return new ExportResourceFilterParticipant(new FilterExtensionsParticipant(strings));
+	public static FilterResourceParticipant createSuffixFilterParticipant(String[] strings) {
+		return new FilterResourceParticipant(new FilterExtensionsParticipant(strings));
 	}
 	
 	private IExportableResourceFilter filter;
-	public ExportResourceFilterParticipant(IExportableResourceFilter filter) {
+	public FilterResourceParticipant(IExportableResourceFilter filter) {
 		this.filter = filter;
 	}
 	
 	public boolean shouldAddExportableFile(IVirtualComponent rootComponent,
-			IVirtualComponent currentComponent, ExportTaskModel dataModel,
-			IExportableFile file) {
+			IVirtualComponent currentComponent, FlatComponentTaskModel dataModel,
+			IFlatFile file) {
 		return filter.accepts(file);
 	}
 }

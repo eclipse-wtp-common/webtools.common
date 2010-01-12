@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IPath;
  * This interface is not intended to be implemented by clients
  *
  */
-public interface IExportableResource extends IAdaptable {
+public interface IFlatResource extends IAdaptable {
 	/**
 	 * Returns the module relative path to this resource.
 	 * 

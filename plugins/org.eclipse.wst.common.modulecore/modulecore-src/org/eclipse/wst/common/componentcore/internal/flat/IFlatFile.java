@@ -8,14 +8,14 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 /**
  * 
  * This interface is not intended to be implemented by clients
  *
  */
-public interface IExportableFile extends IExportableResource {
+public interface IFlatFile extends IFlatResource {
 	/**
 	 * Returns a modification stamp. Whenever the modification
 	 * stamp changes, there may have been a change to the file.

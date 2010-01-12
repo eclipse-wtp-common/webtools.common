@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,15 +20,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.common.componentcore.export.ExportModelUtil.ShouldIncludeUtilityCallback;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.flat.VirtualComponentFlattenUtility.ShouldIncludeUtilityCallback;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
-public class ExportModel implements ShouldIncludeUtilityCallback {
+public class FlatVirtualComponent implements ShouldIncludeUtilityCallback {
 	
-	public static class ExportTaskModel extends HashMap<Object, Object> {
+	public static class FlatComponentTaskModel extends HashMap<Object, Object> {
 		private static final long serialVersionUID = 1L;
 	}
 	
@@ -44,15 +44,15 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 */
 	public static String EXPORT_MODEL = "org.eclipse.wst.common.componentcore.export.exportModel";
 	
-	private ExportTaskModel dataModel;
+	private FlatComponentTaskModel dataModel;
 	private IVirtualComponent component;
-	private IExportParticipant[] participants;
+	private IFlattenParticipant[] participants;
 
-	public ExportModel(IVirtualComponent component) {
-		this(component, new ExportTaskModel());
+	public FlatVirtualComponent(IVirtualComponent component) {
+		this(component, new FlatComponentTaskModel());
 	}
 	
-	public ExportModel(IVirtualComponent component, ExportTaskModel dataModel) {
+	public FlatVirtualComponent(IVirtualComponent component, FlatComponentTaskModel dataModel) {
 		this.component = component;
 		this.dataModel = dataModel;
 		participants = setParticipants();
@@ -63,34 +63,34 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 * Kinda ugly but functional and allows the option
 	 * to be set as one or a list for convenience
 	 */
-	protected IExportParticipant[] setParticipants() {
+	protected IFlattenParticipant[] setParticipants() {
 		Object o = dataModel.get(PARTICIPANT_LIST);
 		if( o != null ) {
-			if( o instanceof IExportParticipant )
-				return new IExportParticipant[] { (IExportParticipant)o};
-			if( o instanceof IExportParticipant[])
-				return (IExportParticipant[])o;
+			if( o instanceof IFlattenParticipant )
+				return new IFlattenParticipant[] { (IFlattenParticipant)o};
+			if( o instanceof IFlattenParticipant[])
+				return (IFlattenParticipant[])o;
 			if( o instanceof List ) {
-				List<IExportParticipant> l = (List<IExportParticipant>)o;
-				return (IExportParticipant[]) l
-						.toArray(new IExportParticipant[l.size()]);
+				List<IFlattenParticipant> l = (List<IFlattenParticipant>)o;
+				return (IFlattenParticipant[]) l
+						.toArray(new IFlattenParticipant[l.size()]);
 			}
 		}
-		return new IExportParticipant[]{};
+		return new IFlattenParticipant[]{};
 	}
 	
-	private List<IExportableResource> members = null;
-	private List<IChildModule> children = null;
-	public ExportableResource[] fetchResources() throws CoreException {
+	private List<IFlatResource> members = null;
+	private List<IChildModuleReference> children = null;
+	public FlatResource[] fetchResources() throws CoreException {
 		if( members == null)
 			cacheResources();
-		return (ExportableResource[]) members.toArray(new ExportableResource[members.size()]);
+		return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
 	}
 	
-	public ChildModule[] getChildModules() throws CoreException {
+	public ChildModuleReference[] getChildModules() throws CoreException {
 		if( members == null )
 			cacheResources();
-		return (ChildModule[]) children.toArray(new ChildModule[children.size()]);
+		return (ChildModuleReference[]) children.toArray(new ChildModuleReference[children.size()]);
 	}
 	
 	
@@ -105,8 +105,8 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	}
 	
 	protected void runInitializations() {
-		members = new ArrayList<IExportableResource>();
-		children = new ArrayList<IChildModule>();
+		members = new ArrayList<IFlatResource>();
+		children = new ArrayList<IChildModuleReference>();
 		for( int i = 0; i < participants.length; i++ ) {
 			participants[i].initialize(component, dataModel, members);
 		}
@@ -120,7 +120,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 		return false;
 	}
 
-	protected void optimize(List<IExportableResource> resources) {
+	protected void optimize(List<IFlatResource> resources) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].canOptimize(component, dataModel)) {
 				participants[i].optimize(component, dataModel, resources);
@@ -129,7 +129,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 		}
 	}
 	
-	protected void runFinalizations(List<IExportableResource> resources) {
+	protected void runFinalizations(List<IFlatResource> resources) {
 		for( int i = 0; i < participants.length; i++ ) {
 			participants[i].finalize(component, dataModel, resources);
 		}
@@ -137,7 +137,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	
 	protected void treeWalk() throws CoreException {
 		if (component != null) {
-			ExportModelUtil util = new ExportModelUtil(members, this);
+			VirtualComponentFlattenUtility util = new VirtualComponentFlattenUtility(members, this);
 			IVirtualFolder vFolder = component.getRootFolder();
 			
 			// actually walk the tree
@@ -157,7 +157,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 * 
 	 * @param vc
 	 */
-	protected void addConsumedReferences(ExportModelUtil util, IVirtualComponent vc, IPath root) throws CoreException {
+	protected void addConsumedReferences(VirtualComponentFlattenUtility util, IVirtualComponent vc, IPath root) throws CoreException {
 		List consumableMembers = new ArrayList();
 		IVirtualReference[] refComponents = vc.getReferences();
     	for (int i = 0; i < refComponents.length; i++) {
@@ -178,10 +178,10 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	 * This checks to see if any exportable file is actually a child module,
 	 * which should be exposed differently
 	 */
-	public boolean shouldAddComponentFile(IVirtualComponent current, IExportableFile file) {
+	public boolean shouldAddComponentFile(IVirtualComponent current, IFlatFile file) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].isChildModule(component, dataModel, file)) {
-				ChildModule child = new ChildModule(file);
+				ChildModuleReference child = new ChildModuleReference(file);
 				children.add(child); 
 				return false;
 			} else if( !participants[i].shouldAddExportableFile(component, current, dataModel, file))
@@ -202,8 +202,8 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 				if( !isChildModule(reference)) {
 					addUsedReference(vc, reference, root.append(reference.getRuntimePath()));
 				} else {
-					ChildModule cm = new ChildModule(reference, root);
-					for( IChildModule tmp : children ) {
+					ChildModuleReference cm = new ChildModuleReference(reference, root);
+					for( IChildModuleReference tmp : children ) {
 						if( tmp.getRelativeURI().equals(cm.getRelativeURI()))
 							return;
 					}
@@ -236,7 +236,7 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 	}
 
 	protected void addUsedReference(IVirtualComponent parent, IVirtualReference reference, IPath runtimePath) {
-		ExportableFile mf = null;
+		FlatFile mf = null;
 		final String archiveName = reference.getArchiveName();
 		final IVirtualComponent virtualComp = reference.getReferencedComponent();
 		
@@ -245,31 +245,31 @@ public class ExportModel implements ShouldIncludeUtilityCallback {
 			IFile ifile = (IFile)virtualComp.getAdapter(IFile.class);
 			if( ifile != null ) {
 				String name = null != archiveName ? archiveName : ifile.getName();
-				mf = new ExportableFile(ifile, name, runtimePath.makeRelative());
+				mf = new FlatFile(ifile, name, runtimePath.makeRelative());
 			} else {
 				File extFile = (File)virtualComp.getAdapter(File.class);
 				if( extFile != null ) {
 					String name = null != archiveName ? archiveName : extFile.getName();
-					mf = new ExportableFile(extFile, name, runtimePath.makeRelative());
+					mf = new FlatFile(extFile, name, runtimePath.makeRelative());
 				}
 			}
 			
 			if( mf != null ) {
-				IExportableResource moduleParent = ExportModelUtil.getExistingModuleResource(members, mf.getModuleRelativePath());
-				if (moduleParent != null && moduleParent instanceof ExportableFolder) {
-					ExportModelUtil.addMembersToModuleFolder((ExportableFolder)moduleParent, new ExportableResource[]{mf});
+				IFlatResource moduleParent = VirtualComponentFlattenUtility.getExistingModuleResource(members, mf.getModuleRelativePath());
+				if (moduleParent != null && moduleParent instanceof FlatFolder) {
+					VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[]{mf});
 				} else {
 					if( shouldAddComponentFile(virtualComp, mf)) {
 						if (mf.getModuleRelativePath().isEmpty()) {
-							for( IExportableResource tmp : members) 
+							for( IFlatResource tmp : members) 
 								if( tmp.getName().equals(mf.getName()))
 									return;
 							members.add(mf);
 						} else {
 							if (moduleParent == null) {
-								moduleParent = ExportModelUtil.ensureParentExists(members, mf.getModuleRelativePath(), (IContainer)parent.getRootFolder().getUnderlyingResource());
+								moduleParent = VirtualComponentFlattenUtility.ensureParentExists(members, mf.getModuleRelativePath(), (IContainer)parent.getRootFolder().getUnderlyingResource());
 							}
-							ExportModelUtil.addMembersToModuleFolder((ExportableFolder)moduleParent, new ExportableResource[] {mf});
+							VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[] {mf});
 						}
 					} else {
 						// Automatically added to children if it needed to be

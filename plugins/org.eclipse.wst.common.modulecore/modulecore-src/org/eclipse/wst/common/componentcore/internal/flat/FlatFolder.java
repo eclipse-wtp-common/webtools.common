@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 
@@ -18,16 +18,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 /**
- * An implementation of {@link IExportableFolder} for physical folders on disk or in the
+ * An implementation of {@link IFlatFolder} for physical folders on disk or in the
  * workspace.
  */
-public class ExportableFolder extends ExportableResource implements IExportableFolder {
-	private static final ExportableResource[] EMPTY_RESOURCE_ARRAY = new ExportableResource[0];
+public class FlatFolder extends FlatResource implements IFlatFolder {
+	private static final FlatResource[] EMPTY_RESOURCE_ARRAY = new FlatResource[0];
 
 	private IContainer container;
 	private String name;
 	private IPath path;
-	private IExportableResource[] members;
+	private IFlatResource[] members;
 
 	/**
 	 * Creates a module folder.
@@ -36,7 +36,7 @@ public class ExportableFolder extends ExportableResource implements IExportableF
 	 * @param name a name
 	 * @param path the module relative path to the folder
 	 */
-	public ExportableFolder(IContainer container, String name, IPath path) {
+	public FlatFolder(IContainer container, String name, IPath path) {
 		if (name == null)
 			throw new IllegalArgumentException();
 		this.container = container;
@@ -49,7 +49,7 @@ public class ExportableFolder extends ExportableResource implements IExportableF
 	 * 
 	 * @param members the members
 	 */
-	public void setMembers(IExportableResource[] members) {
+	public void setMembers(IFlatResource[] members) {
 		this.members = members;
 	}
 
@@ -70,7 +70,7 @@ public class ExportableFolder extends ExportableResource implements IExportableF
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.server.core.model.IModuleFolder#members()
 	 */
-	public IExportableResource[] members() {
+	public IFlatResource[] members() {
 		if (members == null)
 			return EMPTY_RESOURCE_ARRAY;
 		return members;
@@ -80,10 +80,10 @@ public class ExportableFolder extends ExportableResource implements IExportableF
 		if (obj == this)
 			return true;
 		
-		if (!(obj instanceof ExportableFolder))
+		if (!(obj instanceof FlatFolder))
 			return false;
 		
-		ExportableFolder mf = (ExportableFolder) obj;
+		FlatFolder mf = (FlatFolder) obj;
 		if (!name.equals(mf.name))
 			return false;
 		if (!path.equals(mf.path))

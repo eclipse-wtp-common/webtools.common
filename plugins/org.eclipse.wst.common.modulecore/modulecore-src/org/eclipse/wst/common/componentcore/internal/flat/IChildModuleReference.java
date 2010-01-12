@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat - Initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.export;
+package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 
@@ -22,7 +22,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * 
  * This interface is not intended to be implemented by clients
  */
-public interface IChildModule {
+public interface IChildModuleReference {
 	/**
 	 * Will return a file if this can be tracked to one
 	 * @return
