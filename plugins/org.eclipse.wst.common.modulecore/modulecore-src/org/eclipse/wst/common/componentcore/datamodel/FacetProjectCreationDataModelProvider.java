@@ -359,7 +359,14 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	                config = Platform.getAdapterManager().getAdapter( config, IDataModel.class );
 	            }
 	            
-	            facetDmMap.add( (IDataModel) config );
+	            final IDataModel dm = (IDataModel) config;
+	            
+	            facetDmMap.put( facet.getId(), dm );
+	            
+	            for( String alias : facet.getAliases() )
+	            {
+	                facetDmMap.put( alias, dm );
+	            }
 	        }
 		}
 		return super.propertySet(propertyName, propertyValue);
