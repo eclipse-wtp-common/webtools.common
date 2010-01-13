@@ -34,12 +34,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.wst.common.tests.performance"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.wst.common.tests.ui"
          download-size="0"
          install-size="0"
