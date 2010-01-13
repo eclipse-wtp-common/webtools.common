@@ -150,6 +150,8 @@ public abstract class AbstractRuntime
         return getProperties().get( key );
     }
     
+    @SuppressWarnings( "rawtypes" )
+    
     public final Object getAdapter( final Class adapter )
     {
         final String t = adapter.getName();

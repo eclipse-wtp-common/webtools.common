@@ -96,6 +96,8 @@ public final class Category
         this.facets.remove( f );
     }
     
+    @SuppressWarnings( "rawtypes" )
+    
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );

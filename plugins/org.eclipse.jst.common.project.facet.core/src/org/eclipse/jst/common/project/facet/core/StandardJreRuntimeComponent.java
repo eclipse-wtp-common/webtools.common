@@ -28,22 +28,19 @@ import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 public final class StandardJreRuntimeComponent 
 {
     public static final String TYPE_ID = "standard.jre"; //$NON-NLS-1$
-    
-    public static final IRuntimeComponentType TYPE 
-        = RuntimeManager.getRuntimeComponentType( TYPE_ID );
-    
-    public static final IRuntimeComponentVersion VERSION_1_3
-        = TYPE.getVersion( "1.3" ); //$NON-NLS-1$
-    
-    public static final IRuntimeComponentVersion VERSION_1_4
-        = TYPE.getVersion( "1.4" ); //$NON-NLS-1$
+    public static final IRuntimeComponentType TYPE = RuntimeManager.getRuntimeComponentType( TYPE_ID );
+    public static final IRuntimeComponentVersion VERSION_1_3 = TYPE.getVersion( "1.3" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_1_4 = TYPE.getVersion( "1.4" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_1_5 = TYPE.getVersion( "1.5" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_1_6 = TYPE.getVersion( "1.6" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_1_7 = TYPE.getVersion( "1.7" ); //$NON-NLS-1$
 
-    public static final IRuntimeComponentVersion VERSION_5_0
-        = TYPE.getVersion( "5.0" ); //$NON-NLS-1$
+    @Deprecated
+    public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
     
-    public static final IRuntimeComponentVersion VERSION_6_0
-        = TYPE.getVersion( "6.0" ); //$NON-NLS-1$
-    
+    @Deprecated( )
+    public static final IRuntimeComponentVersion VERSION_6_0 = VERSION_1_6;
+
     public static final String PROP_VM_INSTALL_TYPE = "vm-install-type"; //$NON-NLS-1$
     public static final String PROP_VM_INSTALL_ID = "vm-install-id"; //$NON-NLS-1$
     
@@ -61,7 +58,7 @@ public final class StandardJreRuntimeComponent
         
         if( jvmver == null ) 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_6_0;
+            rcv = StandardJreRuntimeComponent.VERSION_1_7;
         } 
         else if( jvmver.startsWith( "1.3" ) ) //$NON-NLS-1$
         {
@@ -71,17 +68,21 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_1_4;
         }
-        else if( jvmver.startsWith( "1.5" ) || jvmver.startsWith( "5.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
+        else if( jvmver.startsWith( "1.5" ) ) //$NON-NLS-1$
         {
-            rcv = StandardJreRuntimeComponent.VERSION_5_0;
+            rcv = StandardJreRuntimeComponent.VERSION_1_5;
         }
-        else if( jvmver.startsWith( "1.6" ) || jvmver.startsWith( "6.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
+        else if( jvmver.startsWith( "1.6" ) ) //$NON-NLS-1$
         {
-            rcv = StandardJreRuntimeComponent.VERSION_6_0;
+            rcv = StandardJreRuntimeComponent.VERSION_1_6;
+        }
+        else if( jvmver.startsWith( "1.7" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_1_7;
         }
         else 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_6_0;
+            rcv = StandardJreRuntimeComponent.VERSION_1_7;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();

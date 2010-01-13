@@ -52,6 +52,15 @@ public interface IProjectFacet
     String getId();
     
     /**
+     * Returns the alternate identifiers that are associated with this facet. Aliases are specified
+     * via the <code>aliases</code> extension point.
+     * 
+     * @return the alternate identifiers that are associated with this facet, if any
+     */
+    
+    Set<String> getAliases();
+    
+    /**
      * Returns the id of the plugin that defines this project facet. This method
      * will return <code>null</code> if this facet is not defined. 
      * 

@@ -14,6 +14,7 @@ package org.eclipse.wst.common.project.facet.core.util.internal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,45 +23,24 @@ import java.util.Set;
  */
 
 public final class IndexedSet<K,V>
-
-    extends HashSet<V>
-    
 {
-    private static final long serialVersionUID = 1L;
+    private final Set<V> set;
     private final Set<V> unmodifiable;
     private final Map<K,V> index;
     
     public IndexedSet()
     {
-        this.unmodifiable = Collections.unmodifiableSet( this );
+        this.set = new HashSet<V>();
+        this.unmodifiable = Collections.unmodifiableSet( this.set );
         this.index = new HashMap<K,V>();
     }
     
-    public void add( final K key,
-                     final V value )
+    public Set<V> getItemSet()
     {
-        remove( this.index.get( key ) );
-        add( value );
-        this.index.put( key, value );
+        return this.unmodifiable;
     }
-    
-    public boolean delete( final K key )
-    {
-        final Object value = this.index.get( key );
-        
-        if( value == null )
-        {
-            return false;
-        }
-        else
-        {
-            remove( value );
-            this.index.remove( key );
-            return true;
-        }
-    }
-    
-    public V get( final K key )
+
+    public V getItemByKey( final K key )
     {
         return this.index.get( key );
     }
@@ -69,9 +49,75 @@ public final class IndexedSet<K,V>
     {
         return this.index.containsKey( key );
     }
-    
-    public Set<V> getUnmodifiable()
+
+    public boolean containsItem( final V item )
     {
-        return this.unmodifiable;
+        return this.set.contains( item );
     }
+
+    public void addItem( final V item )
+    {
+        if( item == null )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        this.set.add( item );
+    }
+    
+    public void addItemWithKey( final K key,
+                                final V item )
+    {
+        addItem( item );
+        addKey( key, item );
+    }
+    
+    public void addKey( final K key,
+                        final V item )
+    {
+        if( key == null || item == null )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        if( ! this.set.contains( item ) )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        this.index.put( key, item );
+    }
+    
+    public boolean removeItem( final V item )
+    {
+        if( this.set.remove( item ) )
+        {
+            for( Iterator<Map.Entry<K,V>> itr = this.index.entrySet().iterator(); itr.hasNext(); )
+            {
+                final Map.Entry<K,V> entry = itr.next();
+                
+                if( entry.getValue() == item )
+                {
+                    itr.remove();
+                }
+            }
+        
+            return true;
+        }
+        
+        return false;
+    }
+
+    public boolean removeItemByKey( final K key )
+    {
+        final V item = this.index.get( key );
+        
+        if( item != null )
+        {
+            return removeItem( item );
+        }
+        
+        return false;
+    }
+    
 }

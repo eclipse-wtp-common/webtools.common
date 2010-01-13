@@ -566,16 +566,15 @@ public final class FacetedProject
      * @deprecated
      */
     
-    @SuppressWarnings( "unchecked" )
     public void setRuntime( final IRuntime runtime,
                             final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        final Set runtimes
+        final Set<IRuntime> runtimes
             = runtime == null 
-              ? Collections.EMPTY_SET : Collections.singleton( runtime );
+              ? Collections.<IRuntime>emptySet() : Collections.singleton( runtime );
         
         setTargetedRuntimes( runtimes, monitor );
     }

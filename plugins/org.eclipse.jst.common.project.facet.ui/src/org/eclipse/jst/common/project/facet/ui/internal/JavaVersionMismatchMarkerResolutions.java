@@ -92,7 +92,7 @@ public final class JavaVersionMismatchMarkerResolutions
             final String level 
                 = this.marker.getAttribute( JavaFacetValidator.ATTR_COMPILER_LEVEL, null );
             
-            return JavaFacetUtil.compilerLevelToFacet( level );
+            return JavaFacet.FACET.getVersion( level );
         }
     }
 
@@ -134,12 +134,7 @@ public final class JavaVersionMismatchMarkerResolutions
         
         private String getCompilerLevel()
         {
-            final String fvstr
-                = this.marker.getAttribute( JavaFacetValidator.ATTR_FACET_VERSION, null);
-            
-            final IProjectFacetVersion fv = JavaFacet.FACET.getVersion( fvstr );
-            
-            return JavaFacetUtil.facetToCompilerLevel( fv );
+            return this.marker.getAttribute( JavaFacetValidator.ATTR_FACET_VERSION, null);
         }
     }
     

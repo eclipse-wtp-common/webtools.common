@@ -30,12 +30,12 @@
          
   <extension point="org.eclipse.wst.common.project.facet.ui.images">
     <image 
-      facet="jst.java" 
+      facet="java" 
       path="images/java-facet.gif"/>
   </extension>
 
   <extension point="org.eclipse.wst.common.project.facet.ui.wizardPages">
-    <wizard-pages action="jst.java.install">
+    <wizard-pages action="java.install">
       <page class="org.eclipse.jst.common.project.facet.ui.internal.JavaFacetInstallPage"/>
     </wizard-pages>
   </extension>

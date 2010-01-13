@@ -43,6 +43,11 @@
     name="%extPointDetectors" 
     schema="schemas/detectors.exsd"/>
   
+  <extension-point 
+    id="aliases" 
+    name="%extPointAliases" 
+    schema="schemas/aliases.exsd"/>
+  
   <extension
     id="nature"
     point="org.eclipse.core.resources.natures">

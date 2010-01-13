@@ -103,6 +103,8 @@ public final class RuntimeComponent
         this.properties.put( key, value );
     }
 
+    @SuppressWarnings( "rawtypes" )
+    
     public Object getAdapter( final Class type )
     {
         final IAdapterManager manager = Platform.getAdapterManager();

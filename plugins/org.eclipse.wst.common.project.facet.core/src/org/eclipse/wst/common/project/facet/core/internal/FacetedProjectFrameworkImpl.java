@@ -218,7 +218,7 @@ public final class FacetedProjectFrameworkImpl
     
     public Set<IProjectFacet> getProjectFacets()
     {
-        return this.facets.getUnmodifiable();
+        return this.facets.getItemSet();
     }
     
     public boolean isProjectFacetDefined( final String id )
@@ -228,7 +228,7 @@ public final class FacetedProjectFrameworkImpl
     
     public IProjectFacet getProjectFacet( final String id )
     {
-        final IProjectFacet f = this.facets.get( id );
+        final IProjectFacet f = this.facets.getItemByKey( id );
         
         if( f == null )
         {
@@ -241,7 +241,7 @@ public final class FacetedProjectFrameworkImpl
     
     public Set<IActionDefinition> getActionDefinitions()
     {
-        return this.actions.getUnmodifiable();
+        return this.actions.getItemSet();
     }
     
     public boolean isActionDefined( final String id )
@@ -251,7 +251,7 @@ public final class FacetedProjectFrameworkImpl
     
     public IActionDefinition getActionDefinition( final String id )
     {
-        final IActionDefinition adef = this.actions.get( id );
+        final IActionDefinition adef = this.actions.getItemByKey( id );
         
         if( adef == null )
         {
@@ -264,7 +264,7 @@ public final class FacetedProjectFrameworkImpl
     
     public Set<ICategory> getCategories()
     {
-        return this.categories.getUnmodifiable();
+        return this.categories.getItemSet();
     }
 
     public boolean isCategoryDefined( final String id )
@@ -274,7 +274,7 @@ public final class FacetedProjectFrameworkImpl
     
     public ICategory getCategory( final String id )
     {
-        final ICategory category = this.categories.get( id );
+        final ICategory category = this.categories.getItemByKey( id );
         
         if( category == null )
         {
@@ -290,7 +290,7 @@ public final class FacetedProjectFrameworkImpl
         synchronized( this.presets )
         {
             initializePresets();
-            return this.presets.getUnmodifiable();
+            return this.presets.getItemSet();
         }
     }
     
@@ -309,7 +309,7 @@ public final class FacetedProjectFrameworkImpl
         {
             initializePresets();
             
-            final IPreset preset = this.presets.get( id );
+            final IPreset preset = this.presets.getItemByKey( id );
             
             if( preset == null )
             {
@@ -364,7 +364,7 @@ public final class FacetedProjectFrameworkImpl
                 = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
                                   facets );
             
-            this.presets.add( id, preset );
+            this.presets.addItemWithKey( id, preset );
             
             if( save )
             {
@@ -388,7 +388,7 @@ public final class FacetedProjectFrameworkImpl
                 return false;
             }
             
-            deleted = this.presets.delete( preset.getId() );
+            deleted = this.presets.removeItemByKey( preset.getId() );
             
             if( deleted )
             {
@@ -415,7 +415,7 @@ public final class FacetedProjectFrameworkImpl
             {
                 for( IPreset preset : PresetsExtensionPoint.getPresets() )
                 {
-                    this.presets.add( preset.getId(), preset );
+                    this.presets.addItemWithKey( preset.getId(), preset );
                 }
                 
                 readUserPresets();
@@ -438,7 +438,7 @@ public final class FacetedProjectFrameworkImpl
                 root.node( children[ i ] ).removeNode();
             }
             
-            for( IPreset preset : this.presets )
+            for( IPreset preset : this.presets.getItemSet() )
             {
                 if( preset.getType() == IPreset.Type.USER_DEFINED )
                 {
@@ -576,7 +576,7 @@ public final class FacetedProjectFrameworkImpl
     
     public Set<IGroup> getGroups()
     {
-        return this.groups.getUnmodifiable();
+        return this.groups.getItemSet();
     }
     
     public boolean isGroupDefined( final String id )
@@ -586,7 +586,7 @@ public final class FacetedProjectFrameworkImpl
     
     public IGroup getGroup( final String id )
     {
-        final IGroup group = this.groups.get( id );
+        final IGroup group = this.groups.getItemByKey( id );
         
         if( group == null )
         {
@@ -1449,7 +1449,7 @@ public final class FacetedProjectFrameworkImpl
         final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
         category.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
         
-        this.categories.add( category.getId(), category );
+        this.categories.addItemWithKey( category.getId(), category );
     }
     
     private void readProjectFacet( final IConfigurationElement config )
@@ -1548,7 +1548,14 @@ public final class FacetedProjectFrameworkImpl
             }
         }
         
-        this.facets.add( f.getId(), f );
+        this.facets.addItem( f );
+        this.facets.addKey( f.getId(), f );
+        
+        for( String alias : ProjectFacetAliasesExtensionPoint.getAliases( f ) )
+        {
+            this.facets.addKey( alias, f );
+            f.addAlias( alias );
+        }
     }
     
     private void readProjectFacetVersion( final IConfigurationElement config,
@@ -1571,7 +1578,7 @@ public final class FacetedProjectFrameworkImpl
             return;
         }
         
-        final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
+        final ProjectFacet f = (ProjectFacet) this.facets.getItemByKey( fid );
         
         if( f == null )
         {
@@ -1610,14 +1617,14 @@ public final class FacetedProjectFrameworkImpl
                     return;
                 }
                 
-                Group group = (Group) this.groups.get( id );
+                Group group = (Group) this.groups.getItemByKey( id );
                 
                 if( group == null )
                 {
                     group = new Group();
                     group.setId( id );
                     
-                    this.groups.add( id, group );
+                    this.groups.addItemWithKey( id, group );
                 }
                 
                 group.addMember( fv );
@@ -1676,7 +1683,7 @@ public final class FacetedProjectFrameworkImpl
     {
         final List<IProjectFacet> badFacets = new ArrayList<IProjectFacet>();
         
-        for( IProjectFacet f : this.facets )
+        for( IProjectFacet f : this.facets.getItemSet() )
         {
             try
             {
@@ -1734,7 +1741,7 @@ public final class FacetedProjectFrameworkImpl
         
         for( IProjectFacet f : badFacets )
         {
-            this.facets.remove( f );
+            this.facets.removeItem( f );
             
             final Category category = (Category) f.getCategory();
             
@@ -1835,7 +1842,7 @@ public final class FacetedProjectFrameworkImpl
             return;
         }
         
-        final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
+        final ProjectFacet f = (ProjectFacet) this.facets.getItemByKey( fid );
         
         if( f == null )
         {
@@ -2011,7 +2018,7 @@ public final class FacetedProjectFrameworkImpl
         }
         else
         {
-            this.actions.add( def.getId(), def );
+            this.actions.addItemWithKey( def.getId(), def );
             f.addActionDefinition( def );
         }
     }
@@ -2026,7 +2033,7 @@ public final class FacetedProjectFrameworkImpl
             return;
         }
         
-        final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
+        final ProjectFacet f = (ProjectFacet) this.facets.getItemByKey( fid );
         
         if( f == null )
         {

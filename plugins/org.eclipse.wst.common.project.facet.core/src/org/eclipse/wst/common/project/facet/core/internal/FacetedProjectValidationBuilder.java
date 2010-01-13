@@ -63,6 +63,8 @@ public final class FacetedProjectValidationBuilder
         readExtensions();
     }
     
+    @SuppressWarnings( "rawtypes" )
+    
     protected IProject[] build( final int kind, 
                                 final Map args, 
                                 final IProgressMonitor monitor ) 

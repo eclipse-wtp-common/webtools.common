@@ -48,6 +48,15 @@ public interface IProjectFacetVersion
     String getVersionString();
     
     /**
+     * Returns the alternate version strings that are associated with this facet version. Aliases 
+     * are specified via the <code>aliases</code> extension point.
+     * 
+     * @return the alternate version strings that are associated with this facet version, if any
+     */
+    
+    Set<String> getAliases();
+    
+    /**
      * Returns the id of the plugin that defines this project facet version. 
      * This method will return <code>null</code> if this version is not defined. 
      * 

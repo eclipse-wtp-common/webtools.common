@@ -43,6 +43,8 @@ public final class ProjectFacetVersion
 {
     private ProjectFacet facet;
     private String version;
+    private final Set<String> aliases;
+    private final Set<String> aliasesReadOnly;
     private IConstraint constraint;
     private String plugin;
     private Map<IProjectFacetVersion,Integer> compTable = Collections.emptyMap();
@@ -51,6 +53,8 @@ public final class ProjectFacetVersion
     
     ProjectFacetVersion() 
     {
+        this.aliases = new HashSet<String>();
+        this.aliasesReadOnly = Collections.unmodifiableSet( this.aliases );
         this.properties = new HashMap<String,Object>();
         this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
     }
@@ -73,6 +77,16 @@ public final class ProjectFacetVersion
     void setVersionString( final String version )
     {
         this.version = version;
+    }
+    
+    public Set<String> getAliases()
+    {
+        return this.aliasesReadOnly;
+    }
+    
+    void addAlias( final String alias )
+    {
+        this.aliases.add( alias );
     }
     
     public Versionable<IProjectFacetVersion> getVersionable()
@@ -241,13 +255,12 @@ public final class ProjectFacetVersion
      * @deprecated
      */
     
-    @SuppressWarnings( "unchecked" )
     public IActionDefinition getActionDefinition( final Action.Type type )
     
         throws CoreException
         
     {
-        final Set definitions = getActionDefinitions( type );
+        final Set<IActionDefinition> definitions = getActionDefinitions( type );
         
         if( definitions.size() == 0 )
         {
@@ -255,7 +268,7 @@ public final class ProjectFacetVersion
         }
         else
         {
-            return (IActionDefinition) definitions.iterator().next();
+            return definitions.iterator().next();
         }
     }
     

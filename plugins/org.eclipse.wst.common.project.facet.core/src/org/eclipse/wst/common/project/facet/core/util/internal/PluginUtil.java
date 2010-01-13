@@ -184,12 +184,13 @@ public final class PluginUtil
     }
 
     @SuppressWarnings( "unchecked" )
+    
     public static <T> Class<T> loadClass( final String pluginId,
                                           final String clname,
                                           final Class<T> interfc )
     {
         final Bundle bundle = Platform.getBundle( pluginId );
-        final Class cl;
+        final Class<?> cl;
 
         try
         {
@@ -216,7 +217,7 @@ public final class PluginUtil
             return null;
         }
 
-        return cl;
+        return (Class<T>) cl;
     }
 
     public static <T> T instantiate( final String pluginId,

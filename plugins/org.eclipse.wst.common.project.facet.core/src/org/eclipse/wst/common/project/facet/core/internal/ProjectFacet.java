@@ -44,6 +44,8 @@ public final class ProjectFacet
     
 {
     private String id;
+    private final Set<String> aliases;
+    private final Set<String> aliasesReadOnly;
     private String plugin;
     private String label;
     private String description;
@@ -56,6 +58,8 @@ public final class ProjectFacet
     
     ProjectFacet() 
     {
+        this.aliases = new HashSet<String>();
+        this.aliasesReadOnly = Collections.unmodifiableSet( this.aliases );
         this.actionDefinitions = new ArrayList<IActionDefinition>();
         this.properties = new HashMap<String,Object>();
         this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
@@ -69,6 +73,16 @@ public final class ProjectFacet
     void setId( final String id )
     {
         this.id = id;
+    }
+    
+    public Set<String> getAliases()
+    {
+        return this.aliasesReadOnly;
+    }
+    
+    void addAlias( final String alias )
+    {
+        this.aliases.add( alias );
     }
     
     public String getPluginId()
@@ -111,9 +125,16 @@ public final class ProjectFacet
         this.category = category;
     }
     
-    void addVersion( final IProjectFacetVersion ver )
+    void addVersion( final IProjectFacetVersion fv )
     {
-        this.versions.add( ver.getVersionString(), ver );
+        this.versions.addItem( fv );
+        this.versions.addKey( fv.getVersionString(), fv );
+        
+        for( String alias : ProjectFacetAliasesExtensionPoint.getAliases( fv ) )
+        {
+            this.versions.addKey( alias, fv );
+            ( (ProjectFacetVersion) fv ).addAlias( alias );
+        }
     }
     
     public IProjectFacetVersion getLatestSupportedVersion( final IRuntime r )
@@ -183,6 +204,8 @@ public final class ProjectFacet
         this.defaultVersionProvider = provider;
     }
     
+    @SuppressWarnings( "rawtypes" )
+    
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );
@@ -212,7 +235,7 @@ public final class ProjectFacet
     
     public boolean isVersionHidden()
     {
-        return ( this.versions.size() == 1 &&
+        return ( this.versions.getItemSet().size() == 1 &&
                  equal( getProperty( PROP_HIDE_VERSION ), true ) );
     }
     

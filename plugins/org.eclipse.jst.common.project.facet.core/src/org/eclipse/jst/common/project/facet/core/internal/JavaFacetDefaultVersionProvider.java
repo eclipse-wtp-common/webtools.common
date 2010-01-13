@@ -11,6 +11,8 @@
 
 package org.eclipse.jst.common.project.facet.core.internal;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
@@ -29,6 +31,23 @@ public final class JavaFacetDefaultVersionProvider
     public IProjectFacetVersion getDefaultVersion()
     {
         final String compilerLevel = JavaFacetUtil.getCompilerLevel();
-        return JavaFacetUtil.compilerLevelToFacet( compilerLevel );
+        
+        if( JavaFacet.FACET.hasVersion( compilerLevel ) )
+        {
+            return JavaFacet.FACET.getVersion( compilerLevel );
+        }
+        else
+        {
+            try
+            {
+                return JavaFacet.FACET.getLatestVersion();
+            }
+            catch( CoreException e )
+            {
+                // Not expected for this facet.
+                
+                throw new RuntimeException( e );
+            }
+        }
     }
 }

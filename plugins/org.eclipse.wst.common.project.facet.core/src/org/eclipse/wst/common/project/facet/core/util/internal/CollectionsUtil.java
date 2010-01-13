@@ -26,7 +26,8 @@ public final class CollectionsUtil
 {
     private CollectionsUtil() {}
     
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( "rawtypes" )
+    
     private static final Comparator<Comparable<? super Comparable>> INVERTING_COMPARATOR 
         = new Comparator<Comparable<? super Comparable>>()
     {
@@ -45,7 +46,8 @@ public final class CollectionsUtil
      * @return an inverting comparator
      */
     
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
+    
     public static <T extends Comparable> Comparator<T> getInvertingComparator()
     {
         return (Comparator<T>) INVERTING_COMPARATOR;

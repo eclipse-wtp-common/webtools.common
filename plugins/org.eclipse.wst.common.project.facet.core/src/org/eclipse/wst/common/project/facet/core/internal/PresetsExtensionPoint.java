@@ -70,13 +70,13 @@ public final class PresetsExtensionPoint
     public static Set<IPreset> getPresets()
     {
         readExtensions();
-        return presets.getUnmodifiable();
+        return presets.getItemSet();
     }
     
     public static IPreset getPreset( final String id )
     {
         readExtensions();
-        return presets.get( id );
+        return presets.getItemByKey( id );
     }
     
     private static synchronized void readExtensions()
@@ -136,11 +136,11 @@ public final class PresetsExtensionPoint
         // Resolve the base presets. Make sure that no presets are extending presets that do not
         // exist, check for circular references, etc.
         
-        Set<IPreset> copy = new HashSet<IPreset>( presets ); 
+        Set<IPreset> copy = new HashSet<IPreset>( presets.getItemSet() ); 
         
         for( IPreset preset : copy )
         {
-            if( presets.contains( preset ) )
+            if( presets.containsItem( preset ) )
             {
                 resolveBasePreset( preset, new HashSet<IPreset>() );
             }
@@ -155,7 +155,7 @@ public final class PresetsExtensionPoint
         {
             doAnotherPass = false;
             
-            for( IPreset preset : presets )
+            for( IPreset preset : presets.getItemSet() )
             {
                 if( preset.getType() == IPreset.Type.STATIC )
                 {
@@ -176,7 +176,8 @@ public final class PresetsExtensionPoint
                                                                     stPreset.getBasePresetId(),
                                                                     stPreset.getProjectFacets() );
                             
-                            presets.add( stPresetNew.getId(), stPresetNew );
+                            presets.removeItem( stPreset );
+                            presets.addItemWithKey( stPresetNew.getId(), stPresetNew );
 
                             doAnotherPass = true;
                             break;
@@ -256,7 +257,7 @@ public final class PresetsExtensionPoint
         final StaticPreset preset 
             = new StaticPreset( id, pluginId, label, description, basePreset, facets );
         
-        presets.add( id, preset );
+        presets.addItemWithKey( id, preset );
     }
 
     private static void readDynamicPreset( final IConfigurationElement el )
@@ -270,7 +271,7 @@ public final class PresetsExtensionPoint
         final String factoryClassName = findRequiredAttribute( elFactory, ATTR_CLASS );
         
         final DynamicPreset preset = new DynamicPreset( id, pluginId, factoryClassName );
-        presets.add( id, preset );
+        presets.addItemWithKey( id, preset );
     }
     
     private static boolean resolveBasePreset( final IPreset preset,
@@ -338,7 +339,7 @@ public final class PresetsExtensionPoint
 
                 if( problem )
                 {
-                    PresetsExtensionPoint.presets.delete( preset.getId() );
+                    PresetsExtensionPoint.presets.removeItemByKey( preset.getId() );
                     return false;
                 }
             }

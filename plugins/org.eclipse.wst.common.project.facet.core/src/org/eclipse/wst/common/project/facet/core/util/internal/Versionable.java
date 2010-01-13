@@ -49,7 +49,7 @@ public abstract class Versionable<T extends IVersion>
     
     public Set<T> getVersions()
     {
-        return this.versions.getUnmodifiable();
+        return this.versions.getItemSet();
     }
     
     public Set<T> getVersions( final String expr )
@@ -60,7 +60,7 @@ public abstract class Versionable<T extends IVersion>
         final VersionExpr<T> prepared = new VersionExpr<T>( this, expr, null );
         final Set<T> result = new HashSet<T>();
          
-        for( T ver : this.versions )
+        for( T ver : this.versions.getItemSet() )
         {
             if( prepared.check( ver ) )
             {
@@ -73,7 +73,7 @@ public abstract class Versionable<T extends IVersion>
     
     public T getVersion( final String version )
     {
-        final T ver = this.versions.get( version );
+        final T ver = this.versions.getItemByKey( version );
         
         if( ver == null )
         {
@@ -87,10 +87,9 @@ public abstract class Versionable<T extends IVersion>
     
     public T getLatestVersion()
     {
-        if( this.versions.size() > 0 )
+        if( this.versions.getItemSet().size() > 0 )
         {
-        	// [263113] Versionable no longer compiles as of I20090125-2000
-            return (T) Collections.max( this.versions );
+            return (T) Collections.max( this.versions.getItemSet() );
         }
         else
         {
@@ -124,13 +123,14 @@ public abstract class Versionable<T extends IVersion>
             };
         }
 
-        final List<T> list = new ArrayList<T>( this.versions );
+        final List<T> list = new ArrayList<T>( this.versions.getItemSet() );
         Collections.sort( list, comp );
         
         return list;
     }
     
     @SuppressWarnings( "unchecked" )
+    
     public Comparator<String> getVersionComparator()
     
         throws CoreException
@@ -150,9 +150,7 @@ public abstract class Versionable<T extends IVersion>
                 
                 try
                 {
-                    final Class cl 
-                        = bundle.loadClass( this.versionComparatorClass );
-                    
+                    final Class<?> cl = bundle.loadClass( this.versionComparatorClass );
                     this.versionComparator = (Comparator<String>) cl.newInstance();
                 }
                 catch( Exception e )

@@ -140,7 +140,7 @@ public final class RuntimeComponentVersion
             
             return this.compTable.get( rcv ).intValue();
         }
-        else if( obj instanceof UnknownVersion )
+        else if( obj instanceof UnknownVersion<?> )
         {
             try
             {
@@ -159,7 +159,8 @@ public final class RuntimeComponentVersion
         
     }
     
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( "rawtypes" )
+    
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );

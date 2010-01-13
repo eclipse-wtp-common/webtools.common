@@ -52,10 +52,11 @@ public final class RuntimeComponentType
     
     void addVersion( final IRuntimeComponentVersion ver )
     {
-        this.versions.add( ver.getVersionString(), ver );
+        this.versions.addItemWithKey( ver.getVersionString(), ver );
     }
     
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( "rawtypes" )
+    
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );

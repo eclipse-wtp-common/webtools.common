@@ -23,6 +23,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
  */
 
+@SuppressWarnings( "rawtypes" )
+
 public final class FacetedProjectAdapter
 
     implements IAdapterFactory

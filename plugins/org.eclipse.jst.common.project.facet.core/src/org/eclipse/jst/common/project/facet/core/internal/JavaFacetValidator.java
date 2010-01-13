@@ -44,7 +44,7 @@ public final class JavaFacetValidator
         
         final IProjectFacetVersion fv = fproj.getInstalledVersion( JavaFacet.FACET );
         
-        if( JavaFacetUtil.compilerLevelToFacet( level ) != fv )
+        if( ! JavaFacet.FACET.hasVersion( level ) || JavaFacet.FACET.getVersion( level ) != fv )
         {
             final IMarker marker
                 = fproj.createErrorMarker( MARKER_ID, Resources.versionsDontMatch );

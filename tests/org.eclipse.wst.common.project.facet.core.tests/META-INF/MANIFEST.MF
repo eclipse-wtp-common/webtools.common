@@ -5,7 +5,7 @@ Bundle-Name: Facet Core Tests Plug-in
 Bundle-SymbolicName: org.eclipse.wst.common.project.facet.core.tests;singleton:=true
 Bundle-Version: 1.4.0.qualifier
 Bundle-Localization: plugin
-Require-Bundle: org.junit;bundle-version="[3.8.2,4.0.0)",
+Require-Bundle: org.junit;bundle-version="[3.0.0,5.0.0)",
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources

@@ -12,13 +12,14 @@
 package org.eclipse.jst.common.project.facet.core.internal;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -28,20 +29,15 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.common.project.facet.core.ClasspathHelper;
 import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
@@ -49,18 +45,30 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public final class JavaFacetUtil
 {
-    public static final String FILE_CLASSPATH = JavaProject.CLASSPATH_FILENAME;
+    public static final String FILE_CLASSPATH = ".classpath";  //$NON-NLS-1$
     public static final String FILE_JDT_CORE_PREFS = ".settings/org.eclipse.jdt.core.prefs"; //$NON-NLS-1$
+    
+    private static final IPath CPE_PREFIX_FOR_EXEC_ENV 
+        = new Path( "org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType" ); //$NON-NLS-1$
+    
+    private static final Map<IProjectFacetVersion,String> FACET_VER_TO_EXEC_ENV = new HashMap<IProjectFacetVersion,String>();
+    
+    static
+    {
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_3, "J2SE-1.3" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_4, "J2SE-1.4" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_5, "J2SE-1.5" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_6, "JavaSE-1.6" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_7, "JavaSE-1.7" ); //$NON-NLS-1$
+    }
     
     public static String getCompilerLevel()
     {
-        final IScopeContext context = new InstanceScope();
-        final IEclipsePreferences prefs = context.getNode( JavaCore.PLUGIN_ID );
-        String level = prefs.get( JavaCore.COMPILER_COMPLIANCE, null );
+        String level = JavaCore.getOption( JavaCore.COMPILER_COMPLIANCE );
         
         if( level == null )
         {
-            final Hashtable defaults = JavaCore.getDefaultOptions();
+            final Hashtable<?,?> defaults = JavaCore.getDefaultOptions();
             level = (String) defaults.get( JavaCore.COMPILER_COMPLIANCE );
         }
         
@@ -69,9 +77,8 @@ public final class JavaFacetUtil
 
     public static String getCompilerLevel( final IProject project )
     {
-        final IScopeContext context = new ProjectScope( project );
-        final IEclipsePreferences prefs = context.getNode( JavaCore.PLUGIN_ID );
-        String level = prefs.get( JavaCore.COMPILER_COMPLIANCE, null );
+        final IJavaProject jproj = JavaCore.create( project );
+        String level = jproj.getOption( JavaCore.COMPILER_COMPLIANCE, false );
         
         if( level == null )
         {
@@ -87,7 +94,7 @@ public final class JavaFacetUtil
         throws CoreException
         
     {
-        setCompilerLevel( project, facetToCompilerLevel( fv ) );
+        setCompilerLevel( project, fv.getVersionString() );
     }
 
     public static void setCompilerLevel( final IProject project,
@@ -96,56 +103,10 @@ public final class JavaFacetUtil
         throws CoreException
         
     {
-        final IScopeContext context = new ProjectScope( project );
-        
-        final IEclipsePreferences prefs 
-            = context.getNode( JavaCore.PLUGIN_ID );
-        
-        if( level.equals( JavaCore.VERSION_1_3 ) )
-        {
-            prefs.put( JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_3 );
-            prefs.put( JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_1 );
-            prefs.put( JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_3 );
-            prefs.put( JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.IGNORE );
-            prefs.put( JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.IGNORE );
-        }
-        else if( level.equals( JavaCore.VERSION_1_4 ) )
-        {
-            prefs.put( JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_4 );
-            prefs.put( JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_2 );
-            prefs.put( JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_3 );
-            prefs.put( JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.WARNING );
-            prefs.put( JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.WARNING );
-        }
-        else if( level.equals( JavaCore.VERSION_1_5 ) )
-        {
-            prefs.put( JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5 );
-            prefs.put( JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5 );
-            prefs.put( JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5 );
-            prefs.put( JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR );
-            prefs.put( JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.ERROR );
-        }
-        else if( level.equals( JavaCore.VERSION_1_6 ) )
-        {
-            prefs.put( JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_6 );
-            prefs.put( JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_6 );
-            prefs.put( JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_6 );
-            prefs.put( JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR );
-            prefs.put( JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.ERROR );
-        }
-        else
-        {
-            throw new IllegalStateException();
-        }
-
-        try
-        {
-            prefs.flush();
-        }
-        catch( BackingStoreException e )
-        {
-            // TODO: Handle this.
-        }
+        final IJavaProject jproj = JavaCore.create( project );
+        final Map<?,?> options = jproj.getOptions( false );
+        JavaCore.setComplianceOptions( level, options );
+        jproj.setOptions( options );
     }
     
     public static void scheduleFullBuild( final IProject project )
@@ -219,14 +180,9 @@ public final class JavaFacetUtil
             
             if( vm != null )
             {
-                IPath path = new Path( JavaRuntime.JRE_CONTAINER );
-                path = path.append( vm.getVMInstallType().getId() );
-                path = path.append( vm.getName() );
-                
-                final IClasspathEntry cpe 
-                    = JavaCore.newContainerEntry( path );
-                
-                final List entries = Collections.singletonList( cpe );
+                final IPath path = CPE_PREFIX_FOR_EXEC_ENV.append( getCorrespondingExecutionEnvironment( newver ) );
+                final IClasspathEntry cpe = JavaCore.newContainerEntry( path );
+                final List<IClasspathEntry> entries = Collections.singletonList( cpe );
                 
                 ClasspathHelper.addClasspathEntries( project, newver, entries );
             }
@@ -269,36 +225,16 @@ public final class JavaFacetUtil
         jproj.setRawClasspath( newcp, null );
     }
     
-    public static IProjectFacetVersion compilerLevelToFacet( final String ver )
+    public static String getCorrespondingExecutionEnvironment( final IProjectFacetVersion fv )
     {
-        if( ver.equals( "1.5" ) ) //$NON-NLS-1$
+        final String res = FACET_VER_TO_EXEC_ENV.get( fv );
+        
+        if( res == null )
         {
-            return JavaFacet.JAVA_50;
+            throw new IllegalArgumentException( fv.toString() );
         }
-        else if( ver.equals(  "1.6" ) ) //$NON-NLS-1$
-        {
-            return JavaFacet.JAVA_60;
-        }
-        else
-        {
-            return JavaFacet.FACET.getVersion( ver );
-        }
-    }
-
-    public static String facetToCompilerLevel( final IProjectFacetVersion fv )
-    {
-        if( fv == JavaFacet.JAVA_50 )
-        {
-            return JavaCore.VERSION_1_5;
-        }
-        else if( fv == JavaFacet.JAVA_60 )
-        {
-            return JavaCore.VERSION_1_6;
-        }
-        else
-        {
-            return fv.getVersionString();
-        }
+        
+        return res;
     }
     
     private static final class Resources
