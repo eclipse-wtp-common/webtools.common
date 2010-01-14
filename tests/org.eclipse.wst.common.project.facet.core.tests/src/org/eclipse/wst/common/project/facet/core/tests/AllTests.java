@@ -40,6 +40,7 @@ public class AllTests
         suite.addTest( FacetConstraintsTests.suite() );
         suite.addTest( DefaultVersionTests.suite() );
         suite.addTest( EventDeliveryTests.suite() );
+        suite.addTest( AliasingSystemTests.suite() );
         
         return suite;
     }

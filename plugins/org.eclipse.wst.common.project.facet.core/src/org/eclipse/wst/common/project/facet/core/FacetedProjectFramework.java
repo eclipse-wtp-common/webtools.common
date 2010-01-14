@@ -22,7 +22,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr2;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -168,8 +168,10 @@ public final class FacetedProjectFramework
                         
                         if( fv != null )
                         {
-                            final VersionExpr2 expr = new VersionExpr2( vexpr );
-                            return expr.check( fv.getVersionString() );
+                            final VersionExpr<IProjectFacetVersion> expr 
+                                = new VersionExpr<IProjectFacetVersion>( f, vexpr, null );
+                            
+                            return expr.check( fv );
                         }
                     }
                 }
@@ -187,8 +189,10 @@ public final class FacetedProjectFramework
                             }
                             else
                             {
-                                final VersionExpr2 expr = new VersionExpr2( vexpr );
-                                return expr.check( fv.getVersionString() );
+                                final VersionExpr<IProjectFacetVersion> expr 
+                                    = new VersionExpr<IProjectFacetVersion>( f, vexpr, null );
+                                
+                                return expr.check( fv );
                             }
                         }
                     }
