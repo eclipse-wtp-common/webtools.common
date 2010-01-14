@@ -476,7 +476,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
 		if (isReadOnly())
 			throwAttemptedReadOnlyModification();
-		else if (validateEdit().isOK())
+		else if (artifactEditModel.isDirty() && validateEdit().isOK())
 			artifactEditModel.saveIfNecessary(aMonitor, this);
 	}
 	
