@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.27 $$  $$Date: 2009/11/10 21:50:15 $$ 
+ *  $$Revision: 1.28 $$  $$Date: 2010/01/16 20:44:12 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.EList;
@@ -921,5 +922,18 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    }
 		    return resources;
 	}
+	@Override
+	public void eNotify(Notification notification) {
+	    Adapter[] eAdapters = eBasicAdapterArray();
+	    if (eAdapters != null && eDeliver())
+	    {
+	      for (int i = 0, size = eAdapters.length; i < size; ++i)
+	      {
+	      	Adapter temp;
+	    	  if ((temp = eAdapters[i]) != null)
+	    		  temp.notifyChanged(notification);
+	      }
+	    }
+	  }
 
 }

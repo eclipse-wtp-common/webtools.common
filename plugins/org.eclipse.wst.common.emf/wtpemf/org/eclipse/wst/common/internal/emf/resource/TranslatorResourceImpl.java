@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.EList;
@@ -423,4 +424,18 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 				loadExisting(options);
 			}
 	}
+
+	@Override
+	public void eNotify(Notification notification) {
+	    Adapter[] eAdapters = eBasicAdapterArray();
+	    if (eAdapters != null && eDeliver())
+	    {
+	      for (int i = 0, size = eAdapters.length; i < size; ++i)
+	      {
+	      	Adapter temp;
+	    	  if ((temp = eAdapters[i]) != null)
+	    		  temp.notifyChanged(notification);
+	      }
+	    }
+	  }
 }
