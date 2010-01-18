@@ -115,7 +115,7 @@ public class ComponentUtilities {
 
 
 	public static IFile findFile(IVirtualComponent comp, IPath aPath) throws CoreException {
-		if (comp == null || aPath == null)
+		if (comp == null || aPath == null || comp.isBinary())
 			return null;
 		IVirtualFolder root = comp.getRootFolder();
 		IVirtualResource file = root.findMember(aPath);
