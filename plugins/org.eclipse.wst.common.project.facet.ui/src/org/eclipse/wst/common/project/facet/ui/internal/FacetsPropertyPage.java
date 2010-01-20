@@ -34,7 +34,6 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -87,6 +86,8 @@ public final class FacetsPropertyPage
 	extends PropertyPage
 	
 {
+    public static final String ID = "org.eclipse.wst.common.project.facet.ui.FacetsPropertyPage"; //$NON-NLS-1$
+    
     private IProject project;
 	private IFacetedProject fpj;
     private IFacetedProjectWorkingCopy fpjwc;
@@ -540,21 +541,7 @@ public final class FacetsPropertyPage
 	
 	private void handleConvertProjectAction()
 	{
-	    final ConvertProjectAction action = new ConvertProjectAction( this.project );
-	    
-	    try
-	    {
-	        new ProgressMonitorDialog( getShell() ).run( true, true, action );
-	    }
-	    catch( InvocationTargetException e )
-	    {
-	        
-	    }
-	    catch( InterruptedException e )
-	    {
-	        
-	    }
-	    
+	    ConvertProjectToFacetedFormRunnable.runInProgressDialog( getShell(), this.project );
 	    resetContents();
 	}
 
@@ -587,57 +574,6 @@ public final class FacetsPropertyPage
         }
     }
     
-    private static final class ConvertProjectAction
-    
-        implements IRunnableWithProgress
-        
-    {
-        private final IProject project;
-        
-        public ConvertProjectAction( final IProject project )
-        {
-            this.project = project;
-        }
-        
-        public void run( final IProgressMonitor monitor )
-        
-            throws InvocationTargetException, InterruptedException
-            
-        {
-            monitor.beginTask( Resources.taskConvertingProject, 1000 );
-            
-            try
-            {
-                final IProgressMonitor createProgressMonitor = new SubProgressMonitor( monitor, 100 );
-                final IFacetedProject fpj = ProjectFacetsManager.create( this.project, true, createProgressMonitor );
-                
-                if( monitor.isCanceled() )
-                {
-                    throw new InterruptedException();
-                }
-                
-                monitor.setTaskName( Resources.taskDetectingTechnologies );
-                
-                final IProgressMonitor detectProgressMonitor = new SubProgressMonitor( monitor, 800 );
-                final IFacetedProjectWorkingCopy fpjwc = SharedWorkingCopyManager.getWorkingCopy( fpj );
-                fpjwc.detect( detectProgressMonitor );
-                
-                monitor.setTaskName( Resources.taskInstallingFacets );
-                
-                final IProgressMonitor commitChangesProgressMonitor = new SubProgressMonitor( monitor, 100 );
-                fpjwc.commitChanges( commitChangesProgressMonitor );
-            }
-            catch( CoreException e )
-            {
-                throw new InvocationTargetException( e );
-            }
-            finally
-            {
-                monitor.done();
-            }
-        }
-    }
-
     private static final class Resources 
     
     	extends NLS
@@ -651,9 +587,6 @@ public final class FacetsPropertyPage
         public static String modifyWithUnknownWarningMessage;
         public static String projectNotFacetedMessage;
         public static String convertLink;
-        public static String taskConvertingProject;
-        public static String taskDetectingTechnologies;
-        public static String taskInstallingFacets;
         
         static
         {

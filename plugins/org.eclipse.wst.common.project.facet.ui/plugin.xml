@@ -91,5 +91,33 @@
       category="org.eclipse.ui.Basic">
     </wizard>
   </extension>
+  
+  <extension point="org.eclipse.ui.commands">
+    <command
+      categoryId="org.eclipse.ui.category.file"
+      defaultHandler="org.eclipse.wst.common.project.facet.ui.internal.ConvertProjectToFacetedFormCommandHandler"
+      id="org.eclipse.wst.common.project.facet.ui.ConvertProjectToFacetedForm"
+      name="%convertToFacetedFormCommandName">
+    </command>
+  </extension>
+  
+  <extension point="org.eclipse.ui.menus">
+    <menuContribution locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+      <command commandId="org.eclipse.wst.common.project.facet.ui.ConvertProjectToFacetedForm" style="push">
+        <visibleWhen checkEnabled="false">
+          <and>
+            <count value="1"/>
+            <iterate ifEmpty="false" operator="and">
+              <adapt type="org.eclipse.core.resources.IProject">
+                <not>
+                  <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.wst.common.project.facet.core.nature"/>
+                </not>
+              </adapt>
+            </iterate>
+          </and>
+        </visibleWhen>
+      </command>
+    </menuContribution>
+  </extension>
 
 </plugin>
