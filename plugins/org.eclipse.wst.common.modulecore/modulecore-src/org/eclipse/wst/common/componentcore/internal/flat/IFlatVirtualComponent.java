@@ -13,6 +13,19 @@ package org.eclipse.wst.common.componentcore.internal.flat;
 import org.eclipse.core.runtime.CoreException;
 
 public interface IFlatVirtualComponent {
+	
+	/**
+	 * An options key listing the export participants.
+	 * The value must be a List<IExportUtilParticipant>, 
+	 *  or simply an IExportUtilParticipant
+	 */
+	public static String PARTICIPANT_LIST = "org.eclipse.wst.common.componentcore.export.participantList";
+	
+	/**
+	 * The ExportModel (this) being used
+	 */
+	public static String EXPORT_MODEL = "org.eclipse.wst.common.componentcore.export.exportModel";
+
 	public IFlatResource[] fetchResources() throws CoreException;
 	public IChildModuleReference[] getChildModules() throws CoreException;
 }

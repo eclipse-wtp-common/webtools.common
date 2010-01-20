@@ -32,18 +32,6 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 			private static final long serialVersionUID = 1L;
 	}
 	
-	/**
-	 * An options key listing the export participants.
-	 * The value must be a List<IExportUtilParticipant>, 
-	 *  or simply an IExportUtilParticipant
-	 */
-	public static String PARTICIPANT_LIST = "org.eclipse.wst.common.componentcore.export.participantList";
-	
-	/**
-	 * The ExportModel (this) being used
-	 */
-	public static String EXPORT_MODEL = "org.eclipse.wst.common.componentcore.export.exportModel";
-	
 	private FlatComponentTaskModel dataModel;
 	private IVirtualComponent component;
 	private IFlattenParticipant[] participants;
@@ -181,7 +169,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 	public boolean shouldAddComponentFile(IVirtualComponent current, IFlatFile file) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].isChildModule(component, dataModel, file)) {
-				ChildModuleReference child = new ChildModuleReference(file);
+				ChildModuleReference child = new ChildModuleReference(current.getProject(), file);
 				children.add(child); 
 				return false;
 			} else if( !participants[i].shouldAddExportableFile(component, current, dataModel, file))
@@ -202,12 +190,14 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 				if( !isChildModule(reference)) {
 					addUsedReference(vc, reference, root.append(reference.getRuntimePath()));
 				} else {
+					boolean duplicate = false;
 					ChildModuleReference cm = new ChildModuleReference(reference, root);
 					for( IChildModuleReference tmp : children ) {
 						if( tmp.getRelativeURI().equals(cm.getRelativeURI()))
-							return;
+							duplicate = true;
 					}
-					children.add(cm);
+					if( !duplicate )
+						children.add(cm);
 				}
 			}
     	}

@@ -12,7 +12,10 @@ package org.eclipse.wst.common.componentcore.internal.flat;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -39,11 +42,13 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  *
  */
 public class ChildModuleReference implements IChildModuleReference {
+	private IProject project;
 	private File file;
 	private IVirtualComponent component;
 	private IVirtualReference reference;
 	private IPath uri;
-	public ChildModuleReference(IFlatFile f) {
+	public ChildModuleReference(IProject project, IFlatFile f) {
+		this.project = project;
 		this.file = f == null ? null : (File)f.getAdapter(File.class);
 		if( f != null && file != null ) {
 			this.uri = f.getModuleRelativePath().append(f.getName());
@@ -53,6 +58,7 @@ public class ChildModuleReference implements IChildModuleReference {
 	public ChildModuleReference(IVirtualReference reference, IPath root) {
 		this.reference = reference;
 		this.component = reference.getReferencedComponent();
+		this.project = this.component.getProject();
 		if( component.isBinary() ) {
 			File f = (File)component.getAdapter(File.class);
 			if( f.exists() && f.isFile()) {
@@ -79,7 +85,11 @@ public class ChildModuleReference implements IChildModuleReference {
 	 * @return
 	 */
 	public IVirtualComponent getComponent() {
-		return component;
+		if( component != null ) 
+			return component;
+		if( file != null ) 
+			return new VirtualArchiveComponent(project, VirtualArchiveComponent.LIBARCHIVETYPE + "/" + file.getAbsolutePath(), new Path("/"));
+		return null;
 	}
 	
 	/**

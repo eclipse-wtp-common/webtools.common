@@ -117,11 +117,16 @@ public class VirtualComponentFlattenUtility {
 		}
 		if( mf != null ) {
 			if (handler == null || handler.shouldAddComponentFile(current, mf)) {
-				if( mf.getModuleRelativePath().isEmpty() )
+				if( mf.getModuleRelativePath().isEmpty()) {
+					members.remove(mf);
 					members.add(mf);
+				}
 				else {
 					IFlatFolder moduleParent = VirtualComponentFlattenUtility.ensureParentExists(members, mf.getModuleRelativePath(), null);
-					VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new IFlatResource[] {mf});
+					List tempParentMembers = new ArrayList(Arrays.asList(moduleParent.members()));
+					tempParentMembers.remove(mf);
+					tempParentMembers.add(mf);
+					moduleParent.setMembers((IFlatResource[]) tempParentMembers.toArray(new IFlatResource[tempParentMembers.size()]));
 				}
 			}
 		}
@@ -188,7 +193,7 @@ public class VirtualComponentFlattenUtility {
 	    			startsWith(moduleSegments, pathSegments) && pathSegments.length > moduleSegments.length &&
 	    			exportableResource.getName().equals(pathSegments[moduleSegments.length > 0 ? moduleSegments.length : 0]))	    	  
     			if (((FlatFolder)exportableResource).members()!=null)
-    				return getExistingModuleResource(Arrays.asList(((FlatFolder)exportableResource).members()),path);		
+    				return getExistingModuleResource(Arrays.asList(((FlatFolder)exportableResource).members()),path);
     	}
     	return null;
     }
