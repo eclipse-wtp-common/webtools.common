@@ -15,12 +15,16 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.jem.util.emf.workbench.ISynchronizerExtender;
+import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.resources.ResourceTimestampMappings;
@@ -33,22 +37,22 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
-public class ComponentImplManager  {
+public class ComponentImplManager implements ISynchronizerExtender{
 
 	private static final String NO_FACETS = "NONE";//$NON-NLS-1$
-	
+
 	private static final String COMPONENT_IMPL_EXTENSION_POINT = "componentimpl"; //$NON-NLS-1$
 	private static final String TAG_COMPONENT_IMPL = "componentimpl"; //$NON-NLS-1$
 	private static final String ATT_TYPE = "typeID"; //$NON-NLS-1$
 	private static final String ATT_CLASS = "class"; //$NON-NLS-1$
 
 	private static final ComponentImplManager instance = new ComponentImplManager();
-//	private static final Object LOAD_FAILED = new Object();
+	//	private static final Object LOAD_FAILED = new Object();
 
 	private final Map/* <String, ComponentImplDescriptor> */ descriptors = new Hashtable();
 
 	private final Map/* <ComponentImplDescriptor, IComponentImplFactory> */ instances = new Hashtable();
-	private final ResourceTimestampMappings factoryMap = new ResourceTimestampMappings();
+
 
 	/**
 	 * @return Returns the instance.
@@ -93,24 +97,18 @@ public class ComponentImplManager  {
 		}
 		return factory;
 	}
-	 
-	private IComponentImplFactory findFactoryForProject(IProject project){
-		try {
-			IComponentImplFactory factory = null;		
-			
-			if( !factoryMap.hasChanged(project) ) {				
 
-				if( factoryMap.hasCacheError(project))
-					return null;
-				
-				if( factoryMap.hasCacheData(project)) 
-					return (IComponentImplFactory) factoryMap.getData(project);
-			} 
-			
+	private IComponentImplFactory findFactoryForProject(IProject project, Map descriptors){
+		try {
+			IComponentImplFactory factory = ComponentCacheManager.instance().getComponentImplFactory(project);
+
+			if(factory != null)
+				return factory;
+
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
 			if (facetedProject == null){
 				factory = getComponentImplFactory(NO_FACETS);
-				factoryMap.mark(project, factory);
+				ComponentCacheManager.instance().setComponentImplFactory(project, factory);
 				return factory;
 			}
 			Iterator keys = descriptors.keySet().iterator();
@@ -124,7 +122,7 @@ public class ComponentImplManager  {
 					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet)){
 						factory = getComponentImplFactory(typeID);
 						if(null != factory){
-							factoryMap.mark(project, factory);
+							ComponentCacheManager.instance().setComponentImplFactory(project, factory);
 							return factory;
 						}
 					}
@@ -132,19 +130,19 @@ public class ComponentImplManager  {
 					continue;
 				}
 			}
-			
+
 		} catch (Exception e) {
 			ModulecorePlugin.logError(0, "Returning null factory for project: " + project, e); //$NON-NLS-1$
-			factoryMap.markError(project);
+			ComponentCacheManager.instance().markErrorComponentImplFactory(project);
 		}
 		return null;
 	}
-	 
-	
-	
+
+
+
 	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath){
 		try {
-			IComponentImplFactory factory = findFactoryForProject(aProject);
+			IComponentImplFactory factory = findFactoryForProject(aProject, descriptors);
 			if(null != factory){
 				return factory.createFolder(aProject, aRuntimePath);
 			}
@@ -155,49 +153,214 @@ public class ComponentImplManager  {
 	}
 
 	public IVirtualComponent createComponent(IProject project) {
-		try {
-			IComponentImplFactory factory = findFactoryForProject(project);
-			if(null != factory){
-				return factory.createComponent(project);
-			}
-		} catch (Exception e) {
-			// Just return a default component
-		}
-		if (!ModuleCoreNature.isFlexibleProject(project)){
-			return null;
-		}
-		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
+		return createComponent(project, true);
 	}
 
 	public IVirtualComponent createComponent(IProject project, boolean checkSettings) {
-		if  (checkSettings)
-			return createComponent(project);
 		try {
-			IComponentImplFactory factory = findFactoryForProject(project);
+			IVirtualComponent component = ComponentCacheManager.instance().getComponent(project);
+			if(component != null) {
+				return component;
+			}		
+
+			IComponentImplFactory factory = findFactoryForProject(project, descriptors);
 			if(null != factory){
-				return factory.createComponent(project);
+				component = factory.createComponent(project);
+				if(component != null) {
+					ComponentCacheManager.instance().setComponent(project, component);
+					registerListener(project);
+				}
+				return component;
 			}
 		} catch (Exception e) {
 			// Just return a default component
 		}
-		if (ModuleCoreNature.getModuleCoreNature(project) == null){
-			return null;
+		if(checkSettings) {
+			if (!ModuleCoreNature.isFlexibleProject(project)){
+				return null;
+			}
 		}
-		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
+		else {
+			if (ModuleCoreNature.getModuleCoreNature(project) == null){
+				return null;
+			}
+		}
+		IVirtualComponent component = new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
+		if(component != null) {
+			ComponentCacheManager.instance().setComponent(project, component);
+			registerListener(project);
+		}
+
+		return component;
 	}
 
 	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
 		try {
-			IComponentImplFactory factory = findFactoryForProject(aProject);
+			IVirtualComponent component = ComponentCacheManager.instance().getArchiveComponent(aProject, aComponentName);
+			if(component != null)
+				return component;
+
+			if(!ComponentCacheManager.instance().isValidComponentImplFactory(aProject)) {
+				registerListener(aProject);
+			}
+
+			IComponentImplFactory factory = findFactoryForProject(aProject, descriptors);
 			if(null != factory){
-				return factory.createArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+				IVirtualComponent archiveComponent = factory.createArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+				ComponentCacheManager.instance().setArchiveComponent(aProject, aComponentName, archiveComponent);
+				return archiveComponent;
 			}
 		} catch (Exception e) {
 			// Just return a default archive component
 		}
-		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+		IVirtualComponent archiveComponent = new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+		ComponentCacheManager.instance().setArchiveComponent(aProject, aComponentName, archiveComponent);
+		return archiveComponent;
 	}
-	
+
+	private void registerListener(IProject aProject) {
+		ProjectResourceSet resSet = getResourceSet(aProject);
+		if (resSet == null)
+			return;
+		resSet.getSynchronizer().addExtender(this);
+	}
+
+	protected ProjectResourceSet getResourceSet(IProject proj) {
+		return (ProjectResourceSet)WorkbenchResourceHelperBase.getResourceSet(proj);
+	}
+
+	public void projectChanged(IResourceDelta delta) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public synchronized void projectClosed() {
+		ComponentCacheManager.instance().clearCache();
+	}
+
+	private static class ComponentCacheManager  {
+		private static final ComponentCacheManager instance = new ComponentCacheManager();
+
+		private final ResourceTimestampMappings factoryMap = new ResourceTimestampMappings();	
+		private final Map <IProject , IVirtualComponent> componentsMap = new Hashtable<IProject , IVirtualComponent>();
+		private final Map <IProject , Map<String, IVirtualComponent>> componentsArchivesMap = new Hashtable<IProject , Map<String, IVirtualComponent>>();
+
+		private Object cacheLock = new Object();
+
+		public ComponentCacheManager() {}
+
+		public static ComponentCacheManager instance() {
+			return instance;
+		}
+
+		public IComponentImplFactory getComponentImplFactory(IProject project) {
+			synchronized (cacheLock) {
+				if(isValidComponentImplFactory(project))
+					return (IComponentImplFactory) factoryMap.getData(project);
+				return null;
+			}
+		}
+
+		public boolean isValidComponentImplFactory(IProject project) {
+			synchronized (cacheLock) {
+				if(!factoryMap.hasChanged(project) && !factoryMap.hasCacheError(project) && factoryMap.hasCacheData(project))
+					return true;
+				return false;
+			}
+		}
+
+		public void setComponentImplFactory(IProject project, IComponentImplFactory factory){
+			synchronized (cacheLock) {
+				factoryMap.mark(project, factory);
+			}
+		}
+
+		public void markErrorComponentImplFactory(IProject project){
+			synchronized (cacheLock) {
+				factoryMap.markError(project);
+			}
+		}
+
+		public IVirtualComponent getComponent(IProject project) {
+			synchronized (cacheLock) {
+				if(componentsMap.containsKey(project)) {
+					if(isValidComponentImplFactory(project)) {
+						return componentsMap.get(project);
+					} else {
+						componentsMap.remove(project);
+					}
+				}
+				return null;
+			}
+		}
+
+		public void setComponent(IProject project, IVirtualComponent component) {
+			synchronized (cacheLock) {
+				if(component != null)
+					componentsMap.put(project, component);
+			}
+		}
+
+		public IVirtualComponent getArchiveComponent(IProject project, String componentName) {
+			synchronized (cacheLock) {
+				Map archives = getComponentArchives(project);			
+				if(isValidComponentImplFactory(project)) {
+					if(archives.containsKey(componentName)) {
+						return (IVirtualComponent) archives.get(componentName);
+					}
+				}
+				else {
+					archives = new Hashtable<String, IVirtualComponent>();
+					componentsArchivesMap.put(project, archives);
+				}
+				return null;
+			}
+		}
+
+		public Map getComponentArchives(IProject project) {
+			synchronized (cacheLock) {
+				Map archives = componentsArchivesMap.get(project);
+				if(archives == null) {
+					archives = new Hashtable<String, IVirtualComponent>();
+					componentsArchivesMap.put(project, archives);
+				}
+				return archives;
+			}
+		}
+
+		public void setArchiveComponent(IProject project, String componentName, IVirtualComponent archiveComponent) {
+			synchronized (cacheLock) {
+				if(archiveComponent != null) {
+					Map archives = ComponentCacheManager.instance().getComponentArchives(project);
+					archives.put(componentName, archiveComponent);
+				}
+			}
+		}
+
+
+		public void clearCache() {
+			Object[] components = null;
+			Object[] componentsArchives = null;
+			synchronized (cacheLock) {
+				components = (Object[]) componentsMap.values().toArray();
+				componentsMap.clear();
+				
+				componentsArchives = (Object[]) componentsArchivesMap.values().toArray();
+				componentsArchivesMap.clear();
+			}
+			
+			for(int i = 0; i < components.length; i++) {
+				if(components[i] instanceof VirtualComponent)
+					((VirtualComponent)components[i]).dispose();
+			}
+			
+			for(int i = 0; i < componentsArchives.length; i++) {
+				if(componentsArchives[i] instanceof VirtualComponent)
+					((VirtualComponent)componentsArchives[i]).dispose();
+			}
+		}
+	}
+
 	private class ComponentImplDescriptor {
 
 		private final IConfigurationElement element;
@@ -243,7 +406,7 @@ public class ComponentImplManager  {
 		}
 
 	}
-	
+
 	private class ComponentImplRegistryReader extends RegistryReader {
 
 		public ComponentImplRegistryReader() {
@@ -266,8 +429,8 @@ public class ComponentImplManager  {
 					descriptors.put(element.getAttribute(ATT_TYPE), new ComponentImplDescriptor(element));
 				else
 					ModulecorePlugin.logError(0, "No type attribute is specified for " + //$NON-NLS-1$
-								ModulecorePlugin.PLUGIN_ID + "." + COMPONENT_IMPL_EXTENSION_POINT + //$NON-NLS-1$ 
-								" extension in " + element.getDeclaringExtension().getNamespaceIdentifier(), null); //$NON-NLS-1$
+							ModulecorePlugin.PLUGIN_ID + "." + COMPONENT_IMPL_EXTENSION_POINT + //$NON-NLS-1$ 
+							" extension in " + element.getDeclaringExtension().getNamespaceIdentifier(), null); //$NON-NLS-1$
 				return true;
 			}
 			return false;
