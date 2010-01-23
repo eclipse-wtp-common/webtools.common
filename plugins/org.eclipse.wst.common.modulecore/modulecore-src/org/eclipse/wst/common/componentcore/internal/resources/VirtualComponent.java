@@ -374,6 +374,7 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 
 	public int hashCode() {
+		if(componentProject == null) return super.hashCode();  //If component factory instance, don't use project to hash
 		int hash = HashUtil.SEED;
 		hash = HashUtil.hash(hash, getProject().getName());
 		hash = HashUtil.hash(hash, getName());
@@ -381,7 +382,8 @@ public class VirtualComponent implements IVirtualComponent {
 		return hash;
 	}
 	
-	public boolean equals(Object anOther) { 
+	public boolean equals(Object anOther) {
+		if(componentProject == null) return super.equals(anOther);  //If component factory instance, don't use project to compare
 		if(anOther instanceof IVirtualComponent) {
 			IVirtualComponent otherComponent = (IVirtualComponent) anOther;
 			return getProject().equals(otherComponent.getProject()) && 
