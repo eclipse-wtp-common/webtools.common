@@ -644,7 +644,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void initialize() {
-		IVirtualReference[] refs = rootComponent.getReferences();
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(IVirtualComponent.IGNORE_DERIVED_REFERENCES, new Boolean(true));
+		IVirtualReference[] refs = rootComponent.getReferences(options);
 		IVirtualComponent comp;
 		for( int i = 0; i < refs.length; i++ ) { 
 			comp = refs[i].getReferencedComponent();

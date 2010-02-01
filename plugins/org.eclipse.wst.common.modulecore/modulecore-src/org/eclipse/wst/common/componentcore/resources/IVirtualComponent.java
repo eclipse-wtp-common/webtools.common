@@ -41,7 +41,7 @@ public interface IVirtualComponent extends IAdaptable {
 	 * An option key to ignore derived references. 
 	 * The default is false
 	 */
-	String IGNORE_DERIVED_REFERENCES = "IGNORE_DERIVED_REFERENCES";
+	public static final String IGNORE_DERIVED_REFERENCES = "IGNORE_DERIVED_REFERENCES";
 
 	
 	/**
