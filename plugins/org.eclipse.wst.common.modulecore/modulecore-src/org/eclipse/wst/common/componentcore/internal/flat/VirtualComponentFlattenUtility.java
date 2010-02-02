@@ -71,16 +71,15 @@ public class VirtualComponentFlattenUtility {
 		IFlatFolder mf = (FlatFolder) getExistingModuleResource(members,path.append(container.getName()).makeRelative());
 		if( mf == null ) {
 			mf = new FlatFolder(container, container.getName(), path);
+			IFlatFolder parent = (FlatFolder) getExistingModuleResource(members, path);
+			if (path.isEmpty())
+				members.add(mf);
+			else {
+				if (parent == null)
+					parent = ensureParentExists(members, path, container);
+				addMembersToModuleFolder(parent, new IFlatResource[] {mf});
+			}
 		}
-		IFlatFolder parent = (FlatFolder) getExistingModuleResource(members, path);
-		if (path.isEmpty())
-			members.add(mf);
-		else {
-			if (parent == null)
-				parent = ensureParentExists(members, path, container);
-			addMembersToModuleFolder(parent, new IFlatResource[] {mf});
-		}
-		
 		// recurse
 		addContainer(container, path.append(container.getName()));
 	}
