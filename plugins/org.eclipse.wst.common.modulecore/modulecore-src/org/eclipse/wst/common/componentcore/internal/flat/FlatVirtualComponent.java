@@ -188,7 +188,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 					continue;
 				
 				if( !isChildModule(reference)) {
-					addUsedReference(vc, reference, root.append(reference.getRuntimePath()));
+					addNonChildUsedReference(vc, reference, root.append(reference.getRuntimePath()));
 				} else {
 					boolean duplicate = false;
 					ChildModuleReference cm = new ChildModuleReference(reference, root);
@@ -225,7 +225,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		return false;
 	}
 
-	protected void addUsedReference(IVirtualComponent parent, IVirtualReference reference, IPath runtimePath) {
+	protected void addNonChildUsedReference(IVirtualComponent parent, IVirtualReference reference, IPath runtimePath) {
 		FlatFile mf = null;
 		final String archiveName = reference.getArchiveName();
 		final IVirtualComponent virtualComp = reference.getReferencedComponent();
