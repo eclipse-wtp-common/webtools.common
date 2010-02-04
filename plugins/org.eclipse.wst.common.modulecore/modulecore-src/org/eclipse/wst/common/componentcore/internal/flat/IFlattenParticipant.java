@@ -62,7 +62,7 @@ public interface IFlattenParticipant {
 	 * 
 	 * Only the first participant to claim it can optimize will be allowed to do so.
 	 * This will be the final list returned by ExportUtil.
-	 * No finalization of the list will take place
+	 * No finalization or other actions on this list will take place
 	 * 
 	 * @param component
 	 * @param dataModel
@@ -73,7 +73,15 @@ public interface IFlattenParticipant {
 			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
 	
 	/**
-	 * Return true if this is a child module of the root component, false otherwise
+	 * Returns true if this participant considers this file to be a child module
+	 * The framework will consider the file a child module if at least one participant
+	 * returns true to this method. 
+	 * 
+	 * The item in question is a flat file which has been found inside the project
+	 * or inside a consumed reference of the project. The framework is asking
+	 * all participants if this file is a child module, to be exposed as such later, 
+	 * or if it is just a generic resource, which should be exposed as a regular member file. 
+	 * 
 	 * @param rootComponent
 	 * @param dataModel
 	 * @param file
@@ -106,9 +114,24 @@ public interface IFlattenParticipant {
 	
 	
 	/**
-	 * Is this referenced component recognized as a child module?
-	 * If any participant returns true, this reference will be 
-	 * cached as a child module
+	 * Returns true if this participant considers the reference a child module.
+	 * The framework will consider it a child module if at least one participant returns true. 
+	 * 
+	 * The framework is asking whether the referenced component is a child module, 
+	 * which should be added to the list of children modules and exposed as an  
+	 * IChildModuleReference, or if it is just some generic type of entity to be 
+	 * exposed as member resources inside the current flat component. 
+	 * 
+	 * The parameter "referenced" is guaranteed to be a "USED" reference,
+	 * as "CONSUMED" references have already been consumed directly into the project
+	 * as if they were part of it originally.  
+	 * 
+	 * A "USED" reference which is a child module will be exposed as an 
+	 * IChildModuleReference and use the archiveName retrieved from the IVirtualReference. 
+	 * 
+	 * A "USED" reference which is *not* a child module will be represented
+	 * as a folder member resource inside the parent, and the folder's name will
+	 * also be retrieved from the archiveName attribute of the IVirtualReference.
 	 * 
 	 * @param rootComponent
 	 * @param referenced 

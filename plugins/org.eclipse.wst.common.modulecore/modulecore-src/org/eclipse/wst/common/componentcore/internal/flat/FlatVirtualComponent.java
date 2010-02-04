@@ -32,10 +32,34 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 			private static final long serialVersionUID = 1L;
 	}
 	
+	/**
+	 * The datamodel, which may contain preferences, settings, or other data
+	 * used by the various participants to determine how to properly 
+	 * traverse this component. 
+	 */
 	private FlatComponentTaskModel dataModel;
+	
+	/**
+	 * The root component being flattened. 
+	 */
 	private IVirtualComponent component;
+	
+	/**
+	 * The list of participants to engage in the flattening process. 
+	 */
 	private IFlattenParticipant[] participants;
 
+	/**
+	 * The list of member resources for this component
+	 */
+	private List<IFlatResource> members = null;
+	
+	/**
+	 * The list of child modules for this component
+	 */
+	private List<IChildModuleReference> children = null;
+	
+	
 	public FlatVirtualComponent(IVirtualComponent component) {
 		this(component, new FlatComponentTaskModel());
 	}
@@ -47,9 +71,9 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		dataModel.put(EXPORT_MODEL, this);
 	}
 	
-	/*
-	 * Kinda ugly but functional and allows the option
-	 * to be set as one or a list for convenience
+	/**
+	 * Set the list of participants for this virtual component. 
+	 * This is pulled from the datamodel. 
 	 */
 	protected IFlattenParticipant[] setParticipants() {
 		Object o = dataModel.get(PARTICIPANT_LIST);
@@ -67,14 +91,20 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		return new IFlattenParticipant[]{};
 	}
 	
-	private List<IFlatResource> members = null;
-	private List<IChildModuleReference> children = null;
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.wst.common.componentcore.internal.flat.IFlatVirtualComponent#fetchResources()
+	 */
 	public IFlatResource[] fetchResources() throws CoreException {
 		if( members == null)
 			cacheResources();
 		return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.wst.common.componentcore.internal.flat.IFlatVirtualComponent#getChildModules()
+	 */
 	public IChildModuleReference[] getChildModules() throws CoreException {
 		if( members == null )
 			cacheResources();
@@ -134,15 +164,24 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 			//addRelevantOutputFolders(); // to be done in a participant later
 
 			addConsumedReferences(util, component, new Path(""));
-			addUsedReferences(component, new Path(""));
+			addUsedReferences(util, component, new Path(""));
 		}
 	}
 	
 	/**
 	 * Consumed references are, by definition, consumed, and should not
 	 * be eligible to be exposed as child modules. They are consumed 
-	 * directly into the module tree
+	 * directly into the module tree. 
 	 * 
+	 * The reference in question may have references of its own, both
+	 * used and consumed. References of the child will be treated
+	 * as references of the parent, whether consumed or used.  
+	 * 
+	 * A key difference in the handling of non-child USED references 
+	 * as compared to CONSUMES is that CONSUMED references have their
+	 * archiveName *ignored*, and its child members are directly consumed. 
+	 * In contrast, a USED non-child keeps its archiveName as the folder name. 
+	 *  
 	 * @param vc
 	 */
 	protected void addConsumedReferences(VirtualComponentFlattenUtility util, IVirtualComponent vc, IPath root) throws CoreException {
@@ -156,15 +195,15 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 					IVirtualFolder vFolder = consumedComponent.getRootFolder();
 					util.addMembers(consumedComponent, vFolder, root.append(reference.getRuntimePath().makeRelative()));
 					addConsumedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
-					addUsedReferences(consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
+					addUsedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
 				}
     		}
     	}
 	}
 	
 	/**
-	 * This checks to see if any exportable file is actually a child module,
-	 * which should be exposed differently
+	 * This checks to see if any exportable file is actually a child module.
+	 * Children modules will be exposed via the getChildModules() method. 
 	 */
 	public boolean shouldAddComponentFile(IVirtualComponent current, IFlatFile file) {
 		for( int i = 0; i < participants.length; i++ ) {
@@ -178,7 +217,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		return true;
 	}
 
-	protected void addUsedReferences(IVirtualComponent vc, IPath root) {
+	protected void addUsedReferences(VirtualComponentFlattenUtility util, IVirtualComponent vc, IPath root) throws CoreException {
 		IVirtualReference[] allReferences = vc.getReferences();
     	for (int i = 0; i < allReferences.length; i++) {
     		IVirtualReference reference = allReferences[i];
@@ -188,7 +227,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 					continue;
 				
 				if( !isChildModule(reference)) {
-					addNonChildUsedReference(vc, reference, root.append(reference.getRuntimePath()));
+					addNonChildUsedReference(util, vc, reference, root.append(reference.getRuntimePath()));
 				} else {
 					boolean duplicate = false;
 					ChildModuleReference cm = new ChildModuleReference(reference, root);
@@ -225,58 +264,69 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		return false;
 	}
 
-	protected void addNonChildUsedReference(IVirtualComponent parent, IVirtualReference reference, IPath runtimePath) {
-		FlatFile mf = null;
-		final String archiveName = reference.getArchiveName();
-		final IVirtualComponent virtualComp = reference.getReferencedComponent();
-		
-		// Binary used references must be added as a single file unless they're child modules
-		if( virtualComp.isBinary()) {
-			IFile ifile = (IFile)virtualComp.getAdapter(IFile.class);
-			if( ifile != null ) {
-				String name = null != archiveName ? archiveName : ifile.getName();
-				mf = new FlatFile(ifile, name, runtimePath.makeRelative());
-			} else {
-				File extFile = (File)virtualComp.getAdapter(File.class);
-				if( extFile != null ) {
-					String name = null != archiveName ? archiveName : extFile.getName();
-					mf = new FlatFile(extFile, name, runtimePath.makeRelative());
-				}
-			}
-			
-			if( mf != null ) {
-				IFlatResource moduleParent = VirtualComponentFlattenUtility.getExistingModuleResource(members, mf.getModuleRelativePath());
-				if (moduleParent != null && moduleParent instanceof FlatFolder) {
-					VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[]{mf});
-				} else {
-					if( shouldAddComponentFile(virtualComp, mf)) {
-						if (mf.getModuleRelativePath().isEmpty()) {
-							for( IFlatResource tmp : members) 
-								if( tmp.getName().equals(mf.getName()))
-									return;
-							members.add(mf);
-						} else {
-							if (moduleParent == null) {
-								moduleParent = VirtualComponentFlattenUtility.ensureParentExists(members, mf.getModuleRelativePath(), (IContainer)parent.getRootFolder().getUnderlyingResource());
-							}
-							VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[] {mf});
-						}
-					} else {
-						// Automatically added to children if it needed to be
-					}
-				}
-			}
+	protected void addNonChildUsedReference(VirtualComponentFlattenUtility util, IVirtualComponent parent, 
+			IVirtualReference reference, IPath runtimePath) throws CoreException {
+		if( reference.getReferencedComponent().isBinary()) {
+			handleNonChildUsedBinaryReference(util, parent, reference, runtimePath);
 		} else /* !virtualComp.isBinary() */ {
 			/*
 			 * used references to non-binary components that are NOT child modules.
 			 * These should be 'consumed' but maintain their name
-			 * As of now I don't believe there are any such instances of this and this can be delayed
-			 * I also believe in most cases, this probably is a child module that the parent just doesn't know about.
-			 * Example: Ear Project consumes ESB project, Ear project does not recognize ESB project
+			 * As of now I don't believe there are any such instances of this.
+			 * I also believe in most cases, this probably is a child module that 
+			 * the parent just doesn't know about.
+			 * 
+			 * Example: Ear Project consumes ESB project, Ear project does not 
+			 * recognize ESB project as a child However, if the server adapter 
+			 * can use nested exploded deployments (folders instead of zips),
+			 * then this will still work. 
 			 * 
 			 * TODO Investigate / Discuss
 			 */
+			util.addMembers(reference.getReferencedComponent(), reference.getReferencedComponent().getRootFolder(), 
+					runtimePath.append(reference.getArchiveName()));
 		}
-
+	}
+	
+	protected void handleNonChildUsedBinaryReference(VirtualComponentFlattenUtility util, IVirtualComponent parent, 
+			IVirtualReference reference, IPath runtimePath) throws CoreException {
+		// Binary used references must be added as a single file unless they're child modules
+		final String archiveName = reference.getArchiveName();
+		final IVirtualComponent virtualComp = reference.getReferencedComponent();
+		FlatFile mf = null;
+		IFile ifile = (IFile)virtualComp.getAdapter(IFile.class);
+		if( ifile != null ) {
+			String name = null != archiveName ? archiveName : ifile.getName();
+			mf = new FlatFile(ifile, name, runtimePath.makeRelative());
+		} else {
+			File extFile = (File)virtualComp.getAdapter(File.class);
+			if( extFile != null ) {
+				String name = null != archiveName ? archiveName : extFile.getName();
+				mf = new FlatFile(extFile, name, runtimePath.makeRelative());
+			}
+		}
+		
+		if( mf != null ) {
+			IFlatResource moduleParent = VirtualComponentFlattenUtility.getExistingModuleResource(members, mf.getModuleRelativePath());
+			if (moduleParent != null && moduleParent instanceof FlatFolder) {
+				VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[]{mf});
+			} else {
+				if( shouldAddComponentFile(virtualComp, mf)) {
+					if (mf.getModuleRelativePath().isEmpty()) {
+						for( IFlatResource tmp : members) 
+							if( tmp.getName().equals(mf.getName()))
+								return;
+						members.add(mf);
+					} else {
+						if (moduleParent == null) {
+							moduleParent = VirtualComponentFlattenUtility.ensureParentExists(members, mf.getModuleRelativePath(), (IContainer)parent.getRootFolder().getUnderlyingResource());
+						}
+						VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[] {mf});
+					}
+				} else {
+					// Automatically added to children if it needed to be
+				}
+			}
+		}
 	}
 }

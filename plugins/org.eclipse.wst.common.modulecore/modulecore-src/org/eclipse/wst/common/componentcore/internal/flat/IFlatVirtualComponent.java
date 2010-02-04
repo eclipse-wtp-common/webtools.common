@@ -22,10 +22,21 @@ public interface IFlatVirtualComponent {
 	public static String PARTICIPANT_LIST = "org.eclipse.wst.common.componentcore.export.participantList";
 	
 	/**
-	 * The ExportModel (this) being used
+	 * The ExportModel being used; the value of this should be the IFlatVirtualComponent itself. 
 	 */
 	public static String EXPORT_MODEL = "org.eclipse.wst.common.componentcore.export.exportModel";
 
+	/**
+	 * Fetch the list of resources, which include raw files or folders only
+	 * @return
+	 * @throws CoreException
+	 */
 	public IFlatResource[] fetchResources() throws CoreException;
+	
+	/**
+	 * Fetch a list of child module references.
+	 * @return
+	 * @throws CoreException
+	 */
 	public IChildModuleReference[] getChildModules() throws CoreException;
 }
