@@ -248,6 +248,7 @@ public class StructureEdit implements IEditModelHandler {
 		if (eclipseResourceAdapter != null)
 			return eclipseResourceAdapter.getEclipseResource();
 		eclipseResourceAdapter = new EclipseResourceAdapter();
+		eclipseResourceAdapter.setTarget(aModuleResource);
 		aModuleResource.eAdapters().add(eclipseResourceAdapter);
 		return eclipseResourceAdapter.getEclipseResource();
 	}
