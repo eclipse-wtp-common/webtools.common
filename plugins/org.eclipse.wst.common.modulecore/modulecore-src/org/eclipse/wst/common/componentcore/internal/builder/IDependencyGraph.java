@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2010 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.Set;
@@ -72,6 +82,10 @@ public interface IDependencyGraph {
 	 * if the project dependencies ever change.
 	 */
 	public long getModStamp();
+	
+	public void addListener(IDependencyGraphListener listener);
+	
+	public void removeListener(IDependencyGraphListener listener);
 
 	/**
 	 * WARNING: this should only be called by implementors of the

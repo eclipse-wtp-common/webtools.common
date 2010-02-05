@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2010 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.Collections;
@@ -6,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -37,7 +48,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	private Object graphLock = new Object();
 
 	/**
-	 * If projects and and B both depend on C an entry in this graph would be {C ->
+	 * If projects A and and B both depend on C an entry in this graph would be {C ->
 	 * {A, B} }
 	 */
 	private Map<IProject, Set<IProject>> graph = null;
@@ -46,6 +57,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 
 	private Map<String, Object> referenceOptions = new HashMap<String, Object>();
 	
+	private ListenerList listeners = new ListenerList();
 	
 	/**
 	 * This is not public; only {@link IDependencyGraph#INSTANCE} should be
@@ -72,6 +84,11 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 	}
 
+	/**
+	 * Returns the set of projects whose components reference the specified
+	 * target project's component. For example if projects A and B both
+	 * reference C. Passing C as the targetProject will return {A, B}
+	 */
 	public Set<IProject> getReferencingComponents(IProject targetProject) {
 		waitForAllUpdates(null);
 		synchronized (graphLock) {
@@ -185,35 +202,56 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 	}
 
-	private void removeAllReferences(IProject project) {
+	private void removeAllReferences(IProject targetProject, DependencyGraphEvent event) {
 		synchronized (graphLock) {
-			graph.remove(project);
-			for (Iterator<Set<IProject>> iterator = graph.values().iterator(); iterator.hasNext();) {
-				iterator.next().remove(project);
+			boolean removed = false;
+			Set<IProject> removedSet = graph.remove(targetProject);
+			if(removedSet != null && !removedSet.isEmpty()){
+				removed = true;
+				for(Iterator<IProject>iterator = removedSet.iterator(); iterator.hasNext();){
+					event.removeReference(iterator.next(), targetProject);
+				}
 			}
-			modStamp++;
+			for(Iterator <Entry<IProject,Set<IProject>>>iterator = graph.entrySet().iterator(); iterator.hasNext();){
+				Entry<IProject,Set<IProject>> entry = iterator.next();
+				if(!entry.getValue().isEmpty() && entry.getValue().remove(targetProject)){
+					removed = true;
+					event.removeReference(targetProject, entry.getKey());
+				}
+			}
+			if(removed){
+				modStamp++;
+				event.setModStamp(modStamp);
+			}
 		}
 	}
 
-	private void removeReference(IProject sourceProject, IProject targetProject) {
+	private void removeReference(IProject sourceProject, IProject targetProject, DependencyGraphEvent event) {
 		synchronized (graphLock) {
 			Set<IProject> referencingProjects = graph.get(targetProject);
 			if (referencingProjects != null) {
-				referencingProjects.remove(sourceProject);
+				if(referencingProjects.remove(sourceProject)){
+					event.removeReference(sourceProject, targetProject);
+					modStamp++;
+					event.setModStamp(modStamp);
+				}
 			}
-			modStamp++;
 		}
 	}
 
-	private void addReference(IProject sourceProject, IProject targetProject) {
+	private void addReference(IProject sourceProject, IProject targetProject, DependencyGraphEvent event) {
 		synchronized (graphLock) {
 			Set<IProject> referencingProjects = graph.get(targetProject);
 			if (referencingProjects == null) {
 				referencingProjects = new HashSet<IProject>();
 				graph.put(targetProject, referencingProjects);
 			}
-			referencingProjects.add(sourceProject);
-			modStamp++;
+			boolean added = referencingProjects.add(sourceProject);
+			if(added){
+				event.addRefererence(sourceProject, targetProject);
+				modStamp++;
+				event.setModStamp(modStamp);
+			}
 		}
 	}
 
@@ -287,6 +325,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 
 		protected IStatus run(IProgressMonitor monitor) {
+			final DependencyGraphEvent event = new DependencyGraphEvent(); 
 			final Object[] removed = projectsRemoved.getListeners();
 			final Object[] updated = projectsUpdated.getListeners();
 			final Object[] added = projectsAdded.getListeners();
@@ -306,7 +345,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					synchronized (graphLock) {
 						for (Object o : removed) {
 							IProject project = (IProject) o;
-							removeAllReferences(project);
+							removeAllReferences(project, event);
 						}
 					}
 					// get the updated queue in case there are any adds
@@ -328,7 +367,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 									if (targetComponent != null) {
 										IProject targetProject = targetComponent.getProject();
 										if (targetProject != null && !targetProject.equals(sourceProject)) {
-											addReference(sourceProject, targetProject);
+											addReference(sourceProject, targetProject, event);
 										}
 									}
 								}
@@ -363,16 +402,16 @@ public class DependencyGraphImpl implements IDependencyGraph {
 										// above, be sure to add it
 										// otherwise, remove it
 										if (validRefs.remove(targetProject)) {
-											addReference(sourceProject, targetProject);
+											addReference(sourceProject, targetProject, event);
 										} else {
-											removeReference(sourceProject, targetProject);
+											removeReference(sourceProject, targetProject, event);
 										}
 									}
 								}
 							} else {
 								// if this project is not a component, then it
 								// should be completely removed.
-								removeAllReferences(sourceProject);
+								removeAllReferences(sourceProject, event);
 							}
 						}
 					}
@@ -387,6 +426,28 @@ public class DependencyGraphImpl implements IDependencyGraph {
 						initAll();
 					}
 					
+					//fire notifications on a different job so they do not block waitForAllUpdates()
+					Job notificationJob = new Job("Graph Update Notification Job"){
+						@Override
+						protected IStatus run(final IProgressMonitor monitor) {
+							SafeRunner.run(new ISafeRunnable() {
+								public void run() throws Exception {
+									for(Object listener : listeners.getListeners()){
+										((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
+									}
+									monitor.done();
+								}
+
+								public void handleException(Throwable exception) {
+									ModulecorePlugin.logError(exception);
+								}
+							});
+							return Status.OK_STATUS;
+						}
+					};
+					notificationJob.setSystem(true);
+					notificationJob.setRule(null);
+					notificationJob.schedule();
 				}
 			});
 			// System.err.println(IDependencyGraph.INSTANCE);
@@ -394,6 +455,14 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 	};
 
+	public void addListener(IDependencyGraphListener listener) {
+		listeners.add(listener);		
+	}
+	
+	public void removeListener(IDependencyGraphListener listener) {
+		listeners.remove(listener);
+	}
+	
 	/**
 	 * @deprecated use {@link #update(IProject, int)}
 	 */
