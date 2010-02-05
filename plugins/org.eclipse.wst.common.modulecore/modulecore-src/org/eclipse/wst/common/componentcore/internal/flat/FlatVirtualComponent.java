@@ -230,10 +230,12 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 					addNonChildUsedReference(util, vc, reference, root.append(reference.getRuntimePath()));
 				} else {
 					ChildModuleReference cm = new ChildModuleReference(reference, root);
+					List<IChildModuleReference> duplicates = new ArrayList();
 					for( IChildModuleReference tmp : children ) {
 						if(tmp.getRelativeURI().equals(cm.getRelativeURI()))
-							children.remove(cm);
+							duplicates.add(tmp);
 					}
+					children.removeAll(duplicates);
 					children.add(cm);
 				}
 			}
