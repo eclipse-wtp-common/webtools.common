@@ -107,7 +107,7 @@ public class ComponentResolver implements URIResolverExtension {
 
 		/* Recompute the IFile, if needed, from the base location. */
 		if (file == null) {
-			if (baseLocation == null || baseLocation.length() == 0) {
+			if (baseLocation == null || baseLocation.length() == 0 || baseLocation.startsWith("wbit:")) { //$NON-NLS-1$
 				/*
 				 * We can't proceed if we lack both an IFile and a system
 				 * reference
