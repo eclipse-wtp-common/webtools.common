@@ -13,6 +13,7 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
@@ -53,7 +57,69 @@ public class VirtualComponent implements IVirtualComponent {
 	String componentTypeId;
 	private int flag = 0;
 	
-
+	// Cache variables
+	String name = null;
+	String deploymentName = null;
+	Map <String, IVirtualReference> referenceMap = null;
+	IVirtualReference[] referencesArray = null;
+	Properties metaProperties = null;
+	IPath[] cacheMetaResources = null;
+	IVirtualReference[] allReferences = null;
+	
+	Resource projectResource;
+	protected ResourceAdapter resourceAdapter = new ResourceAdapter();
+	
+	protected class ResourceAdapter extends AdapterImpl {
+		public void notifyChanged(Notification notification) {
+			if (notification.getFeatureID(null) == Resource.RESOURCE__IS_MODIFIED)
+				resourceChanged((Resource) notification.getNotifier());
+		}
+	}
+	
+	protected void resourceChanged(Resource aResource) {
+		clearCache();
+	}
+	
+	private void addManagedResource() {
+		if(projectResource == null)
+			projectResource = createResource();
+		if (projectResource != null && !projectResource.eAdapters().contains(resourceAdapter))
+			projectResource.eAdapters().add(resourceAdapter);
+	}
+	
+	protected void removeResource() {
+		if(projectResource != null) {
+			projectResource.eAdapters().remove(resourceAdapter);
+			projectResource = null;
+		}
+	}
+	
+	protected void initializeResource() {
+		projectResource = createResource();
+		addManagedResource();
+	}
+	
+	protected Resource createResource() {
+		StructureEdit core = null;
+		Resource res = null;
+        try {
+            core = StructureEdit.getStructureEditForRead(getProject());
+            if (core == null)
+            	return null;
+            WorkbenchComponent component = core.getComponent();
+            if(component != null)
+            	res = component.eResource();
+        } finally {
+            if(core != null)
+                core.dispose();
+        }
+        return res;
+	}
+	
+	public void dispose() {
+		removeResource();
+	}
+	
 	protected VirtualComponent(){
 	}
 	
@@ -64,6 +130,7 @@ public class VirtualComponent implements IVirtualComponent {
 		componentProject = aProject;
 		runtimePath = aRuntimePath;
 		rootFolder = ComponentCore.createFolder(componentProject, new Path("/")); //$NON-NLS-1$
+		initializeResource();
 	}
 	
 	public IVirtualComponent getComponent() {
@@ -71,10 +138,17 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 	
 	public String getName() {
-		return getProject().getName();
+		if(name == null){
+			name = getProject().getName();
+		}
+		return name;
 	}
 	
 	public String getDeployedName() {
+		if(deploymentName != null) {
+			return deploymentName;
+		}
+			
 		StructureEdit core = null;
 		IProject project = getProject();
 		try {
@@ -82,15 +156,18 @@ public class VirtualComponent implements IVirtualComponent {
 				core = StructureEdit.getStructureEditForRead(project);
 				if(core != null && core.getComponent() != null){
 					WorkbenchComponent component = core.getComponent();
-					if (component.getName()!=null && component.getName().length()>0)
-						return component.getName();
+					if (component.getName()!=null && component.getName().length()>0) {
+						deploymentName = component.getName();
+						return deploymentName;
+					}
 				}
 			}
 		} finally {
 			if(core != null)
 				core.dispose();
 		}
-		return getProject().getName();
+		deploymentName = getProject().getName();
+		return deploymentName;
 	}
 	
 	public boolean exists() { 
@@ -100,8 +177,13 @@ public class VirtualComponent implements IVirtualComponent {
 	
 
 	public Properties getMetaProperties() {
+		if(metaProperties != null) {
+			return metaProperties;
+		}
+		
         StructureEdit core = null;
         Properties props = new Properties();
+        metaProperties = props;
         try {
             core = StructureEdit.getStructureEditForRead(getProject());
             if (core == null)
@@ -122,7 +204,8 @@ public class VirtualComponent implements IVirtualComponent {
                     props.setProperty(name, value);
                 }
             }
-            return props; 
+            metaProperties =  props; 
+            return props;
         } finally {
             if(core != null)
                 core.dispose();
@@ -153,6 +236,7 @@ public class VirtualComponent implements IVirtualComponent {
 		            // Add new property
 		            propList.add(prop);
 		         }
+		        clearCache();
 			} 
         } finally {
             if(core != null){
@@ -168,6 +252,7 @@ public class VirtualComponent implements IVirtualComponent {
             core = StructureEdit.getStructureEditForWrite(getProject());
             WorkbenchComponent component = core.getComponent(); 
             component.getProperties().clear();
+            clearCache();
         } finally {
             if(core != null){
             	core.saveIfNecessary(null);
@@ -195,7 +280,7 @@ public class VirtualComponent implements IVirtualComponent {
 			prop.setName(key);
 			prop.setValue(value);
 			component.getProperties().add(prop);
-            
+			clearCache();            
         } finally {
             if(core != null){
             	core.saveIfNecessary(null);
@@ -205,6 +290,9 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 	
 	public IPath[] getMetaResources() {
+		if(cacheMetaResources != null)
+			return cacheMetaResources;
+		
 		StructureEdit moduleCore = null;
 		List metaResources = new ArrayList();
 		try {
@@ -219,7 +307,8 @@ public class VirtualComponent implements IVirtualComponent {
 				moduleCore.dispose();
 			}
 		}
-		return (IPath[]) metaResources.toArray(new IPath[metaResources.size()]);
+		cacheMetaResources = (IPath[]) metaResources.toArray(new IPath[metaResources.size()]);
+		return cacheMetaResources;
 	}
 
 	public void setMetaResources(IPath[] theMetaResourcePaths) {
@@ -232,6 +321,7 @@ public class VirtualComponent implements IVirtualComponent {
 					if (!component.getMetadataResources().contains(theMetaResourcePaths[i]))
 						component.getMetadataResources().add(theMetaResourcePaths[i]);
 				}
+				clearCache();
 			}
 		} finally {
 			if (moduleCore != null) {
@@ -272,6 +362,10 @@ public class VirtualComponent implements IVirtualComponent {
 	}	
 
 	public IVirtualReference[] getReferences(Map<String, Object> options) {
+		if(referencesArray != null) {
+			return referencesArray;
+		}
+		
 		StructureEdit core = null;
 		List references = new ArrayList();
 		try {
@@ -290,7 +384,8 @@ public class VirtualComponent implements IVirtualComponent {
 					}
 				}
 			}
-			return (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+			referencesArray = (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+			return referencesArray;
 		} finally {
 			if(core != null)
 				core.dispose();
@@ -311,6 +406,7 @@ public class VirtualComponent implements IVirtualComponent {
 			core = StructureEdit.getStructureEditForWrite(getProject());
 			if (core == null)
 				return;
+			clearCache();
 			WorkbenchComponent component = core.getComponent();
 			ReferencedComponent referencedComponent = null;
 			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
@@ -337,6 +433,7 @@ public class VirtualComponent implements IVirtualComponent {
 	
 	private void cleanUpReferences(WorkbenchComponent component) {
 		List referencedComponents = component.getReferencedComponents();
+		clearCache();
 		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
 			ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
 			if (referencedComponent==null) 
@@ -354,7 +451,8 @@ public class VirtualComponent implements IVirtualComponent {
 			core = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = core.getComponent();
 			ReferencedComponent referencedComponent = null;
-			  
+			 
+			clearCache();
 			component.getReferencedComponents().clear();
 			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
 			IReferenceResolver resolver = null;
@@ -384,6 +482,7 @@ public class VirtualComponent implements IVirtualComponent {
 	
 	public boolean equals(Object anOther) {
 		if(componentProject == null) return super.equals(anOther);  //If component factory instance, don't use project to compare
+		if(anOther == this) return true;
 		if(anOther instanceof IVirtualComponent) {
 			IVirtualComponent otherComponent = (IVirtualComponent) anOther;
 			return getProject().equals(otherComponent.getProject()) && 
@@ -394,12 +493,20 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 
 	public IVirtualReference getReference(String aComponentName) {
+		if(referenceMap == null){
+			referenceMap = new Hashtable<String, IVirtualReference>();
+		} else if(referenceMap.containsKey(aComponentName)) {
+			return (IVirtualReference) referenceMap.get(aComponentName);
+		}
+		
 		IVirtualReference[] refs = getReferences();
 		for (int i = 0; i < refs.length; i++) {
 			IVirtualReference reference = refs[i];
 			if( reference.getReferencedComponent() != null ){
-				if (reference.getReferencedComponent().getName().equals(aComponentName))
+				if (reference.getReferencedComponent().getName().equals(aComponentName)) {
+					referenceMap.put(aComponentName, reference);
 					return reference;
+				}
 			}
 		}
 		return null;
@@ -441,13 +548,18 @@ public class VirtualComponent implements IVirtualComponent {
 	public void removeReference(IVirtualReference aReference) {
 		StructureEdit core = null;
 		try {
-			core = StructureEdit.getStructureEditForWrite(getProject());
-			if (core == null || aReference == null)
+			if(aReference == null)
 				return;
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			if (core == null) {
+				return;
+			}
+			clearCache();
 			WorkbenchComponent component = core.getComponent();
 			ReferencedComponent refComponent = getWorkbenchReferencedComponent(aReference, component);
-			if (component != null && refComponent != null)
+			if (component != null && refComponent != null) {
 				component.getReferencedComponents().remove(refComponent);
+			}
 		} finally {
 			if(core != null) {
 				core.saveIfNecessary(null);
@@ -482,6 +594,9 @@ public class VirtualComponent implements IVirtualComponent {
 	 * @return IVirtualReference[] - All the references of this component, including potentially deleted references
 	 */
 	public IVirtualReference[] getAllReferences() { 
+		if(allReferences != null)
+			return allReferences;
+		
 		StructureEdit core = null;
 		List references = new ArrayList();
 		try {
@@ -503,13 +618,26 @@ public class VirtualComponent implements IVirtualComponent {
 					}
 				}
 			}
-			return (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+			allReferences = (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+			return allReferences;
 		} finally {
 			if(core != null)
 				core.dispose();
 		}		
 	}
 	
+	protected void clearCache() {
+		name = null;
+		deploymentName = null;
+		if(referenceMap != null) {
+			referenceMap.clear();
+		}
+		referencesArray = null;
+		metaProperties = null;
+		cacheMetaResources = null;
+		allReferences = null;
+	}
+		
 	public String toString() {
 		return componentProject.toString();
 	}
