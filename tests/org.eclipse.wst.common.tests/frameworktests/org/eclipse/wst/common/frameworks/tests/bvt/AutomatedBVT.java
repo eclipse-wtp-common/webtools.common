@@ -59,6 +59,7 @@ public class AutomatedBVT extends TestSuite {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.eclipse.wst.common.test.bvt");
+		suite.addTest(org.eclipse.wst.common.uriresolver.tests.AllTests.suite());
 		suite.addTest(AllTests.suite());
 		suite.addTest(DataModelAPITests.suite());
 		suite.addTest(ArtifactEditAPITests.suite());
