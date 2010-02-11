@@ -30,6 +30,7 @@ public class VirtualReferenceUtilities implements IModuleConstants {
 		mapping.put(JST_EAR_MODULE, EAR_EXTENSION); //$NON-NLS-1$
 		mapping.put(JST_CONNECTOR_MODULE, JAR_EXTENSION); //$NON-NLS-1$
 		mapping.put(JST_UTILITY_MODULE, JAR_EXTENSION); //$NON-NLS-1$
+		mapping.put(JST_WEBFRAGMENT_MODULE, JAR_EXTENSION); //$NON-NLS-1$
 	}
 	
 	/**
