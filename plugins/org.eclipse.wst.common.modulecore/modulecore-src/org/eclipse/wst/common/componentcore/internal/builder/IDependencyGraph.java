@@ -72,6 +72,10 @@ public interface IDependencyGraph {
 	 * if the project dependencies ever change.
 	 */
 	public long getModStamp();
+	
+	public void addListener(IDependencyGraphListener listener);
+	
+	public void removeListener(IDependencyGraphListener listener);
 
 	/**
 	 * WARNING: this should only be called by implementors of the
