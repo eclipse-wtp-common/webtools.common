@@ -6,11 +6,11 @@ Bundle-Version: 1.1.401.qualifier
 Bundle-Activator: org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.eclipse.wst.common.uriresolver.internal,
- org.eclipse.wst.common.uriresolver.internal.provisional,
- org.eclipse.wst.common.uriresolver.internal.util
+Export-Package: org.eclipse.wst.common.uriresolver.internal;x-internal:=true,
+ org.eclipse.wst.common.uriresolver.internal.provisional;x-internal:=true,
+ org.eclipse.wst.common.uriresolver.internal.util;x-internal:=true
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.4.0,4.0.0)"
 Eclipse-LazyStart: true
-Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-ActivationPolicy: lazy
