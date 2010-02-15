@@ -151,4 +151,8 @@ public abstract class AbstractRendererImpl implements Renderer {
 	public boolean isBatchMode() {
 		return false;
 	}
+
+	public boolean isReverting() {
+		return false;
+	}
 }

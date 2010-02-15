@@ -354,6 +354,9 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	public boolean isModified() {
 		return super.isModified() || renderer.isModified();
 	}
+	public boolean isReverting() {
+		return ((AbstractRendererImpl)renderer).isReverting();
+	}
 
 	/*
 	 * Overriden to give the renderer a hook
