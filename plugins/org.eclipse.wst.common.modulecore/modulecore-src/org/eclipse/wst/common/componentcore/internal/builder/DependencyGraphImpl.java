@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
@@ -527,7 +528,39 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		Thread graphUpdateThread = graphUpdateJob.getThread();
 		if(graphUpdateThread != null && graphUpdateThread != Thread.currentThread()) {
 			try {
-				graphUpdateJob.join();
+				// Note: Since the Javadoc for Job.join() states:
+				//     If the calling thread owns a lock or object monitor that the joined thread
+				//     is waiting for, deadlock will occur.
+				// we need to do whatever deadlock avoidance we can.
+				
+				// If this thread is the one handling the current workspace operation,
+				// then we need to try to force this thread to yield to the GraphUpdateJob,
+				// or we really risk a deadlock.
+				if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
+					IJobManager manager = Job.getJobManager();
+					Job job = manager.currentJob();
+					// If we are running a job and the job has no rule, force this job
+					// to yield to the GraphUpdateJob by applying the same scheduling rule.
+					if (job != null && job.getRule() == null) {
+						try {
+							manager.beginRule(ResourcesPlugin.getWorkspace().getRoot(), monitor);
+							graphUpdateJob.join();
+						}
+						finally {
+							manager.endRule(ResourcesPlugin.getWorkspace().getRoot());
+						}
+					}
+					// Else for now, cross your fingers until additional deadlock avoidance
+					// can be implemented.
+					else {
+						graphUpdateJob.join();
+					}
+				}
+				else {
+					// Else for now, cross your fingers until additional deadlock avoidance
+					// can be implemented.
+					graphUpdateJob.join();
+				}
 			} catch (InterruptedException e) {
 				ModulecorePlugin.logError(e);
 			}
