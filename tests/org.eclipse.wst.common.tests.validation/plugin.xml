@@ -302,7 +302,7 @@
          <include>
             <rules>
                <fileext ext="test1"></fileext>
-               <facet id="jst.java" version="5.0"/>
+               <facet id="java" version="1.5"/>
             </rules>
          </include>
       </validator>
@@ -313,7 +313,7 @@
          <include>
             <rules>
                <fileext ext="test1"></fileext>
-               <facet id="jst.java" version="6.0"/>
+               <facet id="java" version="1.6"/>
             </rules>
          </include>
       </validator>

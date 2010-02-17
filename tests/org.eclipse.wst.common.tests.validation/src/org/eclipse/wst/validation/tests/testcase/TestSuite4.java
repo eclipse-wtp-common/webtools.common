@@ -45,8 +45,8 @@ public class TestSuite4 extends TestCase {
 		_env = new TestEnvironment();
 		IFacetedProjectWorkingCopy project = FacetedProjectFramework.createNewProject();
 		project.setProjectName("FacetProject");
-		IProjectFacet pf = ProjectFacetsManager.getProjectFacet("jst.java");
-		IProjectFacetVersion ipv = pf.getVersion("5.0");
+		IProjectFacet pf = ProjectFacetsManager.getProjectFacet("java");
+		IProjectFacetVersion ipv = pf.getVersion("1.5");
 		Set<IProjectFacetVersion> set = new HashSet<IProjectFacetVersion>(1);
 		set.add(ipv);
 		project.setProjectFacets(set);
