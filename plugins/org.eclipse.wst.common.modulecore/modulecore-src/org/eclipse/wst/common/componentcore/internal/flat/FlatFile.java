@@ -65,6 +65,23 @@ public class FlatFile extends FlatResource implements IFlatFile {
 	}
 
 	/**
+	 * Creates an unknown module file with a specific modification stamp.
+	 * 
+	 * @param file
+	 * @param name
+	 * @param path
+	 * @param stamp
+	 */
+	public FlatFile(InputStream is, String name, IPath path, long stamp) {
+		if (name == null)
+			throw new IllegalArgumentException();
+		this.stream = is;
+		this.name = name;
+		this.path = path;
+		this.stamp = stamp;
+	}
+	
+	/**
 	 * Creates an unknown module file with the current modification stamp.
 	 * 
 	 * @param file
@@ -72,13 +89,7 @@ public class FlatFile extends FlatResource implements IFlatFile {
 	 * @param path
 	 */
 	public FlatFile(InputStream is, String name, IPath path) {
-		if (name == null)
-			throw new IllegalArgumentException();
-		this.stream = is;
-		this.name = name;
-		this.path = path;
-		if (file2 != null)
-			stamp = file2.lastModified();
+		this(is, name, path, System.currentTimeMillis());
 	}
 
 	/**
