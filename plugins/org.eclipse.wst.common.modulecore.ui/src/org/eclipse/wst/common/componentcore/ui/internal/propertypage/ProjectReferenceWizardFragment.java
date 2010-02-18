@@ -42,10 +42,10 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardCons
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ProjectReferenceWizardFragment extends WizardFragment {
-	private LabelProvider labelProvider = null;
-	private ITreeContentProvider contentProvider = null;
-	private TreeViewer viewer;
-	private IProject selected;
+	protected LabelProvider labelProvider = null;
+	protected ITreeContentProvider contentProvider = null;
+	protected TreeViewer viewer;
+	protected IProject selected;
 	
 	public boolean hasComposite() {
 		return true;
@@ -69,7 +69,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		return c;
 	}
 	
-	private void selChanged() {
+	protected void selChanged() {
 		if( viewer != null ) {
 			IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 			if( sel != null ) 
