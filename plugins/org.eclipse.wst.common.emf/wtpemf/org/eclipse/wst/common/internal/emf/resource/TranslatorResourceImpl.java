@@ -16,8 +16,10 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -393,4 +395,30 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 				loadExisting(options);
 			}
 	}
+
+	public void eNotify(Notification notification) {
+	    Adapter[] eAdapters = eBasicAdapterArray();
+	    if (eAdapters != null && eDeliver())
+	    {
+	      for (int i = 0, size = eAdapters.length; i < size; ++i)
+	      {
+	      	Adapter temp;
+	    	  if ((temp = eAdapters[i]) != null)
+	    		  temp.notifyChanged(notification);
+	      }
+	    }
+	  }
+	/**
+	   * Returns the underlying array of adapters.
+	   * The length of this array reflects exactly the number of adapters
+	   * where <code>null</code> represents the lack of any adapters.
+	   * This array may not be modified by the caller 
+	   * and must be guaranteed not to be modified even if the {@link #eAdapters() list of adapters} is modified.
+	   * @return the underlying array of adapters.
+	   */
+	  protected Adapter[] eBasicAdapterArray()
+	  {
+	    BasicEList eBasicAdapters = eBasicAdapters();
+	    return eBasicAdapters == null ? null : (Adapter[])eBasicAdapters.data();
+	  }
 }
