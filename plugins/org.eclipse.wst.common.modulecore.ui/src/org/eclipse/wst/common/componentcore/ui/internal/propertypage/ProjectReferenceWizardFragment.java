@@ -80,6 +80,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		if( !ModuleCoreNature.isFlexibleProject(selected)) {
 			try {
+				ModuleCoreNature.addModuleCoreNatureIfNecessary(selected.getProject(), monitor);
 				ProjectFacetsManager.create(selected.getProject(), true, monitor);
 			} catch( CoreException ee) {
 				// TODO something
