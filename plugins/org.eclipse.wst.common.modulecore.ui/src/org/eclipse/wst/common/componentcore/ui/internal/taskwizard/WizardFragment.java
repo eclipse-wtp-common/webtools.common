@@ -15,6 +15,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
 
@@ -40,6 +42,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
  * @since 1.0
  */
 public abstract class WizardFragment {
+	private TaskWizardPage page;
 	private TaskModel taskModel;
 	private boolean isComplete = true;
 	private List<WizardFragment> listImpl;
@@ -91,6 +94,14 @@ public abstract class WizardFragment {
 	 */
 	public TaskModel getTaskModel() {
 		return taskModel;
+	}
+	
+	public void setPage(TaskWizardPage page) {
+		this.page = page;
+	}
+	
+	public IWizardPage getPage() {
+		return page;
 	}
 
 	/**
@@ -219,4 +230,15 @@ public abstract class WizardFragment {
 	protected void setComplete(boolean complete) {
 		this.isComplete = complete;
 	}
+	
+    public void advanceToNextPageOrFinish() {
+		if (getPage().canFlipToNextPage()) {
+			getPage().getWizard().getContainer().showPage(getPage().getNextPage());
+		} else if(getPage().getWizard().canFinish()) {
+			if (getPage().getWizard().performFinish()) {
+				((WizardDialog)getPage().getWizard().getContainer()).close();
+			}
+		}
+    }
+
 }

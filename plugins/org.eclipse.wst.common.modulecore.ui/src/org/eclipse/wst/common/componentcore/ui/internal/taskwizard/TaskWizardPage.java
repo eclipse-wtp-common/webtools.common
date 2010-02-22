@@ -39,6 +39,7 @@ class TaskWizardPage extends WizardPage implements IWizardHandle {
 	public void createControl(Composite parentComp) {
 		Composite comp = null;
 		try {
+			fragment.setPage(this);
 			comp = fragment.createComposite(parentComp, this);
 		} catch (Exception e) {
 			Trace.trace(Trace.WARNING, "Could not create wizard page composite", e);

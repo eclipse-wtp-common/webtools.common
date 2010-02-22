@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -49,7 +51,7 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		return true;
 	}
 
-	public Composite createComposite(Composite parent, IWizardHandle wizard) {
+	public Composite createComposite(Composite parent, final IWizardHandle wizard) {
 		this.wizard = wizard;
 		wizard.setTitle(Messages.NewReferenceTitle);
 		wizard.setDescription(Messages.NewReferenceDescription);
@@ -62,6 +64,11 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				viewerSelectionChanged();
+			}
+		});
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				advanceToNextPageOrFinish();
 			}
 		});
 		return c;
