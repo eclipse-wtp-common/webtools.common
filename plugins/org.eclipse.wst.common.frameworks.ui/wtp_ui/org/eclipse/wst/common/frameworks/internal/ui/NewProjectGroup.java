@@ -45,7 +45,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 	// default values
 	private String defProjectNameLabel = WTPCommonUIResourceHandler.Name_;
 	private String defBrowseButtonLabel = WTPCommonUIResourceHandler.Browse_;
-	private static final String defDirDialogLabel = "Directory"; //$NON-NLS-1$
+	private String defDirDialogLabel = WTPCommonUIResourceHandler.DefDirDialogLabel_;
 
 	private DataModelSynchHelper synchHelper;
 

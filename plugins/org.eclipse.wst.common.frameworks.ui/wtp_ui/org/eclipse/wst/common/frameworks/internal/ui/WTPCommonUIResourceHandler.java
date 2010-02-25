@@ -52,6 +52,7 @@ public class WTPCommonUIResourceHandler extends NLS {
 	public static String WizardPageExtensionManager_UI_1;
 	public static String WizardPageExtensionManager_UI_0;
 	public static String Delete_UI_0;
+	public static String DefDirDialogLabel_;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, WTPCommonUIResourceHandler.class);
