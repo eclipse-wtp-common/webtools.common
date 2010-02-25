@@ -149,12 +149,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		layout.marginWidth = 0;
 		composite.setLayout(layout);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		ModuleAssemblyRootPage.createDescriptionComposite(composite,
-				getModuleAssemblyRootPageDescription());
+		createDescriptionComposite(composite);
 		createListGroup(composite);
 		refresh();
 		Dialog.applyDialogFont(parent);
 		return composite;
+	}
+	
+	protected void createDescriptionComposite(Composite parent){
+		ModuleAssemblyRootPage.createDescriptionComposite(parent, getModuleAssemblyRootPageDescription());
 	}
 
 	protected String getModuleAssemblyRootPageDescription() {
@@ -664,8 +667,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
 			));
 		}
-		editReferenceButton.setEnabled(false);
-		removeButton.setEnabled(false);
+		if(editReferenceButton != null)
+			editReferenceButton.setEnabled(false);
+		if(removeButton != null)
+			removeButton.setEnabled(false);
 		hasInitialized = true;
 	}
 
