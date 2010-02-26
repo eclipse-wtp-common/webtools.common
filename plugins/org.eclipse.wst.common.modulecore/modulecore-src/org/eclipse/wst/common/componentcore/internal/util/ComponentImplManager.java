@@ -10,10 +10,14 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
+import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -35,7 +39,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+
+
 
 public class ComponentImplManager implements ISynchronizerExtender{
 
@@ -45,6 +52,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 	private static final String TAG_COMPONENT_IMPL = "componentimpl"; //$NON-NLS-1$
 	private static final String ATT_TYPE = "typeID"; //$NON-NLS-1$
 	private static final String ATT_CLASS = "class"; //$NON-NLS-1$
+	private static final String EXTENDED_ELEMENT="extendedTypeID"; //$NON-NLS-1$
 
 	private static final ComponentImplManager instance = new ComponentImplManager();
 //	private static final Object LOAD_FAILED = new Object();
@@ -52,7 +60,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 	private final Map/* <String, ComponentImplDescriptor> */ descriptors = new Hashtable();
 
 	private final Map/* <ComponentImplDescriptor, IComponentImplFactory> */ instances = new Hashtable();
-
+	private ArrayList<HashSet> sortedDescriptorsKeyList = new ArrayList<HashSet>();
 
 	/**
 	 * @return Returns the instance.
@@ -71,13 +79,25 @@ public class ComponentImplManager implements ISynchronizerExtender{
 
 			public void run() throws Exception {
 				new ComponentImplRegistryReader().readRegistry();
-			}
+				//sort descriptors keys by size, bigger size is at lower index
+				if( descriptors != null ){
 
+					sortedDescriptorsKeyList.addAll(descriptors.keySet());
+					
+					final Comparator<HashSet> comp = new Comparator<HashSet>() {
+						public int compare(final HashSet descriptor1, final HashSet descriptor2) {
+							if( descriptor1.size() == descriptor2.size() )
+								return 0;
+							return descriptor1.size() < descriptor2.size() ? 1 : -1;
+						}
+					};
+					Collections.sort(sortedDescriptorsKeyList, comp);
+				}
+			}
 		});
 	}
-
-
-	private IComponentImplFactory getComponentImplFactory(String typeID) {
+	
+	private IComponentImplFactory getComponentImplFactory(HashSet typeID) {
 
 		ComponentImplDescriptor descriptor = (ComponentImplDescriptor) descriptors.get(typeID);
 		IComponentImplFactory factory = null;
@@ -97,6 +117,8 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		}
 		return factory;
 	}
+	
+	
 
 	private IComponentImplFactory findFactoryForProject(IProject project, Map descriptors){
 		try {
@@ -107,29 +129,13 @@ public class ComponentImplManager implements ISynchronizerExtender{
 
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
 			if (facetedProject == null){
-				factory = getComponentImplFactory(NO_FACETS);
+				HashSet set = new HashSet();
+				set.add(NO_FACETS);
+				factory = getComponentImplFactory(set);
 				ComponentCacheManager.instance().setComponentImplFactory(project, factory);
 				return factory;
 			}
-			Iterator keys = descriptors.keySet().iterator();
-			while (keys.hasNext()) {
-				String typeID = (String) keys.next();
-				if(typeID.equals(NO_FACETS)){
-					continue;
-				}
-				try {
-					IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
-					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet)){
-						factory = getComponentImplFactory(typeID);
-						if(null != factory){
-							ComponentCacheManager.instance().setComponentImplFactory(project, factory);
-							return factory;
-						}
-					}
-				} catch (Exception e) {
-					continue;
-				}
-			}
+			return findFactorySupportingFacetsForProject(facetedProject);
 
 		} catch (Exception e) {
 			ModulecorePlugin.logError(0, "Returning null factory for project: " + project, e); //$NON-NLS-1$
@@ -137,7 +143,43 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		}
 		return null;
 	}
-	 
+	
+		
+	private IComponentImplFactory findFactorySupportingFacetsForProject(IFacetedProject facetedProject){
+		Set<IProjectFacetVersion> projectFacets = facetedProject.getProjectFacets();
+
+		IComponentImplFactory factory = null;	
+
+		if( sortedDescriptorsKeyList != null ){
+			for( HashSet key : sortedDescriptorsKeyList ){
+				
+				boolean invalidDescriptor = false;
+				Iterator iterator = key.iterator();
+
+				while (iterator.hasNext()) {
+
+					String typeID = (String) iterator.next();
+					IProjectFacet projectFacet = null;
+					try{
+						projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
+					}catch(Exception e){
+						invalidDescriptor = true;
+						break;
+					}
+					//if a project does not have a facet supported by this type, return 
+					if (projectFacet != null && !facetedProject.hasProjectFacet(projectFacet)){
+						invalidDescriptor = true;
+						break;
+					}
+				}
+				if( !invalidDescriptor ){
+					return getComponentImplFactory(key);
+				}
+			}
+		}
+		return null;
+	}
+
 	
 	
 	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath){
@@ -418,9 +460,20 @@ public class ComponentImplManager implements ISynchronizerExtender{
 				 * the registry is initialized in the constructor of this type, other threads cannot
 				 * compete with readElement() for access to <i>descriptors</i>
 				 */
+				
+				HashSet<String> setOfIds = new HashSet<String>();
+				setOfIds.add( element.getAttribute(ATT_TYPE) );
+				
+				IConfigurationElement[] child = element.getChildren(EXTENDED_ELEMENT);
+				if( child.length > 0 ){
+					for( int i=0; i< child.length; i++ ){
+						setOfIds.add(child[i].getValue());
+					}
+				}
 				String type = element.getAttribute(ATT_TYPE);
 				if (type != null)
-					descriptors.put(element.getAttribute(ATT_TYPE), new ComponentImplDescriptor(element));
+					descriptors.put(setOfIds, new ComponentImplDescriptor(element));
+					//descriptors.put(element.getAttribute(ATT_TYPE), new ComponentImplDescriptor(element));
 				else
 					ModulecorePlugin.logError(0, "No type attribute is specified for " + //$NON-NLS-1$
 								ModulecorePlugin.PLUGIN_ID + "." + COMPONENT_IMPL_EXTENSION_POINT + //$NON-NLS-1$ 
