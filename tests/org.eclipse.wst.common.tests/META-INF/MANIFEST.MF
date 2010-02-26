@@ -17,7 +17,7 @@ Export-Package: org.eclipse.etools.common.test.apitools,
  org.eclipse.wst.common.frameworks.datamodel.tests.extended,
  org.eclipse.wst.common.frameworks.tests.bvt,
  org.eclipse.wst.common.tests
-Require-Bundle: org.junit;bundle-version="3.8.2";visibility:=reexport,
+Require-Bundle: org.junit;visibility:=reexport,
  org.eclipse.core.resources;visibility:=reexport,
  org.eclipse.core.runtime.compatibility,
  org.eclipse.wst.common.frameworks;visibility:=reexport,

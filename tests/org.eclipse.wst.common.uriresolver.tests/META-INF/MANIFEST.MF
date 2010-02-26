@@ -4,9 +4,9 @@ Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.wst.common.uriresolver.tests;singleton:=true
 Bundle-Version: 1.0.0.qualifier 
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.wst.common.uriresolver;bundle-version="[1.1.0,2.0.0)",
- org.junit;bundle-version="3.8.2",
- org.eclipse.core.resources;bundle-version="3.6.0"
+Require-Bundle: org.eclipse.wst.common.uriresolver,
+ org.junit,
+ org.eclipse.core.resources
 Bundle-Vendor: %Bundle-Vendor
 Export-Package: org.eclipse.wst.common.uriresolver.tests,
  org.eclipse.wst.common.uriresolver.tests.util

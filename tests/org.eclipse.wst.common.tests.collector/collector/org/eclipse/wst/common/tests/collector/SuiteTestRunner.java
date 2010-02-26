@@ -1,7 +1,7 @@
 package org.eclipse.wst.common.tests.collector;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 
 /**
  * @author jsholl
@@ -34,23 +34,7 @@ public class SuiteTestRunner extends TestRunner {
      * called by the gui
      */
     public void launch() {
-        start();
+        doRun(suite);
     }
-
-    public void start() {
-        String name = "dynamic test"; //$NON-NLS-1$
-        fFrame = createUI(name);
-        fFrame.pack();
-        fFrame.setVisible(true);
-        setSuite(name);
-        runSuite();
-    }
-
-    /*
-     * @see TestRunner#terminate()
-     */
-    public void terminate() {
-        fFrame.dispose();
-    }
-
+   
 }
