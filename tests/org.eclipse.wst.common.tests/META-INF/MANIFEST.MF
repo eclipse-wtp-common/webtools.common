@@ -7,7 +7,6 @@ Bundle-ClassPath: commontests.jar
 Bundle-Activator: org.eclipse.core.internal.compatibility.PluginActivator
 Bundle-Vendor: %Bundle-Vendor.0
 Export-Package: org.eclipse.etools.common.test.apitools,
- org.eclipse.etools.common.tests.xml,
  org.eclipse.wst.common.environment.tests,
  org.eclipse.wst.common.extras,
  org.eclipse.wst.common.frameworks.artifactedit.tests,
@@ -16,7 +15,8 @@ Export-Package: org.eclipse.etools.common.test.apitools,
  org.eclipse.wst.common.frameworks.datamodel.tests,
  org.eclipse.wst.common.frameworks.datamodel.tests.extended,
  org.eclipse.wst.common.frameworks.tests.bvt,
- org.eclipse.wst.common.tests
+ org.eclipse.wst.common.tests,
+ org.eclipse.wst.common.tests.xml
 Require-Bundle: org.junit;visibility:=reexport,
  org.eclipse.core.resources;visibility:=reexport,
  org.eclipse.core.runtime.compatibility,

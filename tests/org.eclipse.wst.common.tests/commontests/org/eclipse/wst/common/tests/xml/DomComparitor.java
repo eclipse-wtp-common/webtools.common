@@ -1,10 +1,14 @@
-/*
- * Created on Mar 17, 2003
+/*******************************************************************************
+ * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package org.eclipse.etools.common.tests.xml;
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.wst.common.tests.xml;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,16 +26,6 @@ import org.w3c.dom.ProcessingInstruction;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-/**
- * THE MASTER COPY of this class is in com.ibm.etools.commontests
- * Please update the copy in commontests and then copy this class to
- * where you need it if you are looking at a different copy
- * 
- * @author jsholl
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class DomComparitor {
     private static HashSet attributeList;
 

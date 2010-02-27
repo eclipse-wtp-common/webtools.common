@@ -1,10 +1,14 @@
-/*
- * Created on Apr 3, 2003
+/*******************************************************************************
+ * Copyright (c) 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package org.eclipse.etools.common.tests.xml;
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.wst.common.tests.xml;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,12 +18,7 @@ import junit.framework.TestCase;
 
 import org.xml.sax.InputSource;
 
-/**
- * @author jsholl
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
+
 public class DomComparitorTest extends TestCase {
 
     String baseDir = System.getProperty("user.dir") + java.io.File.separatorChar;
