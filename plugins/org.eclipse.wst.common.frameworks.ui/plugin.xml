@@ -7,7 +7,21 @@
    <extension-point id="extendableWizard" name="%Extendable_Wizard" schema="schema/extendableWizard.exsd"/>
    <extension-point id="wizardPageGroup" name="%Extendable_Wizard_Page" schema="schema/extendableWizardPage.exsd"/>
    <extension-point id="DataModelWizardExtension" name="%DataModelWizard" schema="schema/DataModelWizardExtension.exsd"/>
-
+	 	 
+	<extension-point id="MenuEnabler" 
+	 name="MenuEnabler"
+	 schema="schema/MenuEnabler.exsd"/>
+	 
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+          class="org.eclipse.wst.common.frameworks.internal.ui.MenuEnablementPropertyTester"
+          id="org.eclipse.wst.common.frameworks.internal.ui.MenuEnablementPropertyTester"
+          namespace="org.eclipse.wst.common.frameworks.actions"
+          properties="show"
+          type="org.eclipse.core.resources.IResource">
+    </propertyTester>
+  </extension>
+  	 
    <extension
          id="UITester"
          point="org.eclipse.wst.common.core.uiTester">
