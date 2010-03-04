@@ -13,10 +13,12 @@
  */
 package org.eclipse.wst.common.internal.emf.utilities;
 
+import java.util.List;
+
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
  * @author mdelder
@@ -39,7 +41,7 @@ public class ResourceIsLoadingAdapter extends AdapterImpl {
          * synchronization.
          */
         synchronized(aResource.eAdapters()) {
-        	adapter = (ResourceIsLoadingAdapter) EcoreUtil.getAdapter(aResource.eAdapters(), ResourceIsLoadingAdapter.class);
+        	adapter = (ResourceIsLoadingAdapter) getAdapter(aResource.eAdapters(), ResourceIsLoadingAdapter.class);
         }
         
         return adapter;
@@ -65,6 +67,18 @@ public class ResourceIsLoadingAdapter extends AdapterImpl {
      */
     public void waitForResourceToLoad() {
 
+    }
+    public static Adapter getAdapter(List<Adapter> adapters, Object type)
+    {
+      for (int i = 0, size = adapters.size(); i < size; ++i)
+      {
+        Adapter adapter = adapters.get(i);
+        if (adapter != null && adapter.isAdapterForType(type))
+        {
+          return adapter;
+        }
+      }
+      return null;
     }
 
     /**

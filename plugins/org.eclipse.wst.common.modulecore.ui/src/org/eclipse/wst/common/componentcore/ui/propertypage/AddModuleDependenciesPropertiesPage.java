@@ -93,8 +93,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl, ILabelProviderListener {
 
-	private static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
-	private static final String SOURCE_PROPERTY = new Integer(1).toString();
+	protected static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
+	protected static final String SOURCE_PROPERTY = new Integer(1).toString();
 	
 	
 	protected final String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
@@ -583,7 +583,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		int flags = SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI;
 
 		Table table = new Table(parent, flags);
-		availableComponentsViewer = new TableViewer(table);
+		TableViewer tempViewer = new TableViewer(table);
 
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
@@ -592,7 +592,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		table.setLayout(tableLayout);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		availableComponentsViewer.setSorter(null);
+		tempViewer.setSorter(null);
 
 		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 0);
 		bndColumn.setText(Messages.DeployPathColumn);
@@ -603,7 +603,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		projectColumn.setResizable(true);
 
 		tableLayout.layout(table, true);
-		return availableComponentsViewer;
+		return tempViewer;
 
 	}
 

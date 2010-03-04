@@ -83,6 +83,6 @@ public class VirtualReferenceUtilities implements IModuleConstants {
 			if( FacetedProjectUtilities.isProjectOfType(component.getProject(), facet))
 				return component.getName() + mapping.get(facet);
 		}
-		return JAR_EXTENSION; 
+		return component.getName() + JAR_EXTENSION; 
 	}
 }

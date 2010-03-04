@@ -47,7 +47,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	protected LabelProvider labelProvider = null;
 	protected ITreeContentProvider contentProvider = null;
 	protected TreeViewer viewer;
-	protected IProject selected;
+	protected IProject[] selected;
 	
 	public boolean hasComposite() {
 		return true;
@@ -59,7 +59,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new FillLayout());
-		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
+		viewer = new TreeViewer(c, SWT.MULTI | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -79,27 +79,34 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	protected void selChanged() {
 		if( viewer != null ) {
 			IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
-			if( sel != null ) 
-				selected = (IProject)sel.getFirstElement();
+			if( sel != null ) {
+				List selectionList = sel.toList();
+				selected = (IProject[])selectionList.toArray(new IProject[selectionList.size()]);
+			}
 		}
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		if( !ModuleCoreNature.isFlexibleProject(selected)) {
-			try {
-				ModuleCoreNature.addModuleCoreNatureIfNecessary(selected, monitor);
-				ProjectFacetsManager.create(selected, true, monitor);
-			} catch( CoreException ee) {
-				// TODO something
+		IVirtualComponent[] comps = new IVirtualComponent[selected.length];
+		String[] paths = new String[selected.length];
+		for (int i = 0; i < selected.length; i++) {
+			IProject proj = selected[i];
+			
+			if( !ModuleCoreNature.isFlexibleProject(proj)) {
+				try {
+					ModuleCoreNature.addModuleCoreNatureIfNecessary(proj, monitor);
+					ProjectFacetsManager.create(proj, true, monitor);
+				} catch( CoreException ee) {
+					// TODO something
+				}
 			}
-		}
-		String path = null;
-		IVirtualComponent comp = ComponentCore.createComponent(selected, false);
-		path = getArchiveName(selected,comp);
+			String path = null;
+			comps[i] = ComponentCore.createComponent(proj, false);
+			paths[i] = getArchiveName(proj,comps[i]);
 		
-
-		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, comp);
-		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, path);
+		}
+		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, comps);
+		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, paths);
 	}
 
 	protected String getArchiveName(IProject proj, IVirtualComponent comp) {

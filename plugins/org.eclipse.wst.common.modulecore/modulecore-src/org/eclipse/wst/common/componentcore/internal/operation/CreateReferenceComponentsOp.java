@@ -110,6 +110,8 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		if (deployPathStr != null && deployPathStr.length() > 0){
 			deployPath = new Path(deployPathStr);
 		}
+		else if (deployPathStr.length() == 0) deployPath = new Path("/"); //$NON-NLS-1$);
+	
 		for (int i = 0; i < modList.size(); i++) {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
 			if (!srcComponentContainsReference(sourceComp, comp, deployPath)) {
