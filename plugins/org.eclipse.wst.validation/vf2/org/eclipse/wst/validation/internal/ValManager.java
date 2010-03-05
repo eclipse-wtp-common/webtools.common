@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -660,7 +660,9 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 				SubMonitor subMonitor = SubMonitor.convert(monitor);
 				String task = NLS.bind(ValMessages.LogValStart, validator.getName(), resource.getName());
 				subMonitor.beginTask(task, 1);
-				validate(validator, operation, resource, kind, subMonitor.newChild(1), null);
+
+				if (project.isOpen())
+					validate(validator, operation, resource, kind, subMonitor.newChild(1), null);
 			}			
 		};
 		SubMonitor sm = SubMonitor.convert(monitor, getValidators(project).length);
@@ -696,28 +698,33 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 		if (Tracing.matchesExtraDetail(validator.getId())){
 			Tracing.log("ValManager-03: validating ", resource); //$NON-NLS-1$
 		}
-		ValidationResult vr = validator.validate(resource, kind, operation, monitor, event);
-		if (pm.isCollecting()){
-			if (cpuTime != -1){
-				cpuTime = Misc.getCPUTime() - cpuTime;
+	
+		if (resource.exists())
+		{	
+			ValidationResult vr = validator.validate(resource, kind, operation, monitor, event);
+	
+			if (pm.isCollecting()){
+				if (cpuTime != -1){
+					cpuTime = Misc.getCPUTime() - cpuTime;
+				}
+				int num = 0;
+				if (vr != null)num = vr.getNumberOfValidatedResources();
+				PerformanceCounters pc = new PerformanceCounters(validator.getId(), 
+					validator.getName(), resource.getName(),
+					num, System.currentTimeMillis()-time, cpuTime);
+				pm.add(pc);
 			}
-			int num = 0;
-			if (vr != null)num = vr.getNumberOfValidatedResources();
-			PerformanceCounters pc = new PerformanceCounters(validator.getId(), 
-				validator.getName(), resource.getName(),
-				num, System.currentTimeMillis()-time, cpuTime);
-			pm.add(pc);
-		}
-		if (ValidationPlugin.getPlugin().isDebugging() && !pm.isCollecting()){
-			String msg = time != 0 ? 
-				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
-					validator.getId(), resource, Misc.getTimeMS(System.currentTimeMillis()-time)}) :
-				NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
-			Tracing.log("ValManager-01: " + msg); //$NON-NLS-1$
-		}
-		if (vr != null){
-			operation.mergeResults(vr);
-			if (vr.getSuspendValidation() != null)operation.suspendValidation(vr.getSuspendValidation(), validator);
+			if (ValidationPlugin.getPlugin().isDebugging() && !pm.isCollecting()){
+				String msg = time != 0 ? 
+					NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
+						validator.getId(), resource, Misc.getTimeMS(System.currentTimeMillis()-time)}) :
+					NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
+				Tracing.log("ValManager-01: " + msg); //$NON-NLS-1$
+			}
+			if (vr != null){
+				operation.mergeResults(vr);
+				if (vr.getSuspendValidation() != null)operation.suspendValidation(vr.getSuspendValidation(), validator);
+			}
 		}
 	}
 	
