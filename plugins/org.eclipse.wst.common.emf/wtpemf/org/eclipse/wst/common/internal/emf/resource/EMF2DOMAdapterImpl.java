@@ -306,22 +306,25 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		int domIndex = 0;
 		int firstDifference = -1;
 		for (Object mofChild : mofChildren){
-			EMF2DOMAdapter adapter = getExistingAdapter((EObject)mofChild);
-			if(adapter.getNode() != domChildren.get(domIndex)){
-				if(firstDifference != -1){
-					//second difference; return
-					return firstDifference;
-				}
-				//we found something that is different
-				firstDifference = domIndex;
-				//skip over one index and check against next
-				domIndex ++;
+			if (mofChild instanceof EObject)
+			{
+				EMF2DOMAdapter adapter = getExistingAdapter((EObject)mofChild);
 				if(adapter.getNode() != domChildren.get(domIndex)){
-					//if these are different then there are multiple changes
-					return firstDifference;
+					if(firstDifference != -1){
+						//second difference; return
+						return firstDifference;
+					}
+					//we found something that is different
+					firstDifference = domIndex;
+					//skip over one index and check against next
+					domIndex ++;
+					if(adapter.getNode() != domChildren.get(domIndex)){
+						//if these are different then there are multiple changes
+						return firstDifference;
+					}
 				}
+				domIndex++;
 			}
-			domIndex++;
 		}
 		if(firstDifference != -1){
 			removeDOMChild(parent, (Element) domChildren.get(firstDifference));
