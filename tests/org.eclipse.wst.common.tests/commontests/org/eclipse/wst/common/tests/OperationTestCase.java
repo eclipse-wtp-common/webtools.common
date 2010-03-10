@@ -260,12 +260,16 @@ public abstract class OperationTestCase extends BaseTestCase {
 
 	public static void waitOnJobs() throws InterruptedException {
 		IProject[] projects = ProjectUtility.getAllProjects();
-		for (int i = 0; i < projects.length; i++) {
-			IProject project = projects[i];
-			Job.getJobManager().join(project.getName() + VALIDATOR_JOB_FAMILY,null);
+		try {
+			for (int i = 0; i < projects.length; i++) {
+				IProject project = projects[i];
+				Job.getJobManager().join(project.getName() + VALIDATOR_JOB_FAMILY,null);
+			}
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_MANUAL_BUILD,null);
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD,null);
+			Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB,null);
+		} catch (InterruptedException ex) {
+			
 		}
-		Job.getJobManager().join(ResourcesPlugin.FAMILY_MANUAL_BUILD,null);
-		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD,null);
-		Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB,null);
 	}
 }
