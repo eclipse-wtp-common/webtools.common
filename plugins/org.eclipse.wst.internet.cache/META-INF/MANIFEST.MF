@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %_PLUGIN_NAME
 Bundle-SymbolicName: org.eclipse.wst.internet.cache; singleton:=true
-Bundle-Version: 1.0.301.qualifier
+Bundle-Version: 1.0.400.qualifier
 Bundle-Activator: org.eclipse.wst.internet.cache.internal.CachePlugin
 Bundle-Vendor: %_PLUGIN_PROVIDER
 Bundle-Localization: plugin
