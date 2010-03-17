@@ -43,6 +43,11 @@ public interface IVirtualComponent extends IAdaptable {
 	 */
 	public static final String IGNORE_DERIVED_REFERENCES = "IGNORE_DERIVED_REFERENCES";
 
+	/**
+	 * An option key to display all references which are 
+	 * displayable or editable in the UI
+	 */
+	public static final String DISPLAYABLE_REFERENCES = "DISPLAYABLE_REFERENCES";
 	
 	/**
 	 * The name of the component must be unique within its enclosing project.
