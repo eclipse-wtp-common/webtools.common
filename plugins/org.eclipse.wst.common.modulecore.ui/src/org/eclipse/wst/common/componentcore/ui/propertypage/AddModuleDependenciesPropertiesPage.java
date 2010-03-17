@@ -45,14 +45,10 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -62,7 +58,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -73,7 +68,6 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -108,7 +102,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected Button addMappingButton, addReferenceButton, editReferenceButton, removeButton;
 	protected Composite buttonColumn;
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
-	protected Listener tableListener;
+	//protected Listener tableListener;
 	protected Listener labelListener;
 
 	// Mappings that existed when the page was opened (or last saved)
@@ -294,11 +288,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void addHoverHelpListeners() {
 		final Table table = availableComponentsViewer.getTable();
 		createLabelListener(table);
-		createTableListener(table);
-		table.addListener(SWT.Dispose, tableListener);
-		table.addListener(SWT.KeyDown, tableListener);
-		table.addListener(SWT.MouseMove, tableListener);
-		table.addListener(SWT.MouseHover, tableListener);
+//		createTableListener(table);
+//		table.addListener(SWT.Dispose, tableListener);
+//		table.addListener(SWT.KeyDown, tableListener);
+//		table.addListener(SWT.MouseMove, tableListener);
+//		table.addListener(SWT.MouseHover, tableListener);
 	}
 
 	protected void createLabelListener(final Table table) {
@@ -323,67 +317,67 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		};
 	}
 
-	protected void createTableListener(final Table table) {
-		tableListener = new Listener() {
-			Shell tip = null;
-			Label label = null;
+//	protected void createTableListener(final Table table) {
+//		tableListener = new Listener() {
+//			Shell tip = null;
+//			Label label = null;
+//
+//			public void handleEvent(Event event) {
+//				switch (event.type) {
+//				case SWT.Dispose:
+//				case SWT.KeyDown:
+//				case SWT.MouseMove: {
+//					if (tip == null)
+//						break;
+//					tip.dispose();
+//					tip = null;
+//					label = null;
+//					break;
+//				}
+//				case SWT.MouseHover: {
+//					TableItem item = table.getItem(new Point(event.x, event.y));
+//					if (item != null && item.getData() != null && !canEdit(item.getData())) {
+//						if (tip != null && !tip.isDisposed())
+//							tip.dispose();
+//						tip = new Shell(PlatformUI.getWorkbench()
+//								.getActiveWorkbenchWindow().getShell(),
+//								SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
+//						tip.setBackground(Display.getDefault().getSystemColor(
+//								SWT.COLOR_INFO_BACKGROUND));
+//						FillLayout layout = new FillLayout();
+//						layout.marginWidth = 2;
+//						tip.setLayout(layout);
+//						label = new Label(tip, SWT.WRAP);
+//						label.setForeground(Display.getDefault()
+//								.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+//						label.setBackground(Display.getDefault()
+//								.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+//						label.setData("_TABLEITEM", item); //$NON-NLS-1$
+//						label.setText( Messages.InternalLibJarWarning);
+//						label.addListener(SWT.MouseExit, labelListener);
+//						label.addListener(SWT.MouseDown, labelListener);
+//						Point size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+//						Rectangle rect = item.getBounds(0);
+//						Point pt = table.toDisplay(rect.x, rect.y);
+//						tip.setBounds(pt.x, pt.y - size.y, size.x, size.y);
+//						tip.setVisible(true);
+//					}
+//				}
+//				}
+//			}
+//		};
+//	}
 
-			public void handleEvent(Event event) {
-				switch (event.type) {
-				case SWT.Dispose:
-				case SWT.KeyDown:
-				case SWT.MouseMove: {
-					if (tip == null)
-						break;
-					tip.dispose();
-					tip = null;
-					label = null;
-					break;
-				}
-				case SWT.MouseHover: {
-					TableItem item = table.getItem(new Point(event.x, event.y));
-					if (item != null && item.getData() != null && !canEdit(item.getData())) {
-						if (tip != null && !tip.isDisposed())
-							tip.dispose();
-						tip = new Shell(PlatformUI.getWorkbench()
-								.getActiveWorkbenchWindow().getShell(),
-								SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
-						tip.setBackground(Display.getDefault().getSystemColor(
-								SWT.COLOR_INFO_BACKGROUND));
-						FillLayout layout = new FillLayout();
-						layout.marginWidth = 2;
-						tip.setLayout(layout);
-						label = new Label(tip, SWT.WRAP);
-						label.setForeground(Display.getDefault()
-								.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-						label.setBackground(Display.getDefault()
-								.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-						label.setData("_TABLEITEM", item); //$NON-NLS-1$
-						label.setText( Messages.InternalLibJarWarning);
-						label.addListener(SWT.MouseExit, labelListener);
-						label.addListener(SWT.MouseDown, labelListener);
-						Point size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-						Rectangle rect = item.getBounds(0);
-						Point pt = table.toDisplay(rect.x, rect.y);
-						tip.setBounds(pt.x, pt.y - size.y, size.x, size.y);
-						tip.setVisible(true);
-					}
-				}
-				}
-			}
-		};
-	}
-
-	protected boolean canEdit(Object data) {
-		if( data == null ) return false;
-		if( !(data instanceof VirtualArchiveComponent)) return true;
-		
-		VirtualArchiveComponent d2 = (VirtualArchiveComponent)data;
-		boolean sameProject = d2.getWorkspaceRelativePath() != null
-			&& d2.getWorkspaceRelativePath().segment(0)
-				.equals(rootComponent.getProject().getName());
-		return !(sameProject && isPhysicallyAdded(d2));
-	}
+//	protected boolean canEdit(Object data) {
+//		if( data == null ) return false;
+//		if( !(data instanceof VirtualArchiveComponent)) return true;
+//		
+//		VirtualArchiveComponent d2 = (VirtualArchiveComponent)data;
+//		boolean sameProject = d2.getWorkspaceRelativePath() != null
+//			&& d2.getWorkspaceRelativePath().segment(0)
+//				.equals(rootComponent.getProject().getName());
+//		return !(sameProject && isPhysicallyAdded(d2));
+//	}
 	
 	protected void addDoubleClickListener() {
 		availableComponentsViewer.setColumnProperties(new String[] { 
@@ -408,7 +402,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void viewerSelectionChanged() {
 		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
-		removeButton.setEnabled(getSelectedObject() != null && canEdit(getSelectedObject()));
+		removeButton.setEnabled(getSelectedObject() != null);// && canEdit(getSelectedObject()));
 	}
 	
 	protected boolean hasEditWizardPage(Object o) {
@@ -427,12 +421,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 		public boolean canModify(Object element, String property) {
 			if( property.equals(DEPLOY_PATH_PROPERTY)) {
-				if (element instanceof VirtualArchiveComponent) {
-					try {
-						return canEdit(element);
-					} catch (IllegalArgumentException iae) {
-					}
-				}
+//				if (element instanceof VirtualArchiveComponent) {
+//					try {
+//						return canEdit(element);
+//					} catch (IllegalArgumentException iae) {
+//					}
+//				}
 				return true;
 			}
 			return false;
@@ -607,14 +601,14 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 	}
 
-	protected boolean isPhysicallyAdded(VirtualArchiveComponent component) {
-		try {
-			component.getProjectRelativePath();
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
+//	protected boolean isPhysicallyAdded(VirtualArchiveComponent component) {
+//		try {
+//			component.getProjectRelativePath();
+//			return true;
+//		} catch (IllegalArgumentException e) {
+//			return false;
+//		}
+//	}
 
 	/**
 	 * This should only be called on changes, such as adding a project
@@ -718,12 +712,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if (availableComponentsViewer != null) {
 			table = availableComponentsViewer.getTable();
 		}
-		if (table == null || tableListener == null)
-			return; 
-		table.removeListener(SWT.Dispose, tableListener);
-		table.removeListener(SWT.KeyDown, tableListener);
-		table.removeListener(SWT.MouseMove, tableListener);
-		table.removeListener(SWT.MouseHover, tableListener);
+//		if (table == null || tableListener == null)
+//			return; 
+//		table.removeListener(SWT.Dispose, tableListener);
+//		table.removeListener(SWT.KeyDown, tableListener);
+//		table.removeListener(SWT.MouseMove, tableListener);
+//		table.removeListener(SWT.MouseHover, tableListener);
 	}
 
 	

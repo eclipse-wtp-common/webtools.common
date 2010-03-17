@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage;
@@ -127,11 +126,9 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		}
 		
 		// default impl
-		if( component.isBinary() && component instanceof VirtualArchiveComponent) {
-			IPath p = ((VirtualArchiveComponent)component).getWorkspaceRelativePath();
-			if( p == null )
-				p = new Path(((VirtualArchiveComponent)component).getUnderlyingDiskFile().getAbsolutePath());
-			return p.toString();
+		if( component.isBinary() ) {
+			IPath p = (IPath)component.getAdapter(IPath.class);
+			return p == null ? null : p.toString();
 		}
 		return component.getProject().getName();
 	}

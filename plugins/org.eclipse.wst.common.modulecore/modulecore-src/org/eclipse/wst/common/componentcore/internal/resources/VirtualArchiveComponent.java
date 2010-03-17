@@ -62,7 +62,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		runtimePath = aRuntimePath;
 
 		String archivePathString = archiveLocation.substring(4, archiveLocation.length());
-		archiveType	= archiveLocation.substring(0, archiveLocation.length() - archivePathString.length() -1);
+		archiveType	= archiveLocation.substring(0, 3);
 		archivePath = new  Path(archivePathString);
 	}
 
@@ -104,10 +104,22 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	}
 
+	/**
+	 * The implementation should be protected. Deprecated as of WTP 3.2 
+	 * You should convert to a File or IFile and then get the extension. 
+	 * @return
+	 */
+	@Deprecated
 	public String getFileExtension() {
 		return archivePath.getFileExtension();
 	}
 
+	/**
+	 * The implementation should be protected. Deprecated as of WTP 3.2
+	 * You should convert to an IFile and get it's full path
+	 * @return
+	 */
+	@Deprecated
 	public IPath getWorkspaceRelativePath() {
 		if( archivePath.segmentCount() > 1 ){
 			IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
@@ -117,6 +129,12 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return null;
 	}
 
+	/**
+	 * The implementation should be protected. Deprecated as of WTP 3.2
+	 * You should convert to an IFile and use IFile.getProjectRelativePath()
+	 * @return
+	 */
+	@Deprecated
 	public IPath getProjectRelativePath() {
 		IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getWorkspaceRelativePath());
 		if (aFile.exists())
@@ -173,17 +191,8 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public boolean exists() {
-		boolean exists = false;
-		java.io.File diskFile = getUnderlyingDiskFile();
-		if( diskFile != null )
-			exists = diskFile.exists();
-		
-		if( !exists ){
-			IFile utilityJar = getUnderlyingWorkbenchFile();
-			if( utilityJar != null )
-				exists =  utilityJar.exists();
-		}
-		return exists;
+		File f = (File)getAdapter(File.class);
+		return f != null && f.exists();
 	}
 
 	public IVirtualFolder getRootFolder() {
@@ -195,17 +204,25 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 
+	/**
+	 * Guaranteed accepted adapters and behaviours:
+	 * org.eclipse.core.runtime.IPath - if a workspace file, returns ifile.getFullPath(),  else new Path(java.io.File.getAbsolutePath())
+	 * java.io.File - the file, whether in workspace or out, this will get the actual file if there is one
+	 * org.eclipse.core.resources.IFile - the workspace file, if it exists
+	 */
 	public Object getAdapter(Class adapterType) {
 		if( File.class.equals(adapterType))
 			return getUnderlyingDiskFile();
 		if( IFile.class.equals(adapterType)) {
-			IPath p = getWorkspaceRelativePath();
-			if( p != null && p.segmentCount() > 1) {
-				IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(p.segment(0));
-				if( proj != null && proj.exists()) {
-					return proj.getFile(p.removeFirstSegments(1));
-				}
-			}
+			return getUnderlyingWorkbenchFile();
+		}
+		if( IPath.class.equals(adapterType)) {
+			IFile f = getUnderlyingWorkbenchFile();
+			if( f != null ) 
+				return f.getFullPath();
+			File f2 = getUnderlyingDiskFile();
+			if( f2 != null )
+				return new Path(f2.getAbsolutePath());
 		}
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
@@ -239,12 +256,25 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public void setMetaProperties(Properties properties) {
 
 	}
+	
+	/**
+	 * The implementation should be protected
+	 * You should use getAdapter(IFile.class)
+	 * @return
+	 */
+	@Deprecated
 	public IFile getUnderlyingWorkbenchFile() {
 		if (getWorkspaceRelativePath()==null)
 			return null;
 		return ResourcesPlugin.getWorkspace().getRoot().getFile(getWorkspaceRelativePath());
 	}
 
+	/**
+	 * The implementation should be protected
+	 * You should use getAdapter(File.class)
+	 * @return
+	 */
+	@Deprecated
 	public File getUnderlyingDiskFile() {
 		String osPath = null;
 		IPath loc = null;
