@@ -291,7 +291,8 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 	protected void handleNonChildUsedBinaryReference(VirtualComponentFlattenUtility util, IVirtualComponent parent, 
 			IVirtualReference reference, IPath runtimePath) throws CoreException {
 		// Binary used references must be added as a single file unless they're child modules
-		final String archiveName = reference.getArchiveName();
+		final String archiveName2 = reference.getArchiveName();
+		final String archiveName = new Path(archiveName2).lastSegment();
 		final IVirtualComponent virtualComp = reference.getReferencedComponent();
 		FlatFile mf = null;
 		IFile ifile = (IFile)virtualComp.getAdapter(IFile.class);
