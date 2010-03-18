@@ -34,7 +34,7 @@
       </editModel> 
    </extension>
 	
-	<extension point="org.eclipse.core.runtime.contentTypes">
+	<extension point="org.eclipse.core.contenttype.contentTypes">
  			<file-association
 				content-type="org.eclipse.core.runtime.xml"
 				file-names="org.eclipse.wst.common.component"/>
