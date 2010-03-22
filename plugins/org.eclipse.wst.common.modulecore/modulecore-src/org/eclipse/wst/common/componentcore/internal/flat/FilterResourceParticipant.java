@@ -38,7 +38,7 @@ public class FilterResourceParticipant extends AbstractFlattenParticipant {
 			}
 			if( name != null) {
 				for( int i = 0; i < bannedExtensions.length; i++ ) {
-					if( ifile.getName().endsWith(bannedExtensions[i]))
+					if( name.endsWith(bannedExtensions[i]))
 						return false;
 				}
 				return true;
