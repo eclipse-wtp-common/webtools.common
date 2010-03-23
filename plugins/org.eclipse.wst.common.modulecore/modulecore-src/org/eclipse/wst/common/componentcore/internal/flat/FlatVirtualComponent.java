@@ -115,7 +115,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 	protected void cacheResources() throws CoreException {
 		runInitializations();
 		if( canOptimize()) {
-			optimize(members);
+			optimize(members, children);
 		} else {
 			treeWalk();
 			runFinalizations(members);
@@ -138,10 +138,10 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		return false;
 	}
 
-	protected void optimize(List<IFlatResource> resources) {
+	protected void optimize(List<IFlatResource> resources, List<IChildModuleReference> children) {
 		for( int i = 0; i < participants.length; i++ ) {
 			if( participants[i].canOptimize(component, dataModel)) {
-				participants[i].optimize(component, dataModel, resources);
+				participants[i].optimize(component, dataModel, resources, children);
 				return;
 			}
 		}

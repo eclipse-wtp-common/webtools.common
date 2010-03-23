@@ -69,8 +69,8 @@ public interface IFlattenParticipant {
 	 * @param original
 	 * @return
 	 */
-	public void optimize(IVirtualComponent component, 
-			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
+	public void optimize(IVirtualComponent component, FlatComponentTaskModel dataModel, 
+			List<IFlatResource> resources, List<IChildModuleReference> children);
 	
 	/**
 	 * Returns true if this participant considers this file to be a child module

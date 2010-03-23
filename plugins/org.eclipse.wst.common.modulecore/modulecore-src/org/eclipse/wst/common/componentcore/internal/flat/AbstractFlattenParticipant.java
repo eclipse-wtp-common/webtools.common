@@ -31,8 +31,8 @@ public class AbstractFlattenParticipant implements IFlattenParticipant {
 		return false;
 	}
 
-	public void optimize(IVirtualComponent component,
-			FlatComponentTaskModel dataModel, List<IFlatResource> resources) {
+	public void optimize(IVirtualComponent component, FlatComponentTaskModel dataModel, 
+			List<IFlatResource> resources, List<IChildModuleReference> childModules) {
 	}
 
 	public void finalize(IVirtualComponent component,
@@ -59,4 +59,5 @@ public class AbstractFlattenParticipant implements IFlattenParticipant {
 			IVirtualReference referenced, FlatComponentTaskModel dataModel) {
 		return false;
 	}
+
 }
