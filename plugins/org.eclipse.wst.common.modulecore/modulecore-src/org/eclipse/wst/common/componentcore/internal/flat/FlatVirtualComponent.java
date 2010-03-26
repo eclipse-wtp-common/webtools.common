@@ -309,8 +309,13 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		
 		if( mf != null ) {
 			IFlatResource moduleParent = VirtualComponentFlattenUtility.getExistingModuleResource(members, mf.getModuleRelativePath());
-			if (moduleParent != null && moduleParent instanceof FlatFolder) {
-				VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[]{mf});
+			if (moduleParent != null && moduleParent instanceof IFlatFolder) {
+				IFlatResource[] mf_members = ((IFlatFolder)moduleParent).members();
+				for (int i = 0; i < mf_members.length; i++) {
+					if (mf_members[i].getName().equals(mf.getName()))
+						return;
+				}
+				VirtualComponentFlattenUtility.addMembersToModuleFolder((IFlatFolder)moduleParent, new FlatResource[]{mf});
 			} else {
 				if( shouldAddComponentFile(virtualComp, mf)) {
 					if (mf.getModuleRelativePath().isEmpty()) {
@@ -322,7 +327,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 						if (moduleParent == null) {
 							moduleParent = VirtualComponentFlattenUtility.ensureParentExists(members, mf.getModuleRelativePath(), (IContainer)parent.getRootFolder().getUnderlyingResource());
 						}
-						VirtualComponentFlattenUtility.addMembersToModuleFolder((FlatFolder)moduleParent, new FlatResource[] {mf});
+						VirtualComponentFlattenUtility.addMembersToModuleFolder((IFlatFolder)moduleParent, new FlatResource[] {mf});
 					}
 				} else {
 					// Automatically added to children if it needed to be
