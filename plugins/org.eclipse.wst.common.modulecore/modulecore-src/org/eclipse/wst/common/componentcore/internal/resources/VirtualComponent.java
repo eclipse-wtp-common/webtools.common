@@ -406,7 +406,6 @@ public class VirtualComponent implements IVirtualComponent {
 	
 	public IVirtualReference[] getReferences() { 
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put(IVirtualComponent.IGNORE_DERIVED_REFERENCES, new Boolean(false));
 		return getReferences(map);
 	}
 

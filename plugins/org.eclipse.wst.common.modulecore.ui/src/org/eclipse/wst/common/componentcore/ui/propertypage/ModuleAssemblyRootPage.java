@@ -175,4 +175,9 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 		}
 		return getFacetErrorComposite(parent);
 	}
+	
+    public void createControl(Composite parent){
+    	noDefaultAndApplyButton();
+    	super.createControl(parent);
+    }
 }

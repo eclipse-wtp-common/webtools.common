@@ -21,6 +21,16 @@ public class Messages extends NLS {
 	public static String Browse;
 	public static String VariableReferenceTitle;
 	public static String VariableReferenceDescription;
+	public static String AddManifestEntryTaskWizardTitle;
+	public static String AddManifestEntryTaskWizardDesc;
+	public static String ParentProjects;
+	public static String CustomEntryButton;
+	public static String Add;
+	public static String Remove;
+	public static String MoveUp;
+	public static String MoveDown;
+	public static String ManifestEntryColumn;
+	public static String ManifestEntrySourceColumn;
 	
 	static {
 		// initialize resource bundle

@@ -24,8 +24,8 @@ public class Messages extends NLS {
 	public static String AddFolder;
 	public static String AddFolderElipses;
 	public static String AddFolderMappings;
-	public static String AddReference;
-	public static String EditReference;
+	public static String AddEllipsis;
+	public static String EditEllipsis;
 	public static String RemoveSelected;
 	public static String JarTitle;
 	public static String JarDescription;

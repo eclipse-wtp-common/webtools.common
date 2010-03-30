@@ -38,17 +38,13 @@ public interface IVirtualComponent extends IAdaptable {
 	public static final int BINARY = 0x1;
 	
 	/**
-	 * An option key to ignore derived references. 
-	 * The default is false
+	 * The key for the property of which reference types we're requesting
 	 */
-	public static final String IGNORE_DERIVED_REFERENCES = "IGNORE_DERIVED_REFERENCES";
-
-	/**
-	 * An option key to display all references which are 
-	 * displayable or editable in the UI
-	 */
+	public static final String REQUESTED_REFERENCE_TYPE = "REQUESTED_REFERENCE_TYPE";
+	public static final String HARD_REFERENCES = "HARD_REFERENCES";
+	public static final String NON_DERIVED_REFERENCES = "NON_DERIVED_REFERENCES";
 	public static final String DISPLAYABLE_REFERENCES = "DISPLAYABLE_REFERENCES";
-	
+		
 	/**
 	 * The name of the component must be unique within its enclosing project.
 	 * 

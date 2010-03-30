@@ -14,7 +14,9 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -25,44 +27,36 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
+import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
-@Deprecated
-public class AddFolderDialog extends TitleAreaDialog {
+public class FolderMappingWizardFragment extends WizardFragment {
 	private IProject project;
 	private TreeViewer viewer;
 	private IContainer selected = null;
-	public AddFolderDialog(Shell parentShell, IProject project) {
-		super(parentShell);        
-        setShellStyle( getShellStyle() | SWT.RESIZE );
-		this.project = project;
+
+	public boolean hasComposite() {
+		return true;
 	}
 
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		
-		shell.setBounds(shell.getLocation().x, shell.getLocation().y, 400,300);
-		
-	}
-	
-	protected Control createDialogArea(Composite parent) {
-		Composite c = (Composite)super.createDialogArea(parent);
-		parent.getShell().setText(Messages.AddFolder);
-		setTitle(Messages.AddFolder);
-	    setMessage(Messages.AddFolderMappings);
-	    //setTitleImage(  );
+	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		handle.setTitle(Messages.AddFolder);
+		handle.setDescription(Messages.AddFolderMappings);
+		project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);		
+		Composite c = new Composite(parent, SWT.NONE);
+		c.setLayout(new FillLayout());
 		this.viewer = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.addFilter(getFilter());
 		viewer.setInput(project);
-		viewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		viewer.addSelectionChangedListener(getListener());
 		return c;
 	}
@@ -148,4 +142,14 @@ public class AddFolderDialog extends TitleAreaDialog {
 			}
 		};
 	}
+
+
+	public void performFinish(IProgressMonitor monitor) throws CoreException {
+		IContainer c = getSelected();
+		if( c != null ) {
+			IPath p = c.getProjectRelativePath();
+			ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/")); //$NON-NLS-1$
+			getTaskModel().putObject(IReferenceWizardConstants.FOLDER_MAPPING, proxy);
+		}
+	}	
 }

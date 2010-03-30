@@ -11,6 +11,11 @@
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
 public interface IReferenceWizardConstants {
+	/**
+	 * The key representing that this wizard can return a folder mapping
+	 * The value should be an instanceof ComponentResourceProxy
+	 */
+	public static final String FOLDER_MAPPING = "folder.mapping"; //$NON-NLS-1$
 	public static final String COMPONENT = "dependency.component"; //$NON-NLS-1$
 	public static final String COMPONENT_PATH = "dependency.component.path"; //$NON-NLS-1$
 	public static final String PROJECT = "root.project"; //$NON-NLS-1$

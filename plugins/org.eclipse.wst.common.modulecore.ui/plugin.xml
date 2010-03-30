@@ -31,5 +31,11 @@
              id="org.eclipse.wst.common.componentcore.ui.newProjectReference"
              name="Project">
        </referenceFragment>
+       <referenceFragment
+             class="org.eclipse.wst.common.componentcore.ui.internal.propertypage.FolderMappingWizardFragment"
+             icon="icons/folder.gif"
+             id="org.eclipse.wst.common.componentcore.ui.resourceMappingReference"
+             name="Folder Mapping">
+       </referenceFragment>
     </extension>
 </plugin>

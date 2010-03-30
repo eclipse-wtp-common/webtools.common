@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -73,11 +72,11 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
-import org.eclipse.wst.common.componentcore.ui.internal.propertypage.AddFolderDialog;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
-import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -181,10 +180,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridData gData = new GridData(GridData.FILL_BOTH);
 		composite.setLayoutData(gData);
-		fillComposite(composite);
+		fillTableComposite(composite);
 	}
 
-	public void fillComposite(Composite parent) {
+	public void fillTableComposite(Composite parent) {
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.marginHeight = 0;
@@ -202,26 +201,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createPushButtons() {
-		addMappingButton = createPushButton(getAddFolderLabel());
-		addReferenceButton = createPushButton(getAddReferenceLabel());
-		editReferenceButton = createPushButton(getEditReferenceLabel());
-		removeButton = createPushButton(getRemoveSelectedLabel());
-	}
-
-	protected String getRemoveSelectedLabel() {
-		return Messages.RemoveSelected;
-	}
-
-	protected String getEditReferenceLabel() {
-		return Messages.EditReference;
-	}
-
-	protected String getAddReferenceLabel() {
-		return Messages.AddReference;
-	}
-
-	protected String getAddFolderLabel() {
-		return Messages.AddFolderElipses;
+		addReferenceButton = createPushButton(Messages.AddEllipsis);
+		editReferenceButton = createPushButton(Messages.EditEllipsis);
+		removeButton = createPushButton(Messages.RemoveSelected);
 	}
 
 	protected Button createPushButton(String label) {
@@ -460,9 +442,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void handleEvent(Event event) {
-		if( event.widget == addMappingButton) 
-			handleAddMappingButton();
-		else if( event.widget == addReferenceButton) 
+//		if( event.widget == addMappingButton) 
+//			handleAddMappingButton();
+//		else 
+		if( event.widget == addReferenceButton) 
 			handleAddReferenceButton();
 		else if( event.widget == editReferenceButton) 
 			handleEditReferenceButton();
@@ -470,18 +453,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			handleRemoveSelectedButton();
 	}
 
-	protected void handleAddMappingButton() {
-		AddFolderDialog afd = new AddFolderDialog(addMappingButton.getShell(), project);
-		if( afd.open() == Window.OK) {
-			IContainer c = afd.getSelected();
-			if( c != null ) {
-				IPath p = c.getProjectRelativePath();
-				ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/")); //$NON-NLS-1$
-				resourceMappings.add(proxy);
-				refresh();
-			}
-		}
-	}
+//	protected void handleAddMappingButton() {
+//		AddFolderDialog afd = new AddFolderDialog(addMappingButton.getShell(), project);
+//		if( afd.open() == Window.OK) {
+//			IContainer c = afd.getSelected();
+//			if( c != null ) {
+//				IPath p = c.getProjectRelativePath();
+//				ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/")); //$NON-NLS-1$
+//				resourceMappings.add(proxy);
+//				refresh();
+//			}
+//		}
+//	}
 	
 	protected void handleAddReferenceButton() {
 		showReferenceWizard(false);
@@ -512,7 +495,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				selected = (IVirtualComponent)o;
 				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, selected);
 				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, objectToRuntimePath.get(selected));
-			}
+			} 
 		}
 		
 		WizardDialog wd = new WizardDialog(addReferenceButton.getShell(), wizard);
@@ -523,24 +506,39 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				consumedReferences.remove(selected);
 			}
 			
-			Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT);
-			Object p1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT_PATH);
-			DependencyType type = (DependencyType)wizard.getTaskModel().getObject(IReferenceWizardConstants.DEPENDENCY_TYPE);
-			boolean consumed = type == null ? false : type.equals(DependencyType.CONSUMES_LITERAL);
-			
-			IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
-					new IVirtualComponent[] { (IVirtualComponent)c1 } : 
-						(IVirtualComponent[])c1;
-			String[] pathArr = p1 instanceof String ? 
-							new String[] { (String)p1 } : 
-								(String[])p1;
-			for( int i = 0; i < compArr.length; i++ ) {
-				objectToRuntimePath.put(compArr[i], 
-						getRuntimePath(compArr[i], pathArr[i]));
-				if( consumed ) 
-					consumedReferences.add(compArr[i]);
-			}
+			if( wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING) != null )
+				handleAddFolderMapping(wizard);
+			else
+				handleAddNewReference(wizard);
 			refresh();
+		}
+	}
+	
+	protected void handleAddFolderMapping(TaskWizard wizard) {
+		Object o = wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING);
+		if( o != null && o instanceof ComponentResourceProxy ) {
+			ComponentResourceProxy proxy = (ComponentResourceProxy)o;
+			resourceMappings.add(proxy);
+		}
+	}
+	
+	protected void handleAddNewReference(TaskWizard wizard) {
+		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT);
+		Object p1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT_PATH);
+		DependencyType type = (DependencyType)wizard.getTaskModel().getObject(IReferenceWizardConstants.DEPENDENCY_TYPE);
+		boolean consumed = type == null ? false : type.equals(DependencyType.CONSUMES_LITERAL);
+		
+		IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
+				new IVirtualComponent[] { (IVirtualComponent)c1 } : 
+					(IVirtualComponent[])c1;
+		String[] pathArr = p1 instanceof String ? 
+						new String[] { (String)p1 } : 
+							(String[])p1;
+		for( int i = 0; i < compArr.length; i++ ) {
+			objectToRuntimePath.put(compArr[i], 
+					getRuntimePath(compArr[i], pathArr[i]));
+			if( consumed ) 
+				consumedReferences.add(compArr[i]);
 		}
 	}
 	
@@ -564,11 +562,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void handleRemoveSelectedButton() {
 		ISelection sel = availableComponentsViewer.getSelection();
 		if( sel instanceof IStructuredSelection ) {
-			Object o = ((IStructuredSelection)sel).getFirstElement();
-			if( o instanceof IVirtualComponent)
-				objectToRuntimePath.remove(o);
-			else if( o instanceof ComponentResourceProxy) 
-				resourceMappings.remove(o);
+			IStructuredSelection sel2 = (IStructuredSelection)sel;
+			Object[] selectedStuff = sel2.toArray();
+			for( int i = 0; i < selectedStuff.length; i++) {
+				Object o = selectedStuff[i];
+				if( o instanceof IVirtualComponent)
+					objectToRuntimePath.remove(o);
+				else if( o instanceof ComponentResourceProxy) 
+					resourceMappings.remove(o);
+			}
 			refresh();
 		}
 	}
@@ -642,7 +644,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 	protected void initialize() {
 		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(IVirtualComponent.IGNORE_DERIVED_REFERENCES, new Boolean(true));
+		options.put(IVirtualComponent.REQUESTED_REFERENCE_TYPE, IVirtualComponent.DISPLAYABLE_REFERENCES);
 		IVirtualReference[] refs = rootComponent.getReferences(options);
 		IVirtualComponent comp;
 		for( int i = 0; i < refs.length; i++ ) { 
@@ -685,7 +687,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		return new ComponentResource[]{};
 	}
 	
-	public class ComponentResourceProxy {
+	public static class ComponentResourceProxy {
 		public IPath source, runtimePath;
 		public ComponentResourceProxy(IPath source, IPath runtimePath) {
 			this.source = source;

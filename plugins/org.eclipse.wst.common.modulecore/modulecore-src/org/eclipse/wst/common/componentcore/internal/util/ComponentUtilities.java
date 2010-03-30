@@ -359,4 +359,5 @@ public class ComponentUtilities {
 			uri = reference.getRuntimePath() + "/" + reference.getReferencedComponent().getProject().getName() + extension; //$NON-NLS-1$
 		}
 		return uri;
-	}}
+	}
+}
