@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.28 $$  $$Date: 2010/01/16 20:44:12 $$ 
+ *  $$Revision: 1.29 $$  $$Date: 2010/04/02 14:57:15 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -690,7 +690,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    URI normalizedURI = theURIConverter.normalize(uri);
 	    List resourcesToRemove = new ArrayList();
 	    synchronized (resourcesLock) {
-			for (Resource resource : getResources()) {
+			for (Resource resource : getImmutableResources()) {
 				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
 
 					if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
@@ -857,7 +857,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    URIConverter theURIConverter = getURIConverter();
 	    URI normalizedURI = theURIConverter.normalize(uri);
 	    synchronized (resourcesLock) {
-			for (Resource resource : getResources()) {
+			for (Resource resource : getImmutableResources()) {
 				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
 					if (loadOnDemand && !resource.isLoaded()) {
 						demandLoadHelper(resource);
@@ -921,6 +921,9 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		      resources = new SynchronizedResourcesEList<Resource>();
 		    }
 		    return resources;
+	}
+	public List<Resource> getImmutableResources() {
+		 return Collections.unmodifiableList(getResources());
 	}
 	@Override
 	public void eNotify(Notification notification) {
