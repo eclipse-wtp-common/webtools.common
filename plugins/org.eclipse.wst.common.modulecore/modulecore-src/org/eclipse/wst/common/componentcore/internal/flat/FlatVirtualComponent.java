@@ -335,4 +335,8 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 			}
 		}
 	}
+
+	public IVirtualComponent getComponent() {
+		return component;
+	}
 }
