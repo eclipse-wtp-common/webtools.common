@@ -274,7 +274,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 	
 	private void registerListener(IProject aProject) {
 		ProjectResourceSet resSet = getResourceSet(aProject);
-		if (resSet == null)
+		if (resSet == null || resSet.getSynchronizer() == null)
 			return;
 		resSet.getSynchronizer().addExtender(this);
 	}
