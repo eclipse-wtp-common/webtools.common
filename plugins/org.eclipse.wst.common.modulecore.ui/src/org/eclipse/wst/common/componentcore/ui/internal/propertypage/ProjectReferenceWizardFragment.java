@@ -39,6 +39,7 @@ import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizardPage;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -49,6 +50,10 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	protected TreeViewer viewer;
 	protected IProject[] selected;
 	
+	public ProjectReferenceWizardFragment() {
+		super();
+		setComplete(false);
+	}
 	public boolean hasComposite() {
 		return true;
 	}
@@ -82,8 +87,11 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 			if( sel != null ) {
 				List selectionList = sel.toList();
 				selected = (IProject[])selectionList.toArray(new IProject[selectionList.size()]);
-			}
+				if (selected.length != 0) setComplete(true);
+				else setComplete(false);
+			} else setComplete(false);
 		}
+		((TaskWizardPage)getPage()).update();
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {

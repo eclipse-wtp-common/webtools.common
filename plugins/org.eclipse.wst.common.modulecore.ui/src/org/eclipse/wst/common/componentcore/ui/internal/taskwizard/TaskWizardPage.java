@@ -26,7 +26,7 @@ import org.eclipse.wst.common.componentcore.ui.Trace;
 /**
  * A task wizard page.
  */
-class TaskWizardPage extends WizardPage implements IWizardHandle {
+public class TaskWizardPage extends WizardPage implements IWizardHandle {
 	protected WizardFragment fragment;
 
 	protected boolean isCreated = false;
