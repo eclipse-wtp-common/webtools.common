@@ -374,9 +374,9 @@ public class VirtualComponent implements IVirtualComponent {
 	}	
 
 	public IVirtualReference[] getReferences(Map<String, Object> options) {
-		if(referencesArray != null) {
-			return referencesArray;
-		}
+//		if(referencesArray != null) {
+//			return referencesArray;
+//		}
 		
 		StructureEdit core = null;
 		List references = new ArrayList();
@@ -393,6 +393,7 @@ public class VirtualComponent implements IVirtualComponent {
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
 						if (vReference != null && vReference.getReferencedComponent() != null && vReference.getReferencedComponent().exists())
 							references.add(vReference); 
+						customizeCreatedReference(vReference, referencedComponent.getDependentObject());
 					}
 				}
 			}
@@ -402,6 +403,10 @@ public class VirtualComponent implements IVirtualComponent {
 			if(core != null)
 				core.dispose();
 		}		
+	}
+	
+	protected void customizeCreatedReference(IVirtualReference reference, Object dependentObject) {
+		// Do Nothing
 	}
 	
 	public IVirtualReference[] getReferences() { 
@@ -582,12 +587,15 @@ public class VirtualComponent implements IVirtualComponent {
 		return null;
 	}
 	
+	protected boolean shouldCacheReferences() {
+		return true;
+	}
 	
 	/**
 	 * @return IVirtualReference[] - All the references of this component, including potentially deleted references
 	 */
 	public IVirtualReference[] getAllReferences() { 
-		if(allReferences != null)
+		if(shouldCacheReferences() && allReferences != null)
 			return allReferences;
 		
 		StructureEdit core = null;
