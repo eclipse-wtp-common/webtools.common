@@ -263,7 +263,7 @@ public class ManifestModuleDependencyControl implements
 		public String getColumnText(Object element, int columnIndex) {
 			if( element instanceof IVirtualReference ) {
 				IVirtualReference ref = (IVirtualReference)element;
-				if( columnIndex == 0 ) 
+				if( columnIndex == 0 && ref.getArchiveName() != null)
 					return ref.getRuntimePath().append(ref.getArchiveName()).toString();
 				if( columnIndex == 1 )
 					return handleSourceText(ref.getReferencedComponent());
