@@ -226,7 +226,8 @@ public class ManifestModuleDependencyControl implements
 		WizardDialog wd = new WizardDialog(addButton.getShell(), wizard);
 		if( wd.open() != Window.CANCEL) {
 			IVirtualReference[] ret = (IVirtualReference[])wizard.getTaskModel().getObject(AddManifestEntryTaskWizard.RETURNED_REFERENCES);
-			list.addAll(Arrays.asList(ret));
+			if (ret != null)
+				list.addAll(Arrays.asList(ret));
 			refreshViewer();
 			updateButtons();
 		}

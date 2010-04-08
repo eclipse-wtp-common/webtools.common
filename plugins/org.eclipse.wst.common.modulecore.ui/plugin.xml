@@ -4,13 +4,13 @@
    <extension-point id="moduleDependencyPropertyPage" name="moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
    <extension-point id="virtualComponentLabelProvider" name="virtualComponentLabelProvider" schema="schema/virtualComponentLabelProvider.exsd"/>
-   <!-- =========== org.eclipse.jst.j2ee.internal.J2EEDependencyPage ============ -->
+   <!-- =========== DeploymentAssemblyPage ============ -->
    <extension
    		point="org.eclipse.ui.propertyPages">
  	<page
       		name="%Module_assembly.name"
             class="org.eclipse.wst.common.componentcore.ui.propertypage.ModuleAssemblyRootPage"
-            id="org.eclipse.wst.common.componentcore.ui.J2EEDependenciesPage">
+            id="org.eclipse.wst.common.componentcore.ui.DeploymentAssemblyPage">
            <enabledWhen>
 				<adapt
 					type="org.eclipse.core.resources.IProject">

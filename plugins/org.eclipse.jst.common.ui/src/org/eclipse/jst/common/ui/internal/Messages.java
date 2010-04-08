@@ -31,6 +31,7 @@ public class Messages extends NLS {
 	public static String MoveDown;
 	public static String ManifestEntryColumn;
 	public static String ManifestEntrySourceColumn;
+	public static String ConfigureParentLink;
 	
 	static {
 		// initialize resource bundle

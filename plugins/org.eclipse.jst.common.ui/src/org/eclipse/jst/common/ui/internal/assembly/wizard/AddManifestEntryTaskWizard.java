@@ -1,5 +1,6 @@
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,11 +8,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jst.common.internal.modulecore.util.JavaModuleComponentUtility;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.jst.common.ui.internal.assembly.wizard.ManifestModuleDependencyControl.ManifestLabelProvider;
@@ -22,7 +25,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -43,16 +48,23 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 		private TableViewer viewer;
 		private Button addCustom;
 		private Text customEntryText;
-		private IProject parentProject, childProject;
+		protected IProject parentProject, childProject;
 		private IVirtualReference[] selected;
 		private ShowPossibleManifestEntryContentProvider contentProvider;
+		private Link parentContainerLink;
 		public boolean hasComposite() {
 			return true;
+		}
+		private void updateWidgets() throws InvocationTargetException {
+		
+			viewer.setInput(ResourcesPlugin.getWorkspace());
+			viewer.refresh();
 		}
 
 		public Composite createComposite(Composite parent, IWizardHandle handle) {
 			parentProject = (IProject)getTaskModel().getObject(PARENT_PROJECT);
 			childProject = (IProject)getTaskModel().getObject(CHILD_PROJECT);
+			handle.setTitle(Messages.AddManifestEntryTaskWizardTitle);
 			handle.setDescription(NLS.bind(Messages.AddManifestEntryTaskWizardDesc, parentProject.getName()));
 			Composite root = new Composite(parent, SWT.NONE);
 			root.setLayout(new FormLayout());
@@ -70,7 +82,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			});
 
 			viewer = ManifestModuleDependencyControl.createManifestReferenceTableViewer(root, SWT.MULTI);
-			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, addCustom, 0, 0, 5, 100, -5));
+			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, addCustom, 0, 0, 5, 100, -5));
 			contentProvider = new ShowPossibleManifestEntryContentProvider(parentProject, childProject, getTaskModel());
 			viewer.setContentProvider(contentProvider);
 			viewer.setLabelProvider(new ManifestLabelProvider());
@@ -80,6 +92,8 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 					viewerSelectionChanged();
 				}
 			});
+			createConfigLink(root);
+			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, viewer, 0, 0, 5, 100, -5));
 			return root;
 		}
 		
@@ -100,6 +114,38 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			}
 			selected = ret;
 		}
+		
+		private void createConfigLink(Composite aGroup){
+			parentContainerLink = new Link(aGroup,SWT.None);
+			parentContainerLink.setText("<A>"+ //$NON-NLS-1$
+					Messages.ConfigureParentLink+"</A>"); //$NON-NLS-1$
+			parentContainerLink.addSelectionListener(new SelectionListener() {
+				
+				public void doLinkActivated(Link e) {
+					IProject parentProject = ManifestRootFragment.this.parentProject;
+					PreferenceDialog dialog = PropertyDialog.createDialogOn(ManifestRootFragment.this.getPage().getControl().getShell(),
+							"org.eclipse.wst.common.componentcore.ui.DeploymentAssemblyPage", parentProject); //$NON-NLS-1$
+					if (dialog != null) {
+						dialog.open();
+					}
+					try {
+						updateWidgets();
+					} catch (InvocationTargetException ie) {
+
+					}
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+					doLinkActivated((Link) e.widget);					
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					doLinkActivated((Link) e.widget);					
+				}
+			});
+			
+		}
+		
 		
 		// just return the selected refs
 		public void performFinish(IProgressMonitor monitor) throws CoreException {
@@ -128,6 +174,13 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			newRefs.addAll(Arrays.asList(possible));
 			newRefs.add(ref);
 			possible = newRefs.toArray(new IVirtualReference[newRefs.size()]);
+		}
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			if (newInput != null) {
+				possible = null;
+				viewer.refresh();
+			}
 		}
 		
 	}
