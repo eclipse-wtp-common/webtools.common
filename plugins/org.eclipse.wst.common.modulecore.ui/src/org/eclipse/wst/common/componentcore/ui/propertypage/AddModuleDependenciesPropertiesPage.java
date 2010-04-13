@@ -110,7 +110,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	// Mappings that are current
 	protected HashMap<IVirtualComponent, String> objectToRuntimePath = new HashMap<IVirtualComponent, String>();
 
+	// consumed references
 	protected ArrayList<IVirtualComponent> consumedReferences = new ArrayList<IVirtualComponent>();
+	
+	// derived references
+	protected ArrayList<IVirtualComponent> derivedReferences = new ArrayList<IVirtualComponent>();
 
 	// A single list of wb-resource mappings. If there's any change, 
 	// all old will be removed and new ones added
@@ -384,7 +388,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void viewerSelectionChanged() {
 		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
-		removeButton.setEnabled(getSelectedObject() != null);// && canEdit(getSelectedObject()));
+		removeButton.setEnabled(getSelectedObject() != null && !derivedReferences.contains(getSelectedObject()));
 	}
 	
 	protected boolean hasEditWizardPage(Object o) {
@@ -402,13 +406,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	private class RuntimePathCellModifier implements ICellModifier {
 
 		public boolean canModify(Object element, String property) {
-			if( property.equals(DEPLOY_PATH_PROPERTY)) {
-//				if (element instanceof VirtualArchiveComponent) {
-//					try {
-//						return canEdit(element);
-//					} catch (IllegalArgumentException iae) {
-//					}
-//				}
+			if( property.equals(DEPLOY_PATH_PROPERTY) && !derivedReferences.contains(element)) {
 				return true;
 			}
 			return false;
@@ -504,6 +502,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				// remove old
 				objectToRuntimePath.remove(selected); 
 				consumedReferences.remove(selected);
+				derivedReferences.remove(selected);
 			}
 			
 			if( wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING) != null )
@@ -524,9 +523,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void handleAddNewReference(TaskWizard wizard) {
 		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT);
+		if( c1 == null )
+			return;
 		Object p1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT_PATH);
+		Object derived = wizard.getTaskModel().getObject(IReferenceWizardConstants.IS_DERIVED);
 		DependencyType type = (DependencyType)wizard.getTaskModel().getObject(IReferenceWizardConstants.DEPENDENCY_TYPE);
 		boolean consumed = type == null ? false : type.equals(DependencyType.CONSUMES_LITERAL);
+		boolean derivedVal = derived == null ? false : ((Boolean)derived).booleanValue();
 		
 		IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
 				new IVirtualComponent[] { (IVirtualComponent)c1 } : 
@@ -539,6 +542,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 					getRuntimePath(compArr[i], pathArr[i]));
 			if( consumed ) 
 				consumedReferences.add(compArr[i]);
+			if( derivedVal )
+				derivedReferences.add(compArr[i]);
 		}
 	}
 	
@@ -655,6 +660,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			oldComponentToRuntimePath.put(comp, val);
 			if( refs[i].getDependencyType() == DependencyType.CONSUMES)
 				consumedReferences.add(comp);
+			if( refs[i].isDerived())
+				derivedReferences.add(comp);
 		}
 
 		ComponentResource[] allMappings = findAllMappings();
