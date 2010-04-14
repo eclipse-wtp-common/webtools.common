@@ -10,7 +10,8 @@
    <extension-point id="validationHelper" name="validationHelper" schema="xsds/validationHelper.exsd"/>
    <extension-point id="validatorDelegates" name="%ValidatorDelegates" schema="xsds/validatorDelegates.exsd"/>   
    <extension-point id="validatorGroup" name="Validator Group" schema="xsds/validatorgroup.exsd"/>   
-   <extension-point id="exclude" name="Validator Exclusions" schema="xsds/exclude.exsd"/>   
+   <extension-point id="exclude" name="Validator Exclusions" schema="xsds/exclude.exsd"/>
+   <extension-point id="removeV2Validator" name="%removeV2Validator" schema="xsds/removeV2Validator.exsd"/>   
    
 <!--============================-->
 <!-- Validation Contributions   -->

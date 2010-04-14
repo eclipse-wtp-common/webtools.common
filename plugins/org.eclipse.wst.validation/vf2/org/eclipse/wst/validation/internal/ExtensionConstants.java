@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2005, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,6 +67,10 @@ public interface ExtensionConstants {
 	/** rules - extension point to declare a validator group */
 	String group = "validatorGroup"; //$NON-NLS-1$
 	
+	/** removeV2Validator - extension point to remove a V2 validator */
+	String removedValidatorExtension = "removeV2Validator"; //$NON-NLS-1$
+	
+
 	interface Group {
 		/*
 		 * The group sub-element for either the validatorGroup or validator
@@ -175,6 +179,10 @@ public interface ExtensionConstants {
 		String id = "id"; //$NON-NLS-1$
 	}
 	
+	interface RemovedValidator {
+		/** validatorId - the validator ID. The String represents the validator that will be removed */
+		String validatorIDAttr = "validatorId"; //$NON-NLS-1$
+	}
 	/** true */
 	String True = "true"; //$NON-NLS-1$
 	

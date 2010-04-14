@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2009 IBM Corporation and others.
+ * Copyright (c) 2007, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -104,6 +104,13 @@ public class ValidatorExtensionReader {
 			}
 			
 		}
+		
+		for (String removedValidator : getRemovedValidators()){
+			if (removedValidator != null) {
+				map.remove(removedValidator);
+			}
+		}
+
 		return map.values();
 		
 	}
@@ -220,6 +227,22 @@ public class ValidatorExtensionReader {
 		return registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.excludeExtension);
 	}
 	
+	/**
+	 * Answer the extension point for removing a validator. 
+	 * 
+	 * @return list of validator ID or null if no validator will be removed
+	 */
+	private List<String> getRemovedValidators(){
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.removedValidatorExtension);
+		List<String> val = new LinkedList<String>();
+		for (IExtension ext : extensionPoint.getExtensions()){
+			for (IConfigurationElement validator : ext.getConfigurationElements()){
+				val.add(validator.getAttribute(ExtensionConstants.RemovedValidator.validatorIDAttr));
+			}
+		}
+		return val;
+	}
 	/**
 	 * Process a message element for the validator, by creating a MessageCategory for it.
 	 * 
