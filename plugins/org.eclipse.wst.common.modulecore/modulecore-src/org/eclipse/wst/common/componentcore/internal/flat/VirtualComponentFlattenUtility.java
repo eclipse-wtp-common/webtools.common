@@ -95,8 +95,7 @@ public class VirtualComponentFlattenUtility {
 				IFlatResource[] mr = addMembersInternal(current, cc, path.append(cc.getName()));
 				addMembersToModuleFolder(mf, mr);
 			} else {
-				IFile f = (IFile) res[j].getUnderlyingResource();
-				addFile(current, f, path);
+				addFile(current, path, (IAdaptable)res[j]);
 			}
 		}
 		FlatResource[] mr = new FlatResource[list.size()];

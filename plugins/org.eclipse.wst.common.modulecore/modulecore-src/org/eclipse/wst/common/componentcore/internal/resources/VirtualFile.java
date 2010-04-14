@@ -119,4 +119,15 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 		//Default
 	}
 
+	@Override
+	public Object getAdapter(Class adapter) { 
+		if( java.io.File.class.equals(adapter)) {
+			IFile file = getUnderlyingFile();
+			return file.getLocation().toFile();
+		}
+		if( IFile.class.equals(adapter)) {
+			return getUnderlyingFile();
+		}
+		return null;
+	}
 }
