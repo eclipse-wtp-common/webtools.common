@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
@@ -39,11 +39,11 @@ public class NewReferenceWizard extends TaskWizard implements IReferenceWizardCo
 		}
 
 		protected void createChildFragments(List<WizardFragment> list) {
-			IVirtualComponent component = (IVirtualComponent)getTaskModel().getObject(COMPONENT);
-			if( component == null )
+			IVirtualReference origRef = (IVirtualReference)getTaskModel().getObject(ORIGINAL_REFERENCE);
+			if( origRef == null )
 				list.add(new NewReferenceRootWizardFragment(extensions));
 			else {
-				WizardFragment fragment = getFirstEditingFragment(component);
+				WizardFragment fragment = getFirstEditingFragment(origRef);
 				if( fragment != null )
 					list.add(fragment);
 			}
@@ -52,11 +52,11 @@ public class NewReferenceWizard extends TaskWizard implements IReferenceWizardCo
 		}
 	}
 
-	public static WizardFragment getFirstEditingFragment(IVirtualComponent component) {
+	public static WizardFragment getFirstEditingFragment(IVirtualReference reference) {
 		WizardFragment[] frags = DependencyPageExtensionManager.getManager().loadAllReferenceWizardFragments();
 		for( int i = 0; i < frags.length; i++ ) {
 			if( frags[i] instanceof IReferenceEditor ) {
-				if( ((IReferenceEditor)frags[i]).canEdit(component)) {
+				if( ((IReferenceEditor)frags[i]).canEdit(reference)) {
 					// accept first one
 					return frags[i];
 				}

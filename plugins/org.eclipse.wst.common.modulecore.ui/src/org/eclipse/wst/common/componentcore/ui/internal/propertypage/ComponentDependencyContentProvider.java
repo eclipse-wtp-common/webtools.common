@@ -11,12 +11,10 @@
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -26,6 +24,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
@@ -43,7 +42,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	
 	final static String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	
-	private HashMap<IVirtualComponent, String> runtimePaths;
+	private ArrayList<IVirtualReference> runtimePaths;
 	private ArrayList<ComponentResourceProxy> resourceMappings;
 	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
 	                new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
@@ -55,8 +54,8 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		delegates = DependencyPageExtensionManager.loadDelegates();
 	}
 
-	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
-		this.runtimePaths = paths;
+	public void setRuntimePaths(ArrayList<IVirtualReference> runtimePaths) {
+		this.runtimePaths = runtimePaths;
 	}
 
 	public void setResourceMappings(ArrayList<ComponentResourceProxy> mappings) {
@@ -69,7 +68,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			return empty;
 		ArrayList<Object> list = new ArrayList<Object>();
 		list.addAll(resourceMappings);
-		list.addAll(runtimePaths.keySet());
+		list.addAll(runtimePaths);
 		return list.toArray();
 	}
 	
@@ -77,11 +76,11 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		if( element instanceof ComponentResourceProxy) {
 			return ModuleCoreUIPlugin.getInstance().getImage("folder");
 		}
-		if (element instanceof IVirtualComponent) {
+		if (element instanceof IVirtualReference) {
 			if (columnIndex == 0)
 				return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
 			else
-				return handleSourceImage((IVirtualComponent)element);
+				return handleSourceImage(((IVirtualReference)element).getReferencedComponent());
 		} 
 		if (element instanceof IProject){
 			return decProvider.getImage(element);
@@ -96,28 +95,17 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			else if( columnIndex == 1 ) 
 				return ((ComponentResourceProxy)element).source.toString();
 		}
-		if (element instanceof IVirtualComponent) {
-			IVirtualComponent comp = (IVirtualComponent)element;
+		if( element instanceof IVirtualReference) {
 			if (columnIndex == 0) {
-				if( runtimePaths == null || runtimePaths.get(element) == null) {
-					return new Path(PATH_SEPARATOR).toString();
-				}
-				return runtimePaths.get(element);
+				return AddModuleDependenciesPropertiesPage.getSafeRuntimePath((IVirtualReference)element);
 			} else if (columnIndex == 1) {
-				return handleSourceText(comp);
+				return handleSourceText(((IVirtualReference)element).getReferencedComponent());
 			}
-		} else if (element instanceof IProject){
-			if (columnIndex == 0) {
-				if( runtimePaths == null || runtimePaths.get(element) == null) {
-					return new Path(PATH_SEPARATOR).toString();
-				}
-				return runtimePaths.get(element);
-			}
-			return ((IProject)element).getName();
 		}
 		return null;
 	}
 
+	
 	private String handleSourceText(IVirtualComponent component) {
 		if( delegates != null ) {
 			for( int i = 0; i < delegates.length; i++ )

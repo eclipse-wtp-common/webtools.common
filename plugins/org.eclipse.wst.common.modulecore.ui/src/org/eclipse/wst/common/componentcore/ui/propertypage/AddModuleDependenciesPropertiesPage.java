@@ -58,15 +58,16 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.datamodel.properties.IAddReferenceDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.DefaultModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
-import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
+import org.eclipse.wst.common.componentcore.internal.operation.AddReferenceDataModelProvider;
+import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceDataModelProvider;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -104,17 +105,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	//protected Listener tableListener;
 	protected Listener labelListener;
 
-	// Mappings that existed when the page was opened (or last saved)
-	protected HashMap<IVirtualComponent, String> oldComponentToRuntimePath = new HashMap<IVirtualComponent, String>();
-
-	// Mappings that are current
-	protected HashMap<IVirtualComponent, String> objectToRuntimePath = new HashMap<IVirtualComponent, String>();
-
-	// consumed references
-	protected ArrayList<IVirtualComponent> consumedReferences = new ArrayList<IVirtualComponent>();
-	
-	// derived references
-	protected ArrayList<IVirtualComponent> derivedReferences = new ArrayList<IVirtualComponent>();
+	protected ArrayList<IVirtualReference> originalReferences = new ArrayList<IVirtualReference>();
+	protected ArrayList<IVirtualReference> currentReferences = new ArrayList<IVirtualReference>();
 
 	// A single list of wb-resource mappings. If there's any change, 
 	// all old will be removed and new ones added
@@ -124,6 +116,23 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected boolean resourceMappingsChanged = false;
 	
 	protected IModuleHandler moduleHandler;
+	
+	public static String getSafeRuntimePath(IVirtualReference ref) {
+		String archiveName = ref.getDependencyType() == DependencyType.CONSUMES ? null : ref.getArchiveName();
+		String val = (archiveName != null) ? ref.getRuntimePath().append(archiveName).toString() : ref.getRuntimePath().toString();
+		if( val == null ) val = "/";
+		return val;
+	}
+
+	public static void setRuntimePathSafe(IVirtualReference ref, String newPath) {
+		if( ref.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES)
+			ref.setRuntimePath(new Path(newPath == null ? "/" : newPath));
+		else {
+			IPath path2 = new Path(newPath == null ? "/" : newPath);
+			ref.setRuntimePath(path2.segmentCount() > 1 ? path2.removeLastSegments(1) : new Path("/"));
+			ref.setArchiveName(path2.segmentCount() > 0 ? path2.lastSegment() : "");
+		}
+	}
 	
 	/**
 	 * Constructor for AddModulestoEARPropertiesControl.
@@ -243,7 +252,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			availableComponentsViewer.getTable().setLayoutData(gd);
 
 			ComponentDependencyContentProvider provider = createProvider();
-			provider.setRuntimePaths(objectToRuntimePath);
+			provider.setRuntimePaths(currentReferences);
 			provider.setResourceMappings(resourceMappings);
 			availableComponentsViewer.setContentProvider(provider);
 			//availableComponentsViewer.setLabelProvider(new DecoratingLabelProvider(
@@ -388,13 +397,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void viewerSelectionChanged() {
 		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
-		removeButton.setEnabled(getSelectedObject() != null && !derivedReferences.contains(getSelectedObject()));
+		removeButton.setEnabled(getSelectedObject() != null);
 	}
 	
 	protected boolean hasEditWizardPage(Object o) {
-		if( o == null || !(o instanceof IVirtualComponent)) 
+		if( o == null || !(o instanceof IVirtualReference)) 
 			return false;
-		WizardFragment wf = NewReferenceWizard.getFirstEditingFragment((IVirtualComponent)o);
+		WizardFragment wf = NewReferenceWizard.getFirstEditingFragment((IVirtualReference)o);
 		return wf != null;
 	}
 
@@ -406,19 +415,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	private class RuntimePathCellModifier implements ICellModifier {
 
 		public boolean canModify(Object element, String property) {
-			if( property.equals(DEPLOY_PATH_PROPERTY) && !derivedReferences.contains(element)) {
-				return true;
+			if( property.equals(DEPLOY_PATH_PROPERTY)) {
+				if( element instanceof IVirtualReference && !((IVirtualReference)element).isDerived())
+					return true;
 			}
 			return false;
 		}
 
 		public Object getValue(Object element, String property) {
-			Object data = element; //((TableItem)element).getData();
-			if( data instanceof IVirtualComponent ) {
-				return objectToRuntimePath.get(element) == null ? new Path("/") //$NON-NLS-1$
-						.toString() : objectToRuntimePath.get(element);
-			} else if( data instanceof ComponentResourceProxy) {
-				return ((ComponentResourceProxy)data).runtimePath.toString();
+			if( element instanceof IVirtualReference ) {
+				return getSafeRuntimePath((IVirtualReference)element);
+			} else if( element instanceof ComponentResourceProxy) {
+				return ((ComponentResourceProxy)element).runtimePath.toString();
 			}
 			return new Path("/"); //$NON-NLS-1$
 		}
@@ -426,8 +434,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		public void modify(Object element, String property, Object value) {
 			if (property.equals(DEPLOY_PATH_PROPERTY)) {
 				TableItem item = (TableItem) element;
-				if( item.getData() instanceof IVirtualComponent) {
-					objectToRuntimePath.put((IVirtualComponent)item.getData(), (String) value);
+				if( item.getData() instanceof IVirtualReference) {
+					setRuntimePathSafe((IVirtualReference)item.getData(), (String) value);
 				} else if( item.getData() instanceof ComponentResourceProxy) {
 					ComponentResourceProxy c = ((ComponentResourceProxy)item.getData());
 					c.runtimePath = new Path((String)value);
@@ -440,9 +448,6 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void handleEvent(Event event) {
-//		if( event.widget == addMappingButton) 
-//			handleAddMappingButton();
-//		else 
 		if( event.widget == addReferenceButton) 
 			handleAddReferenceButton();
 		else if( event.widget == editReferenceButton) 
@@ -450,19 +455,6 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		else if( event.widget == removeButton ) 
 			handleRemoveSelectedButton();
 	}
-
-//	protected void handleAddMappingButton() {
-//		AddFolderDialog afd = new AddFolderDialog(addMappingButton.getShell(), project);
-//		if( afd.open() == Window.OK) {
-//			IContainer c = afd.getSelected();
-//			if( c != null ) {
-//				IPath p = c.getProjectRelativePath();
-//				ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/")); //$NON-NLS-1$
-//				resourceMappings.add(proxy);
-//				refresh();
-//			}
-//		}
-//	}
 	
 	protected void handleAddReferenceButton() {
 		showReferenceWizard(false);
@@ -486,13 +478,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.MODULEHANDLER, getModuleHandler());
 
-		IVirtualComponent selected = null;
+		IVirtualReference selected = null;
 		if( editing ) {
 			Object o = ((IStructuredSelection)availableComponentsViewer.getSelection()).getFirstElement();
-			if( o instanceof IVirtualComponent ) {
-				selected = (IVirtualComponent)o;
-				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, selected);
-				wizard.getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, objectToRuntimePath.get(selected));
+			if( o instanceof IVirtualReference ) {
+				selected = (IVirtualReference)o;
+				wizard.getTaskModel().putObject(IReferenceWizardConstants.ORIGINAL_REFERENCE, selected);
 			} 
 		}
 		
@@ -500,9 +491,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if( wd.open() != Window.CANCEL) {
 			if( editing && selected != null) {
 				// remove old
-				objectToRuntimePath.remove(selected); 
-				consumedReferences.remove(selected);
-				derivedReferences.remove(selected);
+				currentReferences.remove(selected);
 			}
 			
 			if( wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING) != null )
@@ -522,29 +511,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void handleAddNewReference(TaskWizard wizard) {
-		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT);
-		if( c1 == null )
-			return;
-		Object p1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.COMPONENT_PATH);
-		Object derived = wizard.getTaskModel().getObject(IReferenceWizardConstants.IS_DERIVED);
-		DependencyType type = (DependencyType)wizard.getTaskModel().getObject(IReferenceWizardConstants.DEPENDENCY_TYPE);
-		boolean consumed = type == null ? false : type.equals(DependencyType.CONSUMES_LITERAL);
-		boolean derivedVal = derived == null ? false : ((Boolean)derived).booleanValue();
-		
-		IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
-				new IVirtualComponent[] { (IVirtualComponent)c1 } : 
-					(IVirtualComponent[])c1;
-		String[] pathArr = p1 instanceof String ? 
-						new String[] { (String)p1 } : 
-							(String[])p1;
-		for( int i = 0; i < compArr.length; i++ ) {
-			objectToRuntimePath.put(compArr[i], 
-					getRuntimePath(compArr[i], pathArr[i]));
-			if( consumed ) 
-				consumedReferences.add(compArr[i]);
-			if( derivedVal )
-				derivedReferences.add(compArr[i]);
-		}
+		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.FINAL_REFERENCE);
+		IVirtualReference[] referenceArray = c1 instanceof IVirtualReference ? 
+				new IVirtualReference[] { (IVirtualReference)c1 } : 
+					(IVirtualReference[])c1;
+		currentReferences.addAll(Arrays.asList(referenceArray));
 	}
 	
 	/**
@@ -571,8 +542,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			Object[] selectedStuff = sel2.toArray();
 			for( int i = 0; i < selectedStuff.length; i++) {
 				Object o = selectedStuff[i];
-				if( o instanceof IVirtualComponent)
-					objectToRuntimePath.remove(o);
+				if( o instanceof IVirtualReference)
+					currentReferences.remove(o);
 				else if( o instanceof ComponentResourceProxy) 
 					resourceMappings.remove(o);
 			}
@@ -607,15 +578,6 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		return tempViewer;
 
 	}
-
-//	protected boolean isPhysicallyAdded(VirtualArchiveComponent component) {
-//		try {
-//			component.getProjectRelativePath();
-//			return true;
-//		} catch (IllegalArgumentException e) {
-//			return false;
-//		}
-//	}
 
 	/**
 	 * This should only be called on changes, such as adding a project
@@ -652,17 +614,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		options.put(IVirtualComponent.REQUESTED_REFERENCE_TYPE, IVirtualComponent.DISPLAYABLE_REFERENCES);
 		IVirtualReference[] refs = rootComponent.getReferences(options);
 		IVirtualComponent comp;
-		for( int i = 0; i < refs.length; i++ ) { 
-			comp = refs[i].getReferencedComponent();
-			String archiveName = refs[i].getDependencyType() == DependencyType.CONSUMES ? null : refs[i].getArchiveName();
-			String val = (archiveName != null) ? refs[i].getRuntimePath().append(archiveName).toString() : refs[i].getRuntimePath().toString();
-			objectToRuntimePath.put(comp, val);
-			oldComponentToRuntimePath.put(comp, val);
-			if( refs[i].getDependencyType() == DependencyType.CONSUMES)
-				consumedReferences.add(comp);
-			if( refs[i].isDerived())
-				derivedReferences.add(comp);
-		}
+		originalReferences.addAll(Arrays.asList(refs));
+		currentReferences.addAll(Arrays.asList(cloneReferences(refs)));
 
 		ComponentResource[] allMappings = findAllMappings();
 		for( int i = 0; i < allMappings.length; i++ ) {
@@ -677,6 +630,20 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		hasInitialized = true;
 	}
 
+	protected IVirtualReference[] cloneReferences(IVirtualReference[] refs) {
+		IVirtualReference[] result = new IVirtualReference[refs.length];
+		VirtualReference temp;
+		for( int i = 0; i < result.length; i++ ) {
+			temp = new VirtualReference(refs[i].getEnclosingComponent(), refs[i].getReferencedComponent());
+			temp.setDependencyType(refs[i].getDependencyType());
+			temp.setDerived(refs[i].isDerived());
+			temp.setArchiveName(refs[i].getArchiveName());
+			temp.setRuntimePath(refs[i].getRuntimePath());
+			result[i] = temp;
+		}
+		return result;
+	}
+	
 	protected ComponentResource[] findAllMappings() {
 		StructureEdit structureEdit = null;
 		try {
@@ -751,8 +718,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected boolean saveResourceChanges() {
-		removeAllResourceMappings();
-		addNewResourceMappings();
+		if( resourceMappingsChanged ) {
+			removeAllResourceMappings();
+			addNewResourceMappings();
+		}
 		return true;
 	}
 	protected boolean addNewResourceMappings() {
@@ -785,77 +754,65 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected boolean saveReferenceChanges() {
 		// Fill our delta lists
-		ArrayList<IVirtualComponent> added = new ArrayList<IVirtualComponent>();
-		ArrayList<IVirtualComponent> removed = new ArrayList<IVirtualComponent>();
-		ArrayList<IVirtualComponent> changed = new ArrayList<IVirtualComponent>();
+		ArrayList<IVirtualReference> added = new ArrayList<IVirtualReference>();
+		ArrayList<IVirtualReference> removed = new ArrayList<IVirtualReference>();
 
-		Iterator<IVirtualComponent> j = oldComponentToRuntimePath.keySet().iterator();
-		Object key, val;
+		HashMap<IVirtualComponent, IVirtualReference> map = new HashMap<IVirtualComponent, IVirtualReference>();
+		Iterator<IVirtualReference> k = currentReferences.iterator();
+		IVirtualReference v1;
+		while(k.hasNext()) {
+			v1 = k.next();
+			map.put(v1.getReferencedComponent(), v1);
+		}
+		
+		Iterator<IVirtualReference> j = originalReferences.iterator();
+		IVirtualReference origRef, newRef;
 		while (j.hasNext()) {
-			key = j.next();
-			val = oldComponentToRuntimePath.get(key);
-			if( !objectToRuntimePath.containsKey(key))
-				removed.add((IVirtualComponent)key);
-			else if (!val.equals(objectToRuntimePath.get(key)))
-				changed.add((IVirtualComponent)key);
+			origRef = j.next();
+			newRef = map.get(origRef.getReferencedComponent());
+			if( newRef == null )
+				removed.add(origRef);
+			else if( !getSafeRuntimePath(origRef).equals(getSafeRuntimePath(newRef))) {
+				removed.add(origRef);
+				added.add(newRef);
+			}
+			map.remove(origRef.getReferencedComponent());
 		}
 
-		j = objectToRuntimePath.keySet().iterator();
-		while (j.hasNext()) {
-			key = j.next();
-			if (!oldComponentToRuntimePath.containsKey(key))
-				added.add((IVirtualComponent)key);
-		}
+		added.addAll(map.values());
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		boolean subResult = preHandleChanges(monitor);
 		if( !subResult )
 			return false;
 		
-		handleDeltas(removed, changed, added);
+		handleRemoved(removed);
+		handleAdded(added);
+
 		subResult &= postHandleChanges(monitor);
 		
-		// Now update the variables
-		oldComponentToRuntimePath.clear();
-		ArrayList<IVirtualComponent> keys = new ArrayList<IVirtualComponent>();
-		keys.addAll(objectToRuntimePath.keySet());
-		Iterator<IVirtualComponent> i = keys.iterator();
-		while(i.hasNext()) {
-			IVirtualComponent vc = i.next();
-			String path = objectToRuntimePath.get(vc);
-			oldComponentToRuntimePath.put(vc, path);
-		}
+		originalReferences.clear();
+		originalReferences.addAll(currentReferences);
+		currentReferences.clear();
+		IVirtualReference[] currentTmp =
+			originalReferences.toArray(new IVirtualReference[originalReferences.size()]); 
+		currentReferences.addAll(Arrays.asList(cloneReferences(currentTmp)));
 		return subResult;
 	}
-	
-	// Subclass can override if it has a good way to handle changed elements
-	protected void handleDeltas(ArrayList<IVirtualComponent> removed, 
-			ArrayList<IVirtualComponent> changed, ArrayList<IVirtualComponent> added) {
-		ArrayList<IVirtualComponent> removed2 = new ArrayList<IVirtualComponent>();
-		ArrayList<IVirtualComponent> added2 = new ArrayList<IVirtualComponent>();
-		removed2.addAll(removed);
-		removed2.addAll(changed);
-		added2.addAll(added);
-		added2.addAll(changed);
 
-		// meld the changed into the added / removed for less efficiency ;) 
-		// basically we lack "change" operations and only have add / remove
-		handleRemoved(removed2);
-		handleAdded(added2);
-	}	
-	protected void handleRemoved(ArrayList<IVirtualComponent> removed) {
+	protected void handleRemoved(ArrayList<IVirtualReference> removed) {
 		// If it's removed it should *only* be a virtual component already
 		if(removed.isEmpty()) return;
-		final ArrayList<IVirtualComponent> components = new ArrayList<IVirtualComponent>();
-		Iterator<IVirtualComponent> i = removed.iterator();
-		IVirtualComponent o;
+		final ArrayList<IVirtualReference> refs = new ArrayList<IVirtualReference>();
+		Iterator<IVirtualReference> i = removed.iterator();
+		IVirtualReference o;
 		while(i.hasNext()) {
 			o = i.next();
-			components.add(o);
+			refs.add(o);
 		}
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable(){
 			public void run(IProgressMonitor monitor) throws CoreException{
-				removeComponents(components);
+				removeReferences(refs);
 			}
 		};
 		try {
@@ -866,15 +823,14 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		
 	}
 	
-	protected void removeComponents(ArrayList<IVirtualComponent> removed) {
-		Iterator<IVirtualComponent> i = removed.iterator();
+	protected void removeReferences(ArrayList<IVirtualReference> removed) {
+		Iterator<IVirtualReference> i = removed.iterator();
 		while(i.hasNext()) {
-			removeOneComponent(i.next());
+			removeOneReference(i.next());
 		}
-		
 	}
 
-	protected void removeOneComponent(IVirtualComponent comp) {
+	protected void removeOneReference(IVirtualReference comp) {
 		try {
 			IDataModelOperation operation = getRemoveComponentOperation(comp);
 			operation.execute(null, null);
@@ -884,59 +840,32 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		
 	}
 
-	protected IDataModelOperation getRemoveComponentOperation(IVirtualComponent component) {
-		String path, archiveName;
-		path = archiveName = null;
-		
-		if( !consumedReferences.contains(component)) {
-			path = new Path(oldComponentToRuntimePath.get(component)).removeLastSegments(1).toString();
-			archiveName = new Path(oldComponentToRuntimePath.get(component)).lastSegment(); 
-		} else {
-			path = oldComponentToRuntimePath.get(component);
-		}
-		IDataModelProvider provider = getRemoveReferenceDataModelProvider(component);
+	protected IDataModelOperation getRemoveComponentOperation(IVirtualReference reference) {
+		IDataModelProvider provider = getRemoveReferenceDataModelProvider(reference);
 		IDataModel model = DataModelFactory.createDataModel(provider);
-		model.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, rootComponent);
-		List<IVirtualComponent> modHandlesList = (List<IVirtualComponent>) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
-		modHandlesList.add(component);
-		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, modHandlesList);
-        model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
-		Map<IVirtualComponent, String> uriMap = new HashMap<IVirtualComponent, String>();
-		uriMap.put(component, archiveName);
-		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
+		model.setProperty(IAddReferenceDataModelProperties.SOURCE_COMPONENT, rootComponent);
+		List<IVirtualReference> toRemove = new ArrayList<IVirtualReference>();
+		toRemove.add(reference); 
+		model.setProperty(IAddReferenceDataModelProperties.TARGET_REFERENCE_LIST, toRemove);
 		return model.getDefaultOperation();
 	}
 	
-	protected IDataModelProvider getRemoveReferenceDataModelProvider(IVirtualComponent component) {
-		return new RemoveReferenceComponentsDataModelProvider();
-	}
-
-	
-	protected void handleChanged(ArrayList<IVirtualComponent> changed) {
-		Iterator<IVirtualComponent> i = changed.iterator(); 
-		IVirtualComponent component;
-		IVirtualReference ref;
-		IPath p;
-		while(i.hasNext()) {
-			component = i.next();
-			ref = rootComponent.getReference(component.getName());
-			p = new Path(objectToRuntimePath.get(component));
-			ref.setRuntimePath(p);
-		}
+	protected IDataModelProvider getRemoveReferenceDataModelProvider(IVirtualReference reference) {
+		return new RemoveReferenceDataModelProvider();
 	}
 	
-	protected void handleAdded(ArrayList<IVirtualComponent> added) {
-		final ArrayList<IVirtualComponent> components = new ArrayList<IVirtualComponent>();
-		Iterator<IVirtualComponent> i = added.iterator();
-		IVirtualComponent o;
+	protected void handleAdded(ArrayList<IVirtualReference> added) {
+		final ArrayList<IVirtualReference> refs = new ArrayList<IVirtualReference>();
+		Iterator<IVirtualReference> i = added.iterator();
+		IVirtualReference o;
 		while(i.hasNext()) {
 			o = i.next();
-			components.add(o);
+			refs.add(o);
 		}
 		
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable(){
 			public void run(IProgressMonitor monitor) throws CoreException{
-				addComponents(components);
+				addReferences(refs);
 			}
 		};
 		try {
@@ -946,35 +875,26 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 	}
 	
-	protected void addComponents(ArrayList<IVirtualComponent> components) throws CoreException {
-		Iterator<IVirtualComponent> i = components.iterator();
+	protected void addReferences(ArrayList<IVirtualReference> refs) throws CoreException {
+		Iterator<IVirtualReference> i = refs.iterator();
 		while(i.hasNext()) {
-			addOneComponent(i.next());
+			addOneReference(i.next());
 		}
 	}
 	
-	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
-		return new CreateReferenceComponentsDataModelProvider();
+	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualReference component) {
+		return new AddReferenceDataModelProvider();
 	}
 	
-	protected void addOneComponent(IVirtualComponent component) throws CoreException {
+	protected void addOneReference(IVirtualReference ref) throws CoreException {
 		String path, archiveName;
-		path = new Path(objectToRuntimePath.get(component)).removeLastSegments(1).toString();
-		archiveName = new Path(objectToRuntimePath.get(component)).lastSegment();
 
-		IDataModelProvider provider = getAddReferenceDataModelProvider(component);
+		IDataModelProvider provider = getAddReferenceDataModelProvider(ref);
 		IDataModel dm = DataModelFactory.createDataModel(provider);
+		dm.setProperty(IAddReferenceDataModelProperties.SOURCE_COMPONENT, rootComponent);
+		dm.setProperty(IAddReferenceDataModelProperties.TARGET_REFERENCE_LIST, Arrays.asList(ref));
 		
-		dm.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, rootComponent);
-		dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, Arrays.asList(component));
-		
-		//[Bug 238264] the uri map needs to be manually set correctly
-		Map<IVirtualComponent, String> uriMap = new HashMap<IVirtualComponent, String>();
-		uriMap.put(component, archiveName);
-		dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
-        dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
-
-		IStatus stat = dm.validateProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
+		IStatus stat = dm.validateProperty(IAddReferenceDataModelProperties.TARGET_REFERENCE_LIST);
 		if (stat != OK_STATUS)
 			throw new CoreException(stat);
 		try {
@@ -994,57 +914,5 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			moduleHandler = new DefaultModuleHandler();
 		return moduleHandler;
 	}
-	
-//	/**
-//	 * [Bug 238264]
-//	 * determines a unique URI mapping name for a given component
-//	 * this is in case two components have the same name.
-//	 * 
-//	 * @return returns a valid (none duplicate) uri mapping name for the given component\
-//	 */
-//	private String getURIMappingName(IVirtualComponent archive) {
-//		
-//		//get the default uri map name for the given archive
-//		IPath componentPath = Path.fromOSString(archive.getName());
-//		String uriMapName = componentPath.lastSegment().replace(' ', '_');
-//		
-//		
-//		//check to be sure this uri mapping is not already in use by another reference
-//		boolean dupeArchiveName;
-//		String refedCompName;
-//		int lastDotIndex;
-//		String increment;
-//		IVirtualReference [] existingRefs = rootComponent.getReferences();
-//		for(int i=0;i<existingRefs.length;i++){
-//			refedCompName = existingRefs[i].getReferencedComponent().getName();
-//			
-//			//if uri mapping names of the refed component and the given archive are the same
-//			//  find a new uri map name for the given archive
-//			if(existingRefs[i].getArchiveName().equals(uriMapName)){
-//				dupeArchiveName = true;
-//				//find a new uriMapName for the given component
-//				for(int j=1; dupeArchiveName; j++){
-//					lastDotIndex = uriMapName.lastIndexOf('.');
-//					increment = "_"+j; //$NON-NLS-1$
-//					
-//					//create the new potential name
-//					if(lastDotIndex != -1){
-//						uriMapName = uriMapName.substring(0, lastDotIndex) + increment + uriMapName.substring(lastDotIndex);
-//					} else {
-//						uriMapName = uriMapName.substring(0)+increment;
-//					}
-//					
-//					//determine if the new potential name is valid
-//					for(int k=0; k<existingRefs.length; k++) {
-//						dupeArchiveName = existingRefs[k].getArchiveName().equals(uriMapName);
-//						if(dupeArchiveName) {
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		
-//		return uriMapName;
-//	}
+
 }

@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 /**
  * WizardFragments that are providing reference wizard extensions
@@ -21,11 +21,11 @@ public interface IReferenceEditor {
 	
 	/**
 	 * The wizard fragment that implements this interface 
-	 * and is able to edit the provided virtual component is expected 
-	 * to cache this virtual component at the time canEdit(etc) is called
+	 * and is able to edit the provided reference is expected 
+	 * to cache this reference at the time canEdit(etc) is called
 	 * 
 	 * @param vc
 	 * @return
 	 */
-	public boolean canEdit(IVirtualComponent vc);
+	public boolean canEdit(IVirtualReference reference);
 }

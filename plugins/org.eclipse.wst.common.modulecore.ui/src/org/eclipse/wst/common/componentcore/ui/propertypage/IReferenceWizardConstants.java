@@ -16,11 +16,9 @@ public interface IReferenceWizardConstants {
 	 * The value should be an instanceof ComponentResourceProxy
 	 */
 	public static final String FOLDER_MAPPING = "folder.mapping"; //$NON-NLS-1$
-	public static final String COMPONENT = "dependency.component"; //$NON-NLS-1$
-	public static final String COMPONENT_PATH = "dependency.component.path"; //$NON-NLS-1$
 	public static final String PROJECT = "root.project"; //$NON-NLS-1$
 	public static final String ROOT_COMPONENT = "root.component"; //$NON-NLS-1$
-	public static final String DEPENDENCY_TYPE = "dependency.type"; //$NON-NLS-1$
-	public static final String IS_DERIVED = "derived";
 	public static final String MODULEHANDLER = "module.handler"; //$NON-NLS-1$
+	public static final String ORIGINAL_REFERENCE = "dependency.reference.original";//$NON-NLS-1$
+	public static final String FINAL_REFERENCE = "dependency.reference.final";//$NON-NLS-1$
 }

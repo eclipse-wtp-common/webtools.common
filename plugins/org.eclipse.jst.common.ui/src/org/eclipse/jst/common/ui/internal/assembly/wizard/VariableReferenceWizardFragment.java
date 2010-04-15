@@ -38,7 +38,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
@@ -213,8 +215,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
 		if (selected != null ) {
-			ArrayList<IVirtualComponent> compList = new ArrayList<IVirtualComponent>();
-			ArrayList<String> paths = new ArrayList<String>();
+			ArrayList<IVirtualReference> refList = new ArrayList<IVirtualReference>();
 //			for (int i = 0; i < selected.length; i++) {
 				IPath variablePath = getVariablePath(selected);
 				IPath resolvedPath = JavaCore.getResolvedVariablePath(variablePath);
@@ -225,14 +226,13 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 					IVirtualComponent archive = ComponentCore
 							.createArchiveComponent(rootComponent.getProject(),
 									type + variablePath.toString());
-					compList.add(archive);
-					paths.add(resolvedPath.lastSegment());
+					VirtualReference ref = new VirtualReference(rootComponent, archive);
+					ref.setArchiveName(resolvedPath.lastSegment());
+					refList.add(ref);
 				}
 //			}
-			IVirtualComponent[] components = compList.toArray(new IVirtualComponent[compList.size()]);
-			String[] paths2 = paths.toArray(new String[paths.size()]);
-			getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, components);
-			getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, paths2);
+			IVirtualReference[] finalRefs = refList.toArray(new IVirtualReference[refList.size()]);
+			getTaskModel().putObject(IReferenceWizardConstants.FINAL_REFERENCE, finalRefs);
 		}
 	}
 	

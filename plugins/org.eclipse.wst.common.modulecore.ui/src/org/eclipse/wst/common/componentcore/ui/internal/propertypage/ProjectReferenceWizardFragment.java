@@ -36,6 +36,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
@@ -95,8 +96,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		IVirtualComponent[] comps = new IVirtualComponent[selected.length];
-		String[] paths = new String[selected.length];
+		VirtualReference[] refs = new VirtualReference[selected.length];
 		for (int i = 0; i < selected.length; i++) {
 			IProject proj = selected[i];
 			
@@ -109,12 +109,12 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 				}
 			}
 			String path = null;
-			comps[i] = ComponentCore.createComponent(proj, false);
-			paths[i] = getArchiveName(proj,comps[i]);
-		
+			refs[i] = new VirtualReference(
+					(IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT), 
+					ComponentCore.createComponent(proj, false));
+			refs[i].setArchiveName(getArchiveName(proj, refs[i].getReferencedComponent()));
 		}
-		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT, comps);
-		getTaskModel().putObject(IReferenceWizardConstants.COMPONENT_PATH, paths);
+		getTaskModel().putObject(IReferenceWizardConstants.FINAL_REFERENCE, refs);
 	}
 
 	protected String getArchiveName(IProject proj, IVirtualComponent comp) {
