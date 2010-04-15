@@ -44,6 +44,7 @@ public interface IVirtualComponent extends IAdaptable {
 	public static final String HARD_REFERENCES = "HARD_REFERENCES";
 	public static final String NON_DERIVED_REFERENCES = "NON_DERIVED_REFERENCES";
 	public static final String DISPLAYABLE_REFERENCES = "DISPLAYABLE_REFERENCES";
+	public static final String FLATTENABLE_REFERENCES = "FLATTENABLE_REFERENCES";
 		
 	/**
 	 * The name of the component must be unique within its enclosing project.
