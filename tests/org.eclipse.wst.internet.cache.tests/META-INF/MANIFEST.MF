@@ -8,7 +8,7 @@ Bundle-Activator: org.eclipse.wst.internet.cache.tests.internal.CacheTestsPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit;bundle-version="[3.8.2,4.0.0)",
+ org.junit;bundle-version="3.8.2",
  org.eclipse.wst.internet.cache,
  org.eclipse.core.resources,
  org.eclipse.wst.common.uriresolver
