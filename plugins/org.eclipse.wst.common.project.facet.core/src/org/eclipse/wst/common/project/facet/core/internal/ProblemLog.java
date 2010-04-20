@@ -210,8 +210,7 @@ public final class ProblemLog
         
         static
         {
-            initializeMessages( FacetedProjectFrameworkImpl.class.getName(), 
-                                Resources.class );
+            initializeMessages( ProblemLog.class.getName(), Resources.class );
         }
     }
     
