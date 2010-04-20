@@ -1,7 +1,5 @@
 package org.eclipse.wst.common.uriresolver.tests;
 
-import org.eclipse.wst.common.uriresolver.internal.ExtensibleURIResolver;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

@@ -11,15 +11,13 @@
  *******************************************************************************/
 package org.eclipse.wst.common.uriresolver.tests;
 
+import junit.framework.TestCase;
+
 import org.eclipse.wst.common.uriresolver.internal.ExtensibleURIResolver;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
 import org.eclipse.wst.common.uriresolver.tests.util.AuxiliaryCounter;
 import org.eclipse.wst.common.uriresolver.tests.util.ResolverExtensionForText;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 public class ExtensibleURIResolverTest extends TestCase {
 
