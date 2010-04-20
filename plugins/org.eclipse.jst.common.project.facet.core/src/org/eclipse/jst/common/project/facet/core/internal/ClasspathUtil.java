@@ -22,9 +22,12 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IClasspathAttribute;
@@ -52,14 +55,14 @@ public final class ClasspathUtil
     
     private ClasspathUtil() {}
 
-    public static List<IClasspathEntry> getProjectClasspath( final IJavaProject jproj )
+    public static List<IClasspathEntry> getProjectClasspath( final IJavaProject project )
     
         throws CoreException
         
     {
         final List<IClasspathEntry> result = new ArrayList<IClasspathEntry>();
         
-        for( IClasspathEntry cpe : jproj.getRawClasspath() )
+        for( IClasspathEntry cpe : project.getRawClasspath() )
         {
             result.add( cpe );
         }
@@ -67,13 +70,14 @@ public final class ClasspathUtil
         return result;
     }
     
-    public static void setProjectClasspath( final IJavaProject jproj,
+    public static void setProjectClasspath( final IJavaProject project,
                                             final List<IClasspathEntry> cp )
     
         throws CoreException
         
     {
-        jproj.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), null );
+        validateClasspathEdit( project );
+        project.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ), null );
     }
     
     public static void addClasspathEntry( final IProject project,
@@ -91,6 +95,8 @@ public final class ClasspathUtil
         throws CoreException
         
     {
+        validateClasspathEdit( project );
+        
         final IClasspathEntry[] cpOld = project.getRawClasspath();
         final IClasspathEntry[] cpNew = new IClasspathEntry[ cpOld.length + 1 ];
         System.arraycopy( cpOld, 0, cpNew, 0, cpOld.length );
@@ -148,6 +154,7 @@ public final class ClasspathUtil
         throws CoreException
         
     {
+        validateClasspathEdit( project );
         convertLegacyMetadata( project );
         
         final List<IClasspathEntry> cp = getProjectClasspath( project );
@@ -201,6 +208,7 @@ public final class ClasspathUtil
         throws CoreException
         
     {
+        validateClasspathEdit( project );
         convertLegacyMetadata( project );
         
         final List<IClasspathEntry> cp = getProjectClasspath( project );
@@ -250,6 +258,7 @@ public final class ClasspathUtil
         throws CoreException
         
     {
+        validateClasspathEdit( project );
         convertLegacyMetadata( project );
         
         final List<IClasspathEntry> cp = getProjectClasspath( project );
@@ -516,6 +525,21 @@ public final class ClasspathUtil
             }
             
             legacyMetadataFile.delete( true, null );
+        }
+    }
+    
+    private static void validateClasspathEdit( final IJavaProject jproject )
+    
+        throws CoreException
+        
+    {
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        final IProject project = jproject.getProject();
+        final IStatus st = ws.validateEdit( new IFile[] { project.getFile( ".classpath" ) }, IWorkspace.VALIDATE_PROMPT ); //$NON-NLS-1$
+        
+        if( st.getSeverity() == IStatus.ERROR )
+        {
+            throw new CoreException( st );
         }
     }
     
