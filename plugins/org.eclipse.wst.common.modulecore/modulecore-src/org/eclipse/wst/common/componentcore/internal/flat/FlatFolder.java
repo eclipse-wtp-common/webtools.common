@@ -96,10 +96,12 @@ public class FlatFolder extends FlatResource implements IFlatFolder {
 	}
 
 	public Object getAdapter(Class cl) {
-		if (IContainer.class.equals(cl) || IFolder.class.equals(cl) || IResource.class.equals(cl))
-			return container;
-		if( File.class.equals(cl))
-			return container.getLocation().toFile();
+		if (container != null) {
+			if (IContainer.class.equals(cl) || IFolder.class.equals(cl) || IResource.class.equals(cl))
+				return container;
+			if( File.class.equals(cl))
+				return container.getLocation().toFile();
+		}
 		return null;
 	}
 

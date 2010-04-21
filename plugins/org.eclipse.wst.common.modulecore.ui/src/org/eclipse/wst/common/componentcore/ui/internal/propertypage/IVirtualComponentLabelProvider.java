@@ -14,7 +14,30 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 public interface IVirtualComponentLabelProvider {
+	/**
+	 * Return whether this label provider can provide
+	 * UI elements for this component
+	 * @param component
+	 * @return
+	 */
 	public boolean canHandle(IVirtualComponent component);
+	
+	/**
+	 * Return a string representation for this component
+	 * @param component
+	 * @return
+	 */
 	public String getSourceText(IVirtualComponent component);
+	
+	/**
+	 * Return an image representing this component
+	 * @param component
+	 * @return
+	 */
 	public Image getSourceImage(IVirtualComponent component);
+	
+	/**
+	 * Clean up any images you created
+	 */
+	public void dispose();
 }

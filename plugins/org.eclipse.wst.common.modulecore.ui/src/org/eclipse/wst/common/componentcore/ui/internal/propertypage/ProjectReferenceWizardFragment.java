@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -97,6 +98,8 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		VirtualReference[] refs = new VirtualReference[selected.length];
+		String runtimeLoc = (String) getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
+		runtimeLoc = runtimeLoc != null ? runtimeLoc : "/"; //$NON-NLS-1$
 		for (int i = 0; i < selected.length; i++) {
 			IProject proj = selected[i];
 			
@@ -113,6 +116,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 					(IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT), 
 					ComponentCore.createComponent(proj, false));
 			refs[i].setArchiveName(getArchiveName(proj, refs[i].getReferencedComponent()));
+			refs[i].setRuntimePath(new Path(runtimeLoc).makeAbsolute());
 		}
 		getTaskModel().putObject(IReferenceWizardConstants.FINAL_REFERENCE, refs);
 	}

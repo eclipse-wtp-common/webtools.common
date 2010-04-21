@@ -171,8 +171,16 @@ public class DependencyPageExtensionManager {
 				int o1int, o2int;
 				o1String=o1.getAttribute("weight");
 				o2String=o2.getAttribute("weight");
-				o1int = Integer.parseInt(o1String);
-				o2int = Integer.parseInt(o1String);
+				try {
+					o1int = Integer.parseInt(o1String);
+				} catch(NumberFormatException nfe ) {
+					o1int = 0;
+				}
+				try {
+					o2int = Integer.parseInt(o2String);
+				} catch(NumberFormatException nfe ) {
+					o2int = 0;
+				}
 				return o1int-o2int;
 			}
 		};
@@ -181,7 +189,9 @@ public class DependencyPageExtensionManager {
 		Iterator<IConfigurationElement> i = list.iterator();
 		while(i.hasNext()) {
 			try {
-				retList.add((IVirtualComponentLabelProvider)i.next().createExecutableExtension("class"));
+				IConfigurationElement el = i.next();
+				String className = el.getAttribute("class");
+				retList.add((IVirtualComponentLabelProvider)el.createExecutableExtension("class"));
 			} catch( CoreException ce) {
 				// log
 			}

@@ -65,6 +65,7 @@ import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
 import org.eclipse.wst.common.componentcore.internal.operation.AddReferenceDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
@@ -477,6 +478,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.MODULEHANDLER, getModuleHandler());
+		setCustomReferenceWizardProperties(wizard.getTaskModel());
 
 		IVirtualReference selected = null;
 		if( editing ) {
@@ -500,6 +502,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				handleAddNewReference(wizard);
 			refresh();
 		}
+	}
+	
+	/*
+	 * Clients can override this to set custom properties
+	 */
+	protected void setCustomReferenceWizardProperties(TaskModel model) {
+		// do nothing
 	}
 	
 	protected void handleAddFolderMapping(TaskWizard wizard) {

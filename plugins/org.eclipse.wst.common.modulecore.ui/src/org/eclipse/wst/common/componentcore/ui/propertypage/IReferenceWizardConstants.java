@@ -16,9 +16,48 @@ public interface IReferenceWizardConstants {
 	 * The value should be an instanceof ComponentResourceProxy
 	 */
 	public static final String FOLDER_MAPPING = "folder.mapping"; //$NON-NLS-1$
+	
+	/**
+	 * This property should map to the IProject which is the root project
+	 * which will enclose the returned reference
+	 */
 	public static final String PROJECT = "root.project"; //$NON-NLS-1$
+	
+	/**
+	 * This property should map to the IVirtualComponent which is the root component
+	 * which will enclose the returned reference
+	 */
 	public static final String ROOT_COMPONENT = "root.component"; //$NON-NLS-1$
+	
+	/**
+	 * This property should map to the IModuleHandler for customized behaviour
+	 */
 	public static final String MODULEHANDLER = "module.handler"; //$NON-NLS-1$
+	
+	/**
+	 * This property should map to the original reference, if the wizard has been opened
+	 * in editing mode. 
+	 */
 	public static final String ORIGINAL_REFERENCE = "dependency.reference.original";//$NON-NLS-1$
+	
+	/**
+	 * This property should map to the final reference, either new reference, 
+	 * or a new instance of a modified reference. 
+	 */
 	public static final String FINAL_REFERENCE = "dependency.reference.final";//$NON-NLS-1$
+	
+	/**
+	 * This property should map to the default location that libraries should be placed.
+	 * If this is unset, the creating or editing wizard fragment can choose to 
+	 * set the runtimePath of the reference to whatever it wants.
+	 */
+	public static final String DEFAULT_LIBRARY_LOCATION = "default.library.location";
+	
+	/**
+	 * This property should map to the default location that generic resources should be placed.
+	 * If this is unset, the creating or editing wizard fragment can choose to 
+	 * set the runtimePath of the reference to whatever it wants.
+	 */
+	public static final String DEFAULT_RESOURCE_LOCATION = "default.resource.location";
+	
 }

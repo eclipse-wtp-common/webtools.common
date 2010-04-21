@@ -273,8 +273,7 @@ public class ManifestModuleDependencyControl implements
 		}
 		
 		private String handleSourceText(IVirtualComponent component) {
-			if( delegates == null )
-				delegates = DependencyPageExtensionManager.loadDelegates();
+			getDelegates();
 			for( int i = 0; i < delegates.length; i++ )
 				if( delegates[i].canHandle(component))
 					return delegates[i].getSourceText(component);
