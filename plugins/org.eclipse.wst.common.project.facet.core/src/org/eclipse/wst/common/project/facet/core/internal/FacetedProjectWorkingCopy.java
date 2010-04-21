@@ -47,6 +47,7 @@ import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDynamicPreset;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -55,7 +56,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.MinimalConfigurationPresetFactory;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetDetector;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkListener;
@@ -427,17 +427,22 @@ public final class FacetedProjectWorkingCopy
         {
             if( this.project == null && this.projectName != null )
             {
-                final IProject pj = ResourcesPlugin.getWorkspace().getRoot().getProject( this.projectName );
+                final IWorkspace ws = ResourcesPlugin.getWorkspace();
                 
-                if( pj != null && pj.exists() )
+                if( ws.validateName( this.projectName, IResource.PROJECT ).getSeverity() != IStatus.ERROR )
                 {
-                    try
+                    final IProject pj = ws.getRoot().getProject( this.projectName );
+                    
+                    if( pj != null && pj.exists() )
                     {
-                        this.project = ProjectFacetsManager.create( pj );
-                    }
-                    catch( CoreException e )
-                    {
-                        FacetCorePlugin.log( e );
+                        try
+                        {
+                            this.project = ProjectFacetsManager.create( pj );
+                        }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e );
+                        }
                     }
                 }
             }
