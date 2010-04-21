@@ -496,7 +496,10 @@ public final class FacetedProjectWorkingCopy
                             fv = getHighestAvailableVersion( f );
                         }
                         
-                        newFacets.add( fv );
+                        if( fv != null )
+                        {
+                            newFacets.add( fv );
+                        }
                     }
                 }
                 
@@ -559,23 +562,29 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
+    @SuppressWarnings( "unchecked" )
+    
     public IProjectFacetVersion getHighestAvailableVersion( final IProjectFacet f )
     {
         synchronized( this.lock )
         {
             IProjectFacetVersion version = null;
+            final SortedSet<IProjectFacetVersion> availableVersions = this.availableFacets.get( f );
             
-            for( IProjectFacetVersion fv : this.availableFacets.get( f ) )
+            if( availableVersions != null )
             {
-                if( version == null )
+                for( IProjectFacetVersion fv : availableVersions )
                 {
-                    version = fv;
-                }
-                else
-                {
-                    if( fv.compareTo( version ) > 0 )
+                    if( version == null )
                     {
                         version = fv;
+                    }
+                    else
+                    {
+                        if( fv.compareTo( version ) > 0 )
+                        {
+                            version = fv;
+                        }
                     }
                 }
             }
@@ -2087,19 +2096,19 @@ public final class FacetedProjectWorkingCopy
         {
             synchronized( this.lock )
             {
-            	if( this.project != null )
-            	{
+                if( this.project != null )
+                {
                     setFixedProjectFacets( this.project.getFixedProjectFacets() );
                     setTargetedRuntimes( Collections.<IRuntime>emptySet() );
                     setProjectFacets( this.project.getProjectFacets() );
                     setTargetedRuntimes( this.project.getTargetedRuntimes() );
                     setPrimaryRuntime( this.project.getPrimaryRuntime() );
                     this.actions.clear();
-            	}
-            	else
-            	{
-            		throw new UnsupportedOperationException();
-            	}
+                }
+                else
+                {
+                    throw new UnsupportedOperationException();
+                }
             }
         }
         finally
@@ -2116,8 +2125,8 @@ public final class FacetedProjectWorkingCopy
             
             if( this.project == null )
             {
-	            clone.setProjectName( getProjectName() );
-	            clone.setProjectLocation( getProjectLocation() );
+                clone.setProjectName( getProjectName() );
+                clone.setProjectLocation( getProjectLocation() );
             }
             
             clone.setFixedProjectFacets( getFixedProjectFacets() );
