@@ -419,6 +419,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			if( property.equals(DEPLOY_PATH_PROPERTY)) {
 				if( element instanceof IVirtualReference && !((IVirtualReference)element).isDerived())
 					return true;
+				if( element instanceof ComponentResourceProxy )
+					return true; 
 			}
 			return false;
 		}
