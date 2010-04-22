@@ -17,8 +17,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
+import org.osgi.framework.Bundle;
 
 /**
  * This class reads the URI resolver extension point and registers extension
@@ -92,6 +95,10 @@ public class URIResolverExtensionRegistryReader
 			// String projectNatureId = element.getAttribute(ATT_PROJECT_NATURE_ID);
 			String resourceType = element.getAttribute(ATT_RESOURCE_TYPE);
 			String stage = element.getAttribute(ATT_STAGE);
+			if (stage == null || stage.equals(""))
+			{
+			    stage = VAL_STAGE_POST;
+			}
 			String priority = element.getAttribute(ATT_PRIORITY);
 			if (priority == null || priority.equals(""))
 			{
@@ -127,8 +134,9 @@ public class URIResolverExtensionRegistryReader
 							stageint, priority);
 				} catch (Exception e)
 				{
-					// TODO: Log exception as this will cause an extension resolver
-					//       from loading.
+					Bundle bundle = URIResolverPlugin.getInstance().getBundle();
+					IStatus status = new Status(IStatus.ERROR, bundle.getSymbolicName(), e.getMessage(), e);
+					Platform.getLog(bundle).log( status);
 				}
 			}
 		}
