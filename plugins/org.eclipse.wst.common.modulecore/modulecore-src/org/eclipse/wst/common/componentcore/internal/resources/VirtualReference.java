@@ -25,6 +25,7 @@ import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
 import org.eclipse.wst.common.componentcore.resolvers.ReferenceResolverUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.frameworks.internal.HashUtil;
 
 public class VirtualReference implements IVirtualReference {
 	
@@ -155,5 +156,28 @@ public class VirtualReference implements IVirtualReference {
 	
 	public void setDerived(boolean val) {
 		derived = val;
+	}
+
+	public boolean equals(Object anOther) {
+		if(anOther == null || !(anOther instanceof IVirtualReference)) return false;
+		if(anOther == this) return true;
+		IVirtualReference otherRef = (IVirtualReference) anOther;
+		return getArchiveName().equals(otherRef.getArchiveName()) && 
+			   getRuntimePath().equals(otherRef.getRuntimePath()) && 
+			   getEnclosingComponent().equals(otherRef.getEnclosingComponent()) && 
+			   getReferencedComponent().equals(otherRef.getReferencedComponent()) && 
+			   getDependencyType() == otherRef.getDependencyType();
+		
+	}
+
+	public int hashCode() {
+		
+		int hash = HashUtil.SEED;
+		hash = HashUtil.hash(hash, getArchiveName());
+		hash = HashUtil.hash(hash, getRuntimePath());
+		hash = HashUtil.hash(hash, getEnclosingComponent());
+		hash = HashUtil.hash(hash, getReferencedComponent());
+		hash = HashUtil.hash(hash, getDependencyType());
+		return hash;
 	}
 }

@@ -92,7 +92,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			});
 
 			viewer = ManifestModuleDependencyControl.createManifestReferenceTableViewer(root, SWT.MULTI);
-			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, addCustom, 0, 0, 5, 100, -5));
+			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(15, 5, addCustom, 0, 0, 5, 100, -5));
 			contentProvider = new ShowPossibleManifestEntryContentProvider(parentProject, childProject, getTaskModel());
 			viewer.setContentProvider(contentProvider);
 			viewer.setLabelProvider(new ManifestLabelProvider());
@@ -103,7 +103,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 				}
 			});
 			createConfigLink(root);
-			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, viewer, 0, 0, 5, 100, -5));
+			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, viewer, 5, 0, 5, 100, -5));
 			return root;
 		}
 		
