@@ -59,6 +59,7 @@ import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IGroup;
@@ -67,7 +68,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkListener;
@@ -78,8 +78,8 @@ import org.eclipse.wst.common.project.facet.core.events.internal.FrameworkListen
 import org.eclipse.wst.common.project.facet.core.events.internal.LegacyEventHandlerAdapter;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
 import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -112,8 +112,6 @@ public final class FacetedProjectFrameworkImpl
     private static final String EL_DELEGATE = "delegate"; //$NON-NLS-1$
     private static final String EL_DESCRIPTION = "description"; //$NON-NLS-1$
     private static final String EL_EVENT_HANDLER = "event-handler"; //$NON-NLS-1$
-    private static final String EL_GROUP = "group"; //$NON-NLS-1$
-    private static final String EL_GROUP_MEMBER = "group-member"; //$NON-NLS-1$
     private static final String EL_LABEL = "label"; //$NON-NLS-1$
     private static final String EL_MEMBER = "member"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET = "project-facet"; //$NON-NLS-1$
@@ -595,6 +593,11 @@ public final class FacetedProjectFrameworkImpl
         }
         
         return group;
+    }
+    
+    void addGroup( final IGroup group )
+    {
+        this.groups.addItemWithKey( group.getId(), group );
     }
     
     public Set<IFacetedProject> getFacetedProjects()
@@ -1382,6 +1385,8 @@ public final class FacetedProjectFrameworkImpl
         
         calculateVersionComparisonTables( fvToConstraint, fvToActions );
         
+        ProjectFacetGroupsExtensionPoint.processExtensions( this );        
+        
         for( Map.Entry<ProjectFacetVersion,IConfigurationElement> x : fvToConstraint.entrySet() )
         {
             readConstraint( x.getValue(), x.getKey() );
@@ -1415,21 +1420,6 @@ public final class FacetedProjectFrameworkImpl
             if( config.getName().equals( EL_PROJECT_FACET ) )
             {
                 readDefaultVersionInfo( config );
-            }
-        }
-        
-        for( IConfigurationElement config : cfgels )
-        {
-            if( config.getName().equals( EL_GROUP ) )
-            {
-                try
-                {
-                    readGroup( config );
-                }
-                catch( InvalidExtensionException e )
-                {
-                    // Continue. The problem has been reported in the log.
-                }
             }
         }
     }
@@ -1606,28 +1596,6 @@ public final class FacetedProjectFrameworkImpl
             if( childName.equals( EL_CONSTRAINT ) )
             {
                 fvToConstraint.put( fv, child );
-            }
-            else if( childName.equals( EL_GROUP_MEMBER ) )
-            {
-                final String id = child.getAttribute( ATTR_ID );
-                
-                if( id == null )
-                {
-                    reportMissingAttribute( child, ATTR_ID );
-                    return;
-                }
-                
-                Group group = (Group) this.groups.getItemByKey( id );
-                
-                if( group == null )
-                {
-                    group = new Group();
-                    group.setId( id );
-                    
-                    this.groups.addItemWithKey( id, group );
-                }
-                
-                group.addMember( fv );
             }
             else if( childName.equals( EL_ACTION ) )
             {
@@ -2310,27 +2278,6 @@ public final class FacetedProjectFrameworkImpl
         }
         
         return new Constraint( fv, type, operands );
-    }
-    
-    private void readGroup( final IConfigurationElement config )
-    
-        throws InvalidExtensionException
-        
-    {
-        final String id = findRequiredAttribute( config, ATTR_ID );
-        
-        if( ! isGroupDefined( id ) )
-        {
-            return;
-        }
-        
-        final Group group = (Group) getGroup( id );
-        
-        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
-        group.setLabel( getElementValue( elLabel, group.getId() ) );
-        
-        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
-        group.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
     }
     
     private static String toString( final Collection<? extends Object> collection )

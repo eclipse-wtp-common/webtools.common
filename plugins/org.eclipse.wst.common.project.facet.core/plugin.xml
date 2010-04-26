@@ -47,6 +47,11 @@
     id="aliases" 
     name="%extPointAliases" 
     schema="schemas/aliases.exsd"/>
+
+  <extension-point 
+    id="groups" 
+    name="%extPointGroups" 
+    schema="schemas/groups.exsd"/>
   
   <extension
     id="nature"

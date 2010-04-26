@@ -652,8 +652,13 @@ group-not-defined
 
    <element name="group">
       <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
          <documentation>
             Describes a project facet group. A group is a named collection of project facet versions. It is used primarily as a parameter to the &quot;requires&quot; and &quot;conflicts&quot; constraints and allows a level of indirection where a facet does not need to know about all the members of the group. A given project facet version can belong to several groups. Groups are created automatically when used in the &quot;group-member&quot; element, so an explicit group declaration is optional. However, it does allow a label and a description to be associated with the group.
+
+&lt;p&gt;&lt;b&gt;DEPRECATED:&lt;/b&gt; Use groups extension point instead.&lt;/p&gt;
          </documentation>
       </annotation>
       <complexType>

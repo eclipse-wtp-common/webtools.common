@@ -41,6 +41,7 @@ public class AllTests
         suite.addTest( DefaultVersionTests.suite() );
         suite.addTest( EventDeliveryTests.suite() );
         suite.addTest( AliasingSystemTests.suite() );
+        suite.addTest( ProjectFacetGroupsTests.suite() );
         
         return suite;
     }

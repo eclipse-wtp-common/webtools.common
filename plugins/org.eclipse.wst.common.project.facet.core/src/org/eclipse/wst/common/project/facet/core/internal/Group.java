@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -85,6 +86,11 @@ public final class Group
     void addMember( final IProjectFacetVersion fv )
     {
         this.members.add( fv );
+    }
+    
+    void addMembers( final Collection<IProjectFacetVersion> facets )
+    {
+        this.members.addAll( facets );
     }
     
     public String toString()

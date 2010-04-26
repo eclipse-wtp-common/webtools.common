@@ -592,4 +592,129 @@
     
   </extension>
   
+  <!-- ProjectFacetGroupsTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="grp-f1"/>
+    <project-facet-version facet="grp-f1" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f1" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f1" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f2"/>
+    <project-facet-version facet="grp-f2" version="1.0"/>
+    <project-facet-version facet="grp-f2" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f2" version="2.0"/>
+    <action facet="grp-f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f3"/>
+    <project-facet-version facet="grp-f3" version="1.0"/>
+    <project-facet-version facet="grp-f3" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f3" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f3" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f4"/>
+    <project-facet-version facet="grp-f4" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f4" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f4" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f4" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="grp-f5"/>
+    <project-facet-version facet="grp-f5" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f5" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f5" version="2.0"/>
+    <action facet="grp-f5" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="grp-f6"/>
+    <project-facet-version facet="grp-f6" version="1.0"/>
+    <project-facet-version facet="grp-f6" version="1.2">
+      <group-member id="grp-g1"/>
+      <group-member id="grp-g2"/>
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f6" version="2.0">
+      <group-member id="grp-g1"/>
+      <group-member id="grp-g2"/>
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f6" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.groups">
+  
+    <group id="grp-g1">
+      <label>Group 1</label>
+      <description>Description for Group 1.</description>
+      <include facet="grp-f1"/>
+      <include facet="grp-f2" versions="1.2"/>
+      <include facet="grp-f3" versions="[1.2-3.0)"/>
+    </group>
+    
+    <members group="grp-g1">
+      <include facet="grp-f4"/>
+      <include facet="grp-f5" versions="1.0,1.2"/>
+    </members>
+  
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <group id="grp-g2">
+      <label>Group 2</label>
+      <description>Description for Group 2.</description>
+    </group>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.groups">
+  
+    <members group="grp-g2">
+      <include facet="grp-f1"/>
+      <include facet="grp-f2" versions="1.2"/>
+      <include facet="grp-f3" versions="[1.2-3.0)"/>
+    </members>
+    
+    <members group="grp-g2">
+      <include facet="grp-f4"/>
+      <include facet="grp-f5" versions="1.0,1.2"/>
+    </members>
+  
+  </extension>
+  
 </plugin>
