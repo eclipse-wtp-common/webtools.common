@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: Eclipse.org
 Bundle-Name: Facet UI Tests Plug-in
 Bundle-SymbolicName: org.eclipse.wst.common.project.facet.ui.tests;singleton:=true
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.4.100.qualifier
 Require-Bundle: org.eclipse.wst.common.project.facet.ui,
  org.eclipse.wst.common.project.facet.core.tests,
  org.eclipse.core.resources
