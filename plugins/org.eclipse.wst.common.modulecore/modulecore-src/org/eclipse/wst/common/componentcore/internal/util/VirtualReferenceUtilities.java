@@ -78,11 +78,12 @@ public class VirtualReferenceUtilities implements IModuleConstants {
 	public String getDefaultProjectArchiveName(IVirtualComponent component) {
 		Iterator<String> i = mapping.keySet().iterator();
 		String facet;
+		String name = (component.getDeployedName() == null ? component.getName() : component.getDeployedName());
 		while(i.hasNext()) {
 			facet = i.next();
 			if( FacetedProjectUtilities.isProjectOfType(component.getProject(), facet))
-				return component.getName() + mapping.get(facet);
+				return name + mapping.get(facet);
 		}
-		return component.getName() + JAR_EXTENSION; 
+		return name + JAR_EXTENSION; 
 	}
 }
