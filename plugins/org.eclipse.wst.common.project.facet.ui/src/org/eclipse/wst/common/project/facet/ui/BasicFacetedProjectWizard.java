@@ -14,6 +14,8 @@ package org.eclipse.wst.common.project.facet.ui;
 import static org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin.getImageDescriptor;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.NLS;
@@ -121,6 +123,27 @@ public class BasicFacetedProjectWizard
     {
     	return ( (WizardNewProjectCreationPage) getFirstPage() ).getProjectName();
     }
+
+    /**
+     * Used by the wizard to retrieve the project location that the user specifies on the
+     * first page of the wizard. The default implementation works with any subclass of
+     * the {@link WizardNewProjectCreationPage} class. Extenders who override the
+     * {@link #createFirstPage()} method will probably also need to override this method.
+     * 
+     * @return the project name specified by the user
+     */
+    
+    protected IPath getProjectLocation()
+    {
+        IPath location = ( (WizardNewProjectCreationPage) getFirstPage() ).getLocationPath();
+        
+        if( location != null && location.equals( ResourcesPlugin.getWorkspace().getRoot().getLocation() ) )
+        {
+            location = null;
+        }
+        
+        return location;
+    }
     
     public void addPages()
     {
@@ -147,6 +170,7 @@ public class BasicFacetedProjectWizard
         {
         	final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
             fpjwc.setProjectName( getProjectName() );
+            fpjwc.setProjectLocation( getProjectLocation() );
         }
         
         return super.getNextPage( page );
