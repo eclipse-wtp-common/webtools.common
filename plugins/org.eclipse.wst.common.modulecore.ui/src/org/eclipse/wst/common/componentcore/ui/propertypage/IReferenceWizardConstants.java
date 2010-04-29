@@ -7,6 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    IBM - Ongoing maintenance
+ *    
+ * API in these packages is provisional in this release
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
@@ -59,5 +62,10 @@ public interface IReferenceWizardConstants {
 	 * set the runtimePath of the reference to whatever it wants.
 	 */
 	public static final String DEFAULT_RESOURCE_LOCATION = "default.resource.location";
+
+	/**
+	 * This property helps track the current state of the component ref model as each subsequent action is taken, but not committed
+	 */
+	public static final String CURRENT_REFS = "current.references";
 	
 }

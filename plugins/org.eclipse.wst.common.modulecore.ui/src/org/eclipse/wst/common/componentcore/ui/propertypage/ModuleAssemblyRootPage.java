@@ -7,6 +7,8 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    
+ * API in these packages is provisional in this release
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 

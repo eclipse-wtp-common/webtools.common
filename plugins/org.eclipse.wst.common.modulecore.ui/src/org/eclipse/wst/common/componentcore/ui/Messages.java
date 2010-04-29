@@ -7,6 +7,8 @@
  *
  * Contributors:
  *     IBM Corporation - Initial API and implementation
+ *     
+ * API in these packages is provisional in this release
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui;
 

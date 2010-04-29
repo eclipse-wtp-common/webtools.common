@@ -39,6 +39,7 @@ import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizardPage;
@@ -152,10 +153,25 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 				public Object[] getElements(Object inputElement) {
 					IProject root = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);
 					IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-					ArrayList<IProject> list = new ArrayList<IProject>(Arrays.asList(projects));
+					ArrayList<IVirtualReference> currentRefs = (ArrayList<IVirtualReference>)getTaskModel().getObject(IReferenceWizardConstants.CURRENT_REFS);
+					ArrayList<IProject> availableList = getAvailableProjects(projects,currentRefs);
 					IVirtualComponent comp = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
-					List filtered = getModuleHandler().getFilteredProjectListForAdd(comp, list);
+					List filtered = getModuleHandler().getFilteredProjectListForAdd(comp, availableList);
 					return filtered.toArray(new IProject[filtered.size()]);
+				}
+				private ArrayList<IProject> getAvailableProjects(IProject[] projects, ArrayList<IVirtualReference> currentRefs) {
+					if (currentRefs.isEmpty())
+						return new ArrayList<IProject>(Arrays.asList(projects));
+					ArrayList availProjects = new ArrayList();
+					for (int i = 0; i < projects.length; i++) {
+						IProject proj = projects[i];
+						for (int j = 0; j < currentRefs.size(); j++) {
+							IVirtualReference ref = currentRefs.get(j);
+							if (!ref.getReferencedComponent().getProject().equals(proj))
+								availProjects.add(proj);
+						}
+					}
+					return availProjects;
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}

@@ -7,6 +7,8 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    
+ * API in these packages is provisional in this release
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
@@ -480,6 +482,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.MODULEHANDLER, getModuleHandler());
+		wizard.getTaskModel().putObject(IReferenceWizardConstants.CURRENT_REFS, currentReferences);
 		setCustomReferenceWizardProperties(wizard.getTaskModel());
 
 		IVirtualReference selected = null;
