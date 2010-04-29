@@ -30,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFact
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.osgi.framework.Bundle;
 
 public class DependencyGraphImpl implements IDependencyGraph {
 
@@ -343,7 +344,14 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					// if there are any added projects, then unfortunately the
 					// entire workspace needs to be processed
 					if (added.length > 0) {
-						IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+						IProject[] allProjects = null;
+						int state = ResourcesPlugin.getPlugin().getBundle().getState();
+						if (state == Bundle.ACTIVE) {
+							allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+						} else {
+							return;
+						}
+						
 						for (IProject sourceProject : allProjects) {
 							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 							if (component != null) {
@@ -365,7 +373,14 @@ public class DependencyGraphImpl implements IDependencyGraph {
 							}
 						}
 					} else if (updated.length > 0) {
-						IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+						IProject[] allProjects = null;
+						int state = ResourcesPlugin.getPlugin().getBundle().getState();
+						if (state == Bundle.ACTIVE) {
+							allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+						} else {
+							return;
+						}
+						
 						Set<IProject> validRefs = new HashSet<IProject>();
 						for (Object o : updated) {
 							IProject sourceProject = (IProject) o;
