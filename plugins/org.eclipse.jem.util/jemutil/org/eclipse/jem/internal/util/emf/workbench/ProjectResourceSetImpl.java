@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.29 $$  $$Date: 2010/04/02 14:57:15 $$ 
+ *  $$Revision: 1.30 $$  $$Date: 2010/04/29 01:44:22 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -690,25 +690,29 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    URI normalizedURI = theURIConverter.normalize(uri);
 	    List resourcesToRemove = new ArrayList();
 	    synchronized (resourcesLock) {
-			for (Resource resource : getImmutableResources()) {
-				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
-
-					if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
-						if (loadOnDemand && !resource.isLoaded()) {
-							demandLoadHelper(resource);
+	    	List<Resource> c = getImmutableResources();
+	        
+	        synchronized(c) {
+				for (Resource resource : c) {
+					if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
+	
+						if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
+							if (loadOnDemand && !resource.isLoaded()) {
+								demandLoadHelper(resource);
+							}
+	
+							if (map != null) {
+								map.put(uri, resource);
+							}
+							return resource;
+						} else {
+							Resource loadedRes = loadWithContentType(resource, uri, map, loadOnDemand, resourcesToRemove);
+							if (loadedRes != null)
+								return loadedRes;
 						}
-
-						if (map != null) {
-							map.put(uri, resource);
-						}
-						return resource;
-					} else {
-						Resource loadedRes = loadWithContentType(resource, uri, map, loadOnDemand, resourcesToRemove);
-						if (loadedRes != null)
-							return loadedRes;
 					}
 				}
-			}
+	        }
 		}
 	    synchronized (resourcesLock) {
 	    // Cleanup invalid resources
@@ -857,18 +861,22 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    URIConverter theURIConverter = getURIConverter();
 	    URI normalizedURI = theURIConverter.normalize(uri);
 	    synchronized (resourcesLock) {
-			for (Resource resource : getImmutableResources()) {
-				if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
-					if (loadOnDemand && !resource.isLoaded()) {
-						demandLoadHelper(resource);
+	    	List<Resource> c = getImmutableResources();
+	        
+	        synchronized(c) {
+				for (Resource resource : c) {
+					if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
+						if (loadOnDemand && !resource.isLoaded()) {
+							demandLoadHelper(resource);
+						}
+	
+						if (map != null) {
+							map.put(uri, resource);
+						}
+						return resource;
 					}
-
-					if (map != null) {
-						map.put(uri, resource);
-					}
-					return resource;
 				}
-			}
+	        }
 		}
 	    
 	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
@@ -923,7 +931,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    return resources;
 	}
 	public List<Resource> getImmutableResources() {
-		 return Collections.unmodifiableList(getResources());
+		 return Collections.synchronizedList(getResources());
 	}
 	@Override
 	public void eNotify(Notification notification) {
