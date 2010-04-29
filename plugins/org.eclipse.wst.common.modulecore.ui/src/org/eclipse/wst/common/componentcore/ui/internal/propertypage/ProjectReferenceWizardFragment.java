@@ -167,7 +167,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 						IProject proj = projects[i];
 						for (int j = 0; j < currentRefs.size(); j++) {
 							IVirtualReference ref = currentRefs.get(j);
-							if (!ref.getReferencedComponent().getProject().equals(proj))
+							if ((!ref.getReferencedComponent().getProject().equals(proj)) && !availProjects.contains(proj))
 								availProjects.add(proj);
 						}
 					}
