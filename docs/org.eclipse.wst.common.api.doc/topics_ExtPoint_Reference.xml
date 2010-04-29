@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?NLS TYPE="org.eclipse.help.toc"?>
-	 	<toc label="Extension Points Reference">
-<topic label="org.eclipse.wst.common.uriresolver.resolverExtensions" href="reference/ext/org_eclipse_wst_common_uriresolver_resolverExtensions.html"/>
-</toc>
