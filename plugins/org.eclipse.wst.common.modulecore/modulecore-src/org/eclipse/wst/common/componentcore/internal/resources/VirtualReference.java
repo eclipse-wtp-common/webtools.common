@@ -162,7 +162,7 @@ public class VirtualReference implements IVirtualReference {
 		if(anOther == null || !(anOther instanceof IVirtualReference)) return false;
 		if(anOther == this) return true;
 		IVirtualReference otherRef = (IVirtualReference) anOther;
-		return getArchiveName().equals(otherRef.getArchiveName()) && 
+		return ((getArchiveName() == null && otherRef.getArchiveName() == null) || getArchiveName().equals(otherRef.getArchiveName())) && 
 			   getRuntimePath().equals(otherRef.getRuntimePath()) && 
 			   getEnclosingComponent().equals(otherRef.getEnclosingComponent()) && 
 			   getReferencedComponent().equals(otherRef.getReferencedComponent()) && 
