@@ -165,14 +165,11 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 					ArrayList availProjects = new ArrayList();
 					for (int i = 0; i < projects.length; i++) {
 						IProject proj = projects[i];
-						boolean matches = false;
-						for (int j = 0; j < currentRefs.size() && !matches; j++) {
+						for (int j = 0; j < currentRefs.size(); j++) {
 							IVirtualReference ref = currentRefs.get(j);
-							if ((ref.getReferencedComponent().getProject().equals(proj)) || availProjects.contains(proj))
-								matches = true;
+							if ((!ref.getReferencedComponent().getProject().equals(proj)) && !availProjects.contains(proj))
+								availProjects.add(proj);
 						}
-						if( !matches )
-							availProjects.add(proj);
 					}
 					return availProjects;
 				}
