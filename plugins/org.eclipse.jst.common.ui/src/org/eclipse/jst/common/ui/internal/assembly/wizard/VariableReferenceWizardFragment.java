@@ -214,6 +214,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
+		String runtimeLoc = (String)getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
 		if (selected != null ) {
 			ArrayList<IVirtualReference> refList = new ArrayList<IVirtualReference>();
 //			for (int i = 0; i < selected.length; i++) {
@@ -228,6 +229,9 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 									type + variablePath.toString());
 					VirtualReference ref = new VirtualReference(rootComponent, archive);
 					ref.setArchiveName(resolvedPath.lastSegment());
+					if (runtimeLoc != null) {
+						ref.setRuntimePath(new Path(runtimeLoc).makeAbsolute());
+					}
 					refList.add(ref);
 				}
 //			}

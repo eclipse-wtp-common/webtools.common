@@ -17,6 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.ui.wizards.BuildPathDialogAccess;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -101,6 +102,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
+		String runtimeLoc = (String)getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
 		if (selected != null && selected.length > 0) {
 			ArrayList<IVirtualReference> refList = new ArrayList<IVirtualReference>();
 			for (int i = 0; i < selected.length; i++) {
@@ -112,6 +114,9 @@ public class JarReferenceWizardFragment extends WizardFragment {
 								type + selected[i].makeRelative().toString());
 				VirtualReference ref = new VirtualReference(rootComponent, archive);
 				ref.setArchiveName(selected[i].lastSegment());
+				if (runtimeLoc != null) {
+					ref.setRuntimePath(new Path(runtimeLoc).makeAbsolute());
+				}
 				refList.add(ref);
 			}
 			IVirtualReference[] finalRefs = refList.toArray(new IVirtualReference[refList.size()]);
