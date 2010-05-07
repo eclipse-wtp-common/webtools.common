@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -162,7 +162,7 @@ public class VirtualReference implements IVirtualReference {
 		if(anOther == null || !(anOther instanceof IVirtualReference)) return false;
 		if(anOther == this) return true;
 		IVirtualReference otherRef = (IVirtualReference) anOther;
-		return ((getArchiveName() == null && otherRef.getArchiveName() == null) || getArchiveName().equals(otherRef.getArchiveName())) && 
+		return (getArchiveName() != null ? getArchiveName().equals(otherRef.getArchiveName()) : (otherRef.getArchiveName() == null ? true : false)) && 
 			   getRuntimePath().equals(otherRef.getRuntimePath()) && 
 			   getEnclosingComponent().equals(otherRef.getEnclosingComponent()) && 
 			   getReferencedComponent().equals(otherRef.getReferencedComponent()) && 
