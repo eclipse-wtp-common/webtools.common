@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -20,10 +20,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
@@ -122,19 +125,19 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			case IResource.PROJECT: {
 				int kind = delta.getKind();
 				if ((IResourceDelta.ADDED & kind) != 0) {
-					queueProjectAdded((IProject) resource);
+					update((IProject) resource, IDependencyGraph.ADDED);
 					return false;
 				} else if ((IResourceDelta.REMOVED & kind) != 0) {
-					queueProjectDeleted((IProject) resource);
+					update((IProject) resource, IDependencyGraph.REMOVED);
 					return false;
 				} else if ((IResourceDelta.CHANGED & kind) != 0) {
 					int flags = delta.getFlags();
 					if ((IResourceDelta.OPEN & flags) != 0) {
 						boolean isOpen = ((IProject) resource).isOpen();
 						if (isOpen) {
-							queueProjectAdded((IProject) resource);
+							update((IProject) resource, IDependencyGraph.ADDED);
 						} else {
-							queueProjectDeleted((IProject) resource);
+							update((IProject) resource, IDependencyGraph.REMOVED);
 						}
 						return false;
 					}
@@ -150,7 +153,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			case IResource.FILE:
 				String name = resource.getName();
 				if (name.equals(WTPModulesResourceFactory.WTP_MODULES_SHORT_NAME)) {
-					update(resource.getProject());
+					update(resource.getProject(), IDependencyGraph.MODIFIED);
 				}
 			default:
 				return false;
@@ -185,7 +188,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				preUpdate();
 				IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				for (IProject sourceProject : allProjects) {
-					queueProjectAdded(sourceProject);
+					update(sourceProject, IDependencyGraph.ADDED);
 				}	
 			} finally{
 				postUpdate();
@@ -253,11 +256,19 @@ public class DependencyGraphImpl implements IDependencyGraph {
 
 	private final GraphUpdateJob graphUpdateJob = new GraphUpdateJob();
 	private final Object jobLock = new Object();
+	
+	//This lock is used for deadlock avoidance.  The specific scenario
+	//is during waitForAllUpdates(); if a deadlock is detected during 
+	//the lock's acquire() method, this thread will temporarily release
+	//its already acquired ILocks to allow other threads to continue.
+	//When execution is returned to this thread, any release ILocks will
+	//be reacquired before proceeding
+	private final ILock jobILock = Job.getJobManager().newLock();
 
 	private class GraphUpdateJob extends Job {
 
 		public GraphUpdateJob() {
-			super("Graph Update Job");
+			super(Resources.JOB_NAME);
 			setSystem(true);
 			//[Bug 238685] need to lock on workspace to avoid dead lock
 			setRule(ResourcesPlugin.getWorkspace().getRoot());
@@ -317,147 +328,152 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		}
 
 		protected IStatus run(IProgressMonitor monitor) {
-			final DependencyGraphEvent event = new DependencyGraphEvent(); 
-			final Object[] removed = projectsRemoved.getListeners();
-			final Object[] updated = projectsUpdated.getListeners();
-			final Object[] added = projectsAdded.getListeners();
-			if (removed.length == 0 && updated.length == 0 && added.length == 0) {
-				return Status.OK_STATUS;
-			}
-			synchronized (graphLock) {
-				modStamp++;
-			}
-			SafeRunner.run(new ISafeRunnable() {
-				public void handleException(Throwable e) {
-					ModulecorePlugin.logError(e);
+			try{
+				jobILock.acquire();
+				final DependencyGraphEvent event = new DependencyGraphEvent(); 
+				final Object[] removed = projectsRemoved.getListeners();
+				final Object[] updated = projectsUpdated.getListeners();
+				final Object[] added = projectsAdded.getListeners();
+				if (removed.length == 0 && updated.length == 0 && added.length == 0) {
+					return Status.OK_STATUS;
 				}
-
-				public void run() throws Exception {
-					// this is the simple case; just remove them all
-					synchronized (graphLock) {
-						for (Object o : removed) {
-							IProject project = (IProject) o;
-							removeAllReferences(project, event);
-						}
+				synchronized (graphLock) {
+					modStamp++;
+				}
+				SafeRunner.run(new ISafeRunnable() {
+					public void handleException(Throwable e) {
+						ModulecorePlugin.logError(e);
 					}
-					// get the updated queue in case there are any adds
-					// if there are any added projects, then unfortunately the
-					// entire workspace needs to be processed
-					if (added.length > 0) {
-						IProject[] allProjects = null;
-						int state = ResourcesPlugin.getPlugin().getBundle().getState();
-						if (state == Bundle.ACTIVE) {
-							allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-						} else {
-							return;
-						}
-						
-						for (IProject sourceProject : allProjects) {
-							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
-							if (component != null) {
-								IVirtualReference[] references = null;
-								if(referenceOptions != null && component instanceof VirtualComponent) {
-									references = ((VirtualComponent)component).getReferences(referenceOptions);
-								} else {
-									references = component.getReferences();
-								}
-								for (IVirtualReference ref : references) {
-									IVirtualComponent targetComponent = ref.getReferencedComponent();
-									if (targetComponent != null) {
-										IProject targetProject = targetComponent.getProject();
-										if (targetProject != null && !targetProject.equals(sourceProject)) {
-											addReference(sourceProject, targetProject, event);
-										}
-									}
-								}
+	
+					public void run() throws Exception {
+						// this is the simple case; just remove them all
+						synchronized (graphLock) {
+							for (Object o : removed) {
+								IProject project = (IProject) o;
+								removeAllReferences(project, event);
 							}
 						}
-					} else if (updated.length > 0) {
-						IProject[] allProjects = null;
-						int state = ResourcesPlugin.getPlugin().getBundle().getState();
-						if (state == Bundle.ACTIVE) {
-							allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-						} else {
-							return;
-						}
-						
-						Set<IProject> validRefs = new HashSet<IProject>();
-						for (Object o : updated) {
-							IProject sourceProject = (IProject) o;
-							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
-							if (component != null) {
-								validRefs.clear();
-								IVirtualReference[] references = null;
-								if(referenceOptions != null && component instanceof VirtualComponent) {
-									references = ((VirtualComponent)component).getReferences(referenceOptions);
-								} else {
-									references = component.getReferences();
-								}
-								for (IVirtualReference ref : references) {
-									IVirtualComponent targetComponent = ref.getReferencedComponent();
-									if (targetComponent != null) {
-										IProject targetProject = targetComponent.getProject();
-										if (targetProject != null && !targetProject.equals(sourceProject)) {
-											validRefs.add(targetProject);
-										}
-									}
-								}
-								synchronized (graphLock) {
-									for (IProject targetProject : allProjects) {
-										// if the reference was identified
-										// above, be sure to add it
-										// otherwise, remove it
-										if (validRefs.remove(targetProject)) {
-											addReference(sourceProject, targetProject, event);
-										} else {
-											removeReference(sourceProject, targetProject, event);
-										}
-									}
-								}
+						// get the updated queue in case there are any adds
+						// if there are any added projects, then unfortunately the
+						// entire workspace needs to be processed
+						if (added.length > 0) {
+							IProject[] allProjects = null;
+							int state = ResourcesPlugin.getPlugin().getBundle().getState();
+							if (state == Bundle.ACTIVE) {
+								allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 							} else {
-								// if this project is not a component, then it
-								// should be completely removed.
-								removeAllReferences(sourceProject, event);
+								return;
+							}
+							
+							for (IProject sourceProject : allProjects) {
+								IVirtualComponent component = ComponentCore.createComponent(sourceProject);
+								if (component != null) {
+									IVirtualReference[] references = null;
+									if(referenceOptions != null && component instanceof VirtualComponent) {
+										references = ((VirtualComponent)component).getReferences(referenceOptions);
+									} else {
+										references = component.getReferences();
+									}
+									for (IVirtualReference ref : references) {
+										IVirtualComponent targetComponent = ref.getReferencedComponent();
+										if (targetComponent != null) {
+											IProject targetProject = targetComponent.getProject();
+											if (targetProject != null && !targetProject.equals(sourceProject)) {
+												addReference(sourceProject, targetProject, event);
+											}
+										}
+									}
+								}
+							}
+						} else if (updated.length > 0) {
+							IProject[] allProjects = null;
+							int state = ResourcesPlugin.getPlugin().getBundle().getState();
+							if (state == Bundle.ACTIVE) {
+								allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+							} else {
+								return;
+							}
+							
+							Set<IProject> validRefs = new HashSet<IProject>();
+							for (Object o : updated) {
+								IProject sourceProject = (IProject) o;
+								IVirtualComponent component = ComponentCore.createComponent(sourceProject);
+								if (component != null) {
+									validRefs.clear();
+									IVirtualReference[] references = null;
+									if(referenceOptions != null && component instanceof VirtualComponent) {
+										references = ((VirtualComponent)component).getReferences(referenceOptions);
+									} else {
+										references = component.getReferences();
+									}
+									for (IVirtualReference ref : references) {
+										IVirtualComponent targetComponent = ref.getReferencedComponent();
+										if (targetComponent != null) {
+											IProject targetProject = targetComponent.getProject();
+											if (targetProject != null && !targetProject.equals(sourceProject)) {
+												validRefs.add(targetProject);
+											}
+										}
+									}
+									synchronized (graphLock) {
+										for (IProject targetProject : allProjects) {
+											// if the reference was identified
+											// above, be sure to add it
+											// otherwise, remove it
+											if (validRefs.remove(targetProject)) {
+												addReference(sourceProject, targetProject, event);
+											} else {
+												removeReference(sourceProject, targetProject, event);
+											}
+										}
+									}
+								} else {
+									// if this project is not a component, then it
+									// should be completely removed.
+									removeAllReferences(sourceProject, event);
+								}
 							}
 						}
-					}
-					boolean scheduleUpdate = false;
-					synchronized (graphLock) {
-						if(referenceOptions != null){
-							scheduleUpdate = true;
-							referenceOptions = null;
+						boolean scheduleUpdate = false;
+						synchronized (graphLock) {
+							if(referenceOptions != null){
+								scheduleUpdate = true;
+								referenceOptions = null;
+							}
 						}
-					}
-					if(scheduleUpdate){
-						initAll();
-					}
-					
-					//fire notifications on a different job so they do not block waitForAllUpdates()
-					Job notificationJob = new Job("Graph Update Notification Job"){
-						@Override
-						protected IStatus run(final IProgressMonitor monitor) {
-							SafeRunner.run(new ISafeRunnable() {
-								public void run() throws Exception {
-									for(Object listener : listeners.getListeners()){
-										((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
+						if(scheduleUpdate){
+							initAll();
+						}
+						
+						//fire notifications on a different job so they do not block waitForAllUpdates()
+						Job notificationJob = new Job("Graph Update Notification Job"){
+							@Override
+							protected IStatus run(final IProgressMonitor monitor) {
+								SafeRunner.run(new ISafeRunnable() {
+									public void run() throws Exception {
+										for(Object listener : listeners.getListeners()){
+											((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
+										}
+										monitor.done();
 									}
-									monitor.done();
-								}
-
-								public void handleException(Throwable exception) {
-									ModulecorePlugin.logError(exception);
-								}
-							});
-							return Status.OK_STATUS;
-						}
-					};
-					notificationJob.setSystem(true);
-					notificationJob.setRule(null);
-					notificationJob.schedule();
-				}
-			});
-			// System.err.println(IDependencyGraph.INSTANCE);
-			return Status.OK_STATUS;
+	
+									public void handleException(Throwable exception) {
+										ModulecorePlugin.logError(exception);
+									}
+								});
+								return Status.OK_STATUS;
+							}
+						};
+						notificationJob.setSystem(true);
+						notificationJob.setRule(null);
+						notificationJob.schedule();
+					}
+				});
+				// System.err.println(IDependencyGraph.INSTANCE);
+				return Status.OK_STATUS;
+			} finally {
+				jobILock.release();
+			}
 		}
 	};
 
@@ -536,54 +552,57 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		graphUpdateJob.schedule(JOB_DELAY);
 	}
 
-	/**
-	 * Blocks until the graph is finished updating
-	 */
 	public void waitForAllUpdates(IProgressMonitor monitor) {
-		Thread graphUpdateThread = graphUpdateJob.getThread();
-		if(graphUpdateThread != null && graphUpdateThread != Thread.currentThread()) {
-			try {
-				// Note: Since the Javadoc for Job.join() states:
-				//     If the calling thread owns a lock or object monitor that the joined thread
-				//     is waiting for, deadlock will occur.
-				// we need to do whatever deadlock avoidance we can.
-				
-				// If this thread is the one handling the current workspace operation,
-				// then we need to try to force this thread to yield to the GraphUpdateJob,
-				// or we really risk a deadlock.
-				if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
-					IJobManager manager = Job.getJobManager();
-					Job job = manager.currentJob();
-					// If we are running a job and the job has no rule, force this job
-					// to yield to the GraphUpdateJob by applying the same scheduling rule.
-					if (job != null && job.getRule() == null) {
-						try {
-							manager.beginRule(ResourcesPlugin.getWorkspace().getRoot(), monitor);
-							graphUpdateJob.join();
-						}
-						finally {
-							manager.endRule(ResourcesPlugin.getWorkspace().getRoot());
-						}
-					}
-					// Else for now, cross your fingers until additional deadlock avoidance
-					// can be implemented.
-					else {
-						graphUpdateJob.join();
-					}
-				}
-				else {
-					// Else for now, cross your fingers until additional deadlock avoidance
-					// can be implemented.
-					graphUpdateJob.join();
-				}
-			} catch (InterruptedException e) {
-				ModulecorePlugin.logError(e);
+		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		subMonitor.subTask(Resources.WAITING);
+		
+		Job currentJob = Job.getJobManager().currentJob();
+		if (currentJob != graphUpdateJob) {
+			if(Job.getJobManager().isSuspended()){
+				Job.getJobManager().resume();
 			}
+			while(isUpdateNecessary()){
+				if(subMonitor.isCanceled()){
+					throw new OperationCanceledException();
+				}
+				// Ensure any pending work has caused the job to become scheduled
+				if(graphUpdateJob.shouldSchedule()){
+					graphUpdateJob.schedule();
+				}
+				// Wake up any sleeping jobs since we're going to wait on the job, 
+				// there is no sense to wait for a sleeping job
+				graphUpdateJob.wakeUp();
+				if(currentJob != null){
+					currentJob.yieldRule(subMonitor.newChild(100));
+				}
+				boolean interrupted = false;
+				try {
+					if(jobILock.acquire(500)){
+						jobILock.release();
+						//only exit if the job has had a chance to run
+						if(!isUpdateNecessary()){
+							break;	
+						}
+					}
+				} catch (InterruptedException e) {
+					interrupted = true;
+				} finally{
+					if(interrupted){
+						// Propagate interrupts
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		}		
+		if(null != monitor){
+			monitor.done();
 		}
-			
-		if(graphUpdateJob.shouldSchedule()){
-			graphUpdateJob.run(monitor);
-		}
+	}
+
+	// necessary if the job is running, waiting, or sleeping
+	// or there is anything in the graphqueue
+	private boolean isUpdateNecessary() {
+		return graphUpdateJob.getState() != Job.NONE || graphUpdateJob.shouldSchedule();
 	}
 
 	public String toString() {
@@ -604,6 +623,16 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			return buff.toString();
 		}
 
+	}
+	
+	public static final class Resources extends NLS {
+	    public static String WAITING;
+	    public static String JOB_NAME;
+	    
+	    static
+	    {
+	        initializeMessages( DependencyGraphImpl.class.getName(), Resources.class );
+	    }
 	}
 
 }
