@@ -32,6 +32,28 @@ public abstract class AbstractResourceListVirtualComponent implements IVirtualCo
 		this.project = p;
 		this.referencingComp = referencingComponent;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(this == o){
+			return true;
+		}
+		if(o == null){
+			return false;
+		}
+		if(!this.getClass().equals(o.getClass())){
+			return false;
+		}
+		AbstractResourceListVirtualComponent other = (AbstractResourceListVirtualComponent)o;
+		return (project == null ? other.project == null : project.equals(other.project)) && 
+			   (referencingComp == null ? other.referencingComp == null : referencingComp.equals(other.referencingComp));
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode() + (project == null ? 0 : project.hashCode()) + (referencingComp == null ? 0 : referencingComp.hashCode());
+	}
+	
 
 	public void create(int updateFlags, IProgressMonitor aMonitor)
 			throws CoreException {
