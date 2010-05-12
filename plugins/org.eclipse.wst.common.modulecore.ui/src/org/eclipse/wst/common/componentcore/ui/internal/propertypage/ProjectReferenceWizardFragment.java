@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -28,6 +29,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -41,10 +43,13 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizardPage;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
+import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants.ProjectConverterOperationProvider;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ProjectReferenceWizardFragment extends WizardFragment {
@@ -100,17 +105,13 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		VirtualReference[] refs = new VirtualReference[selected.length];
 		String runtimeLoc = (String) getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
+		ProjectConverterOperationProvider converter = (ProjectConverterOperationProvider)getTaskModel().getObject(IReferenceWizardConstants.PROJECT_CONVERTER_OPERATION_PROVIDER);
 		runtimeLoc = runtimeLoc != null ? runtimeLoc : "/"; //$NON-NLS-1$
 		for (int i = 0; i < selected.length; i++) {
 			IProject proj = selected[i];
 			
 			if( !ModuleCoreNature.isFlexibleProject(proj)) {
-				try {
-					ModuleCoreNature.addModuleCoreNatureIfNecessary(proj, monitor);
-					ProjectFacetsManager.create(proj, true, monitor);
-				} catch( CoreException ee) {
-					// TODO something
-				}
+				convertProject(selected[i], converter, monitor);
 			}
 			String path = null;
 			refs[i] = new VirtualReference(
@@ -122,6 +123,28 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		getTaskModel().putObject(IReferenceWizardConstants.FINAL_REFERENCE, refs);
 	}
 
+	protected void convertProject(IProject proj, ProjectConverterOperationProvider converter, IProgressMonitor monitor) {
+		if( converter != null ) {
+			IDataModelOperation operation = converter.getConversionOperation(proj);
+			if( operation != null ) {
+				try {
+					operation.execute(monitor, null);
+					return;
+				} catch( ExecutionException ee ) {
+					ModuleCoreUIPlugin.log(NLS.bind(Messages.ProjectConversionError, proj.getName()), ee);
+				}
+			}
+		} 
+		try {
+			if( !ModuleCoreNature.isFlexibleProject(proj)) {
+				ModuleCoreNature.addModuleCoreNatureIfNecessary(proj, monitor);
+				ProjectFacetsManager.create(proj, true, monitor);
+			}
+		} catch( CoreException ce) {
+			ModuleCoreUIPlugin.log(NLS.bind(Messages.ProjectConversionError, proj.getName()), ce);
+		}
+	}
+	
 	protected String getArchiveName(IProject proj, IVirtualComponent comp) {
 		return getModuleHandler().getArchiveName(proj,comp);
 	}

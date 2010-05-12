@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+
 public interface IReferenceWizardConstants {
 	/**
 	 * The key representing that this wizard can return a folder mapping
@@ -68,4 +71,17 @@ public interface IReferenceWizardConstants {
 	 */
 	public static final String CURRENT_REFS = "current.references";
 	
+	/**
+	 * This key should be used when you want to convert a project into 
+	 * a specific modulecore project type.
+	 * 
+	 */
+	public static final String PROJECT_CONVERTER_OPERATION_PROVIDER = "project.converter.operation.provider";
+	
+	/**
+	 * An interface to provide an operation for converting a specific project
+	 */
+	public static interface ProjectConverterOperationProvider {
+		public IDataModelOperation getConversionOperation(IProject project);
+	}
 }
