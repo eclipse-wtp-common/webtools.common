@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Modulecore Plug-in
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.wst.common.modulecore; singleton:=true
-Bundle-Version: 1.1.61.qualifier
+Bundle-Version: 1.1.62.qualifier
 Bundle-Activator: org.eclipse.wst.common.componentcore.internal.ModulecorePlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.componentcore,
