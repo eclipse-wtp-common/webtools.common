@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ResourceSetWorkbenchSynchronizer.java,v $$
- *  $$Revision: 1.8 $$  $$Date: 2010/04/02 14:57:14 $$ 
+ *  $$Revision: 1.9 $$  $$Date: 2010/05/12 22:47:45 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -36,7 +36,109 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	protected ResourceSet resourceSet;
 
 	/** Extenders that will be notified after a pre build resource change */
-	protected Set extenders;
+	protected QueuingHashSet <ISynchronizerExtender> extenders;
+
+	/**
+	 * This HashSet is similar to a regular HashSet except it can be put in
+	 * queuing mode with a call to the {@link #startQueuing()} method.
+	 * While in queuing mode any adds or removes will not be committed to 
+	 * the set until a call to {@link #stopQueuing()} is made. This allows
+	 * the QueuingHasSet to be put in queuing mode prior to iterating over
+	 * the contents without needing to worry about changes coming in and
+	 * throwing ConcurrentModificationExceptions.
+	 * 
+	 * @author jsholl
+	 *
+	 * @param <E>
+	 */
+	protected class QueuingHashSet <E> extends HashSet <E> {
+
+		private static final long serialVersionUID = 6959354060950816784L;
+	
+		private Object lock = new Object();
+		
+		private boolean queuing = false;
+		private Set <E> addQueue = null;
+		private Set removeQueue = null;
+		private int initialCapacity = 3;
+		
+		public QueuingHashSet(int capacity) {
+			super(capacity);
+			addQueue = new HashSet<E>(capacity);
+			removeQueue = new HashSet(capacity);
+			initialCapacity = capacity;
+		}
+
+		public void startQueuing() {
+			synchronized(lock){
+				if(queuing){
+					throw new UnsupportedOperationException("startQueuing may only be called while not already queuing");
+				}
+				this.queuing = true;
+				addQueue.clear();
+				removeQueue.clear();
+			}
+		}
+
+		/**
+		 * Returns the set of adds which occurred while in queuing mode.
+		 * @return
+		 */
+		public Set <E> stopQueuing() {
+			synchronized(lock){
+				if(!queuing){
+					throw new UnsupportedOperationException("stopQueuing may only be called while queuing");
+				}
+				queuing = false;
+				removeAll(removeQueue);
+				addAll(addQueue);
+				if(!addQueue.isEmpty()){
+					Set <E> queue = addQueue;
+					addQueue = new HashSet<E>(initialCapacity);
+					return queue;
+				}
+				return Collections.emptySet();
+			}
+		}
+		
+		@Override
+		public boolean add(E object) {
+			synchronized (lock) {
+				if(queuing){
+					if(contains(object)){
+						return false;
+					}
+					return addQueue.add(object);
+				} else{
+					return super.add(object);
+				}
+			}
+		}
+		
+		@Override
+		public boolean remove(Object object) {
+			synchronized (lock) {
+				if(queuing){
+					if(contains(object)){
+						return removeQueue.add(object);
+					} else {
+						return false;
+					}
+				} else {
+					return super.remove(object);
+				}
+			}
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			synchronized (lock) {
+				return super.isEmpty();	
+			}
+		}
+		
+	};
+	
 
 	/** The delta for this project that will be broadcast to the extenders */
 	protected IResourceDelta currentProjectDelta;
@@ -84,20 +186,38 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	}
 
 
-	protected synchronized void notifyExtendersIfNecessary() {
-		if (currentEventType != IResourceChangeEvent.POST_CHANGE || extenders == null || currentProjectDelta == null)
+	protected void notifyExtendersIfNecessary() {
+		if (currentEventType != IResourceChangeEvent.POST_CHANGE || currentProjectDelta == null)
 			return;
-		for (Iterator iterator = Collections.unmodifiableSet(extenders).iterator(); iterator.hasNext();) {
-			ISynchronizerExtender extender = (ISynchronizerExtender) iterator.next();
-			extender.projectChanged(currentProjectDelta);	
+		if(extenders != null){
+			Set <ISynchronizerExtender> extendersToNotify = extenders;
+			while(!extendersToNotify.isEmpty()){
+				try{
+					extenders.startQueuing();
+					for (Iterator <ISynchronizerExtender> iterator = extendersToNotify.iterator(); iterator.hasNext();) {
+						ISynchronizerExtender extender = iterator.next();
+						extender.projectChanged(currentProjectDelta);
+					}
+				} finally {
+					extendersToNotify = extenders.stopQueuing();
+				}
+			}
 		}
 	}
 
-	protected synchronized void notifyExtendersOfClose() {
-		if (extenders != null && !extenders.isEmpty()) {
-			for (Iterator iterator = Collections.unmodifiableSet(extenders).iterator(); iterator.hasNext();) {
-				ISynchronizerExtender extender = (ISynchronizerExtender) iterator.next();
-				extender.projectClosed();
+	protected void notifyExtendersOfClose() {
+		if(extenders != null){
+			Set <ISynchronizerExtender> extendersToNotify = extenders;
+			while(!extendersToNotify.isEmpty()){
+				try{
+					extenders.startQueuing();
+					for (Iterator <ISynchronizerExtender> iterator = extendersToNotify.iterator(); iterator.hasNext();) {
+						ISynchronizerExtender extender = iterator.next();
+						extender.projectClosed();
+					}
+				} finally {
+					extendersToNotify = extenders.stopQueuing();
+				}
 			}
 		}
 	}
@@ -145,9 +265,10 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 	 * 
 	 * @since 1.0.0
 	 */
-	public synchronized void addExtender(ISynchronizerExtender extender) {
-		if (extenders == null)
-			extenders = new HashSet(3);
+	public void addExtender(ISynchronizerExtender extender) {
+		if (extenders == null){
+			extenders = new QueuingHashSet <ISynchronizerExtender>(3);
+		}
 		extenders.add(extender);
 	}
 
