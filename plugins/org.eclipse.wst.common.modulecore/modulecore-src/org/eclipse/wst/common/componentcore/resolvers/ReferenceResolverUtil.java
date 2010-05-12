@@ -28,7 +28,7 @@ public class ReferenceResolverUtil {
 	private ArrayList<IReferenceResolver> sorted = null;
 	private DefaultReferenceResolver defaultResolver = new DefaultReferenceResolver();
 	public IReferenceResolver[] getResolvers() {
-		if( resolvers == null )
+		if( resolvers == null || sorted == null)
 			loadResolvers();
 		if (sorted.isEmpty()) return new IReferenceResolver[0];
         return (IReferenceResolver[]) sorted.toArray(new IReferenceResolver[sorted.size()]);
@@ -75,10 +75,9 @@ public class ReferenceResolverUtil {
 				// TODO figure it out
 			}
 		}
-		resolvers = map;
 		
 		// Cache the sorted ones
-		List<ReferenceResolverWrapper> list = new ArrayList(resolvers.values());
+		List<ReferenceResolverWrapper> list = new ArrayList(map.values());
 		Comparator comparator = new Comparator() { 
 			public int compare(Object o1, Object o2) {
 				if( !(o1 instanceof ReferenceResolverWrapper))
@@ -96,6 +95,7 @@ public class ReferenceResolverUtil {
 		while(i.hasNext())
 			sorted.add(((ReferenceResolverWrapper)i.next()).getResolver());
 		this.sorted = sorted;
+		this.resolvers = map;
 	}
 	
 	
