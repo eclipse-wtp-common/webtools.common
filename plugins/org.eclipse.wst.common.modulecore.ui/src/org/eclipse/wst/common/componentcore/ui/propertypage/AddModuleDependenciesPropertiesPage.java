@@ -521,6 +521,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if( o != null && o instanceof ComponentResourceProxy ) {
 			ComponentResourceProxy proxy = (ComponentResourceProxy)o;
 			resourceMappings.add(proxy);
+			resourceMappingsChanged = true;
 		}
 	}
 	
@@ -558,8 +559,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				Object o = selectedStuff[i];
 				if( o instanceof IVirtualReference)
 					currentReferences.remove(o);
-				else if( o instanceof ComponentResourceProxy) 
+				else if( o instanceof ComponentResourceProxy) {
 					resourceMappings.remove(o);
+					resourceMappingsChanged = true;
+				}
 			}
 			refresh();
 		}
