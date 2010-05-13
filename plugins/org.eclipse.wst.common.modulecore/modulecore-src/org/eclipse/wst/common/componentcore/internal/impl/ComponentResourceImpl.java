@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.3 2006/01/11 18:40:31 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.4 2010/05/13 04:04:35 canderson Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil.ESynchronizedAdapterList;
 
 /**
  * <!-- begin-user-doc -->
@@ -429,6 +430,16 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	public void setOwningProject(IProject aProject) {
 		owningProject = aProject;
 	}
+	
+	@Override
+	public EList eAdapters()
+	  {
+	    if (eAdapters == null)
+	    {
+	      eAdapters =  new ESynchronizedAdapterList(this);
+	    }
+	    return eAdapters;
+	  }
 	
 
 } //ComponentResourceImpl

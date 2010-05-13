@@ -11,10 +11,12 @@
 package org.eclipse.wst.common.internal.emf.utilities;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.BasicNotifierImpl.EAdapterList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
@@ -34,7 +36,80 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	private static FileNotFoundDetector FILE_NOT_FOUND_DETECTOR;
 	private static String NAME_ATTRIBUTE_STRING = "name"; //$NON-NLS-1$
 
+	public static class ESynchronizedAdapterList extends EAdapterList
+	  {
 
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 7855438339187540718L;
+
+		public ESynchronizedAdapterList(Notifier notifier) {
+			super(notifier);
+		}
+
+		@Override
+		public synchronized boolean add(Object object)
+	    {
+	    return super.add(object);
+	    }
+
+	    @Override
+		public synchronized void add(int index, Object object)
+	    {
+	    super.add(index, object);
+	    }
+
+	    @Override
+		public synchronized boolean addAll(Collection collection)
+	    {
+	    return super.addAll(collection);
+	    }
+
+	    @Override
+		public synchronized boolean remove(Object object)
+	    {
+	    return super.remove(object);
+	    }
+
+	    @Override
+		public synchronized Object remove(int index)
+	    {
+	    return super.remove(index);
+	    }
+
+	    @Override
+		public synchronized boolean removeAll(Collection collection)
+	    {
+	    return super.removeAll(collection);
+	    }
+
+	    @Override
+		public synchronized void clear()
+	    {
+	     super.clear();
+	    }
+
+
+	    @Override
+		public synchronized Object set(int index, Object object)
+	    {
+	    return super.set(index, object);
+	    }
+
+	    @Override
+		public synchronized void move(int newPosition, Object object)
+	    {
+	    super.move(newPosition, object);
+	    }
+
+	    @Override
+		public synchronized Object move(int newPosition, int oldPosition)
+	    {
+	    return super.move(newPosition, oldPosition);
+	    }
+	  }
+	
 	public interface FileNotFoundDetector {
 		boolean isFileNotFound(WrappedException wrappedEx);
 	}
