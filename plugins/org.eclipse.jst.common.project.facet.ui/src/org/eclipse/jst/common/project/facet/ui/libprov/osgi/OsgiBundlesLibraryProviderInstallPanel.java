@@ -127,6 +127,7 @@ public class OsgiBundlesLibraryProviderInstallPanel
             public void dispose()
             {
                 this.bundleImage.dispose();
+                this.bundleImageError.dispose();
             }
         };
         
