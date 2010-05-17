@@ -910,6 +910,21 @@ public final class FacetsSelectionPanel
     
     private void handleProjectFacetsChangedEvent( final IFacetedProjectEvent event )
     {
+        if( ! Thread.currentThread().equals( getDisplay().getThread() ) )
+        {
+            final Runnable uiRunnable = new Runnable()
+            {
+                public void run()
+                {
+                    handleProjectFacetsChangedEvent( event );
+                }
+            };
+            
+            getDisplay().asyncExec( uiRunnable );
+            
+            return;
+        }
+        
         final Set<ICategory> affectedCategories = new HashSet<ICategory>();
         
         if( event != null )
@@ -924,13 +939,8 @@ public final class FacetsSelectionPanel
                 final IProjectFacet f = fv.getProjectFacet();
                 final boolean checked = fpjwc.hasProjectFacet( fv );
                 
-                final CheckboxTreeViewer treeViewer = this.treeViewer;
-                Display.getDefault().asyncExec(new Runnable() {
-                        public void run() {
-                            treeViewer.setChecked( f, checked );
-                            treeViewer.update( f, null );
-                        }
-                });
+                this.treeViewer.setChecked( f, checked );
+                this.treeViewer.update( f, null );
 
                 final ICategory category = f.getCategory();
                 
