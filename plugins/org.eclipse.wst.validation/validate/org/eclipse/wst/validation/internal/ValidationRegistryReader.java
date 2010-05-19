@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2009 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1221,7 +1221,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				getIncremental(element), getFullBuild(element), element, helperImplName, getMigrationMetaData(element),
 				pluginId, getRuleGroup(element), runChildren[0], validatorName.intern(), validatorImplName.intern(),
 				getContentTypeBindings(element), getDependentValidatorValue(element), getEnablementElement(element),
-				getFacetIds(element), getFilters(element), getProjectNatureFilters(element), markerIds);
+				getFacetIds(element), getFilters(element), getProjectNatureFilters(element), markerIds, getRunStragety(element));
 		
 		
 		if (Tracing.isTraceV1()) {
@@ -1349,5 +1349,22 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return vmd.getValidator();
 		return null;
 	}
+	/**
+	 * Given an IConfigurationElement from plugin.xml, return whether or not the validator is called by project
+	 * 
+	 * <p>If no project attribute is specified, the default is false (validator is called by resource)
+	 */
+	private boolean getRunStragety(IConfigurationElement element) {
+		
+		IConfigurationElement[] runChildren = element.getChildren(TAG_RUN_STRATEGY);
+		
+		if (runChildren == null || runChildren.length < 1) return RegistryConstants.ATT_PROJECT_DEFAULT;
+		String project = runChildren[0].getAttribute(ATT_PROJECT);
+		if (project == null)return RegistryConstants.ATT_PROJECT_DEFAULT;
+
+		return Boolean.valueOf(project.trim()); 
+	
+	}
+	
 
 }

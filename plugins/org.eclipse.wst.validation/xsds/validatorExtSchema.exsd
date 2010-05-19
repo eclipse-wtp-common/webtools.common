@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.validation">
+<schema targetNamespace="org.eclipse.wst.validation" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.wst.validation" id="validator" name="Validator"/>
@@ -13,6 +13,11 @@
    <include schemaLocation="schema://org.eclipse.core.expressions/schema/expressionLanguage.exsd"/>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="validator"/>
@@ -49,13 +54,14 @@
          <sequence>
             <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="filter" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>/>
+            <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="helper"/>
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="contentTypeBinding" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="runStrategy"/>
          </sequence>
          <attribute name="to" type="string">
             <annotation>
@@ -94,15 +100,14 @@
          </attribute>
       </complexType>
    </element>
-   
-   
+
    <element name="contentTypeBinding">
       <annotation>
          <appInfo>
             <meta.element labelAttribute="contentTypeId"/>
          </appInfo>
          <documentation>
-                        Associates a particular content type with the current validator, and enables the validator to be run on resources of the specified content type.
+            Associates a particular content type with the current validator, and enables the validator to be run on resources of the specified content type.
          </documentation>
       </annotation>
       <complexType>
@@ -115,9 +120,6 @@
          </attribute>
       </complexType>
    </element>
-   
-   
-   
 
    <element name="filter">
       <complexType>
@@ -284,6 +286,19 @@ This markerId element also needs a corresponding problemMarker extension to be d
       </complexType>
    </element>
 
+   <element name="runStrategy">
+      <complexType>
+         <attribute name="project" type="boolean">
+            <annotation>
+               <documentation>
+                  If true then the validator is only called once per project. If false (or missing) then the validator could be called once per resource (based on the other filter rules).
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+
    <annotation>
       <appInfo>
          <meta.section type="since"/>
@@ -293,39 +308,14 @@ This markerId element also needs a corresponding problemMarker extension to be d
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="examples"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+         Copyright (c) 2005, 2010 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a

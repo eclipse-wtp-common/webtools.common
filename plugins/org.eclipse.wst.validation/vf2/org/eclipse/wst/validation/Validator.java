@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2009 IBM Corporation and others.
+ * Copyright (c) 2007, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,10 +13,12 @@ package org.eclipse.wst.validation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.IMarker;
@@ -748,6 +750,8 @@ public static class V1 extends Validator {
 		IValidator v = asIValidator();
 		if (v == null)return null;
 		
+		if (shouldSkipValidator(resource, operation))return null;
+		
 		try {
 			IProject project = resource.getProject();
 			SummaryReporter reporter = new SummaryReporter(project, monitor);
@@ -783,6 +787,29 @@ public static class V1 extends Validator {
 		return vr;
 	}
 	
+
+	private static final String VALIDATE_PROJECT_ONCE = "ValidateProjectOnce"; //$NON-NLS-1$
+
+		@SuppressWarnings("unchecked")	
+		private boolean shouldSkipValidator(IResource resource, ValOperation operation) {
+
+			if (_vmd.isValidateByProject())
+			{
+				ValidationState validationState = operation.getState();
+				Set<String> projectsNameSet = (Set<String>)validationState.get(VALIDATE_PROJECT_ONCE);
+				String projectName = resource.getProject().getName();
+
+				if (projectsNameSet == null) {
+					projectsNameSet = new HashSet<String>();
+					validationState.put(VALIDATE_PROJECT_ONCE, projectsNameSet);
+				}
+
+				if (projectsNameSet.contains(projectName))return true;
+				else projectsNameSet.add(projectName);
+			}
+			return false;
+		}
+
 	/*
 	 * GRK - Because I didn't want to try to make a true copy of the V1 validator, (because I didn't
 	 * want to copy the vmd object), I came up with this approach to only copy the fields that

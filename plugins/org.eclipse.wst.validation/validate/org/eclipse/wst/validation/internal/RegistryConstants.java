@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2007 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -54,6 +54,9 @@ public interface RegistryConstants {
 	 * only one validator may use an aggregate of that type. */
 	String TAG_AGGREGATE_VALIDATORS = "aggregateValidator"; //$NON-NLS-1$ 
 
+	/** runStrategy - identifies the run strategy of  Validator*/
+	String TAG_RUN_STRATEGY = "runStrategy"; //$NON-NLS-1$
+	
 	/** objectClass - identifies a type */ 
 	String ATT_OBJECT_CLASS = "objectClass"; //$NON-NLS-1$
 	
@@ -119,6 +122,16 @@ public interface RegistryConstants {
 	/** false - The "can validator run asynchronously" default. In the future this may be changed to true. */
 	boolean ATT_ASYNC_DEFAULT = false;
 
+	/** 
+	 * project - identifies whether or not the validator is called per project. 
+	 * Default is false (i.e. the validator is called per resource). 
+	 */
+	String ATT_PROJECT = "project"; //$NON-NLS-1$
+	
+	/** false - The project default. */
+	boolean ATT_PROJECT_DEFAULT = false;
+	
+	
 	/** migrate - the "migrate" section of the validator */
 	String TAG_MIGRATE = "migrate"; //$NON-NLS-1$
 	
