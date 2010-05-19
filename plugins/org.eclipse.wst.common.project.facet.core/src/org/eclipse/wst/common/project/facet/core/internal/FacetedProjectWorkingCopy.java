@@ -1142,24 +1142,14 @@ public final class FacetedProjectWorkingCopy
                 
                 for( IRuntime r : RuntimeManager.getRuntimes() )
                 {
-                    boolean ok;
+                    boolean ok = true;
                     
-                    if( this.project != null && 
-                        this.project.getTargetedRuntimes().contains( r ) )
+                    for( IProjectFacetVersion fv : this.facets.getItemSet() )
                     {
-                        ok = true;
-                    }
-                    else
-                    {
-                        ok = true;
-                        
-                        for( IProjectFacetVersion fv : this.facets.getItemSet() )
+                        if( ! r.supports( fv ) )
                         {
-                            if( ! r.supports( fv ) )
-                            {
-                                ok = false;
-                                break;
-                            }
+                            ok = false;
+                            break;
                         }
                     }
         
