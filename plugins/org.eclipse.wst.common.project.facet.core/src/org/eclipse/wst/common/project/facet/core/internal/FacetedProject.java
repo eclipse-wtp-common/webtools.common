@@ -698,7 +698,15 @@ public final class FacetedProject
                         return false;
                     }
                 }
+            }
+            
+            if( ! validateEdit( Collections.singleton( this.f ) ) )
+            {
+                return false;
+            }
                 
+            synchronized( this.lock )
+            {
                 for( IRuntime runtime : runtimes )
                 {
                     for( IProjectFacetVersion fv : this.facets )

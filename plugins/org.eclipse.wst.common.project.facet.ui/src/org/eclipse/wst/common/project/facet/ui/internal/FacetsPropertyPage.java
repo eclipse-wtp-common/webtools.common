@@ -252,21 +252,16 @@ public final class FacetsPropertyPage
             }
         };
 
-        boolean failed = false;
-        
         try 
         {
         	new ProgressMonitorDialog( getShell() ).run( true, false, op );
         }
         catch( InterruptedException e ) 
         {
-            failed = true;
             return false;
         } 
         catch( InvocationTargetException e ) 
         {
-            failed = true;
-            
             final Throwable te = e.getTargetException();
             
             if( te instanceof CoreException )
@@ -296,16 +291,16 @@ public final class FacetsPropertyPage
         }
         finally
         {
-            if( failed )
+            // Take care of the case where all changes could not be applied, such as if the user
+            // rejects a validateEdit request. 
+            
+            try
             {
-                try
-                {
-                    this.fpjwc.revertChanges();
-                }
-                catch( Exception e )
-                {
-                    FacetUiPlugin.log( e );
-                }
+                this.fpjwc.revertChanges();
+            }
+            catch( Exception e )
+            {
+                FacetUiPlugin.log( e );
             }
         }
         
