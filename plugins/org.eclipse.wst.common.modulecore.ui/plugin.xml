@@ -4,6 +4,7 @@
    <extension-point id="moduleDependencyPropertyPage" name="moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
    <extension-point id="virtualComponentLabelProvider" name="virtualComponentLabelProvider" schema="schema/virtualComponentLabelProvider.exsd"/>
+   <extension-point id="deploymentAssemblyVerifier" name="Deployment Assembly Verifier" schema="schema/deploymentAssemblyVerifier.exsd"/>
    <!-- =========== DeploymentAssemblyPage ============ -->
    <extension
    		point="org.eclipse.ui.propertyPages">

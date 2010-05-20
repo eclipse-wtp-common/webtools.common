@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
@@ -78,14 +79,19 @@ import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
-import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.verifier.DeploymentAssemblyVerifierHelper;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.internal.facets.FacetUtil;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl, ILabelProviderListener {
@@ -97,6 +103,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected final String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	private boolean hasInitialized = false;
 	protected final IProject project;
+	protected final IRuntime runtime;
 	protected final ModuleAssemblyRootPage propPage;
 	protected IVirtualComponent rootComponent = null;
 	protected Text componentNameText;
@@ -144,7 +151,19 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			final ModuleAssemblyRootPage page) {
 		this.project = project;
 		this.propPage = page;
+		this.runtime = setRuntime();
 		rootComponent = ComponentCore.createComponent(project);
+	}
+
+	private IRuntime setRuntime() {
+		IRuntime aRuntime = null;
+		try {
+			aRuntime = getServerRuntime(project);
+		}
+		catch (CoreException e) {
+			ModuleCoreUIPlugin.log(e);
+		}
+		return aRuntime;
 	}
 
 	/*
@@ -609,7 +628,43 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			initialize();
 			resetTableUI();
 		}
+		verify();
 
+	}
+
+	protected void verify() {
+		
+		IStatus status = DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, resourceMappings,resourceMappingsChanged);
+		// Clear the messages
+		propPage.setErrorMessage(null);
+		propPage.setMessage(null);
+		if (status.isMultiStatus()) {
+			MultiStatus multi = (MultiStatus)status;
+			if (!multi.isOK()) {
+				propPage.setMessage(getMessage(multi), multi.getSeverity());
+				if (multi.getSeverity() == IStatus.ERROR) {
+					propPage.setErrorMessage(getMessage(multi));
+					propPage.setValid(false);
+				}
+				else 
+					propPage.setValid(true);
+			} else propPage.setValid(true);
+		} else if (status.isOK()) propPage.setValid(true);
+		propPage.getContainer().updateMessage();
+	}
+
+	private String getMessage(MultiStatus multi) {
+		//Append Messages
+		StringBuffer message = new StringBuffer();
+		
+		for (int i = 0; i < multi.getChildren().length; i++) {
+			IStatus status = multi.getChildren()[i];
+			if (status.getMessage() != null) {
+				message.append(status.getMessage());
+				message.append(" "); //$NON-NLS-1$
+			}
+		}
+		return message.toString();
 	}
 
 	protected void resetTableUI() {
@@ -645,6 +700,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if(removeButton != null)
 			removeButton.setEnabled(false);
 		hasInitialized = true;
+	}
+
+	private IRuntime getServerRuntime(IProject project2) throws CoreException {
+		if (project == null)
+			return null;
+		IFacetedProject facetedProject = ProjectFacetsManager.create(project);
+		if (facetedProject == null)
+			return null;
+		org.eclipse.wst.common.project.facet.core.runtime.IRuntime runtime = facetedProject.getRuntime();
+		if (runtime == null)
+			return null;
+		return FacetUtil.getRuntime(runtime);
 	}
 
 	protected IVirtualReference[] cloneReferences(IVirtualReference[] refs) {

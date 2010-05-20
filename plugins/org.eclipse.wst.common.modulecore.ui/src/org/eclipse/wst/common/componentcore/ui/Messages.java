@@ -20,6 +20,7 @@ public class Messages extends NLS {
 	public static String ModuleAssembly;
 	public static String ErrorCheckingFacets;
 	public static String ErrorNotVirtualComponent;
+	public static String DeploymentAssemblyVerifierHelper_0;
 	public static String DeployPathColumn;
 	public static String SourceColumn;
 	public static String InternalLibJarWarning;
