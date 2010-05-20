@@ -146,10 +146,11 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 
 	public static void eSetOrAdd(EObject obj, EStructuralFeature feature, Object value, int newIndex) {
 		if (feature.isMany() && value != null) {
-			if (newIndex >= 0)
-				((List) obj.eGet(feature)).add(newIndex, value);
+			List featureList = ((List) obj.eGet(feature));
+			if (newIndex >= 0 && newIndex < featureList.size())
+				featureList.add(newIndex, value);
 			else
-				((List) obj.eGet(feature)).add(value);
+				featureList.add(value);
 		} else {
 			obj.eSet(feature, value);
 		}
