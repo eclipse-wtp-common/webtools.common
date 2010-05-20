@@ -127,6 +127,9 @@ public class ManifestModuleDependencyControl implements
 				refreshViewerFromNewParentProject();
 			}
 		});
+		Label tableLabel = new Label(root, SWT.NONE);
+		tableLabel.setText(Messages.ManifestEntries);
+		tableLabel.setLayoutData(createFormData(parentSelection,5,null,0, 0, 5, null,0));
 		manifestEntryViewer = createManifestReferenceTableViewer(root, SWT.SINGLE);
 		
 		addButton = new Button(root, SWT.PUSH);
@@ -142,7 +145,7 @@ public class ManifestModuleDependencyControl implements
 		moveUpButton.setEnabled(false);
 		moveDownButton.setEnabled(false);
 		
-		addButton.setLayoutData(createFormData(parentSelection,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
+		addButton.setLayoutData(createFormData(tableLabel,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
 		removeButton.setLayoutData(createFormData(addButton,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
 		moveUpButton.setLayoutData(createFormData(removeButton,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
 		moveDownButton.setLayoutData(createFormData(moveUpButton,5,null,0,null,0,100,-5));
@@ -177,7 +180,7 @@ public class ManifestModuleDependencyControl implements
 		});
 		
 		manifestEntryViewer.getTable().setLayoutData(createFormData(
-				parentSelection, 5, 100, -5, 0, 5, moveDownButton, -5));
+				tableLabel, 5, 100, -5, 0, 5, moveDownButton, -5));
 		manifestEntryViewer.setLabelProvider(new ManifestLabelProvider());
 		manifestEntryViewer.setContentProvider(new ManifestContentProvider());
 		manifestEntryViewer.setInput(ResourcesPlugin.getWorkspace());

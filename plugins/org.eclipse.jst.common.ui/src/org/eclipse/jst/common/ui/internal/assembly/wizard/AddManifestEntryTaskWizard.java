@@ -35,6 +35,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
@@ -78,21 +79,15 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			handle.setDescription(NLS.bind(Messages.AddManifestEntryTaskWizardDesc, parentProject.getName()));
 			Composite root = new Composite(parent, SWT.NONE);
 			root.setLayout(new FormLayout());
-			customEntryText = new Text(root, SWT.BORDER);
-			addCustom = new Button(root, SWT.PUSH);
-			customEntryText.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, 0, 5, addCustom, -5));
-			addCustom.setText(Messages.CustomEntryButton);
-			addCustom.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, null, 0, 100, -5));
-			addCustom.addSelectionListener(new SelectionListener() {
-				public void widgetSelected(SelectionEvent e) {
-					addCustomPressed();
-				}
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-
+			
+			createConfigLink(root);
+			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, null, 5, 0, 5, 100, -5));
+			
+			Label tableLabel = new Label(root, SWT.NONE);
+			tableLabel.setText(Messages.ManifestEntries);
+			tableLabel.setLayoutData(ManifestModuleDependencyControl.createFormData(10, 5, null, 0, 0, 5, 100, -5));
+			
 			viewer = ManifestModuleDependencyControl.createManifestReferenceTableViewer(root, SWT.MULTI);
-			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(15, 5, addCustom, 0, 0, 5, 100, -5));
 			contentProvider = new ShowPossibleManifestEntryContentProvider(parentProject, childProject, getTaskModel());
 			viewer.setContentProvider(contentProvider);
 			viewer.setLabelProvider(new ManifestLabelProvider());
@@ -102,8 +97,21 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 					viewerSelectionChanged();
 				}
 			});
-			createConfigLink(root);
-			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, viewer, 5, 0, 5, 100, -5));
+			
+			customEntryText = new Text(root, SWT.BORDER);
+			addCustom = new Button(root, SWT.PUSH);
+			addCustom.setText(Messages.CustomEntryButton);
+			addCustom.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, null, 0, 100, -5));
+			addCustom.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					addCustomPressed();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+			
+			customEntryText.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, 0, 5, addCustom, -5));			
+			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(tableLabel, 5, addCustom, 0, 0, 5, 100, -5));
 			return root;
 		}
 		

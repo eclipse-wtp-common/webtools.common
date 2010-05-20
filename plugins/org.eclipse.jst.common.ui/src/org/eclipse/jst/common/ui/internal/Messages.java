@@ -29,6 +29,7 @@ public class Messages extends NLS {
 	public static String Remove;
 	public static String MoveUp;
 	public static String MoveDown;
+	public static String ManifestEntries;
 	public static String ManifestEntryColumn;
 	public static String ManifestEntrySourceColumn;
 	public static String ConfigureParentLink;
