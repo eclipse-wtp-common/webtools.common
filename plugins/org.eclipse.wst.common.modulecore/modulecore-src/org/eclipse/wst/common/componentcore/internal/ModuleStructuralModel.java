@@ -289,7 +289,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 					try {
 						// OK wait to get workspace root before refreshing
 						Job.getJobManager().beginRule(root, null);
-						compFile.refreshLocal(IResource.DEPTH_ONE, null);
+						compFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 					} catch (CoreException ce) {
 						// ignore
 					} finally {
