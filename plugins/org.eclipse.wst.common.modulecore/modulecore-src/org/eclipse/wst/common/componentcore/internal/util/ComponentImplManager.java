@@ -149,6 +149,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		} catch (Exception e) {
 			// Just return a default folder
 		}
+		ComponentCacheManager.instance().setComponentImplFactory(aProject, null);
 		return new VirtualFolder(aProject, aRuntimePath);
 	}
 
@@ -187,6 +188,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		}
 		IVirtualComponent component = new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
 		if(component != null) {
+			ComponentCacheManager.instance().setComponentImplFactory(project, null);
 			ComponentCacheManager.instance().setComponent(project, component);
 			registerListener(project);
 		}
@@ -213,6 +215,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		} catch (Exception e) {
 			// Just return a default archive component
 		}
+		ComponentCacheManager.instance().setComponentImplFactory(aProject, null);
 		IVirtualComponent archiveComponent = new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
 		ComponentCacheManager.instance().setArchiveComponent(aProject, aComponentName, archiveComponent);
 		return archiveComponent;
@@ -255,8 +258,11 @@ public class ComponentImplManager implements ISynchronizerExtender{
 
 		public IComponentImplFactory getComponentImplFactory(IProject project) {
 			synchronized (cacheLock) {
-				if(isValidComponentImplFactory(project))
-					return (IComponentImplFactory) factoryMap.getData(project);
+				if(isValidComponentImplFactory(project)) {
+					Object data = factoryMap.getData(project);
+					if(data instanceof IComponentImplFactory)
+						return (IComponentImplFactory) data;
+				}
 				return null;
 			}
 		}
@@ -271,7 +277,12 @@ public class ComponentImplManager implements ISynchronizerExtender{
 
 		public void setComponentImplFactory(IProject project, IComponentImplFactory factory){
 			synchronized (cacheLock) {
-				factoryMap.mark(project, factory);
+				if(factory != null) {
+					factoryMap.mark(project, factory);
+				}
+				else {
+					factoryMap.mark(project, project);
+				}
 			}
 		}
 
