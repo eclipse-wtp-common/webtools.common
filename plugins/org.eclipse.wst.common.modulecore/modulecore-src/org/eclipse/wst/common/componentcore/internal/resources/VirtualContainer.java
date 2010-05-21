@@ -72,29 +72,29 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	}
 
 	public IVirtualResource findMember(IPath aPath, int theSearchFlags) {
-
 		StructureEdit structureEdit = null;
 		try {
-
 			structureEdit = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = structureEdit.getComponent();
-			if (null != component) {
-				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-				ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
-
-				for (int i = 0; i < resources.length; i++) {
-				// return the resources corresponding to the root, not any of the children if its a folder
-					if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
-						IResource platformResource = getProject().findMember(resources[i].getSourcePath());
-						if (platformResource == null)
-							platformResource = ResourcesPlugin.getWorkspace().getRoot().findMember(resources[i].getSourcePath());
-						if (platformResource != null) {
-							switch (platformResource.getType()) {
-								case IResource.FOLDER :
-								case IResource.PROJECT :
-									return ComponentCore.createFolder(getProject(), getRuntimePath().append(aPath));
-								case IResource.FILE :
-									return new VirtualFile(getProject(), getRuntimePath().append(aPath));
+			if(structureEdit != null){
+				WorkbenchComponent component = structureEdit.getComponent();
+				if (null != component) {
+					ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+					ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
+	
+					for (int i = 0; i < resources.length; i++) {
+					// return the resources corresponding to the root, not any of the children if its a folder
+						if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
+							IResource platformResource = getProject().findMember(resources[i].getSourcePath());
+							if (platformResource == null)
+								platformResource = ResourcesPlugin.getWorkspace().getRoot().findMember(resources[i].getSourcePath());
+							if (platformResource != null) {
+								switch (platformResource.getType()) {
+									case IResource.FOLDER :
+									case IResource.PROJECT :
+										return ComponentCore.createFolder(getProject(), getRuntimePath().append(aPath));
+									case IResource.FILE :
+										return new VirtualFile(getProject(), getRuntimePath().append(aPath));
+								}
 							}
 						}
 					}
