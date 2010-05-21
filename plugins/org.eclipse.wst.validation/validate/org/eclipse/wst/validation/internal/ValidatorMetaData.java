@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,13 +78,14 @@ public class ValidatorMetaData {
 	private final Map<IValidatorJob, IWorkbenchContext> _helpers = 
 		Collections.synchronizedMap( new HashMap<IValidatorJob, IWorkbenchContext>() );
 	private final Expression 		_enablementExpression;
+	private boolean _validateByProject = true;
 
 	ValidatorMetaData(boolean async, String[] aggregatedValidators, boolean isEnabledByDefault, boolean supportsIncremental,
 			boolean supportsFullBuild, IConfigurationElement helperClassElement, String helperClassName, 
 			MigrationMetaData migrationMetaData, String pluginId, int ruleGroup, IConfigurationElement validatorClassElement,
 			String validatorDisplayName, String validatorUniqueName, String[] contentTypeIds, boolean dependentValidator,
 			Expression enablementExpression, String[] facetFilters, ValidatorFilter[] filters,
-			ValidatorNameFilter[] projectNatureFilters, String[] markerIds) {
+			ValidatorNameFilter[] projectNatureFilters, String[] markerIds, boolean validateByProject) {
 		_async = async;
 		_aggregatedValidators = aggregatedValidators;
 		_isEnabledByDefault = isEnabledByDefault;
@@ -106,6 +107,7 @@ public class ValidatorMetaData {
 		_projectNatureFilters = projectNatureFilters;
 		_markerIds = markerIds;
 		_validatorNames = buildValidatorNames();
+		_validateByProject = validateByProject;
 	}
 		
 	protected String[] getFacetFilters() {
@@ -543,6 +545,10 @@ private boolean isApplicableContentType(IContentDescription desc){
 		}
 	}
 	return false;
+}
+
+public boolean isValidateByProject() {
+	return _validateByProject;
 }
    
 }
