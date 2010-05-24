@@ -17,9 +17,6 @@
       %license
    </license>
 
-   <url>
-      <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
-   </url>
 
    <plugin
          id="org.eclipse.wst.common.emfworkbench.integration"
