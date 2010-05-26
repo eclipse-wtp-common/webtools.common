@@ -79,8 +79,8 @@ import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
-import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.verifier.DeploymentAssemblyVerifierHelper;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
@@ -546,10 +546,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void handleAddNewReference(TaskWizard wizard) {
 		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.FINAL_REFERENCE);
-		IVirtualReference[] referenceArray = c1 instanceof IVirtualReference ? 
-				new IVirtualReference[] { (IVirtualReference)c1 } : 
-					(IVirtualReference[])c1;
-		currentReferences.addAll(Arrays.asList(referenceArray));
+		if(c1 != null) {
+			IVirtualReference[] referenceArray = c1 instanceof IVirtualReference ? 
+					new IVirtualReference[] { (IVirtualReference)c1 } : 
+						(IVirtualReference[])c1;
+			currentReferences.addAll(Arrays.asList(referenceArray));
+		}
 	}
 	
 	/**

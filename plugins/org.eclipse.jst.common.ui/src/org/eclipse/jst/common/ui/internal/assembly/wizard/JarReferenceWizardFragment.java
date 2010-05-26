@@ -50,14 +50,20 @@ public class JarReferenceWizardFragment extends WizardFragment {
 	protected IPath[] paths;
 	protected IWizardHandle handle;
 	protected IPath[] selected = new IPath[]{};
+	boolean isComplete = false;
+
+	public boolean isComplete() {
+		return isComplete;
+	}
+	
 	public boolean hasComposite() {
 		return true;
 	}
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
-		handle.setTitle(Messages.JarTitle);
-		handle.setDescription(Messages.JarDescription);
+		handle.setTitle(Messages.ArchiveTitle);
+		handle.setDescription(Messages.ArchiveDescription);
 				
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new FormLayout());
@@ -96,8 +102,14 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		IProject project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);
 		selected = BuildPathDialogAccess.chooseJAREntries(
 				browse.getShell(), 
-				project.getLocation(), new IPath[0]);
+				project.getFullPath(), new IPath[0]);
 		viewer.refresh();
+		if(selected != null && selected.length > 0) {
+			isComplete = true;
+		} else {
+			isComplete = false;
+		}
+		handle.update();
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {

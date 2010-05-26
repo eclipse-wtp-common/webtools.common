@@ -14,10 +14,11 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.jst.common.ui.internal"; //$NON-NLS-1$
-	public static String JarTitle;
-	public static String JarDescription;
-	public static String ExternalJarTitle;
-	public static String ExternalJarDescription;
+	public static String ArchiveTitle;
+	public static String ArchiveDescription;
+	public static String ExternalArchiveTitle;
+	public static String ExternalArchiveDescription;
+	public static String ArchiveDialogNewTitle;
 	public static String Browse;
 	public static String VariableReferenceTitle;
 	public static String VariableReferenceDescription;

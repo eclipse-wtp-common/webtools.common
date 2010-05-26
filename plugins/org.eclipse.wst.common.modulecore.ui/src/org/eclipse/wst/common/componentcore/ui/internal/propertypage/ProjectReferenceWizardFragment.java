@@ -32,7 +32,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -71,7 +72,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		handle.setDescription(Messages.ProjectReferenceDescription);
 		
 		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayout(new FillLayout());
+		c.setLayout(new GridLayout());
 		viewer = new TreeViewer(c, SWT.MULTI | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
@@ -86,6 +87,10 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 			}
 		});
 		viewer.setInput(ResourcesPlugin.getWorkspace());
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.widthHint = 390;
+		data.heightHint = 185;
+		viewer.getTree().setLayoutData(data);
 		return c;
 	}
 	

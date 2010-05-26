@@ -80,6 +80,8 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 			}
 		});
 		FormData fd = new FormData();
+		fd.width = 390;
+		fd.height = 185;
 		fd.left = new FormAttachment(0, 5);
 		fd.top = new FormAttachment(0, 5);
 		fd.right = new FormAttachment(100, -5);
@@ -103,7 +105,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 			} else if( o instanceof ExtendedVariable) {
 				p = ((ExtendedVariable)o).element.getPath().append(((ExtendedVariable)o).pathAfterElement);
 			}
-			if( p.toFile().isDirectory()) {
+			if(p == null || p.isEmpty() || p.toFile().isDirectory()) {
 				isComplete = false;
 			}
 		}

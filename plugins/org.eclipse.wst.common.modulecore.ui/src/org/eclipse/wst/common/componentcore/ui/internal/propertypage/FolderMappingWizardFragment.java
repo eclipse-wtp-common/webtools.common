@@ -27,37 +27,51 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
-import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
+import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
 
 public class FolderMappingWizardFragment extends WizardFragment {
 	private IProject project;
 	private TreeViewer viewer;
 	private IContainer selected = null;
+	protected IWizardHandle handle;
 
+	boolean isComplete = false;
+
+	public boolean isComplete() {
+		return isComplete;
+	}
+	
 	public boolean hasComposite() {
 		return true;
 	}
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		this.handle = handle;
 		handle.setTitle(Messages.AddFolder);
 		handle.setDescription(Messages.AddFolderMappings);
 		project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);		
 		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayout(new FillLayout());
+		GridLayout layout = new GridLayout();
+		c.setLayout(layout);
 		this.viewer = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.addFilter(getFilter());
 		viewer.setInput(project);
 		viewer.addSelectionChangedListener(getListener());
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.widthHint = 390;
+		data.heightHint = 185;
+		viewer.getTree().setLayoutData(data);
 		return c;
 	}
 	
@@ -66,8 +80,13 @@ public class FolderMappingWizardFragment extends WizardFragment {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 				Object first = sel.getFirstElement();
-				if( first instanceof IContainer) 
+				if( first instanceof IContainer) {
 					selected = (IContainer)first;
+					if(!isComplete) {
+						isComplete = true;
+						handle.update();
+					}
+				}
 			}
 		};
 	}
