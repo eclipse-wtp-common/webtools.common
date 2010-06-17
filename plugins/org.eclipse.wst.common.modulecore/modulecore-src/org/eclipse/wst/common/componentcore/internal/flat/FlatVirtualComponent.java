@@ -322,7 +322,7 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 				}
 				VirtualComponentFlattenUtility.addMembersToModuleFolder((IFlatFolder)moduleParent, new FlatResource[]{mf});
 			} else {
-				if( shouldAddComponentFile(virtualComp, mf)) {
+				if( shouldAddExportableFile(virtualComp, mf)) {
 					if (mf.getModuleRelativePath().isEmpty()) {
 						for( IFlatResource tmp : members) 
 							if( tmp.getName().equals(mf.getName()))
@@ -339,6 +339,14 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 				}
 			}
 		}
+	}
+
+	protected boolean shouldAddExportableFile(IVirtualComponent current, FlatFile file) {
+		for( int i = 0; i < participants.length; i++ ) {
+			if ( !participants[i].shouldAddExportableFile(component, current, dataModel, file))
+				return false;
+		}
+		return true;
 	}
 
 	public IVirtualComponent getComponent() {
