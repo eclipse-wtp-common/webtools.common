@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.emfworkbench.integration; singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.2.1.qualifier
 Bundle-Activator: org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin
 Bundle-Vendor: %pluginVendor
 Bundle-Localization: plugin
@@ -11,7 +11,7 @@ Export-Package: org.eclipse.wst.common.internal.emfworkbench;x-internal:=true,
  org.eclipse.wst.common.internal.emfworkbench.integration;x-internal:=true,
  org.eclipse.wst.common.internal.emfworkbench.validateedit;x-internal:=true
 Require-Bundle: org.eclipse.wst.common.frameworks;bundle-version="[1.1.200,2.0.0)",
- org.eclipse.jem.util;bundle-version="[2.0.100,3.0.0)",
+ org.eclipse.jem.util;bundle-version="[2.1.0,3.0.0)",
  org.eclipse.emf.edit;bundle-version="[2.4.0,3.0.0)",
  org.eclipse.emf.ecore.xmi;bundle-version="[2.4.0,3.0.0)",
  org.eclipse.wst.common.emf;bundle-version="[1.1.200,2.0.0)",
