@@ -43,6 +43,7 @@ import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.componentcore.ui.IModuleCoreUIContextIds;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
@@ -73,6 +74,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout());
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IModuleCoreUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_ADD_NEW_PROJECT_REFERENCE_P1);
 		viewer = new TreeViewer(c, SWT.MULTI | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());

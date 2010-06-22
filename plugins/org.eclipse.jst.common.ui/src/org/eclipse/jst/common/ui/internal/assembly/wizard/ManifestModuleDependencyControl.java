@@ -40,6 +40,7 @@ import org.eclipse.jst.common.internal.modulecore.util.JavaModuleComponentUtilit
 import org.eclipse.jst.common.internal.modulecore.util.ManifestUtilities;
 import org.eclipse.jst.common.internal.modulecore.util.UpdateManifestDataModelProperties;
 import org.eclipse.jst.common.internal.modulecore.util.UpdateManifestDataModelProvider;
+import org.eclipse.jst.common.ui.internal.IJstCommonUIContextIds;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -57,6 +58,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.AbstractResourceListVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -115,6 +117,7 @@ public class ManifestModuleDependencyControl implements
 	
 	public Composite createContents(Composite parent) {
 		Composite root = new Composite(parent, SWT.NONE);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(root, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_MANIFEST_ENTRIES_TAB);
 		root.setLayout(new FormLayout());
 		Label l = new Label(root, SWT.NONE);
 		l.setText(Messages.ParentProjects);

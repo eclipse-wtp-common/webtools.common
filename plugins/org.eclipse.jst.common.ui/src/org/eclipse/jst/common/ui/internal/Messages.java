@@ -19,6 +19,7 @@ public class Messages extends NLS {
 	public static String ExternalArchiveTitle;
 	public static String ExternalArchiveDescription;
 	public static String ArchiveDialogNewTitle;
+	public static String ArchiveDialogNewDescription;
 	public static String Browse;
 	public static String VariableReferenceTitle;
 	public static String VariableReferenceDescription;

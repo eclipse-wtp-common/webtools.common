@@ -17,12 +17,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.common.ui.internal.IJstCommonUIConstants;
+import org.eclipse.jst.common.ui.internal.IJstCommonUIContextIds;
 import org.eclipse.jst.common.ui.internal.JstCommonUIPlugin;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
@@ -36,6 +38,7 @@ public class ExternalJarReferenceWizardFragment extends JarReferenceWizardFragme
 		Composite c = super.createComposite(parent, handle);
 		handle.setTitle(Messages.ExternalArchiveTitle);
 		handle.setDescription(Messages.ExternalArchiveDescription);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_EXTERNAL_ARCHIVE_REFERENCE_P1);
 		return c;
 	}
 

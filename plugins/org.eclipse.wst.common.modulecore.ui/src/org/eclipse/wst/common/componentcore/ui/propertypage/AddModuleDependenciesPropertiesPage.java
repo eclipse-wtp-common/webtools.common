@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IAddReferenceDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -75,6 +76,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.componentcore.ui.IModuleCoreUIContextIds;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDependencyContentProvider;
@@ -172,6 +174,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 	public Composite createContents(final Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, IModuleCoreUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_DEPLOYMENT_ASSEMBLY_TAB);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
 		layout.marginWidth = 0;
@@ -458,14 +461,25 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		public void modify(Object element, String property, Object value) {
 			if (property.equals(DEPLOY_PATH_PROPERTY)) {
 				TableItem item = (TableItem) element;
+				TableItem[] components = availableComponentsViewer.getTable().getItems();
+				int tableIndex = -1;
+				for(int i=0; i < components.length; i++) {
+					if(components[i] == item) {
+						tableIndex = i;
+						break;
+					}
+				}
 				if( item.getData() instanceof IVirtualReference) {
 					setRuntimePathSafe((IVirtualReference)item.getData(), (String) value);
+					if(tableIndex >= 0)
+						components[tableIndex].setText((String)value);
 				} else if( item.getData() instanceof ComponentResourceProxy) {
 					ComponentResourceProxy c = ((ComponentResourceProxy)item.getData());
 					c.runtimePath = new Path((String)value);
 					resourceMappingsChanged = true;
+					if(tableIndex >= 0)
+						components[tableIndex].setText((String)value);
 				}
-				refresh();
 			}
 		}
 
@@ -661,7 +675,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		
 		for (int i = 0; i < multi.getChildren().length; i++) {
 			IStatus status = multi.getChildren()[i];
-			if (status.getMessage() != null) {
+			if (!status.isOK() && status.getMessage() != null) {
 				message.append(status.getMessage());
 				message.append(" "); //$NON-NLS-1$
 			}

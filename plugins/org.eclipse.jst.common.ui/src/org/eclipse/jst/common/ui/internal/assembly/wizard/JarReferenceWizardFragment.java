@@ -12,17 +12,24 @@ package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.ui.wizards.BuildPathDialogAccess;
+import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
+import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
+import org.eclipse.jdt.internal.ui.wizards.buildpaths.ArchiveFileFilter;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jst.common.ui.internal.IJstCommonUIContextIds;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -33,6 +40,11 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
@@ -66,6 +78,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		handle.setDescription(Messages.ArchiveDescription);
 				
 		Composite c = new Composite(parent, SWT.NONE);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_ARCHIVE_REFERENCE_P1);
 		c.setLayout(new FormLayout());
 		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
@@ -100,9 +113,9 @@ public class JarReferenceWizardFragment extends WizardFragment {
 
 	protected void buttonPressed() {
 		IProject project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);
-		selected = BuildPathDialogAccess.chooseJAREntries(
+		selected = chooseEntries(
 				browse.getShell(), 
-				project.getFullPath(), new IPath[0]);
+				project.getFullPath());
 		viewer.refresh();
 		if(selected != null && selected.length > 0) {
 			isComplete = true;
@@ -173,5 +186,33 @@ public class JarReferenceWizardFragment extends WizardFragment {
 			};
 		}
 		return contentProvider;
+	}
+	
+	private static IPath[] chooseEntries(Shell shell, IPath initialSelection) {
+		Class[] acceptedClasses= new Class[] { IFile.class };
+		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, true);
+		IWorkspaceRoot root= ResourcesPlugin.getWorkspace().getRoot();
+
+		FilteredElementTreeSelectionDialog dialog =  new FilteredElementTreeSelectionDialog(shell, new WorkbenchLabelProvider(), new WorkbenchContentProvider());
+		dialog.setHelpAvailable(false);
+		dialog.setValidator(validator);
+		dialog.setTitle(Messages.ArchiveDialogNewTitle);
+		dialog.setMessage(Messages.ArchiveDialogNewDescription);
+		dialog.addFilter(new ArchiveFileFilter(new ArrayList(), true, true));
+		dialog.setInput(root);
+		dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+		dialog.setInitialFilter("*.jar,*.war,*.rar,*.zip"); //$NON-NLS-1$
+		dialog.create();		
+
+		if (dialog.open() == Window.OK) {
+			Object[] elements= dialog.getResult();
+			IPath[] res= new IPath[elements.length];
+			for (int i= 0; i < res.length; i++) {
+				IResource elem= (IResource)elements[i];
+				res[i]= elem.getFullPath();
+			}
+			return res;
+		}
+		return null;
 	}
 }

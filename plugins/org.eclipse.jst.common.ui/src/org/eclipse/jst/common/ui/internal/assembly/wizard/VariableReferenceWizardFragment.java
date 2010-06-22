@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jst.common.ui.internal.IJstCommonUIContextIds;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -69,6 +70,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 		handle.setDescription(Messages.VariableReferenceDescription);
 				
 		Composite c = new Composite(parent, SWT.NONE);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_VARIABLE_REFERENCE_P1);
 		c.setLayout(new FormLayout());
 		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());

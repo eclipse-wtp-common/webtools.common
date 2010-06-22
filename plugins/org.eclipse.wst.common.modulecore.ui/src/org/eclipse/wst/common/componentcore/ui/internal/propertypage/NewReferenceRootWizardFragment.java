@@ -29,6 +29,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.common.componentcore.ui.IModuleCoreUIContextIds;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
@@ -56,6 +58,7 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		wizard.setTitle(Messages.NewReferenceTitle);
 		wizard.setDescription(Messages.NewReferenceDescription);
 		Composite c = new Composite(parent, SWT.NONE);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IModuleCoreUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_ADD_NEW_REFERENCE_P1);
 		c.setLayout(new FillLayout());
 		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
 		viewer.setLabelProvider(getLabelProvider());
