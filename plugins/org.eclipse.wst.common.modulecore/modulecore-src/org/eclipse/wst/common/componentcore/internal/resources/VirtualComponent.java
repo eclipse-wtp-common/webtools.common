@@ -61,6 +61,7 @@ public class VirtualComponent implements IVirtualComponent {
 	String name = null;
 	String deploymentName = null;
 	Map <String, IVirtualReference> referenceMap = null;
+	IVirtualReference[] rawReferencesArray = null;
 	IVirtualReference[] referencesArray = null;
 	Properties metaProperties = null;
 	IPath[] cacheMetaResources = null;
@@ -372,12 +373,51 @@ public class VirtualComponent implements IVirtualComponent {
 			}
 		}
 	}	
+	
+	/**
+	 * Returns a raw list of references exactly as defined in
+	 * .settings/org.eclipse.wst.common.component
+	 * 
+	 * @return
+	 */
+	public final IVirtualReference[] getRawReferences() {
+		if (rawReferencesArray != null) {
+			return rawReferencesArray;
+		}
+		StructureEdit core = null;
+		List references = new ArrayList();
+		try {
+			core = StructureEdit.getStructureEditForRead(getProject());
+			if (core != null && core.getComponent() != null) {
+				WorkbenchComponent component = core.getComponent();
+				if (component != null) {
+					List referencedComponents = component.getReferencedComponents();
+					for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
+						ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
+						if (referencedComponent == null) {
+							continue;
+						}
+						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
+						if (vReference != null && vReference.getReferencedComponent() != null && vReference.getReferencedComponent().exists()) {
+							references.add(vReference);
+						}
+					}
+				}
+			}
+			rawReferencesArray = (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+			return rawReferencesArray;
+		} finally {
+			if (core != null) {
+				core.dispose();
+			}
+		}
+	}
+	
 
 	public IVirtualReference[] getReferences(Map<String, Object> options) {
-//		if(referencesArray != null) {
-//			return referencesArray;
-//		}
-		
+		if(referencesArray != null) {
+			return referencesArray;
+		}
 		StructureEdit core = null;
 		List references = new ArrayList();
 		try {
@@ -634,6 +674,7 @@ public class VirtualComponent implements IVirtualComponent {
 		if(referenceMap != null) {
 			referenceMap.clear();
 		}
+		rawReferencesArray = null;
 		referencesArray = null;
 		metaProperties = null;
 		cacheMetaResources = null;
