@@ -61,6 +61,28 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		if (targetProject == null) {
 			throw new NullPointerException("Target project must not be null.");
 		}
+		//update removed references accordingly
+		if(removedReferences != null){
+			Set references = removedReferences.get(targetProject);
+			if(references != null){
+				if(references.remove(sourceProject)) {
+					if(references.isEmpty()){
+						removedReferences.remove(targetProject);
+						if(removedReferences.isEmpty()){
+							removedReferences = null;
+							if((type & ADDED) == ADDED){
+								type = ADDED;
+							} else {
+								type = 0;
+							}
+						}
+					}
+					//there is no net change, so return.
+					return;
+				}
+			}
+		}
+		
 		if (addedReferences == null) {
 			type = type | ADDED;
 			addedReferences = new HashMap<IProject, Set<IProject>>();
@@ -71,6 +93,8 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 			addedReferences.put(targetProject, references);
 		}
 		references.add(sourceProject);
+		
+		
 	}
 
 	void removeReference(IProject sourceProject, IProject targetProject) {
@@ -80,6 +104,29 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		if (targetProject == null) {
 			throw new NullPointerException("Target project must not be null.");
 		}
+		
+		//updated added references accordingly
+		if(addedReferences != null){
+			Set references = addedReferences.get(targetProject);
+			if(references != null){
+				if(references.remove(sourceProject)){
+					if(references.isEmpty()){
+						addedReferences.remove(targetProject);
+						if(addedReferences.isEmpty()){
+							addedReferences = null;
+							if((type & REMOVED) == REMOVED){
+								type = REMOVED;
+							} else {
+								type = 0;
+							}
+						}
+					}
+					//there is no net change, so return.
+					return;
+				}
+			}
+		}
+		
 		if (removedReferences == null) {
 			type = type | REMOVED;
 			removedReferences = new HashMap<IProject, Set<IProject>>();

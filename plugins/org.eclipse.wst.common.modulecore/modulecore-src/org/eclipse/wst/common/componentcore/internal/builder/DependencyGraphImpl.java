@@ -196,6 +196,16 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			
 		}
 	}
+	
+	private void removeAllReferences(DependencyGraphEvent event){
+		synchronized (graphLock) {
+			IProject [] allReferenceKeys = new IProject [graph.keySet().size()];
+			graph.keySet().toArray(allReferenceKeys);
+			for(IProject project : allReferenceKeys){
+				removeAllReferences(project, event);
+			}
+		}
+	}
 
 	private void removeAllReferences(IProject targetProject, DependencyGraphEvent event) {
 		synchronized (graphLock) {
@@ -352,17 +362,21 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					}
 	
 					public void run() throws Exception {
-						// this is the simple case; just remove them all
-						synchronized (graphLock) {
-							for (Object o : removed) {
-								IProject project = (IProject) o;
-								removeAllReferences(project, event);
+						//all references will be rebuilt during an add
+						if(added.length == 0){
+							// this is the simple case; just remove them all
+							synchronized (graphLock) {
+								for (Object o : removed) {
+									IProject project = (IProject) o;
+									removeAllReferences(project, event);
+								}
 							}
 						}
 						// get the updated queue in case there are any adds
 						// if there are any added projects, then unfortunately the
 						// entire workspace needs to be processed
 						if (added.length > 0) {
+							removeAllReferences(event);
 							IProject[] allProjects = null;
 							int state = ResourcesPlugin.getPlugin().getBundle().getState();
 							if (state == Bundle.ACTIVE) {
