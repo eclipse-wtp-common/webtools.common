@@ -47,6 +47,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jst.common.project.facet.core.JavaFacetInstallConfig;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -132,6 +134,20 @@ public final class JavaFacetInstallPage
         this.sourceFoldersTreeViewer = new TreeViewer( composite, SWT.BORDER );
         this.sourceFoldersTree = this.sourceFoldersTreeViewer.getTree();
         this.sourceFoldersTree.setLayoutData( gdfill() );
+        
+        this.sourceFoldersTree.getAccessible().addAccessibleListener
+        (
+            new AccessibleAdapter() 
+            {			
+                public void getName( final AccessibleEvent event ) 
+                {
+                    if( event.childID == -1 )
+                    {
+                        event.result = Resources.sourceFoldersAccessibilityLabel;
+                    }
+                }
+            }
+        );
         
         this.sourceFoldersTreeViewer.setContentProvider( new SourceFoldersContentProvider() );
         this.sourceFoldersTreeViewer.setLabelProvider( new SourceFoldersLabelProvider() );
@@ -456,6 +472,7 @@ public final class JavaFacetInstallPage
         public static String pageDescription;
         public static String defaultOutputFolderLabel;
         public static String sourceFoldersLabel;
+        public static String sourceFoldersAccessibilityLabel;
         public static String addFolderButton;
         public static String editButton;
         public static String removeButton;
