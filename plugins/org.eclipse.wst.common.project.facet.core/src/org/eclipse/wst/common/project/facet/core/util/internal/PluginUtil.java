@@ -209,8 +209,7 @@ public final class PluginUtil
         if( interfc != null && ! interfc.isAssignableFrom( cl ) )
         {
             final String msg
-                = Resources.bind( Resources.doesNotImplement, clname,
-                                  interfc.getClass().getName() );
+                = Resources.bind( Resources.doesNotImplement, clname, interfc.getName() );
 
             log( createErrorStatus( msg ) );
 
