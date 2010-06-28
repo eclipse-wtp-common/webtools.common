@@ -44,6 +44,11 @@ public class ExternalJarReferenceWizardFragment extends JarReferenceWizardFragme
 
 	protected void buttonPressed() {
 		selected = chooseExternalArchiveEntries(browse.getShell());
+		
+		if(selected != null) {
+			removeInvalidArchiveFiles();
+		}
+		
 		viewer.refresh();
 		if(selected != null && selected.length > 0) {
 			isComplete = true;			

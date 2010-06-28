@@ -10,13 +10,20 @@
  ******************************************************************************/
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.ui.wizards.buildpaths.CPVariableElement;
 import org.eclipse.jdt.internal.ui.wizards.buildpaths.CPVariableElementLabelProvider;
@@ -28,6 +35,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jst.common.ui.internal.IJstCommonUIContextIds;
+import org.eclipse.jst.common.ui.internal.JstCommonUIPlugin;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -107,7 +115,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 			} else if( o instanceof ExtendedVariable) {
 				p = ((ExtendedVariable)o).element.getPath().append(((ExtendedVariable)o).pathAfterElement);
 			}
-			if(p == null || p.isEmpty() || p.toFile().isDirectory()) {
+			if(p == null || p.isEmpty() || p.toFile().isDirectory() || !isValidArchive(p)) {
 				isComplete = false;
 			}
 		}
@@ -250,5 +258,39 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 			return new Path(s1.element.getName()).append(s1.pathAfterElement);
 		}
 		return new Path(((CPVariableElement)selected).getName());
+	}
+	
+	private boolean isValidArchive(IPath path) {
+		boolean valid = true;
+		ZipFile zipFile = null;
+		try {
+			String osPath = null;
+			if(path.segmentCount() > 1){
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+				if(file.exists()) {
+					IPath loc = file.getLocation();
+					if(loc != null) { 
+						osPath = loc.toOSString();
+					}
+				}
+			}
+			if(osPath == null){
+				osPath = path.toOSString();
+			}
+			zipFile = new ZipFile(new File(osPath));
+		} catch (ZipException e1){
+			valid = false;
+		} catch (IOException e2){
+			valid = false;
+		}finally {
+			if (zipFile != null){
+				try {
+					zipFile.close();
+				} catch (IOException e) {
+					JstCommonUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JstCommonUIPlugin.PLUGIN_ID, e.getMessage(), e));
+				}
+			}
+		}
+		return valid;
 	}
 }
