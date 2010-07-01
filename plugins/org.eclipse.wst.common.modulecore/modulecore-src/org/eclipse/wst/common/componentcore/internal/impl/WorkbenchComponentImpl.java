@@ -556,6 +556,13 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public void eNotify(Notification notification) {
 		synchronized (eAdapters()) {
 			super.eNotify(notification);
+			switch(notification.getEventType()) {
+				case Notification.REMOVE:
+				case Notification.REMOVE_MANY:
+					defaultSourceRoot = null;
+					handle = null;
+					break;
+				}
 		}
 	}
 	

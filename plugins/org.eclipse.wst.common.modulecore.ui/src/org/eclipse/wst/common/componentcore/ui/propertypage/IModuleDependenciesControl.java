@@ -46,6 +46,12 @@ public interface IModuleDependenciesControl {
 	boolean performCancel();
 	
 	/**
+	 * Called when the property page's <code>performApply()</code> method is called.
+	 * @return
+	 */
+	void performApply();
+	
+	/**
 	 * Called when the property page's <code>setVisible()</code> method is called.
 	 * @return
 	 */

@@ -144,6 +144,13 @@ public class ManifestModuleDependencyControl implements
 		removeButton.setText(Messages.Remove);
 		moveUpButton.setText(Messages.MoveUp);
 		moveDownButton.setText(Messages.MoveDown);
+		
+		IFile manifest = getManifestIFile(rootComponent);
+		if(manifest == null) {
+			addButton.setEnabled(false);
+		} else {
+			addButton.setEnabled(true);
+		}
 		removeButton.setEnabled(false);
 		moveUpButton.setEnabled(false);
 		moveDownButton.setEnabled(false);
@@ -202,11 +209,17 @@ public class ManifestModuleDependencyControl implements
 	}
 	
 	protected void updateButtons() {
-		int index = manifestEntryViewer.getTable().getSelectionIndex();
-		int size = manifestEntryViewer.getTable().getItems().length;
-		removeButton.setEnabled(index != -1);
-		moveUpButton.setEnabled(index != -1 && index != 0);
-		moveDownButton.setEnabled(index != size-1);
+		if(!addButton.isEnabled()) {
+			removeButton.setEnabled(false);
+			moveUpButton.setEnabled(false);
+			moveDownButton.setEnabled(false);
+		} else {
+			int index = manifestEntryViewer.getTable().getSelectionIndex();
+			int size = manifestEntryViewer.getTable().getItems().length;
+			removeButton.setEnabled(index != -1);
+			moveUpButton.setEnabled(index != -1 && index != 0);
+			moveDownButton.setEnabled(index != size-1);
+		}
 	}
 	
 	protected void moveUp() {
@@ -435,28 +448,32 @@ public class ManifestModuleDependencyControl implements
 
 
 	public boolean performOk() {
-		IDataModel updateManifestDataModel = DataModelFactory.createDataModel(new UpdateManifestDataModelProvider());
-		updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.PROJECT_NAME, project.getName());
-		updateManifestDataModel.setBooleanProperty(UpdateManifestDataModelProperties.MERGE, false);
-		updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.MANIFEST_FILE, getManifestIFile(rootComponent));
-		ArrayList<String> asStrings = new ArrayList<String>();
-		Iterator<IVirtualReference> i = list.iterator();
-		IVirtualReference tmp;
-		while(i.hasNext()) {
-			tmp = i.next();
-			asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
-		}
-		updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.JAR_LIST, asStrings);
-		try {
-			updateManifestDataModel.getDefaultOperation().execute(new NullProgressMonitor(), null );
-		} catch (ExecutionException e) {
-			// TODO log J2EEUIPlugin.logError(e);
+		if(addButton != null && addButton.isEnabled()) {
+			IDataModel updateManifestDataModel = DataModelFactory.createDataModel(new UpdateManifestDataModelProvider());
+			updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.PROJECT_NAME, project.getName());
+			updateManifestDataModel.setBooleanProperty(UpdateManifestDataModelProperties.MERGE, false);
+			updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.MANIFEST_FILE, getManifestIFile(rootComponent));
+			ArrayList<String> asStrings = new ArrayList<String>();
+			Iterator<IVirtualReference> i = list.iterator();
+			IVirtualReference tmp;
+			while(i.hasNext()) {
+				tmp = i.next();
+				asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
+			}
+			updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.JAR_LIST, asStrings);
+			try {
+				updateManifestDataModel.getDefaultOperation().execute(new NullProgressMonitor(), null );
+			} catch (ExecutionException e) {
+				// TODO log J2EEUIPlugin.logError(e);
+			}
 		}
 
 		return true;
 	}
 
 	public void performDefaults() {
+		list.clear();
+		refreshViewerFromNewParentProject();
 	}
 
 	public boolean performCancel() {
@@ -467,6 +484,30 @@ public class ManifestModuleDependencyControl implements
 	}
 
 	public void dispose() {
+	}
+
+	private String previousManifest = null;
+	public void performApply() {
+		IFile manifest = getManifestIFile(rootComponent);
+		if(manifest == null) {
+			previousManifest = null;
+			addButton.setEnabled(false);
+			performDefaults();
+		} else {
+			if(previousManifest == null) {
+				performDefaults();
+			} else {
+				String currentManifest = manifest.getFullPath().toOSString();
+				if(!previousManifest.equals(currentManifest)) {
+						performDefaults();
+				}
+			}
+			previousManifest = manifest.getFullPath().toOSString();
+			addButton.setEnabled(true);
+			
+		}
+		updateButtons();
+		performOk();
 	}
 
 }

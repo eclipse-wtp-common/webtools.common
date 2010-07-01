@@ -90,6 +90,14 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 		}
 	}
 	
+	public void performApply() {
+		for (int i = 0; i < controls.length; i++) {
+			if (controls[i] != null) {
+				controls[i].performApply();
+			}
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.preference.IPreferencePage#performCancel()
 	 */
@@ -179,7 +187,7 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	}
 	
     public void createControl(Composite parent){
-    	noDefaultAndApplyButton();
     	super.createControl(parent);
+    	getDefaultsButton().setText(Messages.Revert);
     }
 }

@@ -480,6 +480,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 					if(tableIndex >= 0)
 						components[tableIndex].setText((String)value);
 				}
+				verify();
 			}
 		}
 
@@ -777,6 +778,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void performDefaults() {
+		currentReferences.clear();
+		IVirtualReference[] currentTmp =
+			originalReferences.toArray(new IVirtualReference[originalReferences.size()]); 
+		currentReferences.addAll(Arrays.asList(cloneReferences(currentTmp)));
+		resourceMappings.clear();
+		ComponentResource[] allMappings = findAllMappings();
+		for( int i = 0; i < allMappings.length; i++ ) {
+			resourceMappings.add(new ComponentResourceProxy(
+					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
+			));
+		}
+		refresh();
 	}
 
 	public boolean performCancel() {
@@ -1013,6 +1026,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if(moduleHandler == null)
 			moduleHandler = new DefaultModuleHandler();
 		return moduleHandler;
+	}
+
+	public void performApply() {
+		performOk();
+		verify();
 	}
 
 }
