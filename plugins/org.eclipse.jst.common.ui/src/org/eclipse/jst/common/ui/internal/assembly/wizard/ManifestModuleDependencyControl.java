@@ -135,10 +135,13 @@ public class ManifestModuleDependencyControl implements
 		tableLabel.setLayoutData(createFormData(parentSelection,5,null,0, 0, 5, null,0));
 		manifestEntryViewer = createManifestReferenceTableViewer(root, SWT.SINGLE);
 		
-		addButton = new Button(root, SWT.PUSH);
-		removeButton = new Button(root, SWT.PUSH);
-		moveUpButton = new Button(root, SWT.PUSH);
-		moveDownButton = new Button(root, SWT.PUSH);
+		Composite buttonColumn = new Composite(root, SWT.NONE);
+		buttonColumn.setLayout(new FormLayout());
+		buttonColumn.setLayoutData(createFormData(tableLabel,5,null,0,null,0, 100,-5));
+		addButton = new Button(buttonColumn, SWT.PUSH);
+		removeButton = new Button(buttonColumn, SWT.PUSH);
+		moveUpButton = new Button(buttonColumn, SWT.PUSH);
+		moveDownButton = new Button(buttonColumn, SWT.PUSH);
 		
 		addButton.setText(Messages.Add);
 		removeButton.setText(Messages.Remove);
@@ -155,10 +158,10 @@ public class ManifestModuleDependencyControl implements
 		moveUpButton.setEnabled(false);
 		moveDownButton.setEnabled(false);
 		
-		addButton.setLayoutData(createFormData(tableLabel,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
-		removeButton.setLayoutData(createFormData(addButton,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
-		moveUpButton.setLayoutData(createFormData(removeButton,5,null,0,manifestEntryViewer.getTable(),5,100,-5));
-		moveDownButton.setLayoutData(createFormData(moveUpButton,5,null,0,null,0,100,-5));
+		addButton.setLayoutData(createFormData(null,0,null,0,manifestEntryViewer.getTable(),5,100,0));
+		removeButton.setLayoutData(createFormData(addButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
+		moveUpButton.setLayoutData(createFormData(removeButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
+		moveDownButton.setLayoutData(createFormData(moveUpButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
 		
 		addButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -190,7 +193,7 @@ public class ManifestModuleDependencyControl implements
 		});
 		
 		manifestEntryViewer.getTable().setLayoutData(createFormData(
-				tableLabel, 5, 100, -5, 0, 5, moveDownButton, -5));
+				tableLabel, 5, 100, -5, 0, 5, buttonColumn, 0));
 		manifestEntryViewer.setLabelProvider(new ManifestLabelProvider());
 		manifestEntryViewer.setContentProvider(new ManifestContentProvider());
 		manifestEntryViewer.setInput(ResourcesPlugin.getWorkspace());
