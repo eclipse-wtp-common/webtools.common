@@ -84,6 +84,7 @@ public class ManifestModuleDependencyControl implements
 	protected Combo parentSelection;
 	protected TableViewer manifestEntryViewer;
 	private ArrayList<IVirtualReference> list = new ArrayList<IVirtualReference>();
+	private String previousManifest = null;
 	
 	public ManifestModuleDependencyControl(final IProject project,
 			final ModuleAssemblyRootPage page) {
@@ -153,6 +154,7 @@ public class ManifestModuleDependencyControl implements
 			addButton.setEnabled(false);
 		} else {
 			addButton.setEnabled(true);
+			previousManifest = manifest.getFullPath().toOSString();
 		}
 		removeButton.setEnabled(false);
 		moveUpButton.setEnabled(false);
@@ -489,7 +491,6 @@ public class ManifestModuleDependencyControl implements
 	public void dispose() {
 	}
 
-	private String previousManifest = null;
 	public void performApply() {
 		IFile manifest = getManifestIFile(rootComponent);
 		if(manifest == null) {
@@ -502,7 +503,7 @@ public class ManifestModuleDependencyControl implements
 			} else {
 				String currentManifest = manifest.getFullPath().toOSString();
 				if(!previousManifest.equals(currentManifest)) {
-						performDefaults();
+					performDefaults();
 				}
 			}
 			previousManifest = manifest.getFullPath().toOSString();
