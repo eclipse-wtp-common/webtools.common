@@ -64,7 +64,12 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public static class ESynchronizedAdapterList extends EAdapterList
 	  {
 	
-	    public ESynchronizedAdapterList(Notifier notifier) {
+	    @Override
+		public Object[] data() {
+			synchronized (this){return super.data();}
+		}
+
+		public ESynchronizedAdapterList(Notifier notifier) {
 			super(notifier);
 		}
 	
