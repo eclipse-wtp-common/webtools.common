@@ -73,13 +73,15 @@ public final class RuntimeManagerImpl
     private static final String EL_RUNTIME_COMPONENT_TYPE = "runtime-component-type"; //$NON-NLS-1$
     private static final String EL_RUNTIME_COMPONENT_VERSION = "runtime-component-version"; //$NON-NLS-1$
     private static final String EL_SUPPORTED = "supported"; //$NON-NLS-1$
+    private static final String EL_UNSUPPORTED = "unsupported"; //$NON-NLS-1$
     private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
 
     private static final String ANY = "any"; //$NON-NLS-1$
     
     private static final IndexedSet<String,IRuntimeComponentType> runtimeComponentTypes;
     private static final IndexedSet<String,IRuntime> runtimes;
-    private static final List<Mapping> mappings;
+    private static final List<Mapping> supportedMappings;
+    private static final List<Mapping> unsupportedMappings;
     private static final Map<String,IRuntimeBridge> bridges;
     private static final Set<IListener> listeners;
     private static final RuntimeLifecycleListenerRegistry runtimeLifecycleListenerRegistry;
@@ -89,7 +91,8 @@ public final class RuntimeManagerImpl
     {
         runtimeComponentTypes = new IndexedSet<String,IRuntimeComponentType>();
         runtimes = new IndexedSet<String,IRuntime>();
-        mappings = new ArrayList<Mapping>();
+        supportedMappings = new ArrayList<Mapping>();
+        unsupportedMappings = new ArrayList<Mapping>();
         bridges = new HashMap<String,IRuntimeBridge>();
         listeners = new HashSet<IListener>();
         runtimeLifecycleListenerRegistry = new RuntimeLifecycleListenerRegistry();
@@ -319,11 +322,32 @@ public final class RuntimeManagerImpl
         
         for( IRuntimeComponent rc : composition )
         {
-            for( Mapping m : mappings )
+            // Process the supported declarations first.
+            
+            for( Mapping m : supportedMappings )
             {
                 try
                 {
-                    result.addAll( m.getSupportedFacets( rc ) );                    
+                    result.addAll( m.evaluate( rc ) );                    
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e.getStatus() );
+                }
+                catch( VersionFormatException e )
+                {
+                    FacetCorePlugin.log( e );
+                }
+            }
+            
+            // Unsupported declarations win over supported, therefore
+            // they must be processed afterwards
+            
+            for( Mapping m : unsupportedMappings )
+            {
+                try
+                {
+                    result.removeAll( m.evaluate( rc ) );                    
                 }
                 catch( CoreException e )
                 {
@@ -495,7 +519,15 @@ public final class RuntimeManagerImpl
         {
             if( config.getName().equals( EL_SUPPORTED ) )
             {
-                readMapping( config );
+                readMapping( config, supportedMappings );
+            }
+        }
+
+        for( IConfigurationElement config : cfgels )
+        {
+            if( config.getName().equals( EL_UNSUPPORTED ) )
+            {
+                readMapping( config, unsupportedMappings );
             }
         }
     }
@@ -764,7 +796,8 @@ public final class RuntimeManagerImpl
         }
     }
     
-    private static void readMapping( final IConfigurationElement config )
+    private static void readMapping( final IConfigurationElement config, 
+                                     final List<Mapping> mappings )
     {
         final Mapping m = new Mapping();
         final IConfigurationElement[] children = config.getChildren();
@@ -958,7 +991,7 @@ public final class RuntimeManagerImpl
         public final Map<IRuntimeComponentType,VersionExpr<RuntimeComponentVersion>> runtimeComponents 
             = new HashMap<IRuntimeComponentType,VersionExpr<RuntimeComponentVersion>>();
         
-        private Set<IProjectFacetVersion> getSupportedFacets( final IRuntimeComponent rc )
+        private Set<IProjectFacetVersion> evaluate( final IRuntimeComponent rc )
         
             throws CoreException
             

@@ -22,6 +22,7 @@
             <element ref="runtime-component-version" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="adapter" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="supported" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="unsupported" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -214,6 +215,20 @@
       </complexType>
    </element>
 
+   <element name="unsupported">
+      <annotation>
+         <documentation>
+            Specifies that these project facets are explicitly unsupported by these runtimes. Declarations of unsupported facets always win over the declarations of supported facets.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="runtime-component" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
    <element name="facet">
       <annotation>
          <documentation>
@@ -252,7 +267,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+
       </documentation>
    </annotation>
 
@@ -261,7 +276,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         
+
       </documentation>
    </annotation>
 
