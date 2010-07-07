@@ -21,6 +21,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
 
 /**
  * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
@@ -43,6 +44,7 @@ public final class VersionExpr<T extends IVersion>
     private static final int SM2_ESCAPE = 2;
     
     private final Versionable<T> versionable;
+    private final String originalExprString;
     private final List<ISubExpr> subexprs;
     private final String usedInPlugin;
     
@@ -65,6 +67,7 @@ public final class VersionExpr<T extends IVersion>
         
     {
         this.versionable = versionable;
+        this.originalExprString = expr;
         this.subexprs = new ArrayList<ISubExpr>();
         this.usedInPlugin = usedInPlugin;
         
@@ -244,18 +247,31 @@ public final class VersionExpr<T extends IVersion>
         
         if( usingDeprecatedSyntax )
         {
-            final String msg;
+            final StringBuilder msg = new StringBuilder();
+            final String nl = System.getProperty( "line.separator" ); //$NON-NLS-1$
             
-            if( this.usedInPlugin == null )
+            msg.append( Resources.depMessage );
+            msg.append( nl );
+            msg.append( nl );
+            msg.append( NLS.bind( Resources.depExpression, this.originalExprString ) );
+            msg.append( nl );
+            
+            if( this.versionable instanceof ProjectFacet )
             {
-                msg = Resources.deprecatedSyntaxNoPlugin;
+                msg.append( NLS.bind( Resources.depUsedWithFacet, this.versionable.toString() ) );
             }
             else
             {
-                msg = NLS.bind( Resources.deprecatedSyntax, this.usedInPlugin );
+                msg.append( NLS.bind( Resources.depUsedWithRuntimeComponentType, this.versionable.toString() ) );
             }
             
-            FacetCorePlugin.logWarning( msg, true );
+            if( this.usedInPlugin != null )
+            {
+                msg.append( nl );
+                msg.append( NLS.bind( Resources.depUsedInBundle, this.usedInPlugin ) );
+            }
+            
+            FacetCorePlugin.logWarning( msg.toString(), true );
         }
     }
     
@@ -655,14 +671,16 @@ public final class VersionExpr<T extends IVersion>
         
     {
         public static String invalidVersionExpr;
-        public static String deprecatedSyntax;
-        public static String deprecatedSyntaxNoPlugin;
+        public static String depMessage;
+        public static String depExpression;
+        public static String depUsedInBundle;
+        public static String depUsedWithFacet;
+        public static String depUsedWithRuntimeComponentType;
         public static String versionOrNewer;
         
         static
         {
-            initializeMessages( VersionExpr.class.getName(), 
-                                Resources.class );
+            initializeMessages( VersionExpr.class.getName(), Resources.class );
         }
     }
 
