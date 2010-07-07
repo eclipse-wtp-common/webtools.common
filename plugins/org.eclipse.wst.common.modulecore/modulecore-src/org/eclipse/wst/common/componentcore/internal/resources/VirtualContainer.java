@@ -352,11 +352,14 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 
 	private IVirtualResource createVirtualResource(ComponentResource aComponentResource) {
 		IResource resource = StructureEdit.getEclipseResource(aComponentResource);
-		switch (resource.getType()) {
-			case IResource.FILE :
-				return ComponentCore.createFile(getProject(), aComponentResource.getRuntimePath());
-			case IResource.FOLDER :
-				return ComponentCore.createFolder(getProject(), aComponentResource.getRuntimePath());
+		if (resource != null)
+		{
+			switch (resource.getType()) {
+				case IResource.FILE :
+					return ComponentCore.createFile(getProject(), aComponentResource.getRuntimePath());
+				case IResource.FOLDER :
+					return ComponentCore.createFolder(getProject(), aComponentResource.getRuntimePath());
+			}
 		}
 		return null;
 	}
