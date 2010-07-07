@@ -193,15 +193,19 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
     	for (int i = 0; i < refComponents.length; i++) {
     		IVirtualReference reference = refComponents[i];
     		if (reference != null && reference.getDependencyType()==IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
-    			IVirtualComponent consumedComponent = reference.getReferencedComponent();
-				if (consumedComponent.getRootFolder()!=null) {
-					IVirtualFolder vFolder = consumedComponent.getRootFolder();
-					util.addMembers(consumedComponent, vFolder, root.append(reference.getRuntimePath().makeRelative()));
-					addConsumedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
-					addUsedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
-				}
+				consumeComponent(util, root, reference);
     		}
     	}
+	}
+
+	protected void consumeComponent(VirtualComponentFlattenUtility util, IPath root, IVirtualReference reference) throws CoreException {
+		IVirtualComponent consumedComponent = reference.getReferencedComponent();
+		if (consumedComponent.getRootFolder()!=null) {
+			IVirtualFolder vFolder = consumedComponent.getRootFolder();
+			util.addMembers(consumedComponent, vFolder, root.append(reference.getRuntimePath().makeRelative()));
+			addConsumedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
+			addUsedReferences(util, consumedComponent, root.append(reference.getRuntimePath().makeRelative()));
+		}
 	}
 	
 	/**
