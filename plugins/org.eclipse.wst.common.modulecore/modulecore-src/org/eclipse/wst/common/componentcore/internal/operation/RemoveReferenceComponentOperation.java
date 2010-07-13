@@ -60,11 +60,16 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 			existingReferences.add(existingReferencesArray[i]);
 		}
 		
-		String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
-		IPath path = new Path( deployPath );
+		IPath path = null;
+		//if the deployPath is not explicitly set, then leave it as null so the first reference is removed.
+		if(model.isPropertySet( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH )){
+			String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
+			path = new Path( deployPath );
+		}
 		
 		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
     
+		
 		List targetprojectList = new ArrayList();
 
 		for (int i = 0; i < modList.size() && !existingReferences.isEmpty(); i++) {
