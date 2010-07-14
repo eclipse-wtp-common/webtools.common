@@ -334,16 +334,68 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			boolean isEmpty = projectsAdded.isEmpty() && projectsRemoved.isEmpty() && projectsUpdated.isEmpty();
 			return !isEmpty;
 		}
-
+		
+		private boolean running = false;
+		private void setRunning(boolean b) {
+			synchronized (runLock) {
+				running = b;
+				if(running){
+					runStamp++;
+				}
+			}
+		}
+		
+		private boolean isRunning(){
+			synchronized (runLock) {
+				return running;
+			}
+		}
+		
+		private boolean didRun(long stamp){
+			synchronized (runLock) {
+				return stamp != runStamp;
+			}
+		}
+		
+		//keeps track of when each run
+		private long runStamp = 0;
+		private Object runLock = new Object();
+		
+		public void waitForRun(long maxWaitTime) {
+			if(isRunning()){
+				return;
+			} else {
+				final long startTime = System.currentTimeMillis();
+				long localRunStamp = 0;
+				synchronized (graphLock) {
+					localRunStamp = runStamp;
+				}
+				while(true){
+					if(System.currentTimeMillis() - startTime > maxWaitTime){
+						return;
+					}
+					if(didRun(localRunStamp)){
+						return;
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						Thread.interrupted();
+					}
+				}
+			}
+		}
+		
 		protected IStatus run(IProgressMonitor monitor) {
 			try{
 				jobILock.acquire();
+				setRunning(true);
+				
 				if(ResourcesPlugin.getPlugin().getBundle().getState() == Bundle.STARTING ){
 					graphUpdateJob.schedule(JOB_DELAY);
 					return Status.OK_STATUS;
 				}
 				
-				final DependencyGraphEvent event = new DependencyGraphEvent(); 
 				final Object[] removed = projectsRemoved.getListeners();
 				final Object[] updated = projectsUpdated.getListeners();
 				final Object[] added = projectsAdded.getListeners();
@@ -362,6 +414,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					}
 	
 					public void run() throws Exception {
+						final DependencyGraphEvent event = new DependencyGraphEvent(); 
+						
 						//all references will be rebuilt during an add
 						if(added.length == 0){
 							// this is the simple case; just remove them all
@@ -471,6 +525,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				});
 				return Status.OK_STATUS;
 			} finally {
+				setRunning(false);
 				jobILock.release();
 			}
 		}
@@ -567,6 +622,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				if(subMonitor.isCanceled()){
 					throw new OperationCanceledException();
 				}
+				
 				// Ensure any pending work has caused the job to become scheduled
 				if(graphUpdateJob.shouldSchedule()){
 					graphUpdateJob.schedule();
@@ -577,6 +633,9 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				if(currentJob != null){
 					currentJob.yieldRule(subMonitor.newChild(100));
 				}
+				
+				graphUpdateJob.waitForRun(500);
+				
 				boolean interrupted = false;
 				try {
 					if(jobILock.acquire(500)){
