@@ -12,7 +12,9 @@ package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
@@ -355,12 +357,35 @@ public class ManifestModuleDependencyControl implements
 		if( parentString != null && !"".equals(parentString)) { //$NON-NLS-1$
 			parentProject = ResourcesPlugin.getWorkspace().getRoot().getProject(parentString);
 			IVirtualReference[] current  = JavaModuleComponentUtility.findCurrentManifestEntries(parentProject, project);
-			refsForCurrentProject = addMissingDummyEntries(current);
+			refsForCurrentProject = sortRefsForCurrentProject(addMissingDummyEntries(current));
 			for( int i = 0; i < refsForCurrentProject.length; i++ ) {
 				list.add(refsForCurrentProject[i]);
 			}
 		}
 		manifestEntryViewer.refresh();
+	}
+	
+	private IVirtualReference[] sortRefsForCurrentProject(IVirtualReference[] currentRefs) {
+		IFile manifestFile = getManifestIFile(rootComponent);
+		if (manifestFile == null)
+			return currentRefs;
+		
+		HashMap<String, IVirtualReference> unsortedRefMap = new HashMap<String, IVirtualReference>();
+		for (int i = 0; i < currentRefs.length; i++) {
+			IVirtualReference ref = currentRefs[i];
+			String entryName = ref.getRuntimePath().append(ref.getArchiveName()).toString();
+			unsortedRefMap.put(entryName, ref);
+		}
+		List<IVirtualReference> sortedRefs = new ArrayList<IVirtualReference>();
+		ArchiveManifest manifest = ManifestUtilities.getManifest(manifestFile);
+		String[] entries = manifest.getClassPathTokenized();
+		for (int i = 0; i < entries.length; i++) {
+			IVirtualReference ref = unsortedRefMap.get(entries[i]);
+			if (ref != null) {
+				sortedRefs.add(ref);
+			}
+		}
+		return sortedRefs.toArray(new IVirtualReference[sortedRefs.size()]);
 	}
 	
 	protected void refreshViewer() {
