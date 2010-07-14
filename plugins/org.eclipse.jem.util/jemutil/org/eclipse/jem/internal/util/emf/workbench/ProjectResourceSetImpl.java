@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.30 $$  $$Date: 2010/04/29 01:44:22 $$ 
+ *  $$Revision: 1.31 $$  $$Date: 2010/07/14 14:39:20 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -55,6 +55,15 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		private static final long serialVersionUID = 1L;
 		private final ILock lock = Job.getJobManager().newLock();
 
+		public void copyInto(List list){
+			try {
+				lock.acquire();
+				list.addAll(this);
+			} finally {
+				lock.release();
+			}
+		}
+		
 		public void move(int newPosition, E object) {
 			
 			try {
@@ -864,6 +873,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    	List<Resource> c = getImmutableResources();
 	        
 	        synchronized(c) {
+	        	
 				for (Resource resource : c) {
 					if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
 						if (loadOnDemand && !resource.isLoaded()) {
@@ -930,8 +940,14 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		    }
 		    return resources;
 	}
+	/**
+	 * Creating a copy of the resources list
+	 * @return
+	 */
 	public List<Resource> getImmutableResources() {
-		 return Collections.synchronizedList(getResources());
+		 List <Resource> list = new ArrayList<Resource>();
+		 ((SynchronizedResourcesEList)getResources()).copyInto(list);
+		 return list;
 	}
 	@Override
 	public void eNotify(Notification notification) {
