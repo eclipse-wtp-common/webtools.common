@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
       label="%featureName"
-      version="3.2.0.qualifier"
+      version="3.2.1.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.jst.common.fproj.enablement.jdt.sdk">
 
@@ -17,7 +17,6 @@
    <license url="license.html">
       %license
    </license>
-
 
    <includes
          id="org.eclipse.jst.common.fproj.enablement.jdt"
