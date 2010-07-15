@@ -131,7 +131,17 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	public static String getSafeRuntimePath(IVirtualReference ref) {
 		String archiveName = ref.getDependencyType() == DependencyType.CONSUMES ? null : ref.getArchiveName();
-		String val = (archiveName != null) ? ref.getRuntimePath().append(archiveName).toString() : ref.getRuntimePath().toString();
+		String val = null;
+		if(archiveName != null) {
+			IPath runtimePath = new Path(archiveName);
+			if(runtimePath.segmentCount() > 1) {
+				val = archiveName;
+			} else {
+				val = ref.getRuntimePath().append(archiveName).toString();
+			}
+		} else {
+			val = ref.getRuntimePath().toString();
+		}
 		if( val == null ) val = "/";
 		return val;
 	}

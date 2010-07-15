@@ -124,7 +124,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 			refs[i] = new VirtualReference(
 					(IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT), 
 					ComponentCore.createComponent(proj, false));
-			refs[i].setArchiveName(getArchiveName(proj, refs[i].getReferencedComponent()));
+			refs[i].setArchiveName(new Path(getArchiveName(proj, refs[i].getReferencedComponent())).lastSegment());
 			refs[i].setRuntimePath(new Path(runtimeLoc).makeAbsolute());
 		}
 		getTaskModel().putObject(IReferenceWizardConstants.FINAL_REFERENCE, refs);
