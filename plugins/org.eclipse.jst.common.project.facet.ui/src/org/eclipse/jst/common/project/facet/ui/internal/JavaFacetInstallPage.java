@@ -25,9 +25,6 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -61,7 +58,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.util.IEventListener;
 import org.eclipse.wst.common.project.facet.core.util.internal.ObjectReference;
 import org.eclipse.wst.common.project.facet.ui.AbstractFacetWizardPage;
@@ -72,49 +68,49 @@ import org.eclipse.wst.common.project.facet.ui.AbstractFacetWizardPage;
 
 public final class JavaFacetInstallPage
 
-	extends AbstractFacetWizardPage
-	
+    extends AbstractFacetWizardPage
+    
 {
-	private static final String WIZARD_PAGE_NAME = "java.facet.install.page"; //$NON-NLS-1$
-	
-	private static final String IMG_KEY_SOURCE_FOLDER = "source.folder"; //$NON-NLS-1$
-	
-	private JavaFacetInstallConfig installConfig = null;
-	private ImageRegistry imageRegistry = null;
-	private Text defaultOutputFolderTextField = null;
-	private TreeViewer sourceFoldersTreeViewer = null;
+    private static final String WIZARD_PAGE_NAME = "java.facet.install.page"; //$NON-NLS-1$
+    
+    private static final String IMG_KEY_SOURCE_FOLDER = "source.folder"; //$NON-NLS-1$
+    
+    private JavaFacetInstallConfig installConfig = null;
+    private ImageRegistry imageRegistry = null;
+    private Text defaultOutputFolderTextField = null;
+    private TreeViewer sourceFoldersTreeViewer = null;
     private Tree sourceFoldersTree = null;
     private Button addButton = null;
     private Button editButton = null;
     private Button removeButton = null;
-	
-	public JavaFacetInstallPage() 
-	{
-		super( WIZARD_PAGE_NAME );
-		
+    
+    public JavaFacetInstallPage() 
+    {
+        super( WIZARD_PAGE_NAME );
+        
         setTitle( Resources.pageTitle );
         setDescription( Resources.pageDescription );
         setImageDescriptor( getImageDescriptor( IMG_PATH_JAVA_WIZBAN ) );
         
         this.imageRegistry = new ImageRegistry();
         this.imageRegistry.put( IMG_KEY_SOURCE_FOLDER, getImageDescriptor( IMG_PATH_SOURCE_FOLDER ) );
-	}
-	
-	public JavaFacetInstallConfig getConfig()
-	{
-	    return this.installConfig;
-	}
+    }
+    
+    public JavaFacetInstallConfig getConfig()
+    {
+        return this.installConfig;
+    }
 
-	public void setConfig( final Object config ) 
-	{
-		this.installConfig = (JavaFacetInstallConfig) config;
-	}
+    public void setConfig( final Object config ) 
+    {
+        this.installConfig = (JavaFacetInstallConfig) config;
+    }
 
-	public void createControl( final Composite parent) 
-	{
-		final Composite composite = new Composite( parent, SWT.NONE );
-		composite.setLayoutData( gdfill() );
-		composite.setLayout( gl( 2 ) );
+    public void createControl( final Composite parent) 
+    {
+        final Composite composite = new Composite( parent, SWT.NONE );
+        composite.setLayoutData( gdfill() );
+        composite.setLayout( gl( 2 ) );
 
         composite.addDisposeListener
         (
@@ -126,7 +122,7 @@ public final class JavaFacetInstallPage
                 }
             }
         );
-		
+        
         final Label sourceFoldersLabel = new Label( composite, SWT.NONE );
         sourceFoldersLabel.setLayoutData( gdhspan( gd(), 2 ) );
         sourceFoldersLabel.setText( Resources.sourceFoldersLabel );
@@ -138,7 +134,7 @@ public final class JavaFacetInstallPage
         this.sourceFoldersTree.getAccessible().addAccessibleListener
         (
             new AccessibleAdapter() 
-            {			
+            {            
                 public void getName( final AccessibleEvent event ) 
                 {
                     if( event.childID == -1 )
@@ -229,32 +225,32 @@ public final class JavaFacetInstallPage
 
         final Label defaultOutputFolderLabel = new Label( composite, SWT.NONE );
         defaultOutputFolderLabel.setLayoutData( gdhspan( gd(), 2 ) );
-		defaultOutputFolderLabel.setText( Resources.defaultOutputFolderLabel );
-		
-		this.defaultOutputFolderTextField = new Text( composite, SWT.BORDER );
-		this.defaultOutputFolderTextField.setLayoutData( gdhspan( gdhfill(), 2 ) );
-		
-		bindUiToModel();
-		
-		setControl( composite );
-	}
-	
+        defaultOutputFolderLabel.setText( Resources.defaultOutputFolderLabel );
+        
+        this.defaultOutputFolderTextField = new Text( composite, SWT.BORDER );
+        this.defaultOutputFolderTextField.setLayoutData( gdhspan( gdhfill(), 2 ) );
+        
+        bindUiToModel();
+        
+        setControl( composite );
+    }
+    
     private void bindUiToModel()
-	{
-	    bindDefaultOutputFolder();
-	}
-	
-	private void bindDefaultOutputFolder()
-	{
-	    final JavaFacetInstallConfig installConfig = this.installConfig;
-	    final Text defaultOutputFolderTextField = this.defaultOutputFolderTextField;
-	    
-	    final ObjectReference<Boolean> updating = new ObjectReference<Boolean>( false );
-	    
-	    this.defaultOutputFolderTextField.addModifyListener
-	    (
-	        new ModifyListener()
-	        {
+    {
+        bindDefaultOutputFolder();
+    }
+    
+    private void bindDefaultOutputFolder()
+    {
+        final JavaFacetInstallConfig installConfig = this.installConfig;
+        final Text defaultOutputFolderTextField = this.defaultOutputFolderTextField;
+        
+        final ObjectReference<Boolean> updating = new ObjectReference<Boolean>( false );
+        
+        this.defaultOutputFolderTextField.addModifyListener
+        (
+            new ModifyListener()
+            {
                 public void modifyText( final ModifyEvent e ) 
                 {
                     if( updating.get() )
@@ -274,11 +270,11 @@ public final class JavaFacetInstallPage
                         updating.set( false );
                     }
                 }
-	        }
-	    );
-	    
-	    final IEventListener<JavaFacetInstallConfig.ChangeEvent> modelEventListener
-	        = new IEventListener<JavaFacetInstallConfig.ChangeEvent>()
+            }
+        );
+        
+        final IEventListener<JavaFacetInstallConfig.ChangeEvent> modelEventListener
+            = new IEventListener<JavaFacetInstallConfig.ChangeEvent>()
         {
             public void handleEvent( final JavaFacetInstallConfig.ChangeEvent event ) 
             {
@@ -302,14 +298,14 @@ public final class JavaFacetInstallPage
         };
 
         this.installConfig.addListener
-	    (
-	        modelEventListener,
-	        JavaFacetInstallConfig.ChangeEvent.Type.DEFAULT_OUTPUT_FOLDER_CHANGED
-	    );
+        (
+            modelEventListener,
+            JavaFacetInstallConfig.ChangeEvent.Type.DEFAULT_OUTPUT_FOLDER_CHANGED
+        );
         
         modelEventListener.handleEvent( null );
-	}
-	
+    }
+    
     private ImageRegistry getImageRegistry()
     {
         return this.imageRegistry;
@@ -321,19 +317,19 @@ public final class JavaFacetInstallPage
         return (IPath) sel.getFirstElement();
     }
 
-	private String convertToString( final IPath path )
-	{
-	    return ( path == null ? "" : path.toOSString() ); //$NON-NLS-1$
-	}
-	
-	private void updateButtonEnablement()
-	{
-	    final boolean haveSelection = ! this.sourceFoldersTreeViewer.getSelection().isEmpty();
-	    
-	    this.editButton.setEnabled( haveSelection );
-	    this.removeButton.setEnabled( haveSelection );
-	}
-	
+    private String convertToString( final IPath path )
+    {
+        return ( path == null ? "" : path.toOSString() ); //$NON-NLS-1$
+    }
+    
+    private void updateButtonEnablement()
+    {
+        final boolean haveSelection = ! this.sourceFoldersTreeViewer.getSelection().isEmpty();
+        
+        this.editButton.setEnabled( haveSelection );
+        this.removeButton.setEnabled( haveSelection );
+    }
+    
     private void handleAddButtonPressed() 
     {
         final InputDialog dialog 
@@ -381,20 +377,15 @@ public final class JavaFacetInstallPage
 
     private IInputValidator createSourceFolderInputValidator()
     {
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        final IFacetedProjectWorkingCopy fpjwc = this.installConfig.getFacetedProjectWorkingCopy();
-        final String projectName = fpjwc.getProjectName();
-        
         final IInputValidator validator = new IInputValidator()
         {
             public String isValid( final String newText ) 
             {
-                final String fullPath = "/" + projectName + "/" + newText; //$NON-NLS-1$ //$NON-NLS-2$
-                final IStatus result = ws.validatePath( fullPath, IResource.FOLDER );
+                final IStatus status = getConfig().validateSourceFolder( newText );
                 
-                if( result.getSeverity() == IStatus.ERROR )
+                if( ! status.isOK() )
                 {
-                    return result.getMessage();
+                    return status.getMessage();
                 }
                 else
                 {
@@ -405,6 +396,7 @@ public final class JavaFacetInstallPage
         
         return validator;
     }
+    
     private final class SourceFoldersContentProvider
 
         implements ITreeContentProvider
@@ -436,7 +428,7 @@ public final class JavaFacetInstallPage
                                   final Object oldObject,
                                   final Object newObject ) {}
     }
-	
+    
     private final class SourceFoldersLabelProvider
 
         implements ILabelProvider

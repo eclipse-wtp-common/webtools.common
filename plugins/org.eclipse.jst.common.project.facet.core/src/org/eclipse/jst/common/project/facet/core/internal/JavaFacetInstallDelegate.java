@@ -18,10 +18,14 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -65,9 +69,7 @@ public final class JavaFacetInstallDelegate
             
             for( IPath srcFolderPath : config.getSourceFolders() )
             {
-                final IFolder folder = project.getFolder( srcFolderPath );
-                mkdirs( folder, false );
-                
+                final IFolder folder = createFolder( project, srcFolderPath, false );
                 cp.add( JavaCore.newSourceEntry( folder.getFullPath() ) );
             }
             
@@ -76,8 +78,7 @@ public final class JavaFacetInstallDelegate
             
             if( defOutputPath != null )
             {
-                defOutputFolder = project.getFolder( config.getDefaultOutputFolder() );
-                mkdirs( defOutputFolder, true );
+                defOutputFolder = createFolder( project, config.getDefaultOutputFolder(), true );
             }
 
             // Add the java nature. This will automatically add the builder.
@@ -140,24 +141,55 @@ public final class JavaFacetInstallDelegate
         }
     }
     
-    private static void mkdirs( final IFolder folder,
-                                final boolean isDerived )
+    private static IFolder createFolder( final IProject project,
+                                         final IPath path,
+                                         final boolean isDerived )
     
         throws CoreException
         
     {
-        if( ! folder.exists() )
+        IContainer current = project;
+        
+        for( int i = 0, n = path.segmentCount(); i < n; i++ )
         {
-            final IContainer parent = folder.getParent();
+            final String name = path.segment( i );
+            IFolder folder = current.getFolder( new Path( name ) );
             
-            if( parent instanceof IFolder )
+            if( ! folder.exists() )
             {
-                mkdirs( (IFolder) parent, isDerived );
+                try
+                {
+                    folder.create( true, true, null );
+                    folder.setDerived( isDerived, null );
+                }
+                catch( CoreException e )
+                {
+                    // Eclipse Resources API is always case sensitive regardless of the underlying
+                    // file system. In particular, IResource.exists() call will return false on
+                    // case collision, but the create() call will fail.
+                    
+                    final IStatus st = e.getStatus();
+                    
+                    if( st.getCode() != IResourceStatus.CASE_VARIANT_EXISTS )
+                    {
+                        throw e;
+                    }
+                    
+                    for( IResource resource : current.members() )
+                    {
+                        if( resource instanceof IFolder && resource.getName().equalsIgnoreCase( name ) )
+                        {
+                            folder = (IFolder) resource;
+                            break;
+                        }
+                    }
+                }
             }
             
-            folder.create( true, true, null );
-            folder.setDerived( isDerived );
+            current = folder;
         }
+        
+        return (IFolder) current;
     }
 
 }
