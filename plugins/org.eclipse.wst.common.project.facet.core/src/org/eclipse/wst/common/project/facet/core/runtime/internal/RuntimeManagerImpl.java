@@ -320,10 +320,10 @@ public final class RuntimeManagerImpl
     {
         final Set<IProjectFacetVersion> result = new HashSet<IProjectFacetVersion>();
         
+        // Process the supported declarations first.
+        
         for( IRuntimeComponent rc : composition )
         {
-            // Process the supported declarations first.
-            
             for( Mapping m : supportedMappings )
             {
                 try
@@ -339,10 +339,13 @@ public final class RuntimeManagerImpl
                     FacetCorePlugin.log( e );
                 }
             }
+        }
             
-            // Unsupported declarations win over supported, therefore
-            // they must be processed afterwards
-            
+        // Unsupported declarations win over supported, therefore
+        // they must be processed afterwards
+        
+        for( IRuntimeComponent rc : composition )
+        {
             for( Mapping m : unsupportedMappings )
             {
                 try
