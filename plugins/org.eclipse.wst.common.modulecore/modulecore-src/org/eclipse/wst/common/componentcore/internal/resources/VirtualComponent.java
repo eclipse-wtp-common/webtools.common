@@ -668,6 +668,14 @@ public class VirtualComponent implements IVirtualComponent {
 		}		
 	}
 	
+	/**
+	 * This is an internal method and should not be called except by the 
+	 * {@link org.eclipse.wst.common.component.internal.builder.DependencyGraphImpl}
+	 */
+	public void flushCache() {
+		clearCache();
+	}
+	
 	protected void clearCache() {
 		name = null;
 		deploymentName = null;

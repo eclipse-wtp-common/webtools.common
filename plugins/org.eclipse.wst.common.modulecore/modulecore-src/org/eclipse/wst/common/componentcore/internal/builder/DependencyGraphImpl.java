@@ -77,7 +77,12 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			return modStamp;
 		}
 	}
-
+	
+	private void incrementModStamp(){
+		synchronized (graphLock) {
+			modStamp++;
+		}
+	}
 	/**
 	 * Returns the set of projects whose components reference the specified
 	 * target project's component. For example if projects A and B both
@@ -90,11 +95,21 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			if (set == null) {
 				return Collections.EMPTY_SET;
 			} else {
+				DependencyGraphEvent event = null;
 				for (Iterator<IProject> iterator = set.iterator(); iterator.hasNext();) {
-					IProject project = iterator.next();
-					if (!project.isAccessible()) {
+					IProject sourceProject = iterator.next();
+					if (!sourceProject.isAccessible()) {
 						iterator.remove();
+						if(event == null){
+							incrementModStamp();
+							event = new DependencyGraphEvent();
+							event.setModStamp(getModStamp());
+						}
+						event.removeReference(sourceProject, targetProject);
 					}
+				}
+				if(event != null){
+					notifiyListeners(event);
 				}
 				Set<IProject> copy = new HashSet<IProject>();
 				copy.addAll(set);
@@ -152,7 +167,11 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			case IResource.FILE:
 				String name = resource.getName();
 				if (name.equals(WTPModulesResourceFactory.WTP_MODULES_SHORT_NAME)) {
-					update(resource.getProject(), IDependencyGraph.MODIFIED);
+					if((delta.getKind() & IResourceDelta.ADDED) != 0){
+						update(resource.getProject(), IDependencyGraph.ADDED);
+					} else {
+						update(resource.getProject(), IDependencyGraph.MODIFIED);
+					}
 				} else if(name.equals(".project")){
 					update(resource.getProject(), IDependencyGraph.ADDED);
 				}
@@ -225,8 +244,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				}
 			}
 			if(removed){
-				modStamp++;
-				event.setModStamp(modStamp);
+				incrementModStamp();
+				event.setModStamp(getModStamp());
 			}
 		}
 	}
@@ -237,8 +256,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			if (referencingProjects != null) {
 				if(referencingProjects.remove(sourceProject)){
 					event.removeReference(sourceProject, targetProject);
-					modStamp++;
-					event.setModStamp(modStamp);
+					incrementModStamp();
+					event.setModStamp(getModStamp());
 				}
 			}
 		}
@@ -254,8 +273,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			boolean added = referencingProjects.add(sourceProject);
 			if(added){
 				event.addRefererence(sourceProject, targetProject);
-				modStamp++;
-				event.setModStamp(modStamp);
+				incrementModStamp();
+				event.setModStamp(getModStamp());
 			}
 		}
 	}
@@ -309,23 +328,17 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		private Queue projectsUpdated = new Queue();
 
 		public void queueProjectAdded(IProject project) {
-			synchronized (graphLock) {
-				modStamp++;
-			}
+			incrementModStamp();
 			projectsAdded.add(project);
 		}
 
 		public void queueProjectDeleted(IProject project) {
-			synchronized (graphLock) {
-				modStamp++;
-			}
+			incrementModStamp();
 			projectsRemoved.add(project);
 		}
 
 		public void queueProjectUpdated(IProject project) {
-			synchronized (graphLock) {
-				modStamp++;
-			}
+			incrementModStamp();
 			projectsUpdated.add(project);
 		}
 
@@ -402,9 +415,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				if (removed.length == 0 && updated.length == 0 && added.length == 0) {
 					return Status.OK_STATUS;
 				}
-				synchronized (graphLock) {
-					modStamp++;
-				}
+				incrementModStamp();
 				if(ResourcesPlugin.getPlugin().getBundle().getState() != Bundle.ACTIVE){
 					return Status.OK_STATUS;
 				}
@@ -414,7 +425,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					}
 	
 					public void run() throws Exception {
-						final DependencyGraphEvent event = new DependencyGraphEvent(); 
+						final DependencyGraphEvent event = new DependencyGraphEvent();
 						
 						//all references will be rebuilt during an add
 						if(added.length == 0){
@@ -437,6 +448,13 @@ public class DependencyGraphImpl implements IDependencyGraph {
 								allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 							} else {
 								return;
+							}
+							
+							for (IProject sourceProject : allProjects) {
+								IVirtualComponent component = ComponentCore.createComponent(sourceProject);
+								if (component != null && component instanceof VirtualComponent) {
+									((VirtualComponent)component).flushCache();
+								}
 							}
 							
 							for (IProject sourceProject : allProjects) {
@@ -469,6 +487,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 								IVirtualComponent component = ComponentCore.createComponent(sourceProject);
 								if (component != null && component instanceof VirtualComponent) {
 									validRefs.clear();
+									((VirtualComponent)component).flushCache();
 									IVirtualReference[] references = ((VirtualComponent)component).getRawReferences();
 									for (IVirtualReference ref : references) {
 										IVirtualComponent targetComponent = ref.getReferencedComponent();
@@ -498,29 +517,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 								}
 							}
 						}
-						
-						//fire notifications on a different job so they do not block waitForAllUpdates()
-						Job notificationJob = new Job(Resources.NOTIFICATION_JOB_NAME){
-							@Override
-							protected IStatus run(final IProgressMonitor monitor) {
-								SafeRunner.run(new ISafeRunnable() {
-									public void run() throws Exception {
-										for(Object listener : listeners.getListeners()){
-											((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
-										}
-										monitor.done();
-									}
-	
-									public void handleException(Throwable exception) {
-										ModulecorePlugin.logError(exception);
-									}
-								});
-								return Status.OK_STATUS;
-							}
-						};
-						notificationJob.setSystem(true);
-						notificationJob.setRule(null);
-						notificationJob.schedule();
+						notifiyListeners(event);
 					}
 				});
 				return Status.OK_STATUS;
@@ -538,6 +535,35 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	public void removeListener(IDependencyGraphListener listener) {
 		listeners.remove(listener);
 	}
+
+	private void notifiyListeners(final DependencyGraphEvent event) {
+		if(event.getType() == 0){
+			return;
+		}
+		//fire notifications on a different job so they do not block waitForAllUpdates()
+		Job notificationJob = new Job(Resources.NOTIFICATION_JOB_NAME){
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				SafeRunner.run(new ISafeRunnable() {
+					public void run() throws Exception {
+						for(Object listener : listeners.getListeners()){
+							((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
+						}
+						monitor.done();
+					}
+
+					public void handleException(Throwable exception) {
+						ModulecorePlugin.logError(exception);
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		notificationJob.setSystem(true);
+		notificationJob.setRule(null);
+		notificationJob.schedule();
+	}
+	
 	
 	/**
 	 * Use: update(project, IDependencyGraph.ADDED);
@@ -630,7 +656,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				// Wake up any sleeping jobs since we're going to wait on the job, 
 				// there is no sense to wait for a sleeping job
 				graphUpdateJob.wakeUp();
-				if(currentJob != null){
+				if(currentJob != null && !ResourcesPlugin.getWorkspace().isTreeLocked()){
 					currentJob.yieldRule(subMonitor.newChild(100));
 				}
 				
