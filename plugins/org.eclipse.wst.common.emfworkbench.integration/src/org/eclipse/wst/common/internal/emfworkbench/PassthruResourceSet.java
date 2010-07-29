@@ -20,7 +20,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
@@ -41,7 +40,7 @@ import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 public class PassthruResourceSet extends ProjectResourceSetImpl {
 	protected boolean isIsolated = false;
 
-	public class PassthruResourcesEList extends ResourceSetImpl.ResourcesEList {
+	public class PassthruResourcesEList extends SynchronizedResourcesEList {
 		/**
 		 * 
 		 */

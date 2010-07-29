@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.31 $$  $$Date: 2010/07/14 14:39:20 $$ 
+ *  $$Revision: 1.32 $$  $$Date: 2010/07/29 18:20:34 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -946,7 +946,15 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	 */
 	public List<Resource> getImmutableResources() {
 		 List <Resource> list = new ArrayList<Resource>();
-		 ((SynchronizedResourcesEList)getResources()).copyInto(list);
+		 EList resources = getResources();
+		 if (resources instanceof SynchronizedResourcesEList)
+		 {
+			 ((SynchronizedResourcesEList)resources).copyInto(list);
+		 }
+		 else
+		 {
+			 list = Collections.synchronizedList(resources);
+		 }
 		 return list;
 	}
 	@Override
