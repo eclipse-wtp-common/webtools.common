@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.snippets">
+<schema targetNamespace="org.eclipse.wst.common.snippets" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.wst.common.snippets" id="SnippetContributions" name="Snippets View Contributions Extension"/>
@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="category" minOccurs="1" maxOccurs="unbounded"/>
@@ -57,6 +62,9 @@
                <documentation>
                   A verbose label to show to the user.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="smallicon" type="string">
@@ -130,6 +138,9 @@
                <documentation>
                   A verbose label to show to the user.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="smallicon" type="string">
@@ -151,6 +162,9 @@
                <documentation>
                   A brief label to show to the user.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="largeicon" type="string">
@@ -165,6 +179,9 @@
 
    <element name="content" type="string">
       <annotation>
+         <appInfo>
+            <meta.element translatable="true"/>
+         </appInfo>
          <documentation>
             Specifies the raw data for this Snippets item, usually as a CDATA section.  The insertion object and editor must both understand how to manipulate this data.  The default implementations understand embedded variable markers.
          </documentation>
@@ -190,6 +207,9 @@
                <documentation>
                   The description of this variable.  With the default insertion class, it will be shown in a description pane when the variable is selected.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
@@ -204,6 +224,9 @@
                <documentation>
                   The label to show to the user.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -272,14 +295,6 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
