@@ -13,6 +13,7 @@ package org.eclipse.wst.common.componentcore.internal.builder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,6 +41,10 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		return type;
 	}
 
+	private void setType(int newType){
+		this.type = newType;
+	}
+	
 	void setModStamp(long modStamp) {
 		this.modStamp = modStamp;
 	}
@@ -70,10 +75,10 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 						removedReferences.remove(targetProject);
 						if(removedReferences.isEmpty()){
 							removedReferences = null;
-							if((type & ADDED) == ADDED){
-								type = ADDED;
+							if((getType() & ADDED) == ADDED){
+								setType(ADDED);
 							} else {
-								type = 0;
+								setType(0);
 							}
 						}
 					}
@@ -84,7 +89,7 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		}
 		
 		if (addedReferences == null) {
-			type = type | ADDED;
+			setType(getType() | ADDED);
 			addedReferences = new HashMap<IProject, Set<IProject>>();
 		}
 		Set references = addedReferences.get(targetProject);
@@ -114,10 +119,10 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 						addedReferences.remove(targetProject);
 						if(addedReferences.isEmpty()){
 							addedReferences = null;
-							if((type & REMOVED) == REMOVED){
-								type = REMOVED;
+							if((getType() & REMOVED) == REMOVED){
+								setType(REMOVED);
 							} else {
-								type = 0;
+								setType(0);
 							}
 						}
 					}
@@ -128,7 +133,7 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		}
 		
 		if (removedReferences == null) {
-			type = type | REMOVED;
+			setType(getType() | REMOVED);
 			removedReferences = new HashMap<IProject, Set<IProject>>();
 		}
 		Set references = removedReferences.get(targetProject);
@@ -165,4 +170,41 @@ public class DependencyGraphEvent implements IDependencyGraphUpdateEvent {
 		return removedReferences;
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer buff = new StringBuffer("Dependency Graph Event \n{\n getModStamp() = "+getModStamp()+"\n hashCode() = "+hashCode()+"\n");
+		boolean added = (getType() & ADDED) == ADDED;
+		if(added){
+			buff.append(" ADDED:\n" );
+			for(Iterator<Map.Entry<IProject, Set<IProject>>> iterator = getAddedReferences().entrySet().iterator(); iterator.hasNext();){
+				Map.Entry<IProject, Set<IProject>> entry = iterator.next();
+				buff.append("  " + entry.getKey().getName() + " -> {");
+				for (Iterator<IProject> mappedProjects = entry.getValue().iterator(); mappedProjects.hasNext();) {
+					buff.append(mappedProjects.next().getName());
+					if (mappedProjects.hasNext()) {
+						buff.append(", ");
+					}
+				}
+				buff.append("}\n");
+			}
+		}
+		boolean removed = (getType() & REMOVED) == REMOVED;
+		if(removed){
+			buff.append(" REMOVED:\n" );
+			for(Iterator<Map.Entry<IProject, Set<IProject>>> iterator = getRemovedReferences().entrySet().iterator(); iterator.hasNext();){
+				Map.Entry<IProject, Set<IProject>> entry = iterator.next();
+				buff.append("  " + entry.getKey().getName() + " -> {");
+				for (Iterator<IProject> mappedProjects = entry.getValue().iterator(); mappedProjects.hasNext();) {
+					buff.append(mappedProjects.next().getName());
+					if (mappedProjects.hasNext()) {
+						buff.append(", ");
+					}
+				}
+				buff.append("}\n");
+			}
+		}
+		buff.append("}\n");
+		return buff.toString();
+	}
+	
 }
