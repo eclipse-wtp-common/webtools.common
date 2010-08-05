@@ -38,8 +38,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -50,7 +48,6 @@ import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 /**
  * @author schacher
@@ -180,52 +177,24 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		}
 	}
 
-	private ILock lock;
-	private static final long delay = 30;
-	
-    private ILock getLock() {
-        if (lock == null)
-            lock = Platform.getJobManager().newLock();
-        return lock;
-    }
-    
-    private void releaseLock() {
-        getLock().release();
-    }
-    private boolean aquireLock() throws InterruptedException{
-    	return getLock().acquire(delay);
-    }
-    
 	protected void acceptDelta(final IResourceChangeEvent event) {
 
-		boolean hasLocked = false;
-		try {
-			hasLocked = aquireLock();
-		} catch (InterruptedException e) {
-			EMFWorkbenchEditPlugin.logError(e);
-		}		
-		
-		try{
-			final IResourceDelta delta = event.getDelta();
-	
-			if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
-				primAcceptDelta(delta, event);
-			}
-			else {
-				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-					public void run(IProgressMonitor monitor) throws CoreException {
-						primAcceptDelta(delta, event);
-					}
-				};
-				try {
-					ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
-				} catch (CoreException e) {
-					EMFWorkbenchEditPlugin.logError(e);
+		final IResourceDelta delta = event.getDelta();
+
+		if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
+			primAcceptDelta(delta, event);
+		}
+		else {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					primAcceptDelta(delta, event);
 				}
+			};
+			try {
+				ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
+			} catch (CoreException e) {
+				EMFWorkbenchEditPlugin.logError(e);
 			}
-		}finally{
-			if( hasLocked )
-				releaseLock();
 		}
 	}
 
