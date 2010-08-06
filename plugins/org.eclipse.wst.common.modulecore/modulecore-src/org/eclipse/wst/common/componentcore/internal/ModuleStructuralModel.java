@@ -19,10 +19,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -284,15 +284,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			if (!compFile.isSynchronized(IResource.DEPTH_ONE)) {
 				File iofile = compFile.getFullPath().toFile();
 				if (iofile.exists() || compFile.exists()) {
-					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 					try {
-						// OK wait to get workspace root before refreshing
-						Job.getJobManager().beginRule(root, null);
-						compFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
+						Workspace workspace = (Workspace)compFile.getWorkspace();
+						if (workspace.getElementTree().isImmutable())
+						{
+							workspace.newWorkingTree();
+						}
+						((org.eclipse.core.internal.resources.Resource)compFile).getLocalManager().refresh(compFile.getProject(), IResource.DEPTH_INFINITE, true, null);
 					} catch (CoreException ce) {
 						// ignore
-					} finally {
-						Job.getJobManager().endRule(root);
 					}
 				}
 			}
