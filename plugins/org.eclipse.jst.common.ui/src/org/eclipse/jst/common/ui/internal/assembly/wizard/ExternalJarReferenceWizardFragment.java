@@ -11,6 +11,7 @@
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -43,36 +44,43 @@ public class ExternalJarReferenceWizardFragment extends JarReferenceWizardFragme
 	}
 
 	protected void buttonPressed() {
-		selected = chooseExternalArchiveEntries(browse.getShell());
+		selected = chooseExternalArchiveEntries(add.getShell());
 		
 		if(selected != null) {
 			removeInvalidArchiveFiles();
-		}
 		
-		viewer.refresh();
-		if(selected != null && selected.length > 0) {
-			isComplete = true;			
-		} else {
-			isComplete = false;
+			for(IPath path: selected) {
+				if(!archives.containsKey(path)) {
+					archives.put(path, path);
+				}
+			}
+			
+			viewer.refresh();
+			if(archives != null && archives.size() > 0) {
+				isComplete = true;
+			} else {
+				isComplete = false;
+			}
+			handle.update();
 		}
-		handle.update();
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
 		String runtimeLoc = (String)getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
-		if (selected != null && selected.length > 0) {
+		if (archives != null && archives.size() > 0) {
 			ArrayList<IVirtualReference> refList = new ArrayList<IVirtualReference>();
-			ArrayList<String> paths = new ArrayList<String>();
-			for (int i = 0; i < selected.length; i++) {
+			Iterator iterator = archives.values().iterator();
+			while(iterator.hasNext()) {
+	    		IPath path = (Path)iterator.next();
 				// IPath fullPath = project.getFile(selected[i]).getFullPath();
 				String type = VirtualArchiveComponent.LIBARCHIVETYPE
 						+ IPath.SEPARATOR;
 				IVirtualComponent archive = ComponentCore
 						.createArchiveComponent(rootComponent.getProject(),
-								type + selected[i].toString());
+								type + path.toString());
 				VirtualReference ref = new VirtualReference(rootComponent, archive);
-				ref.setArchiveName(selected[i].lastSegment());
+				ref.setArchiveName(path.lastSegment());
 				if (runtimeLoc != null) {
 					ref.setRuntimePath(new Path(runtimeLoc).makeAbsolute());
 				}

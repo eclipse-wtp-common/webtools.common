@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -53,6 +55,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
@@ -70,10 +73,11 @@ public class JarReferenceWizardFragment extends WizardFragment {
 	protected LabelProvider labelProvider = null;
 	protected ITreeContentProvider contentProvider = null;
 	protected TreeViewer viewer;
-	protected Button browse;
+	protected Button add, remove;
 	protected IPath[] paths;
 	protected IWizardHandle handle;
 	protected IPath[] selected = new IPath[]{};
+	protected Map <IPath, IPath> archives = new HashMap<IPath, IPath>();
 	boolean isComplete = false;
 
 	public boolean isComplete() {
@@ -92,28 +96,54 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		Composite c = new Composite(parent, SWT.NONE);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_ARCHIVE_REFERENCE_P1);
 		c.setLayout(new FormLayout());
-		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
+		viewer = new TreeViewer(c, SWT.MULTI | SWT.BORDER);
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.setInput(ResourcesPlugin.getWorkspace());
 
-		browse = new Button(c, SWT.NONE);
-		browse.setText(Messages.Browse);
+		Composite buttonColumn = new Composite(c, SWT.NONE);
+		buttonColumn.setLayout(new FormLayout());
 		FormData fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
+		fd.top = new FormAttachment(0, 5);
 		fd.bottom = new FormAttachment(100, -5);
-		browse.setLayoutData(fd);
+		fd.right = new FormAttachment(100, -5);
+		buttonColumn.setLayoutData(fd);
+		
+		add = new Button(buttonColumn, SWT.NONE);
+		add.setText(Messages.Add);
+		fd = new FormData();
+		fd.left = new FormAttachment(viewer.getTree(), 5);
+		fd.right = new FormAttachment(100, 0);
+		add.setLayoutData(fd);
+		
+		remove = new Button(buttonColumn, SWT.NONE);
+		remove.setText(Messages.Remove);
+		fd = new FormData();
+		fd.top = new FormAttachment(add, 5);
+		fd.left = new FormAttachment(viewer.getTree(), 5);
+		fd.right = new FormAttachment(100, 0);
+		remove.setLayoutData(fd);
 
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 5);
 		fd.top = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(100, -5);
-		fd.bottom = new FormAttachment(browse, -5);
+		fd.right = new FormAttachment(buttonColumn, 0);
+		fd.bottom = new FormAttachment(100, -5);
 		viewer.getTree().setLayoutData(fd);
-
-		browse.addSelectionListener(new SelectionListener() {
+		
+		add.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				buttonPressed();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+		
+		remove.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				removeButtonPressed();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -126,36 +156,65 @@ public class JarReferenceWizardFragment extends WizardFragment {
 	protected void buttonPressed() {
 		IProject project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);
 		selected = chooseEntries(
-				browse.getShell(), 
+				add.getShell(), 
 				project.getFullPath());
 
 		if(selected != null) {
 			removeInvalidArchiveFiles();
-		}
 		
-		viewer.refresh();
-		if(selected != null && selected.length > 0) {
-			isComplete = true;
-		} else {
-			isComplete = false;
+			for(IPath path: selected) {
+				if(!archives.containsKey(path)) {
+					archives.put(path, path);
+				}
+			}
+			
+			viewer.refresh();
+			if(archives != null && archives.size() > 0) {
+				isComplete = true;
+			} else {
+				isComplete = false;
+			}
+			handle.update();
 		}
-		handle.update();
+	}
+	
+	protected void removeButtonPressed() {
+		TreeItem[] toRemove = viewer.getTree().getSelection();
+		
+		if(toRemove != null && toRemove.length > 0) {
+			for(int i = 0; i < toRemove.length; i++) {
+				Path path = (Path) toRemove[i].getData();
+				if(archives.containsKey(path)) {
+					archives.remove(path);
+				}
+			}
+			
+			viewer.refresh();
+			if(archives != null && archives.size() > 0) {
+				isComplete = true;
+			} else {
+				isComplete = false;
+			}
+			handle.update();
+		}
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
 		String runtimeLoc = (String)getTaskModel().getObject(IReferenceWizardConstants.DEFAULT_LIBRARY_LOCATION);
-		if (selected != null && selected.length > 0) {
+		if (archives != null && archives.size() > 0) {
 			ArrayList<IVirtualReference> refList = new ArrayList<IVirtualReference>();
-			for (int i = 0; i < selected.length; i++) {
+			Iterator iterator = archives.values().iterator();
+			while(iterator.hasNext()) {
+	    		IPath path = (Path)iterator.next();
 				// IPath fullPath = project.getFile(selected[i]).getFullPath();
 				String type = VirtualArchiveComponent.LIBARCHIVETYPE
 						+ IPath.SEPARATOR;
 				IVirtualComponent archive = ComponentCore
 						.createArchiveComponent(rootComponent.getProject(),
-								type + selected[i].makeRelative().toString());
+								type + path.makeRelative().toString());
 				VirtualReference ref = new VirtualReference(rootComponent, archive);
-				ref.setArchiveName(selected[i].lastSegment());
+				ref.setArchiveName(path.lastSegment());
 				if (runtimeLoc != null) {
 					ref.setRuntimePath(new Path(runtimeLoc).makeAbsolute());
 				}
@@ -185,7 +244,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		if (contentProvider == null) {
 			contentProvider = new ITreeContentProvider() {
 				public Object[] getElements(Object inputElement) {
-					return selected == null ? new Object[]{} : selected;
+					return archives == null ? new Object[]{} : archives.values().toArray();
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}
