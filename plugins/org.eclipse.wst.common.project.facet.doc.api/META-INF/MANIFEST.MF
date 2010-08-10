@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.project.facet.doc.api;singleton:=true
-Bundle-Version: 1.4.100.qualifier
+Bundle-Version: 1.4.200.qualifier
 Bundle-Localization: plugin
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.wst.common.project.facet.core;bundle-version="[1.3.0,2.0.0)",
