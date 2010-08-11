@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.33 $$  $$Date: 2010/08/11 21:30:32 $$ 
+ *  $$Revision: 1.34 $$  $$Date: 2010/08/11 21:47:03 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -422,7 +422,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 				}
 			}
 		}
-			
+		if(contentTypeName == null)
+			contentTypeName = contentType;
 		
 		
 		Resource result = createResourceFromHandlers(converted);
