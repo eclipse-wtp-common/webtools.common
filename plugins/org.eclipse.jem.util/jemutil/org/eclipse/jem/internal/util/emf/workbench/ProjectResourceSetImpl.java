@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.32 $$  $$Date: 2010/07/29 18:20:34 $$ 
+ *  $$Revision: 1.33 $$  $$Date: 2010/08/11 21:30:32 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -658,6 +658,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		if (resourceFactoryRegistry != null && factoryReg != null) {
 			preserveEntries(factoryReg.getExtensionToFactoryMap(), resourceFactoryRegistry.getExtensionToFactoryMap());
 			preserveEntries(factoryReg.getProtocolToFactoryMap(), resourceFactoryRegistry.getProtocolToFactoryMap());
+			preserveEntries(factoryReg.getContentTypeToFactoryMap(), resourceFactoryRegistry.getContentTypeToFactoryMap());
 		}
 		super.setResourceFactoryRegistry(factoryReg);
 	}
