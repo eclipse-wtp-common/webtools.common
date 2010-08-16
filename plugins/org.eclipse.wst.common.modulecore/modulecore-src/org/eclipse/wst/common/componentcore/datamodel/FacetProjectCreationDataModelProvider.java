@@ -41,11 +41,11 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
@@ -356,7 +356,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	            
 	            if( ! ( config instanceof IDataModel ) )
 	            {
-	                config = Platform.getAdapterManager().getAdapter( config, IDataModel.class );
+	                config = Platform.getAdapterManager().loadAdapter( config, IDataModel.class.getName() );
 	            }
 	            
 	            final IDataModel dm = (IDataModel) config;
