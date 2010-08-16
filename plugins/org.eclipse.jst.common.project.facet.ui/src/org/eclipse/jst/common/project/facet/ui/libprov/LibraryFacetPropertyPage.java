@@ -28,12 +28,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jst.common.project.facet.core.libprov.IPropertyChangeListener;
 import org.eclipse.jst.common.project.facet.core.libprov.LibraryInstallDelegate;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -126,8 +129,18 @@ public abstract class LibraryFacetPropertyPage
     public final void createControl( final Composite parent )
     {
         super.createControl( parent );
-        getDefaultsButton().setText( Resources.revertButton );
+        
+        final Button revertButton = getDefaultsButton();
+        
+        revertButton.setText( Resources.revertButton );
+
+        final GridData gd = new GridData( GridData.HORIZONTAL_ALIGN_FILL );
+        final Point minButtonSize = revertButton.computeSize( SWT.DEFAULT, SWT.DEFAULT, true );
+        gd.widthHint = Math.max( convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH), minButtonSize.x );
+        revertButton.setLayoutData( gd );
+        
         updateButtons();
+        
         getShell().layout( true, true );
     }
     
