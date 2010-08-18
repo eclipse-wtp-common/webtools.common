@@ -7,7 +7,8 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
- ******************************************************************************/
+ *    Scott Huff (shuff@us.ibm.com) - improvements to validation
+ *****************************************************************************/
 
 package org.eclipse.jst.common.project.facet.ui.internal;
 
@@ -238,6 +239,29 @@ public final class JavaFacetInstallPage
     private void bindUiToModel()
     {
         bindDefaultOutputFolder();
+       
+        this.installConfig.addListener
+        (
+            new IEventListener<JavaFacetInstallConfig.ChangeEvent>()
+            {
+                public void handleEvent( final JavaFacetInstallConfig.ChangeEvent event ) 
+                {
+                    IStatus status = JavaFacetInstallPage.this.installConfig.validate();
+                    
+                    if( ! status.isOK() )
+                    {
+                        JavaFacetInstallPage.this.setErrorMessage( status.getMessage() );
+                        JavaFacetInstallPage.this.setPageComplete( false );
+                    }
+                    else
+                    {
+                        JavaFacetInstallPage.this.setErrorMessage( null );
+                        JavaFacetInstallPage.this.setPageComplete( true );
+                    }
+                }
+            },
+            JavaFacetInstallConfig.ChangeEvent.Type.values()
+        );
     }
     
     private void bindDefaultOutputFolder()

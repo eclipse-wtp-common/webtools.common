@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
- *    shuff@us.ibm.com - several revisions of source paths validation logic
+ *    Scott Huff (shuff@us.ibm.com) - improvements to validation
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -142,12 +142,19 @@ public class JavaFacetInstallConfig
     {
         IStatus status = Status.OK_STATUS;
         
-        final List<IPath> localFolderList = new ArrayList<IPath>( this.sourceFolders );
+        final List<Folder> folders = new ArrayList<Folder>();
         
-        while( ! localFolderList.isEmpty() )
+        for( IPath sourceFolder : this.sourceFolders )
         {
-            final IPath folder = localFolderList.remove( 0 );
-            status = validateSourceFolder( localFolderList, folder );
+            folders.add( new SourceFolder( sourceFolder ) );
+        }
+        
+        folders.add( new OutputFolder( this.defaultOutputFolder ) );
+        
+        while( ! folders.isEmpty() )
+        {
+            final Folder folder = folders.remove( 0 );
+            status = validateFolder( folders, folder );
             
             if( ! status.isOK() )
             {
@@ -174,30 +181,46 @@ public class JavaFacetInstallConfig
             throw new IllegalArgumentException();
         }
         
-        return validateSourceFolder( this.sourceFolders, new Path( candidateSourceFolder.trim() ) );
+        final List<Folder> folders = new ArrayList<Folder>();
+        
+        for( IPath sourceFolder : this.sourceFolders )
+        {
+            folders.add( new SourceFolder( sourceFolder ) );
+        }
+        
+        folders.add( new OutputFolder( this.defaultOutputFolder ) );
+        
+        return validateFolder( folders, new SourceFolder( new Path( candidateSourceFolder.trim() ) ) );
     }
     
-    private IStatus validateSourceFolder( final List<IPath> existingSourceFolders,
-                                          final IPath sourceFolder )
+    private IStatus validateFolder( final List<Folder> existingFolders,
+                                    final Folder folder )
     {
         IStatus status = Status.OK_STATUS;
         
-        if( sourceFolder.segmentCount() == 0 )
+        if( folder.path.segmentCount() == 0 )
         {
-            status = new Status( IStatus.ERROR, PLUGIN_ID, Resources.mustSpecifySourceFolderMessage );
+            if( folder instanceof SourceFolder )
+            {
+                status = new Status( IStatus.ERROR, PLUGIN_ID, Resources.mustSpecifySourceFolderMessage );
+            }
+            else
+            {
+                status = new Status( IStatus.ERROR, PLUGIN_ID, Resources.mustSpecifyDefaultOutputFolderMessage );
+            }
         }
         else
         {
             final String pjname = getFacetedProjectWorkingCopy().getProjectName();
-            final String fullPath = "/" + pjname + "/" + sourceFolder; //$NON-NLS-1$ //$NON-NLS-2$
+            final String fullPath = "/" + pjname + "/" + folder.path; //$NON-NLS-1$ //$NON-NLS-2$
             
             status = ResourcesPlugin.getWorkspace().validatePath( fullPath, IResource.FOLDER );
             
             if( status.isOK() )
             {
-                for( IPath existingSourceFolder : existingSourceFolders )
+                for( Folder existingFolder : existingFolders )
                 {
-                    status = validateSourceFolder( existingSourceFolder, sourceFolder );
+                    status = validateFolder( existingFolder, folder );
                     
                     if( ! status.isOK() )
                     {
@@ -210,11 +233,11 @@ public class JavaFacetInstallConfig
         return status;
     }
 
-    private IStatus validateSourceFolder( final IPath existingPath,
-                                          final IPath newPath )
+    private IStatus validateFolder( final Folder existingPath,
+                                    final Folder newPath )
     {
-        final int existingPathLen = existingPath.segmentCount();
-        final int newPathLen = newPath.segmentCount();
+        final int existingPathLen = existingPath.path.segmentCount();
+        final int newPathLen = newPath.path.segmentCount();
         final int minPathLen = Math.min( existingPathLen, newPathLen );
         
         if( minPathLen == 0 )
@@ -226,25 +249,44 @@ public class JavaFacetInstallConfig
         
         for( int i = 0; i < minPathLen; i++ )
         {
-            if( comparePathSegments( existingPath.segment( i ), newPath.segment( i ) ) == false )
+            if( comparePathSegments( existingPath.path.segment( i ), newPath.path.segment( i ) ) == false )
             {
                 return Status.OK_STATUS;
             }
         }
         
-        final String message;
+        String message = null;
         
         if( existingPathLen == newPathLen )
         {
-            message = NLS.bind( Resources.nonUniqueSourceFolderMessage, newPath );
-        }
-        else if( existingPathLen > newPathLen )
-        {
-            message = NLS.bind( Resources.cannotNestSourceFoldersMessage, newPath, existingPath );
+            // It is legal to use the same folder as both source and output. 
+            
+            if( existingPath instanceof SourceFolder && newPath instanceof SourceFolder )
+            {
+                message = NLS.bind( Resources.nonUniqueSourceFolderMessage, newPath.path );
+            }
         }
         else
         {
-            message = NLS.bind( Resources.cannotNestSourceFoldersMessage, existingPath, newPath );
+            final Folder x, y;
+            
+            if( existingPathLen > newPathLen )
+            {
+                x = newPath;
+                y = existingPath;
+            }
+            else
+            {
+                x = existingPath;
+                y = newPath;
+            }
+            
+            message = NLS.bind( Resources.cannotNestFoldersMessage, new Object[] { x.path, x.getTypeLabel(), y.path, y.getTypeLabel() } );
+        }
+        
+        if( message == null )
+        {
+            return Status.OK_STATUS;
         }
         
         return new Status( IStatus.ERROR, PLUGIN_ID, message );
@@ -359,15 +401,55 @@ public class JavaFacetInstallConfig
         
         return value;
     }
-
-    private static final class Resources 
-
-        extends NLS 
-
+    
+    private static abstract class Folder
     {
-        public static String nonUniqueSourceFolderMessage;
-        public static String cannotNestSourceFoldersMessage;
+        public final IPath path;
+        
+        public Folder( final IPath path )
+        {
+            this.path = path;
+        }
+        
+        public abstract String getTypeLabel();
+    }
+    
+    private static final class SourceFolder extends Folder
+    {
+        public SourceFolder( final IPath path )
+        {
+            super( path );
+        }
+        
+        @Override
+        public String getTypeLabel()
+        {
+            return Resources.sourceFolderType;
+        }
+    }
+
+    private static final class OutputFolder extends Folder
+    {
+        public OutputFolder( final IPath path )
+        {
+            super( path );
+        }
+        
+        @Override
+        public String getTypeLabel()
+        {
+            return Resources.outputFolderType;
+        }
+    }
+
+    private static final class Resources extends NLS 
+    {
         public static String mustSpecifySourceFolderMessage;
+        public static String mustSpecifyDefaultOutputFolderMessage;
+        public static String nonUniqueSourceFolderMessage;
+        public static String cannotNestFoldersMessage;
+        public static String sourceFolderType;
+        public static String outputFolderType;
 
         static 
         {
