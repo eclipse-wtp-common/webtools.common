@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -272,7 +273,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 	 * @throws UnresolveableURIException
 	 *             could not WorkbenchResource with the corresponding URI.
 	 */
-	protected boolean processResourcesIfInterrested(List theResources) {
+	protected boolean processResourcesIfInterrested(List aTheResources) {
+		List theResources = new ArrayList(aTheResources);
 		int size = theResources.size();
 		Resource resourceToProcess;
 		boolean processed = false; 

@@ -907,7 +907,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * Process Resources that we are interrested in.
 	 */
-	protected boolean processResourcesIfInterrested(List someResources) {
+	protected boolean processResourcesIfInterrested(List aSomeResources) {
+		List someResources = new ArrayList(aSomeResources);
 		int size = someResources.size();
 		Resource res;
 		boolean processed = false;
