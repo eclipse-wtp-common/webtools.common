@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  *    
  * API in these packages is provisional in this release
  ******************************************************************************/
@@ -21,7 +22,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ui.Messages;
@@ -140,6 +140,8 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 		Composite descriptionComp = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
 		descriptionComp.setLayout(layout);
 		descriptionComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		fillDescription(descriptionComp, description);
@@ -148,9 +150,9 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	private static void fillDescription(Composite c, String s) {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 250;
-		Text text = new Text(c, SWT.READ_ONLY | SWT.WRAP);
-		text.setLayoutData(data);
-		text.setText(s);
+		final Label label = new Label( c, SWT.NONE );
+		label.setLayoutData(data);
+		label.setText(s);
 	}
 	
 	protected Control createContents(Composite parent) {

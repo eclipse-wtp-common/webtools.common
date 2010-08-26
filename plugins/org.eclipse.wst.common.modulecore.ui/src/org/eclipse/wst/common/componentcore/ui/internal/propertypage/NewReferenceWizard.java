@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.List;
@@ -23,18 +25,14 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardCons
 
 public class NewReferenceWizard extends TaskWizard implements IReferenceWizardConstants {
 	private static final Object REFERENCE_FAMILY = new Object();
-	public NewReferenceWizard() {
-		this(null);
-	}
-	public NewReferenceWizard(ReferenceExtension[] extensions) {
+	public NewReferenceWizard(List<ReferenceExtension> extensions) {
 		super(Messages.NewReferenceWizard, new RootWizardFragment(extensions));
 		setFinishJobFamily(REFERENCE_FAMILY);
 		getRootFragment().setTaskModel(getTaskModel());
 	}
 	protected static class RootWizardFragment extends WizardFragment {
-		private ReferenceExtension[] extensions = null;
-		public RootWizardFragment() {}
-		public RootWizardFragment(ReferenceExtension[] extensions) {
+		private List<ReferenceExtension> extensions = null;
+		public RootWizardFragment(List<ReferenceExtension> extensions) {
 			this.extensions = extensions;
 		}
 

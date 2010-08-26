@@ -25,13 +25,12 @@ public class Messages extends NLS {
 	public static String VariableReferenceDescription;
 	public static String AddManifestEntryTaskWizardTitle;
 	public static String AddManifestEntryTaskWizardDesc;
-	public static String ParentProjects;
+	public static String ParentProject;
 	public static String CustomEntryButton;
 	public static String Add;
 	public static String Remove;
 	public static String MoveUp;
 	public static String MoveDown;
-	public static String ManifestEntries;
 	public static String ManifestEntryColumn;
 	public static String ManifestEntrySourceColumn;
 	public static String ConfigureParentLink;

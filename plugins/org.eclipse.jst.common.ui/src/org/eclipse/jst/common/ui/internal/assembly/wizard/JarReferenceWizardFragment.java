@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
@@ -33,9 +34,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
 import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -49,9 +52,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -92,45 +94,34 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		this.handle = handle;
 		handle.setTitle(Messages.ArchiveTitle);
 		handle.setDescription(Messages.ArchiveDescription);
+		handle.setImageDescriptor(JavaPluginImages.DESC_WIZBAN_ADD_LIBRARY);
 				
 		Composite c = new Composite(parent, SWT.NONE);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_ARCHIVE_REFERENCE_P1);
-		c.setLayout(new FormLayout());
+		c.setLayout(new GridLayout(2, false));
 		viewer = new TreeViewer(c, SWT.MULTI | SWT.BORDER);
+		viewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		viewer.setContentProvider(getContentProvider());
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.setInput(ResourcesPlugin.getWorkspace());
 
 		Composite buttonColumn = new Composite(c, SWT.NONE);
-		buttonColumn.setLayout(new FormLayout());
-		FormData fd = new FormData();
-		fd.top = new FormAttachment(0, 5);
-		fd.bottom = new FormAttachment(100, -5);
-		fd.right = new FormAttachment(100, -5);
-		buttonColumn.setLayoutData(fd);
+		buttonColumn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+		
+		final GridLayout gl = new GridLayout();
+		gl.marginWidth = 0;
+		gl.marginHeight = 0;
+		
+		buttonColumn.setLayout( gl );
 		
 		add = new Button(buttonColumn, SWT.NONE);
 		add.setText(Messages.Add);
-		fd = new FormData();
-		fd.left = new FormAttachment(viewer.getTree(), 5);
-		fd.right = new FormAttachment(100, 0);
-		add.setLayoutData(fd);
+		GridDataFactory.defaultsFor(add).applyTo(add);
 		
 		remove = new Button(buttonColumn, SWT.NONE);
 		remove.setText(Messages.Remove);
-		fd = new FormData();
-		fd.top = new FormAttachment(add, 5);
-		fd.left = new FormAttachment(viewer.getTree(), 5);
-		fd.right = new FormAttachment(100, 0);
-		remove.setLayoutData(fd);
+		GridDataFactory.defaultsFor(remove).applyTo(remove);
 
-		fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		fd.top = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(buttonColumn, 0);
-		fd.bottom = new FormAttachment(100, -5);
-		viewer.getTree().setLayoutData(fd);
-		
 		add.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				buttonPressed();

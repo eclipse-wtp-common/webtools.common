@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
@@ -26,19 +27,23 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jst.common.internal.modulecore.util.JavaModuleComponentUtility;
+import org.eclipse.jst.common.ui.internal.JstCommonUIPlugin;
 import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.jst.common.ui.internal.assembly.wizard.ManifestModuleDependencyControl.ManifestLabelProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
+import org.eclipse.ui.internal.WorkbenchImages;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -71,23 +76,29 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			viewer.setInput(ResourcesPlugin.getWorkspace());
 			viewer.refresh();
 		}
-
+		
+		private static GridLayout glayout( final int columns )
+		{
+			final GridLayout gl = new GridLayout( columns, false );
+			gl.marginWidth = 0;
+			gl.marginHeight = 0;
+			
+			return gl;
+		}
+		
 		public Composite createComposite(Composite parent, IWizardHandle handle) {
 			parentProject = (IProject)getTaskModel().getObject(PARENT_PROJECT);
 			childProject = (IProject)getTaskModel().getObject(CHILD_PROJECT);
 			handle.setTitle(Messages.AddManifestEntryTaskWizardTitle);
 			handle.setDescription(NLS.bind(Messages.AddManifestEntryTaskWizardDesc, parentProject.getName()));
+			handle.setImageDescriptor(WorkbenchImages.getImageDescriptor(IWorkbenchGraphicConstants.IMG_WIZBAN_EXPORT_WIZ));
+			handle.setImageDescriptor( AbstractUIPlugin.imageDescriptorFromPlugin( JstCommonUIPlugin.PLUGIN_ID, "icons/manifest-classpath-banner.png" ) );
+			
 			Composite root = new Composite(parent, SWT.NONE);
-			root.setLayout(new FormLayout());
-			
-			createConfigLink(root);
-			parentContainerLink.setLayoutData(ManifestModuleDependencyControl.createFormData(0, 5, null, 5, 0, 5, 100, -5));
-			
-			Label tableLabel = new Label(root, SWT.NONE);
-			tableLabel.setText(Messages.ManifestEntries);
-			tableLabel.setLayoutData(ManifestModuleDependencyControl.createFormData(10, 5, null, 0, 0, 5, 100, -5));
+			root.setLayout(glayout(1));
 			
 			viewer = ManifestModuleDependencyControl.createManifestReferenceTableViewer(root, SWT.MULTI);
+			viewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
 			contentProvider = new ShowPossibleManifestEntryContentProvider(parentProject, childProject, getTaskModel());
 			viewer.setContentProvider(contentProvider);
 			viewer.setLabelProvider(new ManifestLabelProvider());
@@ -98,10 +109,16 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 				}
 			});
 			
-			customEntryText = new Text(root, SWT.BORDER);
-			addCustom = new Button(root, SWT.PUSH);
+			final Composite customEntryComposite = new Composite(root,SWT.NONE);
+			customEntryComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			customEntryComposite.setLayout(glayout(2));
+			
+			customEntryText = new Text(customEntryComposite, SWT.BORDER);
+			customEntryText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			
+			addCustom = new Button(customEntryComposite, SWT.PUSH);
+			addCustom.setLayoutData(new GridData());
 			addCustom.setText(Messages.CustomEntryButton);
-			addCustom.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, null, 0, 100, -5));
 			addCustom.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					addCustomPressed();
@@ -110,8 +127,9 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 				}
 			});
 			
-			customEntryText.setLayoutData(ManifestModuleDependencyControl.createFormData(null, 0, 100, -5, 0, 5, addCustom, -5));			
-			viewer.getTable().setLayoutData(ManifestModuleDependencyControl.createFormData(tableLabel, 5, addCustom, 0, 0, 5, 100, -5));
+			createConfigLink(root);
+			parentContainerLink.setLayoutData(new GridData());
+			
 			return root;
 		}
 		

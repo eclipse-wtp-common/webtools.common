@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  *    
  * API in these packages is provisional in this release
  ******************************************************************************/
@@ -32,6 +33,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -42,8 +44,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -56,10 +58,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IAddReferenceDataModelProperties;
@@ -99,9 +101,11 @@ import org.eclipse.wst.server.core.internal.facets.FacetUtil;
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl, ILabelProviderListener {
 
-	protected static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
-	protected static final String SOURCE_PROPERTY = new Integer(1).toString();
 	
+	public static final int SOURCE_COLUMN = 0;
+	public static final int DEPLOY_COLUMN = 1;
+	protected static final String SOURCE_PROPERTY = new Integer(SOURCE_COLUMN).toString();
+	protected static final String DEPLOY_PATH_PROPERTY = new Integer(DEPLOY_COLUMN).toString();
 	
 	protected final String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	private boolean hasInitialized = false;
@@ -110,8 +114,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected final ModuleAssemblyRootPage propPage;
 	protected IVirtualComponent rootComponent = null;
 	protected Text componentNameText;
-	protected Label availableModules;
-	protected TableViewer availableComponentsViewer;
+	protected TreeViewer availableComponentsViewer;
+	
 	protected Button addMappingButton, addReferenceButton, editReferenceButton, removeButton;
 	protected Composite buttonColumn;
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
@@ -214,15 +218,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		listGroup.setLayout(layout);
-		GridData gData = new GridData(GridData.FILL_BOTH);
-		gData.horizontalIndent = 5;
-		listGroup.setLayoutData(gData);
+		listGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		availableModules = new Label(listGroup, SWT.NONE);
-		gData = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-				| GridData.VERTICAL_ALIGN_FILL);
-		availableModules.setText(Messages.ModuleAssembly); 
-		availableModules.setLayoutData(gData);
 		createTableComposite(listGroup);
 	}
 
@@ -237,6 +234,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.marginHeight = 0;
+		layout.marginWidth = 0;
 		parent.setLayout(layout);
 		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
 		createTable(parent);
@@ -260,7 +258,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		Button aButton = new Button(buttonColumn, SWT.PUSH);
 		aButton.setText(label);
 		aButton.addListener(SWT.Selection, this);
-		aButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		GridDataFactory.defaultsFor( aButton ).applyTo( aButton );
 		return aButton;
 	}
 
@@ -284,11 +282,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void createTable(Composite parent) {
 		if (rootComponent != null) {
 			availableComponentsViewer = createAvailableComponentsViewer(parent);
-			GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-					| GridData.FILL_VERTICAL);
-			availableComponentsViewer.getTable().setLayoutData(gd);
+			GridData gd = new GridData( GridData.FILL_BOTH );
+			availableComponentsViewer.getTree().setLayoutData(gd);
 
 			ComponentDependencyContentProvider provider = createProvider();
+			provider.setComponent(rootComponent);
 			provider.setRuntimePaths(currentReferences);
 			provider.setResourceMappings(resourceMappings);
 			availableComponentsViewer.setContentProvider(provider);
@@ -318,8 +316,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void addHoverHelpListeners() {
-		final Table table = availableComponentsViewer.getTable();
-		createLabelListener(table);
+		final Tree tree = availableComponentsViewer.getTree();
+		createLabelListener(tree);
 //		createTableListener(table);
 //		table.addListener(SWT.Dispose, tableListener);
 //		table.addListener(SWT.KeyDown, tableListener);
@@ -327,7 +325,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 //		table.addListener(SWT.MouseHover, tableListener);
 	}
 
-	protected void createLabelListener(final Table table) {
+	protected void createLabelListener(final Tree tree) {
 		labelListener = new Listener() {
 			public void handleEvent(Event event) {
 				Label label = (Label) event.widget;
@@ -335,11 +333,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				switch (event.type) {
 				case SWT.MouseDown:
 					Event e = new Event();
-					e.item = (TableItem) label.getData("_TABLEITEM"); //$NON-NLS-1$
-					table.setSelection(new TableItem[] { (TableItem) e.item });
-					table.notifyListeners(SWT.Selection, e);
+					e.item = (TreeItem) label.getData("_TreeItem"); //$NON-NLS-1$
+					tree.setSelection(new TreeItem[] { (TreeItem) e.item });
+					tree.notifyListeners(SWT.Selection, e);
 					shell.dispose();
-					table.setFocus();
+					tree.setFocus();
 					break;
 				case SWT.MouseExit:
 					shell.dispose();
@@ -367,7 +365,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 //					break;
 //				}
 //				case SWT.MouseHover: {
-//					TableItem item = table.getItem(new Point(event.x, event.y));
+//					TreeItem item = table.getItem(new Point(event.x, event.y));
 //					if (item != null && item.getData() != null && !canEdit(item.getData())) {
 //						if (tip != null && !tip.isDisposed())
 //							tip.dispose();
@@ -384,7 +382,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 //								.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 //						label.setBackground(Display.getDefault()
 //								.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-//						label.setData("_TABLEITEM", item); //$NON-NLS-1$
+//						label.setData("_TreeItem", item); //$NON-NLS-1$
 //						label.setText( Messages.InternalLibJarWarning);
 //						label.addListener(SWT.MouseExit, labelListener);
 //						label.addListener(SWT.MouseDown, labelListener);
@@ -413,14 +411,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void addDoubleClickListener() {
 		availableComponentsViewer.setColumnProperties(new String[] { 
-				DEPLOY_PATH_PROPERTY, SOURCE_PROPERTY });
+				SOURCE_PROPERTY, DEPLOY_PATH_PROPERTY });
 		
-		CellEditor[] editors = new CellEditor[] { 
-				new TextCellEditor(availableComponentsViewer.getTable()),
-				new TextCellEditor()};
+		CellEditor[] editors = new CellEditor[] {
+				new TextCellEditor(),
+				new TextCellEditor(availableComponentsViewer.getTree())};
 		availableComponentsViewer.setCellEditors(editors);
 		availableComponentsViewer
-				.setCellModifier(new RuntimePathCellModifier());
+				.setCellModifier(getRuntimePathCellModifier());
+	}
+
+	protected RuntimePathCellModifier getRuntimePathCellModifier() {
+		return new RuntimePathCellModifier();
 	}
 
 	protected void addSelectionListener() {
@@ -434,7 +436,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void viewerSelectionChanged() {
 		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
-		removeButton.setEnabled(getSelectedObject() != null);
+		removeButton.setEnabled(canRemove(getSelectedObject()));
+	}
+
+	protected boolean canRemove(Object selectedObject) {
+		return selectedObject != null;
 	}
 	
 	protected boolean hasEditWizardPage(Object o) {
@@ -449,7 +455,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		return sel.getFirstElement();
 	}
 	
-	private class RuntimePathCellModifier implements ICellModifier {
+	protected class RuntimePathCellModifier implements ICellModifier {
 
 		public boolean canModify(Object element, String property) {
 			if( property.equals(DEPLOY_PATH_PROPERTY)) {
@@ -472,8 +478,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 		public void modify(Object element, String property, Object value) {
 			if (property.equals(DEPLOY_PATH_PROPERTY)) {
-				TableItem item = (TableItem) element;
-				TableItem[] components = availableComponentsViewer.getTable().getItems();
+				TreeItem item = (TreeItem) element;
+				TreeItem[] components = availableComponentsViewer.getTree().getItems();
 				int tableIndex = -1;
 				for(int i=0; i < components.length; i++) {
 					if(components[i] == item) {
@@ -484,13 +490,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				if( item.getData() instanceof IVirtualReference) {
 					setRuntimePathSafe((IVirtualReference)item.getData(), (String) value);
 					if(tableIndex >= 0)
-						components[tableIndex].setText((String)value);
+						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, (String)value);
 				} else if( item.getData() instanceof ComponentResourceProxy) {
 					ComponentResourceProxy c = ((ComponentResourceProxy)item.getData());
 					c.runtimePath = new Path((String)value);
 					resourceMappingsChanged = true;
 					if(tableIndex >= 0)
-						components[tableIndex].setText((String)value);
+						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, (String)value);
 				}
 				verify();
 			}
@@ -515,20 +521,44 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		showReferenceWizard(true);
 	}
 	
-	protected ReferenceExtension[] filterReferenceTypes(ReferenceExtension[] defaults) {
-		return defaults;
+	protected void filterReferenceTypes(List<ReferenceExtension> defaults) 
+	{
 	}
 	
-	protected void showReferenceWizard(boolean editing) {
-		ReferenceExtension[] extensions = 
+	protected void showReferenceWizard( final boolean editing ) 
+	{
+		final List<ReferenceExtension> extensions = 
 			DependencyPageExtensionManager.getManager().getExposedReferenceExtensions();
-		extensions = filterReferenceTypes(extensions);
+		
+		for( Iterator<ReferenceExtension> itr = extensions.iterator(); itr.hasNext(); )
+		{
+			final ReferenceExtension extension = itr.next();
+			
+			if( ! extension.isApplicable( this.project ) )
+			{
+				itr.remove();
+			}
+		}
+		
+		filterReferenceTypes( extensions );
+		
 		NewReferenceWizard wizard = new NewReferenceWizard(extensions);
+		
 		// fill the task model
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.PROJECT, project);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.ROOT_COMPONENT, rootComponent);
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.MODULEHANDLER, getModuleHandler());
 		wizard.getTaskModel().putObject(IReferenceWizardConstants.CURRENT_REFS, currentReferences);
+		
+		final List<Object> directives = new ArrayList<Object>();
+		
+		for( TreeItem item : this.availableComponentsViewer.getTree().getItems() )
+		{
+			directives.add( item.getData() );
+		}
+		
+		wizard.getTaskModel().putObject(IReferenceWizardConstants.ALL_DIRECTIVES, directives);
+		
 		setCustomReferenceWizardProperties(wizard.getTaskModel());
 
 		IVirtualReference selected = null;
@@ -547,10 +577,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				currentReferences.remove(selected);
 			}
 			
-			if( wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING) != null )
-				handleAddFolderMapping(wizard);
-			else
-				handleAddNewReference(wizard);
+			handleAddDirective( wizard );
 			refresh();
 		}
 	}
@@ -562,22 +589,27 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		// do nothing
 	}
 	
-	protected void handleAddFolderMapping(TaskWizard wizard) {
-		Object o = wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING);
-		if( o != null && o instanceof ComponentResourceProxy ) {
-			ComponentResourceProxy proxy = (ComponentResourceProxy)o;
+	protected void handleAddDirective( final TaskWizard wizard )
+	{
+		final Object folderMapping = wizard.getTaskModel().getObject(IReferenceWizardConstants.FOLDER_MAPPING);
+		
+		if( folderMapping != null && folderMapping instanceof ComponentResourceProxy ) 
+		{
+			ComponentResourceProxy proxy = (ComponentResourceProxy) folderMapping;
 			resourceMappings.add(proxy);
 			resourceMappingsChanged = true;
 		}
-	}
-	
-	protected void handleAddNewReference(TaskWizard wizard) {
-		Object c1 = wizard.getTaskModel().getObject(IReferenceWizardConstants.FINAL_REFERENCE);
-		if(c1 != null) {
-			IVirtualReference[] referenceArray = c1 instanceof IVirtualReference ? 
-					new IVirtualReference[] { (IVirtualReference)c1 } : 
-						(IVirtualReference[])c1;
-			currentReferences.addAll(Arrays.asList(referenceArray));
+		else
+		{
+			Object reference = wizard.getTaskModel().getObject(IReferenceWizardConstants.FINAL_REFERENCE);
+			
+			if( reference != null ) 
+			{
+				IVirtualReference[] referenceArray = reference instanceof IVirtualReference ? 
+						new IVirtualReference[] { (IVirtualReference)reference } : 
+							(IVirtualReference[])reference;
+				currentReferences.addAll(Arrays.asList(referenceArray));
+			}
 		}
 	}
 	
@@ -605,41 +637,45 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			Object[] selectedStuff = sel2.toArray();
 			for( int i = 0; i < selectedStuff.length; i++) {
 				Object o = selectedStuff[i];
-				if( o instanceof IVirtualReference)
-					currentReferences.remove(o);
-				else if( o instanceof ComponentResourceProxy) {
-					resourceMappings.remove(o);
-					resourceMappingsChanged = true;
-				}
+				remove(o);
 			}
 			refresh();
 		}
 	}
 
-	public TableViewer createAvailableComponentsViewer(Composite parent) {
+	protected void remove(Object selectedItem){
+		if( selectedItem instanceof IVirtualReference)
+			currentReferences.remove(selectedItem);
+		else if( selectedItem instanceof ComponentResourceProxy) {
+			resourceMappings.remove(selectedItem);
+			resourceMappingsChanged = true;
+		}
+	}
+	
+	public TreeViewer createAvailableComponentsViewer(Composite parent) {
 		int flags = SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI;
 
-		Table table = new Table(parent, flags);
-		TableViewer tempViewer = new TableViewer(table);
+		Tree tree = new Tree(parent, flags);
+		TreeViewer tempViewer = new TreeViewer(tree);
 
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(400, true));
 		tableLayout.addColumnData(new ColumnWeightData(500, true));
-		table.setLayout(tableLayout);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		tree.setLayout(tableLayout);
+		tree.setHeaderVisible(true);
+		tree.setLinesVisible(true);
 		tempViewer.setSorter(null);
 
-		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 0);
-		bndColumn.setText(Messages.DeployPathColumn);
-		bndColumn.setResizable(true);
-
-		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 1);
+		TreeColumn projectColumn = new TreeColumn(tree, SWT.NONE, SOURCE_COLUMN);
 		projectColumn.setText(Messages.SourceColumn);
 		projectColumn.setResizable(true);
 
-		tableLayout.layout(table, true);
+		TreeColumn bndColumn = new TreeColumn(tree, SWT.NONE, DEPLOY_COLUMN);
+		bndColumn.setText(Messages.DeployPathColumn);
+		bndColumn.setResizable(true);
+
+		tableLayout.layout(tree, true);
 		return tempViewer;
 
 	}
@@ -703,11 +739,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		IWorkspaceRoot input = ResourcesPlugin.getWorkspace().getRoot();
 		availableComponentsViewer.setInput(input);
 		GridData data = new GridData(GridData.FILL_BOTH);
-		int numlines = Math.min(10, availableComponentsViewer.getTable()
+		int numlines = Math.min(10, availableComponentsViewer.getTree()
 				.getItemCount());
-		data.heightHint = availableComponentsViewer.getTable().getItemHeight()
+		data.heightHint = availableComponentsViewer.getTree().getItemHeight()
 				* numlines;
-		availableComponentsViewer.getTable().setLayoutData(data);
+		availableComponentsViewer.getTree().setLayoutData(data);
 		GridData btndata = new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.VERTICAL_ALIGN_BEGINNING);
 		buttonColumn.setLayoutData(btndata);
@@ -866,9 +902,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void dispose() {
-		Table table = null;
+		Tree tree = null;
 		if (availableComponentsViewer != null) {
-			table = availableComponentsViewer.getTable();
+			tree = availableComponentsViewer.getTree();
 		}
 //		if (table == null || tableListener == null)
 //			return; 
@@ -1102,7 +1138,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void labelProviderChanged(LabelProviderChangedEvent event) {
-		if(!availableComponentsViewer.getTable().isDisposed())
+		if(!availableComponentsViewer.getTree().isDisposed())
 			availableComponentsViewer.refresh(true);
 	}
 

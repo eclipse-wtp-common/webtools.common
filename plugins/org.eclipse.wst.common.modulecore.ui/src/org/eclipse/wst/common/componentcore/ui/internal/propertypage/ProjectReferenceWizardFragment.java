@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.IModuleHandler;
@@ -71,6 +74,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		handle.setTitle(Messages.ProjectReferenceTitle);
 		handle.setDescription(Messages.ProjectReferenceDescription);
+		handle.setImageDescriptor(IDEWorkbenchPlugin.getIDEImageDescriptor("wizban/newprj_wiz.png"));
 		
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout());

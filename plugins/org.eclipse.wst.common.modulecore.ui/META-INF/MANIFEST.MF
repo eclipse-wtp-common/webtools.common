@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.emf.ecore;bundle-version="[2.5.0,3.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="[1.2.0,2.0.0)",
- org.eclipse.wst.server.core;bundle-version="[1.1.202,2.0.0)"
+ org.eclipse.wst.server.core;bundle-version="[1.1.202,2.0.0)",
+ org.eclipse.core.expressions;bundle-version="[3.4.200,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.wst.common.componentcore.internal.impl;x-internal:=true,

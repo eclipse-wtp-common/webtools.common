@@ -78,6 +78,8 @@ public interface IReferenceWizardConstants {
 	 */
 	public static final String PROJECT_CONVERTER_OPERATION_PROVIDER = "project.converter.operation.provider";
 	
+	public static final String ALL_DIRECTIVES = "all.directives";
+	
 	/**
 	 * An interface to provide an operation for converting a specific project
 	 */

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import org.eclipse.core.resources.IContainer;
@@ -32,6 +34,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.wst.common.componentcore.ui.IModuleCoreUIContextIds;
 import org.eclipse.wst.common.componentcore.ui.Messages;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
@@ -59,6 +62,7 @@ public class FolderMappingWizardFragment extends WizardFragment {
 		this.handle = handle;
 		handle.setTitle(Messages.AddFolder);
 		handle.setDescription(Messages.AddFolderMappings);
+		handle.setImageDescriptor(IDEWorkbenchPlugin.getIDEImageDescriptor("wizban/newfolder_wiz.png"));
 		project = (IProject)getTaskModel().getObject(IReferenceWizardConstants.PROJECT);		
 		Composite c = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();

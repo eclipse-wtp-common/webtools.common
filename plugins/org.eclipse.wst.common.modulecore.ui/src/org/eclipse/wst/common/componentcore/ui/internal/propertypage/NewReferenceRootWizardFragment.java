@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
 import java.util.ArrayList;
@@ -25,13 +27,17 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.IModuleCoreUIContextIds;
 import org.eclipse.wst.common.componentcore.ui.Messages;
+import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
@@ -41,11 +47,10 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		new HashMap<String, WizardFragment>();
 	private IWizardHandle wizard;
 	private TreeViewer viewer;
-	private ReferenceExtension[] extensions = null;
-	public NewReferenceRootWizardFragment(ReferenceExtension[] extensions) {
-		this.extensions = extensions != null ? extensions :
-				DependencyPageExtensionManager.getManager().getExposedReferenceExtensions();
-		if( this.extensions.length == 0 )
+	private List<ReferenceExtension> extensions = null;
+	public NewReferenceRootWizardFragment(List<ReferenceExtension> extensions) {
+		this.extensions = extensions;
+		if( this.extensions.size() == 0 )
 			setComplete(false);
 	}
 	
@@ -57,12 +62,15 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		this.wizard = wizard;
 		wizard.setTitle(Messages.NewReferenceTitle);
 		wizard.setDescription(Messages.NewReferenceDescription);
+		wizard.setImageDescriptor( AbstractUIPlugin.imageDescriptorFromPlugin( ModuleCoreUIPlugin.PLUGIN_ID, "icons/assembly-banner.png" ) );
 		Composite c = new Composite(parent, SWT.NONE);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IModuleCoreUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_ADD_NEW_REFERENCE_P1);
-		c.setLayout(new FillLayout());
+		c.setLayout(new GridLayout());
 		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
+		viewer.getTree().setLayoutData(new GridData( GridData.FILL_BOTH ));
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.setContentProvider(getContentProvider());
+		viewer.setComparator( new ViewerComparator() );
 		viewer.setInput(ResourcesPlugin.getWorkspace());
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -138,8 +146,9 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 			   public void dispose() {
 			    	super.dispose();
 			    	if( extensions != null ) {
-			    		for( int i = 0; i < extensions.length; i++) {
-			    			extensions[i].disposeImage();
+			    		for( ReferenceExtension ex : extensions )
+			    		{
+			    			ex.disposeImage();
 			    		}
 			    	}
 			    }
@@ -152,7 +161,7 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		if( contentProvider == null ) {
 			contentProvider = new ITreeContentProvider() {
 				public Object[] getElements(Object inputElement) {
-					return extensions;
+					return extensions.toArray();
 				}
 				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}
@@ -171,4 +180,5 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		}
 		return contentProvider;
 	}
+	
 }

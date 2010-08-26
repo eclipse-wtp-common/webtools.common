@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
@@ -38,10 +39,11 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependencie
  * This provider no longer "meddles" in to the content as it used to, 
  * but rather serves as only a view of it. 
  */
-public class ComponentDependencyContentProvider extends LabelProvider implements IStructuredContentProvider, ITableLabelProvider {
+public class ComponentDependencyContentProvider extends LabelProvider implements IStructuredContentProvider, ITableLabelProvider, ITreeContentProvider {
 	
 	final static String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	
+	private IVirtualComponent component;
 	private ArrayList<IVirtualReference> runtimePaths;
 	private ArrayList<ComponentResourceProxy> resourceMappings;
 	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
@@ -77,10 +79,11 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			return ModuleCoreUIPlugin.getInstance().getImage("folder");
 		}
 		if (element instanceof IVirtualReference) {
-			if (columnIndex == 0)
-				return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
-			else
+			if( columnIndex == AddModuleDependenciesPropertiesPage.SOURCE_COLUMN ){
 				return handleSourceImage(((IVirtualReference)element).getReferencedComponent());
+			} else if(columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN){
+				return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
+			}
 		} 
 		if (element instanceof IProject){
 			return decProvider.getImage(element);
@@ -90,17 +93,18 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 
 	public String getColumnText(Object element, int columnIndex) {
 		if( element instanceof ComponentResourceProxy) {
-			if( columnIndex == 0 ) 
-				return ((ComponentResourceProxy)element).runtimePath.toString();
-			else if( columnIndex == 1 ) 
+			if( columnIndex == AddModuleDependenciesPropertiesPage.SOURCE_COLUMN ) { 
 				return ((ComponentResourceProxy)element).source.toString();
+			} else if( columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN ) { 
+				return ((ComponentResourceProxy)element).runtimePath.toString();
+			}
 		}
 		if( element instanceof IVirtualReference) {
-			if (columnIndex == 0) {
-				return AddModuleDependenciesPropertiesPage.getSafeRuntimePath((IVirtualReference)element);
-			} else if (columnIndex == 1) {
+			if (columnIndex == AddModuleDependenciesPropertiesPage.SOURCE_COLUMN) {
 				return handleSourceText(((IVirtualReference)element).getReferencedComponent());
-			}
+			} else if (columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN) {
+				return AddModuleDependenciesPropertiesPage.getSafeRuntimePath((IVirtualReference)element);
+			} 
 		}
 		return null;
 	}
@@ -140,5 +144,24 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		
 	}
 
+	public void setComponent(IVirtualComponent component) {
+		this.component = component;
+	}
+
+	public IVirtualComponent getComponent(){
+		return component;
+	}
+
+	public Object[] getChildren(Object parentElement) {
+		return null;
+	}
+
+	public Object getParent(Object element) {
+		return null;
+	}
+
+	public boolean hasChildren(Object element) {
+		return false;
+	}
 	
 }

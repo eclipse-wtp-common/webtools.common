@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
@@ -25,6 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -50,13 +52,11 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -95,61 +95,63 @@ public class ManifestModuleDependencyControl implements
 		rootComponent = ComponentCore.createComponent(project);
 	}
 
-	/*
-	 * Convenience method to quickly create form datas, 
-	 * referencing either pixel counts (via autoboxing) or controls.
-	 * If the object is null, no attachment will be created for that side
-	 */
-	public static FormData createFormData(Object top, int topDif, Object bottom, int bottomDif,
-						Object left, int leftDif, Object right, int rightDif) {
-		FormData fd = new FormData();
-		if( top instanceof Control ) fd.top = new FormAttachment((Control)top, topDif);
-		else if( top != null ) fd.top = new FormAttachment(((Integer)top).intValue(), topDif);
+	private static GridLayout glayout( final int columns )
+	{
+		final GridLayout gl = new GridLayout( columns, false );
+		gl.marginWidth = 0;
+		gl.marginHeight = 0;
 		
-		if( bottom instanceof Control ) fd.bottom = new FormAttachment((Control)bottom, bottomDif);
-		else if( bottom != null ) fd.bottom = new FormAttachment(((Integer)bottom).intValue(), bottomDif);
-		
-		if( left instanceof Control ) fd.left = new FormAttachment((Control)left, leftDif);
-		else if( left != null ) fd.left = new FormAttachment(((Integer)left).intValue(), leftDif);
-		
-		if( right instanceof Control ) fd.right = new FormAttachment((Control)right, rightDif);
-		else if( right != null ) fd.right = new FormAttachment(((Integer)right).intValue(), rightDif);
-		
-		return fd;
+		return gl;
 	}
 	
 	public Composite createContents(Composite parent) {
 		Composite root = new Composite(parent, SWT.NONE);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(root, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_PREFERENCE_PAGE_MANIFEST_ENTRIES_TAB);
-		root.setLayout(new FormLayout());
-		Label l = new Label(root, SWT.NONE);
-		l.setText(Messages.ParentProjects);
-		l.setLayoutData(createFormData(0,10,null,0, 0, 5, null,0));
-		parentSelection = new Combo(root, SWT.READ_ONLY);
-		parentSelection.setLayoutData(createFormData(0,5,null,0,l,5,100,-5));
+		root.setLayout(glayout(1));
+		
+		final Composite parentSelectionComposite = new Composite( root, SWT.NONE );
+		parentSelectionComposite.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
+		parentSelectionComposite.setLayout( glayout( 2 ) );
+		
+		Label l = new Label(parentSelectionComposite, SWT.NONE);
+		l.setText(Messages.ParentProject);
+		l.setLayoutData(new GridData());
+		
+		parentSelection = new Combo(parentSelectionComposite, SWT.READ_ONLY);
+		parentSelection.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		parentSelection.setItems(getPossibleParentProjects());
 		parentSelection.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				refreshViewerFromNewParentProject();
 			}
 		});
-		Label tableLabel = new Label(root, SWT.NONE);
-		tableLabel.setText(Messages.ManifestEntries);
-		tableLabel.setLayoutData(createFormData(parentSelection,5,null,0, 0, 5, null,0));
-		manifestEntryViewer = createManifestReferenceTableViewer(root, SWT.SINGLE);
 		
-		Composite buttonColumn = new Composite(root, SWT.NONE);
-		buttonColumn.setLayout(new FormLayout());
-		buttonColumn.setLayoutData(createFormData(tableLabel,5,null,0,null,0, 100,-5));
+		final Composite manifestEntryViewerComposite = new Composite( root, SWT.NONE );
+		manifestEntryViewerComposite.setLayoutData( new GridData( GridData.FILL_BOTH ) );
+		manifestEntryViewerComposite.setLayout( glayout( 2 ) );
+		
+		manifestEntryViewer = createManifestReferenceTableViewer(manifestEntryViewerComposite, SWT.SINGLE);
+		manifestEntryViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		Composite buttonColumn = new Composite(manifestEntryViewerComposite, SWT.NONE);
+		buttonColumn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+		buttonColumn.setLayout(glayout( 1 ));
+		
 		addButton = new Button(buttonColumn, SWT.PUSH);
-		removeButton = new Button(buttonColumn, SWT.PUSH);
-		moveUpButton = new Button(buttonColumn, SWT.PUSH);
-		moveDownButton = new Button(buttonColumn, SWT.PUSH);
-		
 		addButton.setText(Messages.Add);
+		GridDataFactory.defaultsFor(addButton).applyTo(addButton);
+		
+		removeButton = new Button(buttonColumn, SWT.PUSH);
 		removeButton.setText(Messages.Remove);
+		GridDataFactory.defaultsFor(removeButton).applyTo(removeButton);
+		
+		moveUpButton = new Button(buttonColumn, SWT.PUSH);
 		moveUpButton.setText(Messages.MoveUp);
+		GridDataFactory.defaultsFor(moveUpButton).applyTo(moveUpButton);
+		
+		moveDownButton = new Button(buttonColumn, SWT.PUSH);
 		moveDownButton.setText(Messages.MoveDown);
+		GridDataFactory.defaultsFor(moveDownButton).applyTo(moveDownButton);
 		
 		IFile manifest = getManifestIFile(rootComponent);
 		if(manifest == null) {
@@ -161,11 +163,6 @@ public class ManifestModuleDependencyControl implements
 		removeButton.setEnabled(false);
 		moveUpButton.setEnabled(false);
 		moveDownButton.setEnabled(false);
-		
-		addButton.setLayoutData(createFormData(null,0,null,0,manifestEntryViewer.getTable(),5,100,0));
-		removeButton.setLayoutData(createFormData(addButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
-		moveUpButton.setLayoutData(createFormData(removeButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
-		moveDownButton.setLayoutData(createFormData(moveUpButton,5,null,0,manifestEntryViewer.getTable(),5,100,0));
 		
 		addButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -196,8 +193,6 @@ public class ManifestModuleDependencyControl implements
 			}
 		});
 		
-		manifestEntryViewer.getTable().setLayoutData(createFormData(
-				tableLabel, 5, 100, -5, 0, 5, buttonColumn, 0));
 		manifestEntryViewer.setLabelProvider(new ManifestLabelProvider());
 		manifestEntryViewer.setContentProvider(new ManifestContentProvider());
 		manifestEntryViewer.setInput(ResourcesPlugin.getWorkspace());

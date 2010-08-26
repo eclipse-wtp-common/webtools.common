@@ -17,7 +17,6 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.wst.common.componentcore.ui.messages"; //$NON-NLS-1$
 	public static String ModuleAssemblyRootPageDescription;
-	public static String ModuleAssembly;
 	public static String ErrorCheckingFacets;
 	public static String ErrorNotVirtualComponent;
 	public static String DeploymentAssemblyVerifierHelper_0;

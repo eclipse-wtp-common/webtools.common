@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2009 Red Hat
+ * Copyright (c) 2010 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,9 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - misc. UI cleanup
  ******************************************************************************/
+
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
 import java.io.File;
@@ -25,6 +27,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.wizards.buildpaths.CPVariableElement;
 import org.eclipse.jdt.internal.ui.wizards.buildpaths.CPVariableElementLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -76,6 +79,7 @@ public class VariableReferenceWizardFragment extends WizardFragment {
 		this.handle = handle;
 		handle.setTitle(Messages.VariableReferenceTitle);
 		handle.setDescription(Messages.VariableReferenceDescription);
+		handle.setImageDescriptor(JavaPluginImages.DESC_WIZBAN_ADD_LIBRARY);
 				
 		Composite c = new Composite(parent, SWT.NONE);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(c, IJstCommonUIContextIds.DEPLOYMENT_ASSEMBLY_NEW_VARIABLE_REFERENCE_P1);
