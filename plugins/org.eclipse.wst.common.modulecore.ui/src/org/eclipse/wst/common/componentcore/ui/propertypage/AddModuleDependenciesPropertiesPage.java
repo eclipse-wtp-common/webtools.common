@@ -776,9 +776,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			for( int i = 0; i < arr.length; i++ )
 				result[i] = (ComponentResource)arr[i];
 			return result;
-		} catch(Exception e) {
+		} catch (NullPointerException e) {
+			ModuleCoreUIPlugin.logError(e);
 		} finally {
-			structureEdit.dispose();
+			if(structureEdit != null)
+				structureEdit.dispose();
 		}
 		return new ComponentResource[]{};
 	}
@@ -797,9 +799,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				}
 			}
 			return result.toArray(new ComponentResource[result.size()]);
-		} catch(Exception e) {
+		} catch (NullPointerException e) {
+			ModuleCoreUIPlugin.logError(e);
 		} finally {
-			structureEdit.dispose();
+			if(structureEdit != null)
+				structureEdit.dispose();
 		}
 		return new ComponentResource[]{};
 	}
@@ -818,9 +822,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				}
 			}
 			return result.toArray(new ComponentResource[result.size()]);
-		} catch(Exception e) {
+		} catch (NullPointerException e) {
+			ModuleCoreUIPlugin.logError(e);
 		} finally {
-			structureEdit.dispose();
+			if(structureEdit != null)
+				structureEdit.dispose();
 		}
 		return new ComponentResource[]{};
 	}
@@ -909,6 +915,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			try {
 				rootFolder.getFolder(proxies[i].runtimePath).createLink(proxies[i].source, 0, null);
 			} catch( CoreException ce ) {
+				ModuleCoreUIPlugin.logError(ce);
 			}
 		}
 	}
@@ -920,6 +927,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			try {
 				rootFolder.getFolder(proxies[i].runtimePath).createLink(proxies[i].source, 0, null);
 			} catch( CoreException ce ) {
+				ModuleCoreUIPlugin.logError(ce);
 			}
 		}
 		resourceMappingsChanged = false;

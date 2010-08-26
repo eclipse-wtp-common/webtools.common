@@ -49,7 +49,7 @@
          <attribute name="source-path" type="string" use="required">
             <annotation>
                <documentation>
-                  Project relative source path that should be filtered out represented as regular expression. (i.e. source-path=&quot;\.settings&quot; would filter out the &apos;.settings&apos; folder and its contents)
+                  Project relative source path that should be filtered out represented as regular expression. (i.e. source-path=&quot;\.settings&quot; would filter out the &apos;.settings&apos; folder and its contents; Since it expects a relative path filtering source-path=&quot;/\.settings&quot; would not filter out the &apos;.settings&apos; folder)
                </documentation>
             </annotation>
          </attribute>

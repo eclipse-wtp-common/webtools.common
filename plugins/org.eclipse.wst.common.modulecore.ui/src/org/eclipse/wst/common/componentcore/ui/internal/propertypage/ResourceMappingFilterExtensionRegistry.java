@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
@@ -56,9 +57,14 @@ public class ResourceMappingFilterExtensionRegistry extends RegistryReader {
 	private static void addResourceMappingFilter(String filterRegExp) {
 		if(resourceMappingFilters == null)
 			resourceMappingFilters = new HashMap<String, Pattern>();
-		String cleanFilter = makeFilterRelative(filterRegExp);
-		if(cleanFilter != null)
-			resourceMappingFilters.put(filterRegExp, Pattern.compile(cleanFilter));
+		if(filterRegExp != null) {
+			try {
+				Pattern pattern = Pattern.compile(filterRegExp);
+				resourceMappingFilters.put(filterRegExp, pattern);
+			} catch(PatternSyntaxException e) {
+				ModuleCoreUIPlugin.logError(e);
+			}
+		}
 	}
 	
 	
@@ -89,24 +95,6 @@ public class ResourceMappingFilterExtensionRegistry extends RegistryReader {
 			return shouldFilter(new Path(path));
 		}
 		return false;
-	}
-	
-	private static String makeFilterRelative(String value) {
-		if(value != null) {
-			int start = -1;
-			char [] filterChar = value.toCharArray();
-			for(int i = 0; i < filterChar.length; i++) {
-				start = i;
-				if(filterChar[i] != '/') {
-					break;
-				}
-			}
-			if(start <= 0)
-				return value;
-			if(start < value.length() - 1)
-				return value.substring(start);
-		}
-		return null;
 	}
 	
 	public static String[] getResourceMappingFiltersRegularExpressions() {
