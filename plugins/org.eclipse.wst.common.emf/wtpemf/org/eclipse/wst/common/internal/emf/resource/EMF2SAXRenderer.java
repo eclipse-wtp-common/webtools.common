@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
@@ -50,7 +51,7 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#doLoad(java.io.InputStream, java.util.Map)
 	 */
-	public void doLoad(InputStream in, Map options) {
+	public void doLoad(InputStream in, Map options) throws IOException {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			factory.setValidating(isValidating());
@@ -65,11 +66,13 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 			try {
 				reader.setFeature("http://xml.org/sax/features/validation", isValidating()); //$NON-NLS-1$
 			} catch (SAXNotRecognizedException snre) {
+                // ignore exception
 			}
 			try {
 				reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true); //$NON-NLS-1$
 			} catch (SAXNotRecognizedException snre) {
-			}
+                // ignore exception
+            }
 			try {
 				reader.setFeature("http://apache.org/xml/features/validation/schema", isValidating()); //$NON-NLS-1$
 			} catch (SAXNotRecognizedException e) {
@@ -93,9 +96,11 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 			reader.parse(testsource);
 		} catch (RuntimeException t_rex) {
 			throw t_rex;
-		} catch (Exception ex) {
-			throw new WrappedException(ex);
-		}
+		} catch (SAXException se) {
+		    throw new WrappedException(se);
+        } catch (ParserConfigurationException e) {
+            throw new WrappedException(e);
+        }
 	}
 
 	/*
