@@ -95,9 +95,18 @@ public class DependencyPageExtensionManager {
 	
 	public ReferenceExtension[] getExposedReferenceExtensions() {
 		ArrayList<ReferenceExtension> list = new ArrayList<ReferenceExtension>();
+		HashMap <String, ReferenceExtension> hiddenIDs = new HashMap<String, ReferenceExtension>();
 		list.addAll(Arrays.asList(getAllReferenceExtensions()));
 		for(Iterator<ReferenceExtension> i = list.iterator();i.hasNext();) {
-			if(i.next().isHidden())
+			ReferenceExtension reference = i.next();
+			if(reference.isHidden()) {
+				hiddenIDs.put(reference.getId(), reference);
+			}
+		}
+		
+		for(Iterator<ReferenceExtension> i = list.iterator();i.hasNext();) {
+			ReferenceExtension reference = i.next(); 
+			if(reference.isHidden() || hiddenIDs.containsKey(reference.getId()))
 				i.remove();
 		}
 		return list.toArray(new ReferenceExtension[list.size()]);
