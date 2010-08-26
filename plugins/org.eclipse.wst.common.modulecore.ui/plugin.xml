@@ -5,6 +5,7 @@
    <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
    <extension-point id="virtualComponentLabelProvider" name="virtualComponentLabelProvider" schema="schema/virtualComponentLabelProvider.exsd"/>
    <extension-point id="deploymentAssemblyVerifier" name="Deployment Assembly Verifier" schema="schema/deploymentAssemblyVerifier.exsd"/>
+   <extension-point id="resourceMappingFilter" name="resourceMappingFilter" schema="schema/resourceMappingFilter.exsd"/>
    <!-- =========== DeploymentAssemblyPage ============ -->
    <extension
    		point="org.eclipse.ui.propertyPages">
@@ -39,4 +40,12 @@
              name="%Folder_Mapping">
        </referenceFragment>
     </extension>
+    
+    <extension
+        point="org.eclipse.wst.common.modulecore.ui.resourceMappingFilter">
+        <resourceMapping 
+              source-path="\.settings">            
+        </resourceMapping>
+    </extension>
+    
 </plugin>

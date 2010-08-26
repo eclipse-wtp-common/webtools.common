@@ -98,10 +98,17 @@ public class FolderMappingWizardFragment extends WizardFragment {
 	}
 	
 	protected ViewerFilter getFilter() {
-		return new ViewerFilter() {
+		return new ViewerFilter() {			
 			public boolean select(Viewer viewer, Object parentElement,
 					Object element) {
-				return element instanceof IContainer;
+				if(element instanceof IContainer) {
+					IContainer container = (IContainer) element;
+					IPath path = container.getProjectRelativePath();
+					if(!ResourceMappingFilterExtensionRegistry.shouldFilter(path)){
+						return true;
+					}
+				}
+				return false;
 			}
 		};
 	}
@@ -168,7 +175,7 @@ public class FolderMappingWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IContainer c = getSelected();
 		if( c != null ) {
-			IPath p = c.getProjectRelativePath();
+			IPath p = c.getProjectRelativePath().makeAbsolute();
 			ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/")); //$NON-NLS-1$
 			getTaskModel().putObject(IReferenceWizardConstants.FOLDER_MAPPING, proxy);
 		}

@@ -83,6 +83,7 @@ import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ComponentDe
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.ResourceMappingFilterExtensionRegistry;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.verifier.DeploymentAssemblyVerifierHelper;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.TaskWizard;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
@@ -123,6 +124,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	// A single list of wb-resource mappings. If there's any change, 
 	// all old will be removed and new ones added
 	protected ArrayList<ComponentResourceProxy> resourceMappings = new ArrayList<ComponentResourceProxy>();
+	protected ArrayList<ComponentResourceProxy> hiddenMappings = new ArrayList<ComponentResourceProxy>();
 	
 	// keeps track if a change has occurred in wb-resource mappings
 	protected boolean resourceMappingsChanged = false;
@@ -660,8 +662,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void verify() {
+		ArrayList<ComponentResourceProxy> allMappings = new ArrayList<ComponentResourceProxy>();
+		allMappings.addAll(resourceMappings);
+		allMappings.addAll(hiddenMappings);
 		
-		IStatus status = DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, resourceMappings,resourceMappingsChanged);
+		IStatus status = DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, allMappings,resourceMappingsChanged);
 		// Clear the messages
 		propPage.setErrorMessage(null);
 		propPage.setMessage(null);
@@ -716,10 +721,16 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		originalReferences.addAll(Arrays.asList(refs));
 		currentReferences.addAll(Arrays.asList(cloneReferences(refs)));
 
-		ComponentResource[] allMappings = findAllMappings();
+		ComponentResource[] allMappings = findAllExposedMappings();
 		for( int i = 0; i < allMappings.length; i++ ) {
 			resourceMappings.add(new ComponentResourceProxy(
 					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
+			));
+		}
+		ComponentResource[] onlyHiddenMappings = findOnlyHiddenMappings();
+		for( int i = 0; i < onlyHiddenMappings.length; i++ ) {
+			hiddenMappings.add(new ComponentResourceProxy(
+					onlyHiddenMappings[i].getSourcePath(), onlyHiddenMappings[i].getRuntimePath()
 			));
 		}
 		if(editReferenceButton != null)
@@ -772,6 +783,48 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		return new ComponentResource[]{};
 	}
 	
+	protected ComponentResource[] findAllExposedMappings() {
+		StructureEdit structureEdit = null;
+		try {
+			structureEdit = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent component = structureEdit.getComponent();
+			Object[] arr = component.getResources().toArray();
+			ArrayList <ComponentResource> result = new ArrayList<ComponentResource>();
+			for( int i = 0; i < arr.length; i++ ) {
+				ComponentResource resource = (ComponentResource)arr[i];
+				if(!ResourceMappingFilterExtensionRegistry.shouldFilter(resource.getSourcePath())) {
+					result.add((ComponentResource)arr[i]);
+				}
+			}
+			return result.toArray(new ComponentResource[result.size()]);
+		} catch(Exception e) {
+		} finally {
+			structureEdit.dispose();
+		}
+		return new ComponentResource[]{};
+	}
+	
+	protected ComponentResource[] findOnlyHiddenMappings() {
+		StructureEdit structureEdit = null;
+		try {
+			structureEdit = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent component = structureEdit.getComponent();
+			Object[] arr = component.getResources().toArray();
+			ArrayList <ComponentResource> result = new ArrayList<ComponentResource>();
+			for( int i = 0; i < arr.length; i++ ) {
+				ComponentResource resource = (ComponentResource)arr[i];
+				if(ResourceMappingFilterExtensionRegistry.shouldFilter(resource.getSourcePath())) {
+					result.add((ComponentResource)arr[i]);
+				}
+			}
+			return result.toArray(new ComponentResource[result.size()]);
+		} catch(Exception e) {
+		} finally {
+			structureEdit.dispose();
+		}
+		return new ComponentResource[]{};
+	}
+	
 	public static class ComponentResourceProxy {
 		public IPath source, runtimePath;
 		public ComponentResourceProxy(IPath source, IPath runtimePath) {
@@ -793,7 +846,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			originalReferences.toArray(new IVirtualReference[originalReferences.size()]); 
 		currentReferences.addAll(Arrays.asList(cloneReferences(currentTmp)));
 		resourceMappings.clear();
-		ComponentResource[] allMappings = findAllMappings();
+		ComponentResource[] allMappings = findAllExposedMappings();
 		for( int i = 0; i < allMappings.length; i++ ) {
 			resourceMappings.add(new ComponentResourceProxy(
 					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
@@ -844,9 +897,22 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if( resourceMappingsChanged ) {
 			removeAllResourceMappings();
 			addNewResourceMappings();
+			addAllHiddenResourceMappings();
 		}
 		return true;
 	}
+	
+	private void addAllHiddenResourceMappings() {
+		ComponentResourceProxy[] proxies = hiddenMappings.toArray(new ComponentResourceProxy[hiddenMappings.size()]);
+		IVirtualFolder rootFolder = rootComponent.getRootFolder();
+		for( int i = 0; i < proxies.length; i++ ) {
+			try {
+				rootFolder.getFolder(proxies[i].runtimePath).createLink(proxies[i].source, 0, null);
+			} catch( CoreException ce ) {
+			}
+		}
+	}
+	
 	protected boolean addNewResourceMappings() {
 		ComponentResourceProxy[] proxies = resourceMappings.toArray(new ComponentResourceProxy[resourceMappings.size()]);
 		IVirtualFolder rootFolder = rootComponent.getRootFolder();
