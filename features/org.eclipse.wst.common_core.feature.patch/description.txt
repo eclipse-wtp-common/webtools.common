@@ -1,4 +1,0 @@
-The HEAD branch of this patch feature is intentionally empty, 
-to attempt to try and avoid confusion. 
-
-Please load the correct version from the branch of the related patch.
