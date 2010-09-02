@@ -98,7 +98,9 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			root.setLayout(glayout(1));
 			
 			viewer = ManifestModuleDependencyControl.createManifestReferenceTableViewer(root, SWT.MULTI);
-			viewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+			final GridData gData = new GridData(GridData.FILL_BOTH);
+			gData.heightHint = 350;
+			viewer.getTable().setLayoutData(gData);
 			contentProvider = new ShowPossibleManifestEntryContentProvider(parentProject, childProject, getTaskModel());
 			viewer.setContentProvider(contentProvider);
 			viewer.setLabelProvider(new ManifestLabelProvider());

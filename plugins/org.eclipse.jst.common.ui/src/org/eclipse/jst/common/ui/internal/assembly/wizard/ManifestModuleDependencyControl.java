@@ -127,7 +127,9 @@ public class ManifestModuleDependencyControl implements
 		});
 		
 		final Composite manifestEntryViewerComposite = new Composite( root, SWT.NONE );
-		manifestEntryViewerComposite.setLayoutData( new GridData( GridData.FILL_BOTH ) );
+		final GridData manifestEntryViewerCompositeLayoutData = new GridData( GridData.FILL_BOTH );
+		manifestEntryViewerCompositeLayoutData.heightHint = 350;
+		manifestEntryViewerComposite.setLayoutData( manifestEntryViewerCompositeLayoutData );
 		manifestEntryViewerComposite.setLayout( glayout( 2 ) );
 		
 		manifestEntryViewer = createManifestReferenceTableViewer(manifestEntryViewerComposite, SWT.SINGLE);
