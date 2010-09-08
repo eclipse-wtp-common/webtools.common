@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2009 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,46 +44,39 @@ public class ComponentResolver implements URIResolverExtension {
 	 * is the correct number. On Win32, java.io.File.toURL adds only 1 slash,
 	 * and on Unix it adds 2.
 	 * 
-	 * @param uri
-	 * @return The IFile for this file location
+	 * @param location
+	 * @return The IFile for this location
 	 */
-	private IFile recalculateFile(String uri) {
+	private IFile recalculateFile(String location) {
 		IFile file = null;
-		String location = null;
+		String uriLocation = null;
 
 		long time0 = -1;
 		if (_DEBUG)
 			time0 = System.currentTimeMillis();
-		if (uri.startsWith(HTTP_PROTOCOL)) {
-			IFile files[] = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(URI.create(uri));
-			for (int i = 0; i < files.length && file == null; i++) {
-				if (files[i].isAccessible()) {
-					file = files[i];
-				}
-			}
-			if (_DEBUG) {
-				System.out.println("\"" + uri + "\" findFilesForLocationURI:" + (System.currentTimeMillis() - time0));
-				time0 = System.currentTimeMillis();
-			}
+		if (location.startsWith(FILE_PROTOCOL)) {
+			uriLocation = location.substring(FILE_PROTOCOL.length());
+		}
+		else if (location.startsWith(FILE_PROTOCOL2)) {
+			uriLocation = location.substring(FILE_PROTOCOL2.length());
 		}
 		else {
-			if (uri.startsWith(FILE_PROTOCOL)) {
-				location = uri.substring(FILE_PROTOCOL.length());
-			}
-			else if (uri.startsWith(FILE_PROTOCOL2)) {
-				location = uri.substring(FILE_PROTOCOL2.length());
-			}
-			else {
-				location = uri;
-			}
-			IPath path = new Path(location);
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+			uriLocation = location;
+		}
+
+		try {
+			URI uri = new URI(uriLocation);
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
 			for (int i = 0; i < files.length && file == null; i++) {
 				if (files[i].isAccessible()) {
 					file = files[i];
 				}
 			}
 		}
+		catch (URISyntaxException e) {
+			// unsupported syntax
+		}
+
 		if (_DEBUG)
 			System.out.println("\"" + location + "\" findFilesForLocation:" + (System.currentTimeMillis() - time0));
 		return file;
@@ -107,9 +100,10 @@ public class ComponentResolver implements URIResolverExtension {
 
 		/* Recompute the IFile, if needed, from the base location. */
 		if (file == null) {
-			if (baseLocation == null || baseLocation.length() == 0 || baseLocation.startsWith("wbit:")) { //$NON-NLS-1$
+			// Generates Internal Error message if we continue with a http URI: org.eclipse.core.runtime.CoreException: No file system is defined for scheme: http
+			if (baseLocation == null || baseLocation.length() == 0 || baseLocation.startsWith("wbit:") || baseLocation.startsWith(HTTP_PROTOCOL)) { //$NON-NLS-1$
 				/*
-				 * We can't proceed if we lack both an IFile and a system
+				 * We can't proceed if we lack both an IFile and a valid filesystem
 				 * reference
 				 */
 				if (_DEBUG) {
