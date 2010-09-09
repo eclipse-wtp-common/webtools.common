@@ -64,17 +64,11 @@ public class ComponentResolver implements URIResolverExtension {
 			uriLocation = location;
 		}
 
-		try {
-			URI uri = new URI(uriLocation);
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
-			for (int i = 0; i < files.length && file == null; i++) {
-				if (files[i].isAccessible()) {
-					file = files[i];
-				}
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(uriLocation));
+		for (int i = 0; i < files.length && file == null; i++) {
+			if (files[i].isAccessible()) {
+				file = files[i];
 			}
-		}
-		catch (URISyntaxException e) {
-			// unsupported syntax
 		}
 
 		if (_DEBUG)
