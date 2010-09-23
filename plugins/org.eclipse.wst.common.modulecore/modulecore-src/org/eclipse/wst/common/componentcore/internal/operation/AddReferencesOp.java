@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -23,16 +24,21 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jem.util.UIContextDetermination;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IAddReferenceDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.core.util.UIContextDetermination;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public class AddReferencesOp extends AbstractDataModelOperation {
 
@@ -45,7 +51,7 @@ public class AddReferencesOp extends AbstractDataModelOperation {
 		if (!validateEdit().isOK())
 			return Status.CANCEL_STATUS;
 		addReferencedComponents(monitor);
-		addProjectReferences();
+		addProjectReferences(monitor);
 		return OK_STATUS;
 	}
 	
@@ -82,7 +88,10 @@ public class AddReferencesOp extends AbstractDataModelOperation {
 	}
 	
 	protected void addProjectReferences() {
+		addProjectReferences(null);
+	}
 
+	protected void addProjectReferences(IProgressMonitor monitor) {
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(IAddReferenceDataModelProperties.SOURCE_COMPONENT);
 		List modList = getListFromModel(model);
 		List targetprojectList = new ArrayList();
@@ -96,6 +105,36 @@ public class AddReferencesOp extends AbstractDataModelOperation {
 		}
 		try {
 			ProjectUtilities.addReferenceProjects(sourceComp.getProject(), targetprojectList);
+
+			// set the primary runtime for the child modules to be the parent module's primary runtime, if necessary
+            IFacetedProject sourceProject = ProjectFacetsManager.create( sourceComp.getProject() );
+            IRuntime sourceRuntime = sourceProject.getPrimaryRuntime();
+            for (Iterator tplItr = targetprojectList.iterator(); tplItr.hasNext();)
+            {
+	            IFacetedProject moduleFacetedProject = ProjectFacetsManager.create( ((IProject)tplItr.next()) );
+	
+	            if( moduleFacetedProject != null && ! equals( sourceRuntime, moduleFacetedProject.getPrimaryRuntime() ) )
+	            {
+	            	boolean supports = true;
+	
+	            	if( sourceRuntime != null )
+	            	{
+	            		for( Iterator itr = moduleFacetedProject.getProjectFacets().iterator(); itr.hasNext(); )
+	            		{
+	            			IProjectFacetVersion fver = (IProjectFacetVersion) itr.next();
+	            			if( ! sourceRuntime.supports( fver ) )
+	            			{
+	            				supports = false;
+	            				break;
+	            			}
+	            		}
+	            	}
+		            if( supports )
+		            {
+		                moduleFacetedProject.setRuntime( sourceRuntime, submon( monitor, 1 ) );
+		            }
+		        }
+            }
 		} catch (CoreException e) {
 			ModulecorePlugin.logError(e);
 		}
@@ -117,4 +156,23 @@ public class AddReferencesOp extends AbstractDataModelOperation {
 		return null;
 	}
 
+	private static IProgressMonitor submon(final IProgressMonitor parent, final int ticks) {
+		return (parent == null ? null : new SubProgressMonitor(parent, ticks));
+	}
+
+	private static boolean equals( final Object obj1, final Object obj2 )
+	{
+		if( obj1 == obj2 )
+		{
+			return true;
+		}
+		else if( obj1 == null || obj2 == null )
+		{
+			return false;
+		}
+		else
+		{
+			return obj1.equals( obj2 );
+		}
+	}
 }
