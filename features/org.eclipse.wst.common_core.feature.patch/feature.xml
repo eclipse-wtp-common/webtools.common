@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.wst.common_ui.feature.patch"
+      id="org.eclipse.wst.common_core.feature.patch"
       label="%featureName"
-      version="3.0.5.qualifier"
+      version="3.2.2.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,11 +18,11 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.wst.common_ui.feature" version="3.0.5.v200903300951-7C78ELqE8VrRVrtKp9gT6KxR8WBR" patch="true"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="3.2.2.v201008091400-7B7DFElF7RZHOZJ6W0PsNJ" patch="true"/>
    </requires>
 
    <plugin
-         id="org.eclipse.wst.common.snippets"
+         id="org.eclipse.wst.common.modulecore"
          download-size="0"
          install-size="0"
          version="0.0.0"
