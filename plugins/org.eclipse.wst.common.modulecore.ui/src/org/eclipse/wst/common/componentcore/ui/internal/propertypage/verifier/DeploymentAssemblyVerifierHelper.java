@@ -75,7 +75,7 @@ public class DeploymentAssemblyVerifierHelper {
 	 * @param runtime
 	 * @return all verifiers by iterating through projects installed facets, and querying the registry
 	 */
-	private static List collectAllVerifiers(IProject project, IRuntime runtime) {
+	public static List collectAllVerifiers(IProject project, IRuntime runtime) {
 		IFacetedProject fProj = null;
 		try {
 			fProj = ProjectFacetsManager.create(project);

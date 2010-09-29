@@ -703,22 +703,28 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		allMappings.addAll(hiddenMappings);
 		
 		IStatus status = DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, allMappings,resourceMappingsChanged);
+		setErrorMessage(status);
+	}
+	
+	protected void setErrorMessage(IStatus status) {
 		// Clear the messages
 		propPage.setErrorMessage(null);
 		propPage.setMessage(null);
-		if (status.isMultiStatus()) {
-			MultiStatus multi = (MultiStatus)status;
-			if (!multi.isOK()) {
-				propPage.setMessage(getMessage(multi), multi.getSeverity());
-				if (multi.getSeverity() == IStatus.ERROR) {
-					propPage.setErrorMessage(getMessage(multi));
-					propPage.setValid(false);
-				}
-				else 
-					propPage.setValid(true);
-			} else propPage.setValid(true);
-		} else if (status.isOK()) propPage.setValid(true);
-		propPage.getContainer().updateMessage();
+		if(status != null) {
+			if (status.isMultiStatus()) {
+				MultiStatus multi = (MultiStatus)status;
+				if (!multi.isOK()) {
+					propPage.setMessage(getMessage(multi), multi.getSeverity());
+					if (multi.getSeverity() == IStatus.ERROR) {
+						propPage.setErrorMessage(getMessage(multi));
+						propPage.setValid(false);
+					}
+					else 
+						propPage.setValid(true);
+				} else propPage.setValid(true);
+			} else if (status.isOK()) propPage.setValid(true);
+			propPage.getContainer().updateMessage();
+		}
 	}
 
 	private String getMessage(MultiStatus multi) {
