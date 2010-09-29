@@ -1287,10 +1287,13 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		if (textNode != null) {
 			textNode.setData(text);
 		} else {
+			textNode = createTextNode(parent.getOwnerDocument(), map, text);
 			if (!isEmptyTag((Element) parent)) {
-				Text newNode = createTextNode(parent.getOwnerDocument(), map, text);
-				DOMUtilities.insertBeforeNode(parent, newNode, null);
-				return newNode;
+				DOMUtilities.insertBeforeNode(parent, textNode, null);
+			}
+			else
+			{
+				parent.appendChild(textNode);
 			}
 		}
 		return textNode;
