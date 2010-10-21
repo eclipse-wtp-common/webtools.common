@@ -373,10 +373,14 @@ public class VirtualComponent implements IVirtualComponent {
 			}
 		}
 	}	
-	
+
 	/**
 	 * Returns a raw list of references exactly as defined in
-	 * .settings/org.eclipse.wst.common.component
+	 * .settings/org.eclipse.wst.common.component. All returned references will
+	 * return a non <code>null</code> for
+	 * {@link IVirtualReference#getReferencedComponent()}, however, it is
+	 * possible that calls to these component's
+	 * {@link IVirtualComponent#exists()} may return <code>false</code>.
 	 * 
 	 * @return
 	 */
@@ -398,7 +402,7 @@ public class VirtualComponent implements IVirtualComponent {
 							continue;
 						}
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
-						if (vReference != null && vReference.getReferencedComponent() != null && vReference.getReferencedComponent().exists()) {
+						if (vReference != null && vReference.getReferencedComponent() != null) {
 							references.add(vReference);
 						}
 					}
