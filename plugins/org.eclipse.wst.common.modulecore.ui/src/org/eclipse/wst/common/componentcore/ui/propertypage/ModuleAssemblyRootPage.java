@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ui.Messages;
@@ -150,7 +151,8 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	private static void fillDescription(Composite c, String s) {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 250;
-		final Label label = new Label( c, SWT.NONE );
+		final Text label = new Text( c, SWT.WRAP | SWT.READ_ONLY);
+		label.setBackground(c.getBackground());
 		label.setLayoutData(data);
 		label.setText(s);
 	}
