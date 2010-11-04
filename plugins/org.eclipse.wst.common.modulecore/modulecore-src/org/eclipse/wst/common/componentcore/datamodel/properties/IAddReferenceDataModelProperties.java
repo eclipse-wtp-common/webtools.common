@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
+ *    Carl Anderson (IBM) - SYNC_PRIMARY_RUNTIME
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
@@ -40,4 +41,12 @@ public interface IAddReferenceDataModelProperties {
 	 * </p>
 	 */
 	public static final String TARGET_REFERENCE_LIST = "IAddReferenceDataModelProperties.TARGET_REFERENCE_LIST"; //$NON-NLS-1$
+
+	/**
+	 * <p>
+	 * This required property is a {@link java.util.Boolean} that specifies whether the child project's primary runtime should be set 
+	 * to the same primary runtime as the parent.  The default is TRUE.
+	 * </p>
+	 */
+	public static final String SYNC_PRIMARY_RUNTIME = "IAddReferenceDataModelProperties.SYNC_PRIMARY_RUNTIME"; //$NON-NLS-1$
 }
