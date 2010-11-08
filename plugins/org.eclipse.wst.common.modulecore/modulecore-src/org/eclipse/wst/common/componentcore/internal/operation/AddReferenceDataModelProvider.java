@@ -30,6 +30,7 @@ public class AddReferenceDataModelProvider extends AbstractDataModelProvider imp
 		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(SOURCE_COMPONENT);
 		propertyNames.add(TARGET_REFERENCE_LIST);
+		propertyNames.add(SYNC_PRIMARY_RUNTIME);
 		return propertyNames;
 	}
 
@@ -38,7 +39,10 @@ public class AddReferenceDataModelProvider extends AbstractDataModelProvider imp
 	}
 
 	public Object getDefaultProperty(String propertyName) {
-		// No defaults, both must be set
-		return super.getDefaultProperty(propertyName);
+		Object retVal = super.getDefaultProperty(propertyName);
+		if (SYNC_PRIMARY_RUNTIME.equals(propertyName)){
+			retVal = Boolean.TRUE;
+		}
+		return retVal;
 	}
 }
