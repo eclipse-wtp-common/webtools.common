@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2009 IBM Corporation and others.
+ * Copyright (c) 2007, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -447,9 +447,9 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 	 */
 	public boolean isDisabled(IProject project){
 		GlobalPreferences gp = getGlobalPreferences();
-		if (!gp.getOverride() || project == null)return gp.getDisableAllValidation();
+		if (mustUseGlobalValidators(project))return gp.getDisableAllValidation();
 		
-		ProjectPreferences pp = _projectPreferences.get(project);
+		ProjectPreferences pp = getProjectPreferences(project);
 		if (pp == null)return gp.getDisableAllValidation();
 		return pp.getSuspend();		
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2009 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
+import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
@@ -151,7 +153,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		// won't they have builders of their own.
 		IProject[] referenced = getAllReferencedProjects(project, null);
 		if (ValidationFramework.getDefault().isSuspended(project) || 
-			ValManager.getDefault().isDisabled(project))return referenced;
+			ValManager.getDefault().isDisabled(project)) {
+		  MarkerManager.getDefault().deleteMarkers(project, System.currentTimeMillis(), IResource.DEPTH_INFINITE);
+		  return referenced;
+		}
 
 		try {
 			newBuild(kind, monitor);

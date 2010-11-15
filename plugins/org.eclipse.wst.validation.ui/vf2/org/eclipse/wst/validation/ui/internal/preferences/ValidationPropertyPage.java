@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,6 +62,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
+import org.eclipse.wst.validation.internal.ProjectReValidationJob;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerProject;
@@ -664,6 +665,14 @@ public class ValidationPropertyPage extends PropertyPage  {
 			ProjectPreferences pp = new ProjectPreferences(project, _override.getSelection(), _suspend.getSelection(), null);
 			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
 			vpm.savePreferences(pp, _validators);
+			
+            if (_changes > 0 && !pp.getSuspend() && 
+                MessageDialog.openQuestion(_shell, ValUIMessages.RebuildTitle, ValUIMessages.RevalidateProjectMsg)){
+                
+                ProjectReValidationJob pbj = new ProjectReValidationJob(project);
+                pbj.schedule();
+            }
+            
 			return true;
 		}
 		
