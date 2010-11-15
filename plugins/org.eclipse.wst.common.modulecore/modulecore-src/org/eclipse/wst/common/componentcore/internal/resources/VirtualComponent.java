@@ -525,10 +525,19 @@ public class VirtualComponent implements IVirtualComponent {
 	 */
 	public IVirtualComponent[] getReferencingComponents() {
 		Set<IProject> projects = IDependencyGraph.INSTANCE.getReferencingComponents(getProject());
-		IVirtualComponent[] result = new IVirtualComponent[projects.size()];
+		ArrayList<IVirtualComponent> compList = new ArrayList<IVirtualComponent>();
+		IVirtualComponent currentComp = null;
 		Iterator<IProject> i = projects.iterator();
 		for (int j=0; j<projects.size(); j++)
-			result[j] = ComponentCore.createComponent(i.next());
+		{
+			currentComp = ComponentCore.createComponent(i.next());
+			if (currentComp != null)
+			{
+				compList.add(currentComp);
+			}
+		}
+		IVirtualComponent[] result = new IVirtualComponent[compList.size()];
+		result = compList.toArray(result);
 		return result;
 	}
 	
