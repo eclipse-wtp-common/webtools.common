@@ -104,8 +104,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.internal.facets.FacetUtil;
  
-public class AddModuleDependenciesPropertiesPage implements Listener,
-		IModuleDependenciesControl, ILabelProviderListener {
+public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependenciesControl implements Listener,
+		ILabelProviderListener {
 
 	
 	public static final int SOURCE_COLUMN = 0;
@@ -720,12 +720,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void verify() {
+		propPage.refreshProblemsView();
+	}
+	
+	public IStatus validate() {
 		ArrayList<ComponentResourceProxy> allMappings = new ArrayList<ComponentResourceProxy>();
 		allMappings.addAll(resourceMappings);
 		allMappings.addAll(hiddenMappings);
 		
-		IStatus status = DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, allMappings,resourceMappingsChanged);
-		setErrorMessage(status);
+		return DeploymentAssemblyVerifierHelper.verify(rootComponent, runtime, currentReferences, allMappings,resourceMappingsChanged);
 	}
 	
 	protected void setErrorMessage(IStatus status) {

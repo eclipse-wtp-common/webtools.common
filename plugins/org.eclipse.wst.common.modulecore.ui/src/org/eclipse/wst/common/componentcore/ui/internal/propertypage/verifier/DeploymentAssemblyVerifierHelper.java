@@ -60,7 +60,11 @@ public class DeploymentAssemblyVerifierHelper {
 				verifier = (IDeploymentAssemblyVerifier) ((IConfigurationElement) verifiers.get(i)).createExecutableExtension(VerifierRegistryReader.VERIFIER_CLASS);
 				DeploymentAssemblyVerifierData data = new DeploymentAssemblyVerifierData(component, runtime,currentReferences,resourceMappings,resourceMappingsChanged);
 				IStatus verifyStatus = verifier.verify(data);
-				masterStatus.add(verifyStatus);
+				if(verifyStatus != null && verifyStatus.isMultiStatus()) {
+					masterStatus.addAll(verifyStatus);
+				} else {
+					masterStatus.add(verifyStatus);
+				}
 			} catch (Exception e) {
 				ModuleCoreUIPlugin.log(e);
 				continue;

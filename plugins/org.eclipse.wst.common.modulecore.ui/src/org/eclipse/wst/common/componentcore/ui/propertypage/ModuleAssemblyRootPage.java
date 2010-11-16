@@ -13,16 +13,32 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ui.Messages;
@@ -37,6 +53,10 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	
 	private IProject project;
 	private IModuleDependenciesControl[] controls = new IModuleDependenciesControl[0];
+	private SashForm sform1;
+	private Composite topComposite;
+	private ScrolledComposite problemsViewComposite;
+	private Composite subProblemsViewComposite;
 	
 	public ModuleAssemblyRootPage() {
 		super();
@@ -174,24 +194,218 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 					controls = controls == null ? new IModuleDependenciesControl[]{} : controls;
 					if (provider.getPageTitle(project) != null)
 						setTitle(provider.getPageTitle(project));
-					return provider.createRootControl(facetedProject, controls, parent);
+					
+					this.sform1 = new SashForm( parent, SWT.VERTICAL | SWT.SMOOTH );
+					GridData gd1 = new GridData(SWT.LEFT, SWT.FILL, false, false);
+			        this.sform1.setLayoutData(gd1);
+			        
+					topComposite = provider.createRootControl(facetedProject, controls, sform1);
+				} else {				
+					if( ComponentCore.createComponent(project) == null )
+						return getVirtCompErrorComposite(parent);
+					
+					AddModuleDependenciesPropertiesPage page = new AddModuleDependenciesPropertiesPage(project, this);
+					controls = new IModuleDependenciesControl[1];
+					controls[0] = page;
+					this.sform1 = new SashForm( parent, SWT.VERTICAL | SWT.SMOOTH );
+					GridData gd1 = new GridData(SWT.LEFT, SWT.FILL, false, false);
+			        this.sform1.setLayoutData(gd1);
+			        
+					topComposite = page.createContents(sform1);
 				}
 				
-				if( ComponentCore.createComponent(project) == null )
-					return getVirtCompErrorComposite(parent);
-				
-				AddModuleDependenciesPropertiesPage page = new AddModuleDependenciesPropertiesPage(project, this);
-				controls = new IModuleDependenciesControl[1];
-				controls[0] = page;
-				return page.createContents(parent);
+				problemsViewComposite = new ScrolledComposite(sform1, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);				
+				fillProblemsViewComposite();
+		        this.sform1.setWeights( new int[] { 80, 20 } );
+		        problemsViewComposite.addListener(SWT.Resize, new Listener() {
+					public void handleEvent(Event e) {
+						handleProblemsViewResize();
+					}
+				});
+		        return sform1;
 			} catch( CoreException ce )	{
 			}
 		}
 		return getFacetErrorComposite(parent);
 	}
 	
+	private void handleProblemsViewResize() {
+		if(subProblemsViewComposite != null && !subProblemsViewComposite.isDisposed() && topComposite != null) {
+           	int width = topComposite.getClientArea().width;
+           	if(width < 400) {
+           		width = 400;
+           	}
+			int i = 1;
+			for( Control child : subProblemsViewComposite.getChildren() )
+			{
+				if(i%2 == 0) {
+					GridData gd = (GridData) child.getLayoutData();
+					gd.widthHint = width - 50;
+				}
+				i++;
+			}
+			subProblemsViewComposite.setSize(subProblemsViewComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        	subProblemsViewComposite.update();
+		}
+	}
+	
+	protected void fillProblemsViewComposite() {
+		if(problemsViewComposite != null) {
+			boolean resize = false;
+			for( Control child : problemsViewComposite.getChildren() )
+			{
+				child.dispose();
+				resize = true;
+			}
+			IStatus [] problems = getProblemElements();
+	    	if(problems != null && problems.length > 0) {
+	    		GridData gd = new GridData();
+	    		gd.heightHint = 100;
+	        	gd.horizontalAlignment = SWT.FILL;
+	    		gd.verticalAlignment = SWT.BOTTOM;
+	    		problemsViewComposite.setLayoutData(gd);
+	    		problemsViewComposite.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE) );
+	        	subProblemsViewComposite = new Composite( problemsViewComposite, SWT.NONE);
+	            subProblemsViewComposite.setLayoutData(new GridData( SWT.FILL, SWT.FILL, true, true));
+	            subProblemsViewComposite.setLayout(glmargins( new GridLayout(2, false ), 0, 0, 5, 5) );
+	            subProblemsViewComposite.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+
+	            int width = 400;
+	            if(topComposite != null && topComposite.getClientArea().width > 400) {
+	            	width = topComposite.getClientArea().width;
+	            }
+	            
+	            Listener focusOnProblemListener = new Listener() {
+	                public void handleEvent(Event e) {
+	                  Control problemLabel = (Control) e.widget;
+	                  Rectangle problemLabelBounds = problemLabel.getBounds();
+	                  Rectangle scrollableArea = problemsViewComposite.getClientArea();
+	                  Point currentScrollPosition = problemsViewComposite.getOrigin();
+	                  if (currentScrollPosition.y > problemLabelBounds.y)
+	                	  currentScrollPosition.y = Math.max(0, problemLabelBounds.y);
+	                  if (currentScrollPosition.y + scrollableArea.height < problemLabelBounds.y + problemLabelBounds.height)
+	                	  currentScrollPosition.y = Math.max(0, problemLabelBounds.y + problemLabelBounds.height - scrollableArea.height);
+	                  problemsViewComposite.setOrigin(currentScrollPosition);
+	                }
+	              };
+	           	
+	        	for (int i = 0; i < problems.length; i++) {
+	    			IStatus singleStatus = problems[i];
+	    			if (!singleStatus.isOK() && singleStatus.getMessage() != null) {
+	    				final Label image = new Label( subProblemsViewComposite, SWT.NONE );
+	    				GridData gdImage = new GridData();	    				
+	    				gdImage.verticalAlignment = SWT.BEGINNING;
+	    	            image.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE) );
+	    	            image.setImage(getProblemImage(singleStatus));
+	    	            image.setLayoutData(gdImage);
+	    	            
+	    	            final Text text  = new Text( subProblemsViewComposite, SWT.WRAP | SWT.READ_ONLY);
+	    	            GridData gdLabel = new GridData();
+	    	            gdLabel.widthHint = width - 50;
+	    	            text.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE) );
+	    	            text.setText(singleStatus.getMessage());
+	    	            text.setLayoutData(gdLabel);
+	    	            text.addListener(SWT.Activate, focusOnProblemListener);
+	    			}
+	    		}
+	            problemsViewComposite.setContent(subProblemsViewComposite);
+	            
+	            if(resize)
+	            	handleProblemsViewResize();
+	            
+	            if( this.sform1.getMaximizedControl() != null ) {
+	                this.sform1.setMaximizedControl( null );
+	            }
+	    	} else {
+	    		this.sform1.setMaximizedControl( this.topComposite );
+	    	}
+		}
+	}
+	
+	
+	private final static GridLayout glmargins( final GridLayout layout,
+			final int marginWidth,
+			final int marginHeight,
+			final int marginTop,
+			final int marginBottom)
+	{
+		layout.marginWidth = marginWidth;
+		layout.marginHeight = marginHeight;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = marginTop;
+		layout.marginBottom = marginBottom;
+
+		return layout;
+	}
+	
     public void createControl(Composite parent){
     	super.createControl(parent);
     	getDefaultsButton().setText(Messages.Revert);
     }
+    
+    public void refreshProblemsView(){
+    	setErrorMessage(null);
+		setMessage(null);
+    	setValid(true);
+    	fillProblemsViewComposite();
+    }
+    
+    private Image getProblemImage(IStatus element) {
+		final ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+		final String imageType;
+
+		if(element.getSeverity() == IStatus.ERROR) {
+			imageType = ISharedImages.IMG_OBJS_ERROR_TSK;
+		}
+		else {
+			imageType = ISharedImages.IMG_OBJS_WARN_TSK;
+		}
+		return sharedImages.getImage( imageType );
+	}
+    
+    protected IStatus[] getProblemElements() {
+		final List<IStatus> errors = new ArrayList<IStatus>();
+		final List<IStatus> warnings = new ArrayList<IStatus>();
+        
+		for (int i = 0; i < controls.length; i++) {
+			if (controls[i] != null) {
+				IStatus status = Status.OK_STATUS;
+				if(controls[i] instanceof AbstractIModuleDependenciesControl)
+					status = ((AbstractIModuleDependenciesControl) controls[i]).validate();
+				if(status != null) {
+					if (status.isMultiStatus()) {
+						MultiStatus multi = (MultiStatus)status;
+						if (!multi.isOK()) {
+							for (int y = 0; y < multi.getChildren().length; y++) {
+								IStatus singleStatus = multi.getChildren()[y];
+								if(singleStatus.getMessage() != null && singleStatus.getMessage().trim().length() > 0) {
+									if(multi.getChildren()[y].getSeverity() == IStatus.ERROR) {
+										errors.add(multi.getChildren()[y]);
+									} else {
+										warnings.add(multi.getChildren()[y]);
+									}
+								}
+							}
+						}
+					} else if (!status.isOK()) {
+						if(status.getMessage() != null && status.getMessage().trim().length() > 0) {
+							if(status.getSeverity() == IStatus.ERROR) {
+								errors.add(status);
+							} else {
+								warnings.add(status);
+							}
+						}
+					}
+				}
+			}
+		}
+		if(errors.size() > 0) {
+			setValid(false);
+			errors.addAll(warnings);
+			// This returns all the errors followed by all the warnings
+			return errors.toArray(new IStatus[errors.size()]);
+		}
+		return warnings.toArray(new IStatus[warnings.size()]);
+	}
 }

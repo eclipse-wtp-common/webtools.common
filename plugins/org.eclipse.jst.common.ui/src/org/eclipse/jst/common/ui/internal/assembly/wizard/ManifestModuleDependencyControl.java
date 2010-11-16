@@ -70,13 +70,12 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.DependencyPageExtensionManager;
 import org.eclipse.wst.common.componentcore.ui.internal.propertypage.IVirtualComponentLabelProvider;
-import org.eclipse.wst.common.componentcore.ui.propertypage.IModuleDependenciesControl;
+import org.eclipse.wst.common.componentcore.ui.propertypage.AbstractIModuleDependenciesControl;
 import org.eclipse.wst.common.componentcore.ui.propertypage.ModuleAssemblyRootPage;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ManifestModuleDependencyControl implements
-		IModuleDependenciesControl {
+public class ManifestModuleDependencyControl extends AbstractIModuleDependenciesControl {
 	
 	protected IProject project;
 	protected IVirtualComponent rootComponent;
@@ -128,12 +127,14 @@ public class ManifestModuleDependencyControl implements
 		
 		final Composite manifestEntryViewerComposite = new Composite( root, SWT.NONE );
 		final GridData manifestEntryViewerCompositeLayoutData = new GridData( GridData.FILL_BOTH );
-		manifestEntryViewerCompositeLayoutData.heightHint = 350;
 		manifestEntryViewerComposite.setLayoutData( manifestEntryViewerCompositeLayoutData );
 		manifestEntryViewerComposite.setLayout( glayout( 2 ) );
 		
 		manifestEntryViewer = createManifestReferenceTableViewer(manifestEntryViewerComposite, SWT.SINGLE);
-		manifestEntryViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData data = new GridData(GridData.FILL_BOTH);
+		int numlines = Math.min(10, manifestEntryViewer.getTable().getItemCount());
+		data.heightHint = manifestEntryViewer.getTable().getItemHeight() * numlines;
+		manifestEntryViewer.getTable().setLayoutData(data);
 		
 		Composite buttonColumn = new Composite(manifestEntryViewerComposite, SWT.NONE);
 		buttonColumn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -387,6 +388,10 @@ public class ManifestModuleDependencyControl implements
 	
 	protected void refreshViewer() {
 		refsForCurrentProject = list.toArray(new IVirtualReference[list.size()]);
+		GridData data = new GridData(GridData.FILL_BOTH);
+		int numlines = Math.min(10, manifestEntryViewer.getTable().getItemCount());
+		data.heightHint = manifestEntryViewer.getTable().getItemHeight() * numlines;
+		manifestEntryViewer.getTable().setLayoutData(data);
 		manifestEntryViewer.refresh();
 	}
 	
