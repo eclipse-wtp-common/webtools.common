@@ -937,6 +937,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 
 	public IProject getProject() {
+		if(project == null)
+			throw new IllegalStateException("The value of the project attribute is null"); //$NON-NLS-1$
 		return project;
 	}
 
