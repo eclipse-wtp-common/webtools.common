@@ -438,7 +438,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 	public static IVirtualReference createDummyReference(String path, IProject project, IVirtualComponent rootComponent) {
 		IVirtualComponent comp = new DummyVirtualComponent(project, rootComponent);
 		IVirtualReference ref = ComponentCore.createReference(rootComponent, comp);
-		IPath path2 = new Path(path);
+		IPath path2 = new Path(path.trim());
 		IPath runtimePath = path2.segmentCount() > 1 ? path2.removeLastSegments(1) : new Path("/"); //$NON-NLS-1$
 		runtimePath = runtimePath.makeRelative();
 		ref.setRuntimePath(runtimePath);
@@ -490,7 +490,8 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 			IVirtualReference tmp;
 			while(i.hasNext()) {
 				tmp = i.next();
-				asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
+				if(tmp.getArchiveName() != null)
+					asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
 			}
 			updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.JAR_LIST, asStrings);
 			try {
