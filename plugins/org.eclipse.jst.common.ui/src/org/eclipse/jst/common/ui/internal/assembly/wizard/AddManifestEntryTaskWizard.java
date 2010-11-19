@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -32,6 +33,8 @@ import org.eclipse.jst.common.ui.internal.Messages;
 import org.eclipse.jst.common.ui.internal.assembly.wizard.ManifestModuleDependencyControl.ManifestLabelProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -117,6 +120,14 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			
 			customEntryText = new Text(customEntryComposite, SWT.BORDER);
 			customEntryText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			customEntryText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					if(customEntryText.getText() == null || customEntryText.getText().trim().length() == 0 || new Path(customEntryText.getText().trim()).makeRelative().toString().length() == 0)
+						addCustom.setEnabled(false);
+					else
+						addCustom.setEnabled(true);
+				} 
+			});
 			
 			addCustom = new Button(customEntryComposite, SWT.PUSH);
 			addCustom.setLayoutData(new GridData());
@@ -128,6 +139,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
+			addCustom.setEnabled(false);
 			
 			createConfigLink(root);
 			parentContainerLink.setLayoutData(new GridData());
@@ -140,6 +152,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 					customEntryText.getText(), parentProject, ComponentCore.createComponent(parentProject));
 			contentProvider.addPossibleReference(ref);
 			customEntryText.setText(""); //$NON-NLS-1$
+			addCustom.setEnabled(false);
 			viewer.refresh();
 		}
 		
