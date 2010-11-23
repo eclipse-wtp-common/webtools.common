@@ -350,6 +350,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 
 	private IVirtualReference[] refsForCurrentProject;
 	protected void refreshViewerFromNewParentProject() {
+		list.clear();
 		String parentString = parentSelection.getText();
 		refsForCurrentProject = new IVirtualReference[]{};
 		if( parentString != null && !"".equals(parentString)) { //$NON-NLS-1$
@@ -505,7 +506,6 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 	}
 
 	public void performDefaults() {
-		list.clear();
 		refreshViewerFromNewParentProject();
 	}
 
