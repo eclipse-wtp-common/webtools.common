@@ -1,5 +1,13 @@
 package org.eclipse.wst.common.componentcore.internal.builder;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,8 +22,10 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
@@ -205,14 +215,24 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		synchronized (graphLock) {
 			try{
 				preUpdate();
-				IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-				for (IProject sourceProject : allProjects) {
-					update(sourceProject, IDependencyGraph.ADDED);
-				}	
+				if(restoreGraph() == null){
+					rebuild();
+				}
 			} finally{
 				postUpdate();
 			}
 			
+		}
+	}
+
+	private void rebuild() {
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		rebuild(allProjects);
+	}
+
+	private void rebuild(IProject[] allProjects) {
+		for (IProject sourceProject : allProjects) {
+			update(sourceProject, IDependencyGraph.ADDED);
 		}
 	}
 	
@@ -549,6 +569,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 						for(Object listener : listeners.getListeners()){
 							((IDependencyGraphListener)listener).dependencyGraphUpdate(event);
 						}
+						saveGraph(); //trigger a future save
 						monitor.done();
 					}
 
@@ -692,6 +713,280 @@ public class DependencyGraphImpl implements IDependencyGraph {
 		return graphUpdateJob.getState() != Job.NONE || graphUpdateJob.shouldSchedule();
 	}
 
+	private class RestoredGraphResults {
+		private DependencyGraphEvent event;
+		private HashMap <String, Set<String>>graph;
+	}
+	
+	/**
+	 * This file will be stored here:
+	 * .metadata\.plugins\org.eclipse.wst.common.modulecore\dependencyCache.index
+	 */
+	private static final String DEPENDENCY_GRAPH_CACHE = "dependencyCache.index";
+	
+	/**
+	 * Restores the graph if possible and returns a {@link RestoredGraphResults}
+	 * if successful.
+	 * 
+	 * It is essential this method do everything possible to avoid restoring bad
+	 * data to ensure bad data does not corrupt the current workspace instance. If
+	 * bad data is detected, it is deleted to avoid a repeat failure the next
+	 * time the workspace is restarted.
+	 * 
+	 * @return {@link RestoredGraphResults} if successful in restoring the
+	 *         graph, <code>null</code> if not successful
+	 */
+	private RestoredGraphResults restoreGraph(){
+		try {
+			synchronized (graphLock) {
+				graph = new HashMap<IProject, Set<IProject>>();
+				IPath stateLocation = ModulecorePlugin.getDefault().getStateLocation();
+				java.io.File file = stateLocation.append(DEPENDENCY_GRAPH_CACHE).toFile();
+				if(!file.exists()){
+					return null; // no state to restore from
+				} else {
+					HashMap <String, Set<String>>savedMap = null;
+					FileInputStream fIn = null;
+					try{ 
+						fIn = new FileInputStream(file);
+						BufferedInputStream bIn = new BufferedInputStream(fIn);
+						ObjectInputStream oIn = new ObjectInputStream(bIn);
+						savedMap = (HashMap<String, Set<String>>)oIn.readObject();
+						oIn.close();
+					} catch (FileNotFoundException e) {
+						ModulecorePlugin.logError(e);
+						return null;
+					} catch (IOException e) {
+						ModulecorePlugin.logError(e);
+						file.delete();
+						return null;
+					} catch (ClassNotFoundException e) {
+						ModulecorePlugin.logError(e);
+						file.delete();
+						return null;
+					} finally{
+						if(fIn != null){
+							try {
+								fIn.close();
+							} catch (IOException e) {
+								ModulecorePlugin.logError(e);
+							}
+						}
+					}
+					if(savedMap != null){ // we have something to restore the state from
+						//first check to ensure all projects are still present
+						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot(); 
+						for(String sourceProjectName:savedMap.keySet()){
+							IProject sourceProject = root.getProject(sourceProjectName);
+							if(!sourceProject.exists()){
+								return null;
+							} else {
+								Set <String> targetProjectNames = savedMap.get(sourceProjectName);
+								for(String targetProjectName:targetProjectNames){
+									IProject targetProject = root.getProject(targetProjectName);
+									if(!targetProject.exists()){
+										return null;
+									}
+								}
+							}
+						}
+						
+						//next add the references
+						DependencyGraphEvent event = new DependencyGraphEvent();
+						incrementModStamp();
+						event = new DependencyGraphEvent();
+						event.setModStamp(getModStamp());
+						
+						Set <Entry<String, Set<String>>> entries = savedMap.entrySet();
+						for(Iterator<Entry<String, Set<String>>> iterator = entries.iterator(); iterator.hasNext();){
+							Entry<String, Set<String>> entry = iterator.next();
+							IProject sourceProject = root.getProject(entry.getKey());
+							for(String targetProjectName : entry.getValue()){
+								IProject targetProject = root.getProject(targetProjectName);
+								addReference(targetProject, sourceProject, event);
+							}
+						}
+						
+						RestoredGraphResults results = new RestoredGraphResults();
+						results.event = event;
+						results.graph = savedMap;
+						
+						//finally ensure the results are accurate
+						checkRestoredResults(results);
+						return results;
+					}
+				}
+			}
+		} catch (Exception e){
+			try{
+				ModulecorePlugin.logError(e);
+				IPath stateLocation = ModulecorePlugin.getDefault().getStateLocation();
+				java.io.File file = stateLocation.append(DEPENDENCY_GRAPH_CACHE).toFile();
+				file.delete();
+			} catch (Exception e2){
+				//eat it
+			}
+		}
+		return null;
+	}
+	
+	
+	private class PersistJob extends Job {
+
+		public PersistJob() {
+			super(Resources.GRAPH_SAVE_JOB_NAME);
+			setSystem(true);
+			setRule(null);
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			SafeRunner.run(new ISafeRunnable() {
+				public void run() throws Exception {
+					persist();
+				}
+
+				public void handleException(Throwable exception) {
+					ModulecorePlugin.logError(exception);
+				}
+			});
+			return Status.OK_STATUS;
+		}
+	}
+
+	private static int persistDelay = 60000; // 1 minute
+	private PersistJob persistJob = new PersistJob();
+
+	/**
+	 * Farm out the I/O to a job to minimize the necessary processing.
+	 */
+	private void saveGraph() {
+		persistJob.schedule(persistDelay);
+	}
+	
+	private void persist(){
+		HashMap <String, Set<String>> savedMap = new HashMap<String, Set<String>>();
+		synchronized (graphLock) {
+			for(IProject sourceProject:graph.keySet()){
+				Set <String> savedTargets = new HashSet<String>();
+				for(IProject targetProject:graph.get(sourceProject)){
+					savedTargets.add(targetProject.getName());
+				}
+				savedMap.put(sourceProject.getName(), savedTargets);
+			}
+		}
+		IPath stateLocation = ModulecorePlugin.getDefault().getStateLocation();
+		java.io.File file = stateLocation.append(DEPENDENCY_GRAPH_CACHE).toFile();
+		if(savedMap.isEmpty()){
+			//if there is nothing to persist, delete the file.
+			if(file.exists()){
+				file.delete(); 
+			}
+		} else {
+			FileOutputStream fOut = null;
+			try{
+				fOut = new FileOutputStream(file);
+				BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+				ObjectOutputStream oOut = new ObjectOutputStream(bOut);
+				oOut.writeObject(savedMap);
+				oOut.close();
+			} catch (FileNotFoundException e) {
+				ModulecorePlugin.logError(e);
+			} catch (IOException e) {
+				ModulecorePlugin.logError(e);
+			} finally{
+				if(fOut != null){
+					try {
+						fOut.close();
+					} catch (IOException e) {
+						ModulecorePlugin.logError(e);
+					}
+				}
+			}
+		}
+	}
+
+	private void checkRestoredResults(final RestoredGraphResults restoredGraphResults) {
+		Job checkRestoreDataJob = new Job(Resources.CHECK_GRAPH_RESTORE_JOB_NAME){
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				SafeRunner.run(new ISafeRunnable() {
+					public void run() throws Exception {
+						try {
+							IProject[] allProjects = null;
+							int state = ResourcesPlugin.getPlugin().getBundle().getState();
+							if (state == Bundle.ACTIVE) {
+								allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+							} else {
+								return;
+							}
+							if(isStale(allProjects)){
+								rebuild(allProjects);
+								saveGraph(); //trigger a future save
+							}
+						} finally {
+							monitor.done();
+						}				
+					}
+					private boolean isStale(IProject[] allProjects){
+						if(restoredGraphResults.event.getModStamp() != getModStamp()){
+							return true;
+						}
+						
+						HashMap<String, Set<String>> computedGraph = new HashMap<String, Set<String>>();
+						
+						for (IProject sourceProject : allProjects) {
+							if(restoredGraphResults.event.getModStamp() != getModStamp()){
+								return true;
+							}
+							IVirtualComponent component = ComponentCore.createComponent(sourceProject);
+							if (component != null && component instanceof VirtualComponent) {
+								IVirtualReference[] references = ((VirtualComponent)component).getRawReferences();
+								for (IVirtualReference ref : references) {
+									if(restoredGraphResults.event.getModStamp() != getModStamp()){
+										return true;
+									}
+									IVirtualComponent targetComponent = ref.getReferencedComponent();
+									if (targetComponent != null) {
+										IProject targetProject = targetComponent.getProject();
+										if (targetProject != null && !targetProject.equals(sourceProject)) {
+											String targetProjectName = targetProject.getName();
+											String sourceProjectName = sourceProject.getName();
+											Set <String> targetProjects = computedGraph.get(targetProjectName);
+											if(targetProjects == null){
+												targetProjects = new HashSet <String>();
+												computedGraph.put(targetProjectName, targetProjects);
+											}
+											targetProjects.add(sourceProjectName);
+										}
+									}
+								}	
+							}
+						}
+						if(restoredGraphResults.event.getModStamp() != getModStamp()){
+							return true;
+						}
+						if(!restoredGraphResults.graph.equals(computedGraph)){
+							return true;
+						}
+						if(restoredGraphResults.event.getModStamp() != getModStamp()){
+							return true;
+						}
+						return false;
+					}
+
+					public void handleException(Throwable exception) {
+						ModulecorePlugin.logError(exception);
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		checkRestoreDataJob.setSystem(true);
+		checkRestoreDataJob.setRule(null);
+		checkRestoreDataJob.schedule();
+	}
+			
 	public String toString() {
 		synchronized (graphLock) {
 			StringBuffer buff = new StringBuffer("Dependency Graph:\n{\n");
@@ -716,6 +1011,8 @@ public class DependencyGraphImpl implements IDependencyGraph {
 	    public static String WAITING;
 	    public static String JOB_NAME;
 	    public static String NOTIFICATION_JOB_NAME;
+	    public static String CHECK_GRAPH_RESTORE_JOB_NAME;
+	    public static String GRAPH_SAVE_JOB_NAME;
 	    
 	    static
 	    {
