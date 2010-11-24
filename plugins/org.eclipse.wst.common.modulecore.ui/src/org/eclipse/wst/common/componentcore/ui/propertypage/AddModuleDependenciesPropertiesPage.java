@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,7 +81,9 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.TaskModel;
 import org.eclipse.wst.common.componentcore.internal.operation.AddReferenceDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceDataModelProvider;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
+import org.eclipse.wst.common.componentcore.internal.util.VirtualReferenceUtilities;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -160,11 +163,22 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 
 	public static void setRuntimePathSafe(IVirtualReference ref, String newPath) {
 		if( ref.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES)
-			ref.setRuntimePath(new Path(newPath == null ? "/" : newPath));
+			ref.setRuntimePath(new Path(newPath == null ? "/" : newPath.trim()).makeRelative().makeAbsolute());
 		else {
-			IPath path2 = new Path(newPath == null ? "/" : newPath);
+			IPath path2 = new Path(newPath == null ? "/" : newPath.trim()).makeRelative().makeAbsolute();
 			ref.setRuntimePath(path2.segmentCount() > 1 ? path2.removeLastSegments(1) : new Path("/"));
-			ref.setArchiveName(path2.segmentCount() > 0 ? path2.lastSegment() : "");
+			if(path2.segmentCount() > 0) {
+				ref.setArchiveName(path2.lastSegment());
+			} else if(ref.getReferencedComponent() instanceof VirtualArchiveComponent && ((VirtualArchiveComponent)ref.getReferencedComponent()).getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE) ) {
+				File diskFile = (java.io.File)ref.getReferencedComponent().getAdapter(java.io.File.class);
+				IPath filePath = null;
+				if (diskFile.exists()) {
+					filePath = new Path(diskFile.getAbsolutePath());
+					ref.setArchiveName(filePath.lastSegment());
+				}
+			} else {
+				ref.setArchiveName(VirtualReferenceUtilities.INSTANCE.getDefaultArchiveName(ref));
+			}
 		}
 	}
 	
@@ -475,9 +489,12 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 
 		public Object getValue(Object element, String property) {
 			if( element instanceof IVirtualReference ) {
-				return getSafeRuntimePath((IVirtualReference)element);
+				return new Path(getSafeRuntimePath((IVirtualReference)element)).makeRelative().toString();
 			} else if( element instanceof ComponentResourceProxy) {
-				return ((ComponentResourceProxy)element).runtimePath.toString();
+				if(((ComponentResourceProxy)element).runtimePath.isRoot())
+					return ((ComponentResourceProxy)element).runtimePath.toString();
+				else
+					return ((ComponentResourceProxy)element).runtimePath.makeRelative().toString();
 			}
 			return new Path("/"); //$NON-NLS-1$
 		}
@@ -495,14 +512,21 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 				}
 				if( item.getData() instanceof IVirtualReference) {
 					setRuntimePathSafe((IVirtualReference)item.getData(), (String) value);
-					if(tableIndex >= 0)
-						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, (String)value);
+					if(tableIndex >= 0) {
+						IPath deployPath = ((IVirtualReference)item.getData()).getRuntimePath().append(((IVirtualReference)item.getData()).getArchiveName());
+						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, deployPath.makeRelative().toString());
+					}
 				} else if( item.getData() instanceof ComponentResourceProxy) {
 					ComponentResourceProxy c = ((ComponentResourceProxy)item.getData());
-					c.runtimePath = new Path((String)value);
+					c.runtimePath = new Path((String)value).makeAbsolute();
+					String runtimePath;
+					if(c.runtimePath.isRoot())
+						runtimePath = c.runtimePath.toString();
+					else
+						runtimePath = c.runtimePath.makeRelative().toString();
 					resourceMappingsChanged = true;
 					if(tableIndex >= 0)
-						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, (String)value);
+						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, runtimePath);
 				}
 				verify();
 			}
