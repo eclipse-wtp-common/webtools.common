@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -95,15 +96,18 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		if( element instanceof ComponentResourceProxy) {
 			if( columnIndex == AddModuleDependenciesPropertiesPage.SOURCE_COLUMN ) { 
 				return ((ComponentResourceProxy)element).source.toString();
-			} else if( columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN ) { 
-				return ((ComponentResourceProxy)element).runtimePath.toString();
+			} else if( columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN ) {
+				if(((ComponentResourceProxy)element).runtimePath.isRoot())
+					return ((ComponentResourceProxy)element).runtimePath.toString();
+				else
+					return ((ComponentResourceProxy)element).runtimePath.makeRelative().toString();
 			}
 		}
 		if( element instanceof IVirtualReference) {
 			if (columnIndex == AddModuleDependenciesPropertiesPage.SOURCE_COLUMN) {
 				return handleSourceText(((IVirtualReference)element).getReferencedComponent());
 			} else if (columnIndex == AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN) {
-				return AddModuleDependenciesPropertiesPage.getSafeRuntimePath((IVirtualReference)element);
+				return new Path(AddModuleDependenciesPropertiesPage.getSafeRuntimePath((IVirtualReference)element)).makeRelative().toString();
 			} 
 		}
 		return null;
