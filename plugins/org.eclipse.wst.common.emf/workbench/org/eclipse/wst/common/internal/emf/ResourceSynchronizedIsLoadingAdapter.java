@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 IBM Corporation and others.
+ * Copyright (c) 2005, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapter;
 import org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin;
+import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapter;
 
 
 
@@ -57,7 +57,7 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ibm.wtp.internal.emf.utilities.ResourceIsLoadingAdapter#waitForResourceToLoad()
+	 * @see org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapter#waitForResourceToLoad()
 	 */
 	@Override
 	public void waitForResourceToLoad() {
@@ -82,13 +82,10 @@ public class ResourceSynchronizedIsLoadingAdapter extends ResourceIsLoadingAdapt
 	}
 
 
-	/**
-	 * 
-	 */
 	private void logWarning() {
-		Notifier target = getTarget();
-		if (target == null || !(target instanceof Resource)) {
-			Resource resource = (Resource) target;
+		Notifier notificationTarget = getTarget();
+		if (notificationTarget != null && notificationTarget instanceof Resource) {
+			Resource resource = (Resource) notificationTarget;
 			EcoreUtilitiesPlugin.logError("[WARNING] Could not acquire Semaphore Lock for Resource: \"" + resource.getURI() + "\" in " + getClass());  //$NON-NLS-1$//$NON-NLS-2$
 		}
 	}
