@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.34.2.1 $$  $$Date: 2010/12/02 05:30:57 $$ 
+ *  $$Revision: 1.34.2.2 $$  $$Date: 2010/12/02 05:45:48 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -589,6 +589,79 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 			}
 		}
 
+	}
+
+	public static class ESynchronizedAdapterList extends EAdapterList
+	{
+
+/**
+ * 
+ */
+		private static final long serialVersionUID = 7855438339187540718L;
+
+		public ESynchronizedAdapterList(Notifier notifier) {
+			super(notifier);
+		}
+
+		@Override
+		public synchronized boolean add(Object object)
+		{
+			return super.add(object);
+		}
+
+		@Override
+		public synchronized void add(int index, Object object)
+		{
+			super.add(index, object);
+		}
+
+		@Override
+		public synchronized boolean addAll(Collection collection)
+		{
+			return super.addAll(collection);
+		}
+
+		@Override
+		public synchronized boolean remove(Object object)
+		{
+			return super.remove(object);
+		}
+
+		@Override
+		public synchronized Object remove(int index)
+		{
+			return super.remove(index);
+		}
+
+		@Override
+		public synchronized boolean removeAll(Collection collection)
+		{
+			return super.removeAll(collection);
+		}
+
+		@Override
+		public synchronized void clear()
+		{
+			super.clear();
+		}
+
+		@Override
+		public synchronized Object set(int index, Object object)
+		{
+			return super.set(index, object);
+		}
+
+		@Override
+		public synchronized void move(int newPosition, Object object)
+		{
+			super.move(newPosition, object);
+		}
+
+		@Override
+		public synchronized Object move(int newPosition, int oldPosition)
+		{
+			return super.move(newPosition, oldPosition);
+		}
 	}
 
 	private boolean isReleasing = false;
@@ -1206,5 +1279,15 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	      }
 	    }
 	  }
+
+	@Override
+	public EList eAdapters()
+	{
+		if (eAdapters == null)
+		{
+			eAdapters =  new ESynchronizedAdapterList(this);
+		}
+		return eAdapters;
+	}
 
 }
