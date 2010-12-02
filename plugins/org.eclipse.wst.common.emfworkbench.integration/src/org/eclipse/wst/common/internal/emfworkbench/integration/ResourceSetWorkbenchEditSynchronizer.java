@@ -43,6 +43,7 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
@@ -398,7 +399,13 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected List getResources(IFile aFile) {
 
 		List resources = new ArrayList();
-		List allResources = resourceSet.getResources();
+		List allResources = null;
+		if (resourceSet instanceof ProjectResourceSetImpl) {
+            ProjectResourceSetImpl projResSet =(ProjectResourceSetImpl)resourceSet;
+            allResources = projResSet.getImmutableResources();
+        } else {
+            allResources = resourceSet.getResources();
+        }
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
