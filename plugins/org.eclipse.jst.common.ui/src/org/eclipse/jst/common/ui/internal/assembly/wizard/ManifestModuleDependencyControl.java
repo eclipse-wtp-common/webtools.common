@@ -223,7 +223,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 			int size = manifestEntryViewer.getTable().getItems().length;
 			removeButton.setEnabled(index != -1);
 			moveUpButton.setEnabled(index != -1 && index != 0);
-			moveDownButton.setEnabled(index != size-1);
+			moveDownButton.setEnabled(index != -1 && index != size-1);
 		}
 	}
 	
@@ -288,8 +288,12 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 		public String getColumnText(Object element, int columnIndex) {
 			if( element instanceof IVirtualReference ) {
 				IVirtualReference ref = (IVirtualReference)element;
-				if( columnIndex == 0 && ref.getArchiveName() != null)
-					return ref.getRuntimePath().append(ref.getArchiveName()).toString();
+				if( columnIndex == 0 && ref.getArchiveName() != null) {
+					if(ref.getRuntimePath().toString().length() > 0)
+						return ref.getRuntimePath().append(ref.getArchiveName()).toString();
+					else
+						return ref.getArchiveName();
+				}
 				if( columnIndex == 1 )
 					return handleSourceText(ref.getReferencedComponent());
 			}
@@ -372,7 +376,11 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 		HashMap<String, IVirtualReference> unsortedRefMap = new HashMap<String, IVirtualReference>();
 		for (int i = 0; i < currentRefs.length; i++) {
 			IVirtualReference ref = currentRefs[i];
-			String entryName = ref.getRuntimePath().append(ref.getArchiveName()).toString();
+			String entryName;
+			if(ref.getRuntimePath().toString().length() > 0)
+				entryName = ref.getRuntimePath().append(ref.getArchiveName()).toString();
+			else
+				entryName = ref.getArchiveName();
 			unsortedRefMap.put(entryName, ref);
 		}
 		List<IVirtualReference> sortedRefs = new ArrayList<IVirtualReference>();
@@ -439,6 +447,11 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 	public static IVirtualReference createDummyReference(String path, IProject project, IVirtualComponent rootComponent) {
 		IVirtualComponent comp = new DummyVirtualComponent(project, rootComponent);
 		IVirtualReference ref = ComponentCore.createReference(rootComponent, comp);
+		if(path.indexOf("\\") > 0) {
+			ref.setRuntimePath(new Path(""));
+			ref.setArchiveName(path);
+			return ref;
+		}
 		IPath path2 = new Path(path.trim());
 		IPath runtimePath = path2.segmentCount() > 1 ? path2.removeLastSegments(1) : new Path("/"); //$NON-NLS-1$
 		runtimePath = runtimePath.makeRelative();
@@ -491,8 +504,12 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 			IVirtualReference tmp;
 			while(i.hasNext()) {
 				tmp = i.next();
-				if(tmp.getArchiveName() != null)
-					asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
+				if(tmp.getArchiveName() != null) {
+					if(tmp.getRuntimePath().toString().length() > 0 )
+						asStrings.add(tmp.getRuntimePath().append(tmp.getArchiveName()).toString());
+					else
+						asStrings.add(tmp.getArchiveName());
+				}
 			}
 			updateManifestDataModel.setProperty(UpdateManifestDataModelProperties.JAR_LIST, asStrings);
 			try {
