@@ -149,7 +149,7 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 		
 		private void addCustomPressed() {
 			IVirtualReference ref = ManifestModuleDependencyControl.createDummyReference(
-					customEntryText.getText(), parentProject, ComponentCore.createComponent(parentProject));
+					new Path(customEntryText.getText()).toString(), parentProject, ComponentCore.createComponent(parentProject));
 			contentProvider.addPossibleReference(ref);
 			customEntryText.setText(""); //$NON-NLS-1$
 			addCustom.setEnabled(false);
