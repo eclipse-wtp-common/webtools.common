@@ -214,7 +214,13 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 					topComposite = page.createContents(sform1);
 				}
 				
-				problemsViewComposite = new ScrolledComposite(sform1, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);				
+				problemsViewComposite = new ScrolledComposite(sform1, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+				GridData gd = new GridData();
+	    		gd.heightHint = 100;
+	        	gd.horizontalAlignment = SWT.FILL;
+	    		gd.verticalAlignment = SWT.BOTTOM;
+	    		problemsViewComposite.setLayoutData(gd);
+	    		problemsViewComposite.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE) );
 				fillProblemsViewComposite();
 		        this.sform1.setWeights( new int[] { 80, 20 } );
 		        problemsViewComposite.addListener(SWT.Resize, new Listener() {
@@ -251,20 +257,15 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	
 	protected void fillProblemsViewComposite() {
 		if(problemsViewComposite != null) {
-			boolean resize = false;
-			for( Control child : problemsViewComposite.getChildren() )
-			{
-				child.dispose();
-				resize = true;
-			}
 			IStatus [] problems = getProblemElements();
 	    	if(problems != null && problems.length > 0) {
-	    		GridData gd = new GridData();
-	    		gd.heightHint = 100;
-	        	gd.horizontalAlignment = SWT.FILL;
-	    		gd.verticalAlignment = SWT.BOTTOM;
-	    		problemsViewComposite.setLayoutData(gd);
-	    		problemsViewComposite.setBackground( Display.getDefault().getSystemColor(SWT.COLOR_WHITE) );
+	    		boolean resize = false;
+				for( Control child : problemsViewComposite.getChildren() )
+				{
+					child.dispose();
+					resize = true;
+				}
+
 	        	subProblemsViewComposite = new Composite( problemsViewComposite, SWT.NONE);
 	            subProblemsViewComposite.setLayoutData(new GridData( SWT.FILL, SWT.FILL, true, true));
 	            subProblemsViewComposite.setLayout(glmargins( new GridLayout(2, false ), 0, 0, 5, 5) );
