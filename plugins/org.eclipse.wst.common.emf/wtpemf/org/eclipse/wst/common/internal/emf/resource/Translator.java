@@ -476,7 +476,7 @@ public class Translator {
 	 *            org.eclipse.emf.ecore.EObject
 	 */
 	public boolean featureExists(EObject emfObject) {
-		if (feature == null)
+		if (feature == null || emfObject == null)
 			return false;
 
 		return emfObject.eClass().getEStructuralFeature(feature.getName()) != null;
