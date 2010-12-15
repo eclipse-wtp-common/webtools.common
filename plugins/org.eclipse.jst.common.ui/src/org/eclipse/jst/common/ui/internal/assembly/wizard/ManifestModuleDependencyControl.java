@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -37,6 +38,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jst.common.internal.modulecore.util.ArchiveManifest;
@@ -206,6 +208,28 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 				viewerSelectionChanged();
 			}
 		});
+
+		//ensure the buttons are properly updated when table sort mode toggled
+		manifestEntryViewer.getTable().getColumn(0).addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				updateButtons();
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing
+			}
+		});
+
+		//ensure the buttons are properly updated when table sort mode toggled
+		manifestEntryViewer.getTable().getColumn(1).addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				updateButtons();
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//do nothing
+			}
+		});
 		return root;
 	}
 	
@@ -221,9 +245,10 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 		} else {
 			int index = manifestEntryViewer.getTable().getSelectionIndex();
 			int size = manifestEntryViewer.getTable().getItems().length;
+			boolean sorted = manifestEntryViewer.getTable().getSortDirection() != SWT.NONE;
 			removeButton.setEnabled(index != -1);
-			moveUpButton.setEnabled(index != -1 && index != 0);
-			moveDownButton.setEnabled(index != -1 && index != size-1);
+			moveUpButton.setEnabled(index != -1 && index != 0 && !sorted);
+			moveDownButton.setEnabled(index != -1 && index != size-1 && !sorted);
 		}
 	}
 	
@@ -326,12 +351,83 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 		}
 	}
 	
+	/**
+	 * Provides three possible sorts for each column based on the text labels.
+	 * First click on any column will enable forward sorting for that column,
+	 * second click on a column will enable backwards sorting, and third click
+	 * will disable sorting.
+	 * @author jsholl
+	 */
+	private static class TableViewerColumnSortToggler {
+		private int sortDirection = 0;
+		private int sortColumn = 0;
+		private TableViewer tableViewer;
+		
+		private TableViewerColumnSortToggler(TableViewer tableViewer){
+			this.tableViewer = tableViewer;
+		}
+		
+		private void toggleSort(int column){
+			if(sortColumn == column){
+				//cycle through sort options
+				switch(sortDirection){
+				case SWT.NONE:
+					sortDirection = SWT.UP;
+					break;
+				case SWT.UP:
+					sortDirection = SWT.DOWN;
+					break;
+				case SWT.DOWN:
+					sortDirection = SWT.NONE;
+					break;
+				}
+			} else {
+				//clicked on a different column reset cycle
+				sortColumn = column;
+				sortDirection = SWT.UP;
+			}
+			
+			ViewerComparator comparator = getViewerComparator(column, sortDirection);
+			tableViewer.setComparator(comparator);
+			
+			Table table = tableViewer.getTable();
+			TableColumn sortColumn = tableViewer.getTable().getColumn(column);
+			table.setSortColumn(sortColumn);
+			table.setSortDirection(sortDirection);
+		}
+		
+		private ViewerComparator getViewerComparator(final int columnIndex, final int sortDirection) {
+			if(sortDirection == SWT.NONE){
+				return null;
+			}
+			return new ViewerComparator() {
+				public int compare(Viewer viewerLocal, Object e1, Object e2) {
+					IBaseLabelProvider baseLabelProvider = tableViewer.getLabelProvider();
+					if(baseLabelProvider instanceof ITableLabelProvider){
+						ITableLabelProvider tableLabelProvider = (ITableLabelProvider)baseLabelProvider;
+						String text1 = tableLabelProvider.getColumnText(e1, columnIndex);
+						if(text1 != null){
+							String text2 = tableLabelProvider.getColumnText(e2, columnIndex);
+							int comp = text1.compareTo(text2);
+							if(sortDirection == SWT.DOWN){
+								comp = -comp;
+							}
+							return comp;
+						}
+					}
+					return 0;
+				}
+			};
+		}
+	};
+	
 	public static TableViewer createManifestReferenceTableViewer(Composite parent, int style) {
 		int flags = SWT.BORDER | style;
 
 		Table table = new Table(parent, flags);
 		TableViewer viewer = new TableViewer(table);
-
+		final TableViewerColumnSortToggler sortController = new TableViewerColumnSortToggler(viewer);
+		
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(200, true));
@@ -344,10 +440,27 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 		TableColumn fileNameColumn = new TableColumn(table, SWT.NONE, 0);
 		fileNameColumn.setText(Messages.ManifestEntryColumn);
 		fileNameColumn.setResizable(true);
+		fileNameColumn.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				sortController.toggleSort(0);
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//do nothing
+			}
+		});
 
 		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 1);
 		projectColumn.setText(Messages.ManifestEntrySourceColumn);
 		projectColumn.setResizable(true);
+		projectColumn.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				sortController.toggleSort(1);
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//do nothing
+			}
+		});
+		
 		tableLayout.layout(table, true);
 		return viewer;
 	}
