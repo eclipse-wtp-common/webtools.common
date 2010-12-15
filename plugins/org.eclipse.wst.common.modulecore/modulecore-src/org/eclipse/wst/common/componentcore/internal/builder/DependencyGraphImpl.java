@@ -747,22 +747,22 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				} else {
 					HashMap <String, Set<String>>savedMap = null;
 					FileInputStream fIn = null;
+					boolean deleteCache = true;
 					try{ 
 						fIn = new FileInputStream(file);
 						BufferedInputStream bIn = new BufferedInputStream(fIn);
 						ObjectInputStream oIn = new ObjectInputStream(bIn);
 						savedMap = (HashMap<String, Set<String>>)oIn.readObject();
 						oIn.close();
+						deleteCache = false;
 					} catch (FileNotFoundException e) {
 						ModulecorePlugin.logError(e);
 						return null;
 					} catch (IOException e) {
 						ModulecorePlugin.logError(e);
-						file.delete();
 						return null;
 					} catch (ClassNotFoundException e) {
 						ModulecorePlugin.logError(e);
-						file.delete();
 						return null;
 					} finally{
 						if(fIn != null){
@@ -771,6 +771,9 @@ public class DependencyGraphImpl implements IDependencyGraph {
 							} catch (IOException e) {
 								ModulecorePlugin.logError(e);
 							}
+						}
+						if(deleteCache){
+							file.delete();
 						}
 					}
 					if(savedMap != null){ // we have something to restore the state from
@@ -817,7 +820,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 					}
 				}
 			}
-		} catch (Exception e){
+		} catch (Throwable e){
 			try{
 				ModulecorePlugin.logError(e);
 				IPath stateLocation = ModulecorePlugin.getDefault().getStateLocation();
@@ -983,7 +986,7 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			}
 		};
 		checkRestoreDataJob.setSystem(true);
-		checkRestoreDataJob.setRule(null);
+		checkRestoreDataJob.setRule(ResourcesPlugin.getWorkspace().getRoot());
 		checkRestoreDataJob.schedule();
 	}
 			
