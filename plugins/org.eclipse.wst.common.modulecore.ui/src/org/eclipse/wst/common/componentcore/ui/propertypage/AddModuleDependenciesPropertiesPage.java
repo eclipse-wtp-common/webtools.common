@@ -41,11 +41,13 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
@@ -53,9 +55,13 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -682,11 +688,80 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		}
 	}
 	
+	/**
+	 * Provides two possible sorts for each column based on the text labels.
+	 * Clicking on the column will toggle forwards/backwards sorting
+	 * @author jsholl
+	 */
+	private static class TreeViewerTableColumnSortToggler {
+		private int sortDirection = 0;
+		private int sortColumn = 0;
+		private TreeViewer treeViewer;
+		
+		private TreeViewerTableColumnSortToggler(TreeViewer treeViewer){
+			this.treeViewer = treeViewer;
+		}
+		
+		private void toggleSort(int column){
+			if(sortColumn == column){
+				//cycle through sort options
+				switch(sortDirection){
+				case SWT.NONE:
+					sortDirection = SWT.UP;
+					break;
+				case SWT.UP:
+					sortDirection = SWT.DOWN;
+					break;
+				case SWT.DOWN:
+					sortDirection = SWT.UP;
+					break;
+				}
+			} else {
+				//clicked on a different column reset cycle
+				sortColumn = column;
+				sortDirection = SWT.UP;
+			}
+			
+			ViewerComparator comparator = getViewerComparator(column, sortDirection);
+			treeViewer.setComparator(comparator);
+			
+			Tree tree = treeViewer.getTree();
+			TreeColumn sortColumn = treeViewer.getTree().getColumn(column);
+			tree.setSortColumn(sortColumn);
+			tree.setSortDirection(sortDirection);
+		}
+		
+		private ViewerComparator getViewerComparator(final int columnIndex, final int sortDirection) {
+			if(sortDirection == SWT.NONE){
+				return null;
+			}
+			return new ViewerComparator() {
+				public int compare(Viewer viewerLocal, Object e1, Object e2) {
+					IBaseLabelProvider baseLabelProvider = treeViewer.getLabelProvider();
+					if(baseLabelProvider instanceof ITableLabelProvider){
+						ITableLabelProvider tableLabelProvider = (ITableLabelProvider)baseLabelProvider;
+						String text1 = tableLabelProvider.getColumnText(e1, columnIndex);
+						if(text1 != null){
+							String text2 = tableLabelProvider.getColumnText(e2, columnIndex);
+							int comp = text1.compareTo(text2);
+							if(sortDirection == SWT.DOWN){
+								comp = -comp;
+							}
+							return comp;
+						}
+					}
+					return 0;
+				}
+			};
+		}
+	};
+	
 	public TreeViewer createAvailableComponentsViewer(Composite parent) {
 		int flags = SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI;
 
 		Tree tree = new Tree(parent, flags);
 		TreeViewer tempViewer = new TreeViewer(tree);
+		final TreeViewerTableColumnSortToggler sortController = new TreeViewerTableColumnSortToggler(tempViewer);
 		
 		TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(tempViewer,new FocusCellOwnerDrawHighlighter(tempViewer));
 		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(tempViewer) {
@@ -716,12 +791,29 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		TreeColumn projectColumn = new TreeColumn(tree, SWT.NONE, SOURCE_COLUMN);
 		projectColumn.setText(Messages.SourceColumn);
 		projectColumn.setResizable(true);
+		projectColumn.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				sortController.toggleSort(0);
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//do nothing
+			}
+		});
 
 		TreeColumn bndColumn = new TreeColumn(tree, SWT.NONE, DEPLOY_COLUMN);
 		bndColumn.setText(Messages.DeployPathColumn);
 		bndColumn.setResizable(true);
-
+		bndColumn.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				sortController.toggleSort(1);
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//do nothing
+			}
+		});
+		
 		tableLayout.layout(tree, true);
+		sortController.toggleSort(0);
 		return tempViewer;
 
 	}
