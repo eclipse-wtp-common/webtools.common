@@ -92,7 +92,7 @@ public abstract class FacetedProjectWizard
         {
             final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
             fpjwc.setProjectName( this.firstPage.getProjectName() );
-            fpjwc.setProjectLocation( this.firstPage.getLocationPath() );
+            fpjwc.setProjectLocation( this.firstPage.useDefaults() ? null : this.firstPage.getLocationPath() );
         }
         
         return super.getNextPage( page );
