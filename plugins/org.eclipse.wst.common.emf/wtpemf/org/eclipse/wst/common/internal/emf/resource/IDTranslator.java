@@ -48,14 +48,16 @@ public class IDTranslator extends Translator {
 
 	@Override
 	public void setMOFValue(EObject emfObject, Object value) {
-		XMIResource res = (XMIResource) emfObject.eResource();
-		if (res == null)
-			throw new NoResourceException();
-		String id = res.getID(emfObject);
-		if (id == null && value == null)
-			return;
-		if ((id != null && !id.equals(value)) || (value != null && !value.equals(id)))
-			res.setID(emfObject, (String) value);
+		if (emfObject != null) {
+			XMIResource res = (XMIResource) emfObject.eResource();
+			if (res == null)
+				throw new NoResourceException();
+			String id = res.getID(emfObject);
+			if (id == null && value == null)
+				return;
+			if ((id != null && !id.equals(value)) || (value != null && !value.equals(id)))
+				res.setID(emfObject, (String) value);
+		}
 	}
 
 	@Override
