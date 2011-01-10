@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.eclipse.jst.common.ui.internal.assembly.wizard;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -401,6 +402,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 				return null;
 			}
 			return new ViewerComparator() {
+				Collator collator = Collator.getInstance();
 				public int compare(Viewer viewerLocal, Object e1, Object e2) {
 					IBaseLabelProvider baseLabelProvider = tableViewer.getLabelProvider();
 					if(baseLabelProvider instanceof ITableLabelProvider){
@@ -408,7 +410,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 						String text1 = tableLabelProvider.getColumnText(e1, columnIndex);
 						if(text1 != null){
 							String text2 = tableLabelProvider.getColumnText(e2, columnIndex);
-							int comp = text1.compareTo(text2);
+							int comp = collator.compare(text1, text2);
 							if(sortDirection == SWT.DOWN){
 								comp = -comp;
 							}

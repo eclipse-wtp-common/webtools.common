@@ -14,6 +14,7 @@
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -736,6 +737,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 				return null;
 			}
 			return new ViewerComparator() {
+				Collator collator = Collator.getInstance();
 				public int compare(Viewer viewerLocal, Object e1, Object e2) {
 					IBaseLabelProvider baseLabelProvider = treeViewer.getLabelProvider();
 					if(baseLabelProvider instanceof ITableLabelProvider){
@@ -743,7 +745,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 						String text1 = tableLabelProvider.getColumnText(e1, columnIndex);
 						if(text1 != null){
 							String text2 = tableLabelProvider.getColumnText(e2, columnIndex);
-							int comp = text1.compareTo(text2);
+							int comp = collator.compare(text1, text2);
 							if(sortDirection == SWT.DOWN){
 								comp = -comp;
 							}
