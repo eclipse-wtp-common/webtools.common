@@ -157,7 +157,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				}				
 			}
 			catch (EOFException e){
-				Tracing.log("Unable to read the dependency index file because of EOF exception"); 
+				Tracing.log("Unable to read the dependency index file because of EOF exception");  //$NON-NLS-1$
 			}
 			catch (IOException e){
 				error = true;
@@ -177,7 +177,8 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	public synchronized void clear(IProject project) {
 		init();
 		for (Map.Entry<IResource,Set<Depends>> me : _dependents.entrySet()){
-			if (me.getKey().getProject() == project){
+			IResource key = me.getKey();
+			if (key != null && key.getProject() == project){
 				for (Depends d : me.getValue()){
 					if (d.delete())_dirty = true;
 				}
@@ -228,7 +229,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 		}
 	}
 		
-	public boolean isDependedOn(IResource resource) {
+	public synchronized boolean isDependedOn(IResource resource) {
 		init();
 		Set<Depends> set = _dependsOn.get(resource);
 		if (set == null || set.size() == 0)return false;
@@ -289,10 +290,8 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			for (Depends d : me.getValue()){
 				IPath path = d.getDependent().getFullPath();
 				if (path != null){
-					DependsResolved dr = new DependsResolved();
-					dr.resource = path.toPortableString();
-					if (d.getValidators().size() > 0){
-						dr.validators = d.getValidators();
+					DependsResolved dr = new DependsResolved(path.toPortableString(), d.getValidators());
+					if (dr.validators.size() > 0){
 						set.add(dr);
 					}
 				}				
@@ -320,16 +319,16 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	 * @author karasiuk
 	 * 
 	 */
-	private static class Depends {
+	private final static class Depends {
 
 		/** The resource that is being depended on, for example a.xsd */
-		private IResource _dependsOn;
+		private final IResource _dependsOn;
 
 		/** The resource that is dependent, for example a.xml */
-		private IResource _dependent;
+		private final IResource _dependent;
 
 		/** The id's of the validators that have asserted the dependency. */
-		private Set<String> _validators;
+		private final Set<String> _validators;
 
 		public Depends(IResource dependent, IResource dependsOn) {
 			_dependent = dependent;
@@ -367,9 +366,15 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 		}
 }
 
-	private static class DependsResolved {
-		String 		resource;
-		Set<String> validators;
+	private final static class DependsResolved {
+		final String 		resource;
+		final Set<String> validators;
+		
+		DependsResolved(String resource, Set<String> validators){
+			this.resource = resource;
+			this.validators = validators;
+			
+		}
 	}
 
 
