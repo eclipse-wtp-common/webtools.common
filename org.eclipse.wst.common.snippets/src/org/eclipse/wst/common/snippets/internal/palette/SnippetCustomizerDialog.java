@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,14 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 	private static class EXPORT_IMPORT_STRATEGY {
 		static EXPORT_IMPORT_STRATEGY ARCHIVE = new EXPORT_IMPORT_STRATEGY();
 		static EXPORT_IMPORT_STRATEGY XML = new EXPORT_IMPORT_STRATEGY();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.gef.ui.palette.customize.PaletteCustomizerDialog#handleDelete()
+	 */
+	protected void handleDelete() {
+		clearProblem();
+		super.handleDelete();
 	}
 
 	private class ExportAction extends PaletteCustomizationAction {
