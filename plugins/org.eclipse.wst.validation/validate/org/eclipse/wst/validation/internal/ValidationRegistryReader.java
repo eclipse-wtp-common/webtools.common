@@ -802,13 +802,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	public void getValidatorMetaData(IProject project, Set<ValidatorMetaData> vmds) {
 		if (vmds == null)return;
 		vmds.clear();
-		int executionMap = 0x0;
+//		int executionMap = 0x0;
 		try {
 			if (Tracing.isTraceV1()) {
 				Tracing.log("ValidationRegistryReader-04: IProject is " + String.valueOf(project)); //$NON-NLS-1$
 			}
 			if (project == null) {
-				executionMap |= 0x1;
+//				executionMap |= 0x1;
 				// vmds is already clear
 				return;
 			}
@@ -816,7 +816,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			try {
 				projectNatures = project.getDescription().getNatureIds();
 			} catch (CoreException e) {
-				executionMap |= 0x2;
+//				executionMap |= 0x2;
 				// vmds is already clear
 				ValidationPlugin.getPlugin().handleException(e);
 				return;
@@ -826,7 +826,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			// on it, return the validators which are configured on all
 			// projects.
 			if ((projectNatures == null) || (projectNatures.length == 0)) {
-				executionMap |= 0x4;
+//				executionMap |= 0x4;
 				
 				// Also include the validators which are enabled through enablement
 				// expression for this project.
@@ -853,7 +853,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 
 			} else {
-				executionMap |= 0x8;
+//				executionMap |= 0x8;
 				if (Tracing.isTraceV1()) {
 					Tracing.log("ValidationRegistryReader-05: ", projectNatures.toString()); //$NON-NLS-1$
 				}
@@ -861,7 +861,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				// Now filter out the validators which must not run on this project
 				removeExcludedProjects(project, vmds);
 				if (vmds.size() == 0) {
-					executionMap |= 0x20;
+//					executionMap |= 0x20;
 					clone(getValidatorMetaDataUnknownProject(), vmds);
 				}
 			}
