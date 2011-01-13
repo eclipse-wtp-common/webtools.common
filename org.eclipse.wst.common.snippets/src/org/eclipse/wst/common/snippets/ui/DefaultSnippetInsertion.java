@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -139,7 +139,7 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 			if (!"\n".equals(systemEOL) && systemEOL != null) { //$NON-NLS-1$
 				content = StringUtils.replace(content, "\n", systemEOL); //$NON-NLS-1$
 			}
-			event.data = content;
+			event.data = content != null ? content : " "; //$NON-NLS-1$ // TextTransfer does not like non-empty strings
 		}
 		else {
 			/*
