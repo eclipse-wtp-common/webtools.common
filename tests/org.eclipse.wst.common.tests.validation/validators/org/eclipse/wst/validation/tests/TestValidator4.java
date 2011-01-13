@@ -41,15 +41,15 @@ public class TestValidator4 extends TestValidator {
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor) {
 		ValidationResult vr = super.validate(resource, kind, state, monitor);
-		long j = 0;
+		//long j = 0;
 		try {
-			for (long i=0; i< 10000000; i++)j = i + 1;
+			//for (long i=0; i< 10000000; i++)j = i + 1;
 			Thread.sleep(2000);
 		}
 		catch (InterruptedException e){
 			// eat it
 		}
-		j++; // just to get rid of the compiler warning
+		//j++; // just to get rid of the compiler warning
 		return vr;
 	}
 }
