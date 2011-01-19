@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2011 Oracle and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Roberto Sanchez Herrera - [334438] Disable the Cancel button in Project Facets dialog
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -15,9 +16,11 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -68,11 +71,16 @@ public final class FacetsSelectionDialog
     }
     
     @Override
-    protected void cancelPressed()
+    protected void createButtonsForButtonBar( final Composite parent ) 
     {
-        super.cancelPressed();
+        super.createButtonsForButtonBar( parent );
         
-        // TODO: revert changes.
+        final Button cancelButton = getButton( IDialogConstants.CANCEL_ID );
+        
+        if( cancelButton != null )
+        {
+            cancelButton.setEnabled(false);
+        }
     }
 
     public static final void openDialog( final Shell parentShell,
@@ -81,18 +89,14 @@ public final class FacetsSelectionDialog
          ( new FacetsSelectionDialog( parentShell, fpjwc ) ).open();
     }
     
-    private static final class Resources
-    
-        extends NLS
-        
+    private static final class Resources extends NLS
     {
         public static String dialogTitle;
         public static String dialogDescription;
         
         static
         {
-            initializeMessages( FacetsSelectionDialog.class.getName(), 
-                                Resources.class );
+            initializeMessages( FacetsSelectionDialog.class.getName(), Resources.class );
         }
     }
 
