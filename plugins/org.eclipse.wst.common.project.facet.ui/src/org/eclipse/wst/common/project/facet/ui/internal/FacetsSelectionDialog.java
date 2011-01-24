@@ -8,6 +8,7 @@
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Roberto Sanchez Herrera - [334438] Disable the Cancel button in Project Facets dialog
+ *    Nitin Dahyabbhai        - [334844] Remove the disabled Cancel button from Project Facets dialog
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -20,7 +21,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -73,14 +73,9 @@ public final class FacetsSelectionDialog
     @Override
     protected void createButtonsForButtonBar( final Composite parent ) 
     {
-        super.createButtonsForButtonBar( parent );
+        // Create only the OK button. There is no handling for cancel.
         
-        final Button cancelButton = getButton( IDialogConstants.CANCEL_ID );
-        
-        if( cancelButton != null )
-        {
-            cancelButton.setEnabled(false);
-        }
+        createButton( parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true );
     }
 
     public static final void openDialog( final Shell parentShell,
