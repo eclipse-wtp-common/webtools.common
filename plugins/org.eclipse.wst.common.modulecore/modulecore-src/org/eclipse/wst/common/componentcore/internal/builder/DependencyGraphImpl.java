@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2011 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.io.BufferedInputStream;
@@ -93,17 +104,31 @@ public class DependencyGraphImpl implements IDependencyGraph {
 			modStamp++;
 		}
 	}
+
+	
 	/**
 	 * Returns the set of projects whose components reference the specified
 	 * target project's component. For example if projects A and B both
 	 * reference C. Passing C as the targetProject will return {A, B}
 	 */
 	public Set<IProject> getReferencingComponents(IProject targetProject) {
-		waitForAllUpdates(null);
+		IDependencyGraphReferences refs = getReferencingComponents(targetProject, true);
+		return refs.getReferencingComponents();
+	}
+
+	public IDependencyGraphReferences getReferencingComponents(IProject targetProject, boolean waitForAllUpdates) {
+		DependencyGraphReferences refs = new DependencyGraphReferences();
+		refs.targetProject = targetProject;
+		if(waitForAllUpdates){
+			refs.stale = false;
+			waitForAllUpdates(null);
+		} else if(isUpdateNecessary()){
+			refs.stale = true;
+		}
 		synchronized (graphLock) {
 			Set<IProject> set = graph.get(targetProject);
 			if (set == null) {
-				return Collections.EMPTY_SET;
+				refs.referencingProjects = Collections.EMPTY_SET;
 			} else {
 				DependencyGraphEvent event = null;
 				for (Iterator<IProject> iterator = set.iterator(); iterator.hasNext();) {
@@ -123,11 +148,16 @@ public class DependencyGraphImpl implements IDependencyGraph {
 				}
 				Set<IProject> copy = new HashSet<IProject>();
 				copy.addAll(set);
-				return copy;
+				refs.referencingProjects = copy;
 			}
 		}
-	}
+		return refs;
+	} 
 
+	public boolean isStale() {
+		return isUpdateNecessary();
+	}
+	
 	private class DependencyGraphResourceChangedListener implements IResourceChangeListener, IResourceDeltaVisitor {
 		// only registered for post change events
 		public void resourceChanged(IResourceChangeEvent event) {

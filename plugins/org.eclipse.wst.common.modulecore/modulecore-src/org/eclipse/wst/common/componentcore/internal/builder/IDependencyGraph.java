@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2011 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.Set;
@@ -67,6 +78,30 @@ public interface IDependencyGraph {
 	 */
 	public Set<IProject> getReferencingComponents(IProject targetProject);
 
+	/**
+	 * If <code>waitForAllUpdates</code> is <code>true</code> this method is
+	 * equivalent to {@link #getReferencingComponents(IProject)}. Otherwise this
+	 * method will return immediately without waiting for all updates to occur
+	 * and potentially returning stale data. This a safer way to call
+	 * getReferences to avoid deadlocks. If stale data is returned, then a
+	 * subsequent on the same thread can be made, but there may be deadlock risk
+	 * depending on what ISchedulingRule is currently held.  A safer reaction
+	 * to stale data would be to schedule another job to run in future to try again.
+	 * 
+	 * @param targetProject
+	 * @param waitForAllUpdates
+	 * @return
+	 */
+	public IDependencyGraphReferences getReferencingComponents(
+			IProject targetProject, boolean waitForAllUpdates);
+	
+	
+	/**
+	 * Returns <code>true</code> if there are any pending updates.
+	 * @return
+	 */
+	public boolean isStale();
+	
 	/**
 	 * Returns a modification stamp. This modification stamp will be different
 	 * if the project dependencies ever change.
