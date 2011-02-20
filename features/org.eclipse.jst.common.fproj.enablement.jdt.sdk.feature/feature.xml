@@ -4,7 +4,9 @@
       label="%featureName"
       version="3.3.0.qualifier"
       provider-name="%providerName"
-      plugin="org.eclipse.jst.common.fproj.enablement.jdt.sdk">
+      plugin="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
+      license-feature="org.eclipse.license"
+      license-feature-version="1.0.0.qualifier">
 
    <description>
       %description
