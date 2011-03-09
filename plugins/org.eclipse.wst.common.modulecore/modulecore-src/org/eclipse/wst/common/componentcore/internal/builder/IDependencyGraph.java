@@ -22,7 +22,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
  * provides a project limited inverse of
  * {@link IVirtualComponent#getReferences()}.
  * 
- * For example:
+ * <p>For example:
  * <ul>
  * <li>if the IVirtualComponent for project A has a dependency on the
  * IVirtualComponent for project B, then calling
@@ -46,28 +46,28 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 public interface IDependencyGraph {
 
 	/**
-	 * Flag used by {@link #update(IProject, int)} to specify that something has
+	 * Flag used by {@link #update(IProject, int)} to specify that something has been
 	 * modified in a project which has changed the component dependencies.
 	 */
-	public static final int MODIFIED = 0;
+	int MODIFIED = 0;
 
 	/**
 	 * Flag used by {@link #update(IProject, int)} to specify a project has been
 	 * added or opened. This flag should be used as sparingly as possible
 	 * because there are performance implications.
 	 */
-	public static final int ADDED = 1;
+	int ADDED = 1;
 
 	/**
 	 * Flag used by {@link #update(IProject, int)} to specify a project has been
 	 * removed or closed.
 	 */
-	public static final int REMOVED = 2;
+	int REMOVED = 2;
 
 	/**
-	 * The static instance of this graph
+	 * The static instance of this graph.
 	 */
-	public static IDependencyGraph INSTANCE = DependencyGraphImpl.getInstance();
+	IDependencyGraph INSTANCE = DependencyGraphImpl.getInstance();
 
 	/**
 	 * Returns the set of component projects referencing the specified target
@@ -76,7 +76,7 @@ public interface IDependencyGraph {
 	 * @param targetProject
 	 * @return
 	 */
-	public Set<IProject> getReferencingComponents(IProject targetProject);
+	Set<IProject> getReferencingComponents(IProject targetProject);
 
 	/**
 	 * If <code>waitForAllUpdates</code> is <code>true</code> this method is
@@ -92,56 +92,54 @@ public interface IDependencyGraph {
 	 * @param waitForAllUpdates
 	 * @return
 	 */
-	public IDependencyGraphReferences getReferencingComponents(
-			IProject targetProject, boolean waitForAllUpdates);
-	
-	
+	IDependencyGraphReferences getReferencingComponents(IProject targetProject, boolean waitForAllUpdates);
+		
 	/**
 	 * Returns <code>true</code> if there are any pending updates.
 	 * @return
 	 */
-	public boolean isStale();
+	boolean isStale();
 	
 	/**
 	 * Returns a modification stamp. This modification stamp will be different
 	 * if the project dependencies ever change.
 	 */
-	public long getModStamp();
+	long getModStamp();
 	
-	public void addListener(IDependencyGraphListener listener);
+	void addListener(IDependencyGraphListener listener);
 	
-	public void removeListener(IDependencyGraphListener listener);
+	void removeListener(IDependencyGraphListener listener);
 
 	/**
 	 * WARNING: this should only be called by implementors of the
 	 * org.eclipse.wst.common.modulecore.componentimpl extension point.
 	 * 
-	 * This method is part of the update API.
+	 * <p>This method is part of the update API.
 	 * 
 	 * @see {@link #update(IProject)}
 	 */
-	public void preUpdate();
+	void preUpdate();
 
 	/**
 	 * WARNING: this should only be called by implementors of the
 	 * org.eclipse.wst.common.modulecore.componentimpl extension point.
 	 * 
-	 * This method is part of the update API.
+	 * <p>This method is part of the update API.
 	 * 
 	 * @see {@link #update(IProject)}
 	 */
-	public void postUpdate();
+	void postUpdate();
 
 	/**
 	 * @deprecated use {@link #update(IProject, int) using the #MODIFIED flag.
 	 */
-	public void update(IProject sourceProject);
+	void update(IProject sourceProject);
 
 	/**
 	 * WARNING: this should only be called by implementors of the
 	 * org.eclipse.wst.common.modulecore.componentimpl extension point.
 	 * 
-	 * This method must be called when a resource change is detected which will
+	 * <p>This method must be called when a resource change is detected which will
 	 * affect how dependencies behave. For example, the core IVirtualComponent
 	 * framework updates when changes are made to the
 	 * .settings/org.eclipse.wst.common.component file changes, and also when
@@ -150,22 +148,23 @@ public interface IDependencyGraph {
 	 * general a call to update should only be made from a fast
 	 * {@link IResourceDeltaVisitor}.
 	 * 
-	 * In order to improve efficiency and avoid unnecessary update processing,
+	 * <p>In order to improve efficiency and avoid unnecessary update processing,
 	 * it is necessary to always proceed calls to update() with a call to
 	 * preUpdate() and follow with a call to postUpdate() using a try finally
-	 * block as follows: <code>
+	 * block as follows: 
+	 * <pre>
 	 * try {
 	 *     preUpdate();
 	 *     // perform 0 or more update() calls here
 	 * } finally {
 	 *     IDependencyGraph.INSTANCE.postUpdate();
 	 * }    
-	 * </code>
+	 * </pre>
 	 * 
 	 * Valid updateType flags are {@link #MODIFIED}, {@link #ADDED}, and
 	 * {@link #REMOVED}
 	 * 
 	 */
-	public void update(IProject sourceProject, int updateType);
+	void update(IProject sourceProject, int updateType);
 
 }
