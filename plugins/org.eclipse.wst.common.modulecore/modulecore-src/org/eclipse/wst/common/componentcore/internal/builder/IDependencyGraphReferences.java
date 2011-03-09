@@ -17,22 +17,18 @@ import org.eclipse.core.resources.IProject;
 
 public interface IDependencyGraphReferences {
 
-	public abstract IProject getTargetProject();
+	IProject getTargetProject();
 
 	/**
 	 * Returns the set of referencing projects; see
 	 * {@link IDependencyGraph#getReferencingComponents(IProject)}
-	 * 
-	 * @return
 	 */
-	public abstract Set<IProject> getReferencingComponents();
+	Set<IProject> getReferencingComponents();
 
 	/**
-	 * If this is value is <code>true</code>, then it is possible that this data
-	 * is stale. It is also possible this data is accurate.
-	 * 
-	 * @return
+	 * If this returns <code>true</code>, then it is possible that this data
+	 * are stale. It is also possible this data are accurate.
 	 */
-	public abstract boolean isStale();
+	boolean isStale();
 
 }
