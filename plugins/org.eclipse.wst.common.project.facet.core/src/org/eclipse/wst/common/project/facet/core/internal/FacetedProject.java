@@ -19,7 +19,6 @@ import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMo
 import static org.eclipse.wst.common.project.facet.core.util.internal.XmlUtil.escape;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -1720,7 +1719,7 @@ public final class FacetedProject
                     
                     try
                     {
-                        root = parse( this.f.getLocation().toFile() );
+                        root = parse( this.f );
                         this.parsingException = null;
                     }
                     catch( Exception e )
@@ -1901,7 +1900,28 @@ public final class FacetedProject
         return fv;
     }
     
-    private static Element parse( final File f )
+    private static Element parse( final IFile f )
+    
+        throws CoreException, IOException, SAXException
+        
+    {
+        final InputStream stream = f.getContents();
+        
+        try
+        {
+            return parse( stream );
+        }
+        finally
+        {
+            try
+            {
+                stream.close();
+            }
+            catch( Exception e ) {}
+        }
+    }
+    
+    private static Element parse( final InputStream stream )
     
         throws IOException, SAXException
         
@@ -1934,9 +1954,9 @@ public final class FacetedProject
             throw new RuntimeException( e );
         }
 
-        return docbuilder.parse( f ).getDocumentElement();
+        return docbuilder.parse( stream ).getDocumentElement();
     }
-    
+
     private Element[] children( final Element element )
     {
         final List<Element> list = new ArrayList<Element>();
