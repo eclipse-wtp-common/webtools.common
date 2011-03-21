@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2010 IBM Corporation and others.
+ * Copyright (c) 2007, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -921,6 +921,20 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 		_cache.reset(project);
 	}
 	
+	/**
+	 * Clear the validation properties.
+	 * @param resource
+	 */
+	public void clearValProperty(IResource resource){
+		if (!resource.isAccessible())return;
+		try {
+			resource.setSessionProperty(StatusBuild, null);
+			resource.setSessionProperty(StatusManual, null);
+		} 
+		catch (CoreException e) {
+		}		
+	}
+	
 	private void putValProperty(ValProperty vp, IResource resource, ValType valType) {
 		try {
 			if (!(resource.isAccessible())) return;
@@ -981,7 +995,7 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 			configHasChanged();
 		}
 	}
-	
+		
 	private final class HasValidatorVisitor implements IResourceVisitor {
 		
 		private boolean 			_hasValidator;
