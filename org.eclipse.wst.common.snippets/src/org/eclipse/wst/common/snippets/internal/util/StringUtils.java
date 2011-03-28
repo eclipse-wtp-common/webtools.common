@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2006 IBM Corporation and others.
+ * Copyright (c) 2001, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,12 +16,14 @@ package org.eclipse.wst.common.snippets.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.ibm.icu.util.StringTokenizer;
 
+import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+
+import com.ibm.icu.util.StringTokenizer;
 
 
 public class StringUtils {
@@ -33,7 +35,7 @@ public class StringUtils {
 	protected static final String CRLF = "\r\n"; //$NON-NLS-1$
 	protected static final String DELIMITERS = " \t\n\r\f"; //$NON-NLS-1$
 	protected static final String DOUBLE_QUOTE = "\""; //$NON-NLS-1$
-	protected static final char DOUBLE_QUOTE_CHAR = '\"'; //$NON-NLS-1$
+	protected static final char DOUBLE_QUOTE_CHAR = '\"';
 	protected static final String DOUBLE_QUOTE_ENTITY = "&quot;"; //$NON-NLS-1$
 
 	protected static final String EQUAL_SIGN = "="; //$NON-NLS-1$
@@ -51,7 +53,7 @@ public class StringUtils {
 	protected static final String LINE_TAB_ENTITY = "\\t"; //$NON-NLS-1$
 	protected static final String LINE_TAB_TAG = "<dd>"; //$NON-NLS-1$
 	protected static final String SINGLE_QUOTE = "'"; //$NON-NLS-1$
-	protected static final char SINGLE_QUOTE_CHAR = '\''; //$NON-NLS-1$
+	protected static final char SINGLE_QUOTE_CHAR = '\'';
 	protected static final String SINGLE_QUOTE_ENTITY = "&#039;"; //$NON-NLS-1$
 	protected static final String SPACE = " "; //$NON-NLS-1$
 	protected static final String SPACE_ENTITY = "&nbsp;"; //$NON-NLS-1$

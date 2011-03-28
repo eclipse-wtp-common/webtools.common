@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ public abstract class AbstractCategoryAction extends Action {
 		public String isValid(String name) {
 			// Don't allow blank names
 			if (name == null || name.length() < 1) {
-				return (SnippetsMessages.A_name_must_be_specified_1); //$NON-NLS-1$
+				return (SnippetsMessages.A_name_must_be_specified_1);
 			}
 			return null;
 		}
@@ -46,7 +46,7 @@ public abstract class AbstractCategoryAction extends Action {
 	}
 
 	public AbstractCategoryAction(String text, SnippetsView viewer, PaletteContainer entry) {
-		super(text); //$NON-NLS-1$
+		super(text);
 		fContainer = entry;
 		fViewer = viewer;
 	}

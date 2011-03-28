@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ public class SnippetPaletteItemFactory extends PaletteEntryFactory {
 	 */
 	public SnippetPaletteItemFactory() {
 		super();
-		setLabel(SnippetsMessages.New_Item_Title); //$NON-NLS-1$
+		setLabel(SnippetsMessages.New_Item_Title);
 		setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_NEW_TEMPLATE));
 	}
 
@@ -34,9 +34,9 @@ public class SnippetPaletteItemFactory extends PaletteEntryFactory {
 	 * @see org.eclipse.gef.ui.palette.customize.PaletteEntryFactory#createNewEntry(org.eclipse.swt.widgets.Shell)
 	 */
 	protected PaletteEntry createNewEntry(Shell shell) {
-		SnippetPaletteItem item = new SnippetPaletteItem(SnippetsMessages.Unnamed_Template_1); //$NON-NLS-1$
-		item.setId(SnippetsMessages.item + "_" + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
-		item.setLabel(SnippetsMessages.Unnamed_Template_1); //$NON-NLS-1$
+		SnippetPaletteItem item = new SnippetPaletteItem(SnippetsMessages.Unnamed_Template_1);
+		item.setId(SnippetsMessages.item + "_" + System.currentTimeMillis()); //$NON-NLS-1$
+		item.setLabel(SnippetsMessages.Unnamed_Template_1);
 		item.setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
 		return item;
 	}

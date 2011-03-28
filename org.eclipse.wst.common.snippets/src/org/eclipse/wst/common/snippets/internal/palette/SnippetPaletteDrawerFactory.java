@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ public class SnippetPaletteDrawerFactory extends PaletteDrawerFactory {
 
 	public SnippetPaletteDrawerFactory() {
 		super();
-		setLabel(SnippetsMessages.New_Category_Title); //$NON-NLS-1$
+		setLabel(SnippetsMessages.New_Category_Title);
 		setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_NEW_CATEGORY));
 	}
 
@@ -31,10 +31,10 @@ public class SnippetPaletteDrawerFactory extends PaletteDrawerFactory {
 	 * @see org.eclipse.gef.ui.palette.customize.PaletteEntryFactory#createNewEntry(org.eclipse.swt.widgets.Shell)
 	 */
 	protected PaletteEntry createNewEntry(Shell shell) {
-		SnippetPaletteDrawer drawer = new SnippetPaletteDrawer(SnippetsMessages.Unnamed_Category); //$NON-NLS-1$
+		SnippetPaletteDrawer drawer = new SnippetPaletteDrawer(SnippetsMessages.Unnamed_Category);
 		drawer.setType(PaletteDrawer.PALETTE_TYPE_DRAWER);
 		drawer.setDrawerType(PaletteTemplateEntry.PALETTE_TYPE_TEMPLATE);
-		drawer.setId(SnippetsMessages.category + "_" + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
+		drawer.setId(SnippetsMessages.category + "_" + System.currentTimeMillis()); //$NON-NLS-1$
 		drawer.setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
 		drawer.setFilters(getDefaultFilters());
 		return drawer;

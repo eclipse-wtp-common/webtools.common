@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2008 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -232,7 +232,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		variableComposite.setLayout(sublayout);
 
 		Label nameLabel = new Label(variableComposite, SWT.NONE);
-		nameLabel.setText(SnippetsMessages.Variables__4); //$NON-NLS-1$
+		nameLabel.setText(SnippetsMessages.Variables__4);
 		GridData doubleData = new GridData(GridData.FILL_HORIZONTAL);
 		nameLabel.setLayoutData(doubleData);
 
@@ -240,9 +240,9 @@ public class VariableItemEditor implements ISnippetEditor {
 		throwAway.setLayoutData(new GridData());
 
 		// saved and made final here to update the template text area below
-		final String nameProperty = SnippetsMessages.Name_5; //$NON-NLS-1$
+		final String nameProperty = SnippetsMessages.Name_5;
 		fTableViewer = new StringPropertyTableViewer();
-		fTableViewer.setColumnNames(new String[]{nameProperty, SnippetsMessages.Description_6, SnippetsMessages.Default_Value_7}); //$NON-NLS-1$ //$NON-NLS-2$
+		fTableViewer.setColumnNames(new String[]{nameProperty, SnippetsMessages.Description_6, SnippetsMessages.Default_Value_7});
 		fTableViewer.createContents(variableComposite);
 
 		GridData data = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
@@ -277,7 +277,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		// input.
 		// TODO: for usability, throw up a dialog in the middle
 		Button addButton = new Button(variableButtons, SWT.PUSH);
-		addButton.setText(SnippetsMessages.New_1); //$NON-NLS-1$
+		addButton.setText(SnippetsMessages.New_1);
 		addButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		addButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -300,11 +300,11 @@ public class VariableItemEditor implements ISnippetEditor {
 		// add the Remove button with a listener to enable it only when a
 		// cell is selected and in focus
 		final Button removeButton = new Button(variableButtons, SWT.PUSH);
-		removeButton.setText(SnippetsMessages.Remove_15); //$NON-NLS-1$
+		removeButton.setText(SnippetsMessages.Remove_15);
 		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		nameLabel = new Label(parent, SWT.NONE);
-		nameLabel.setText(SnippetsMessages.Template_Pattern__16); //$NON-NLS-1$
+		nameLabel.setText(SnippetsMessages.Template_Pattern__16);
 		nameLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// create a source viewer for to edit the text (makes it easier to
@@ -399,7 +399,7 @@ public class VariableItemEditor implements ISnippetEditor {
 
 		// specifically associate the template pattern label w/ the content
 		// styled text so screen reader reads it
-		setAccessible(content, SnippetsMessages.Template_Pattern__16); //$NON-NLS-1$
+		setAccessible(content, SnippetsMessages.Template_Pattern__16);
 
 		// add a value change listener to the fTableViewer so that changes to
 		// the name property of a variable
@@ -422,7 +422,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		 * making content assist obviously available in the source viewer.
 		 */
 		final Button insertVariableButton = new Button(parent, SWT.PUSH);
-		insertVariableButton.setText(SnippetsMessages.Insert_Variable_17); //$NON-NLS-1$
+		insertVariableButton.setText(SnippetsMessages.Insert_Variable_17);
 		insertVariableButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING));
 		insertVariableButton.setEnabled(fTableViewer.getTable().getItemCount() > 0);
 		insertVariableButton.addSelectionListener(new SelectionListener() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -123,8 +123,8 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 
 	protected void browsePressed() {
 		ListSelectionDialog dialog = new ListSelectionDialog(getControl().getShell(), Platform.getContentTypeManager(), new ContentTypeStructuredContentProvider(), new ContentTypeLabelProvider(), null);
-		dialog.setTitle(SnippetsMessages.SnippetDrawerEntryPage_5); //$NON-NLS-1$
-		dialog.setMessage(SnippetsMessages.SnippetDrawerEntryPage_6); //$NON-NLS-1$
+		dialog.setTitle(SnippetsMessages.SnippetDrawerEntryPage_5);
+		dialog.setMessage(SnippetsMessages.SnippetDrawerEntryPage_6);
 		ArrayList initialSelections = new ArrayList();
 		IContentType[] contentTypes = Platform.getContentTypeManager().getAllContentTypes();
 		ISnippetsEntry snippetEntry = (ISnippetsEntry) getEntry();
@@ -185,16 +185,16 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		};
 
 		fAlwaysShowButton = new Button(radioGroup, SWT.RADIO);
-		fAlwaysShowButton.setText(SnippetsMessages.SnippetDrawerEntryPage_1); //$NON-NLS-1$
+		fAlwaysShowButton.setText(SnippetsMessages.SnippetDrawerEntryPage_1);
 		fAlwaysShowButton.setSelection(true);
 		fAlwaysShowButton.addSelectionListener(updateEnablement);
 
 		fAlwaysHideButton = new Button(radioGroup, SWT.RADIO);
-		fAlwaysHideButton.setText(SnippetsMessages.SnippetDrawerEntryPage_2); //$NON-NLS-1$
+		fAlwaysHideButton.setText(SnippetsMessages.SnippetDrawerEntryPage_2);
 		fAlwaysHideButton.addSelectionListener(updateEnablement);
 
 		fCustomButton = new Button(radioGroup, SWT.RADIO);
-		fCustomButton.setText(SnippetsMessages.SnippetDrawerEntryPage_3); //$NON-NLS-1$
+		fCustomButton.setText(SnippetsMessages.SnippetDrawerEntryPage_3);
 		fCustomButton.addSelectionListener(updateEnablement);
 
 		return radioGroup;
@@ -217,7 +217,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		fContentTypeText.setLayoutData(contentTypeTextGridData);
 
 		fBrowseButton = new Button(contentTypeTextRow, SWT.PUSH);
-		fBrowseButton.setText(SnippetsMessages.SnippetDrawerEntryPage_4); //$NON-NLS-1$
+		fBrowseButton.setText(SnippetsMessages.SnippetDrawerEntryPage_4);
 		fBrowseButton.setEnabled(false);
 		GridData browseButtonGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		fBrowseButton.setLayoutData(browseButtonGridData);
@@ -237,7 +237,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		Control[] tablist = new Control[panel.getTabList().length + 2];
 		System.arraycopy(panel.getTabList(), 0, tablist, 0, tablist.length - 2);
 
-		createLabel(panel, SWT.NONE, SnippetsMessages.SnippetDrawerEntryPage_0); //$NON-NLS-1$
+		createLabel(panel, SWT.NONE, SnippetsMessages.SnippetDrawerEntryPage_0);
 		tablist[tablist.length - 2] = createContentTypeRadios(panel);
 
 		tablist[tablist.length - 1] = createContentTypeTextRow(panel);

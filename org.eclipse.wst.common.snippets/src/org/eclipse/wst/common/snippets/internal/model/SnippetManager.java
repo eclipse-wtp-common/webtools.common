@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,7 +78,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		if (instance == null) {
 			instance = new SnippetManager();
 			try {
-				hiddenStateFile = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toFile();
+				hiddenStateFile = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toFile(); //$NON-NLS-1$
 			}
 			catch (Exception e) {
 				hiddenStateFile = new File("/hidden.xml"); //$NON-NLS-1$
@@ -454,7 +454,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		File storageFolder = new File(snippetStorage.toOSString());
 		if (!storageFolder.exists()){
 			if (!storageFolder.mkdirs()){
-				return createErrorStatus("Could not create snippet storage folder.", null);
+				return createErrorStatus("Could not create snippet storage folder.", null); //$NON-NLS-1$
 			}
 		}
 		for (int i = 0; i < pathList.length; i++) {
@@ -463,7 +463,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			File destination = new File(destPath.toOSString());
 			if (!destination.getParentFile().exists()){
 				if (!destination.getParentFile().mkdirs()){
-					return createErrorStatus("Could not create snippet storage folder.", null);
+					return createErrorStatus("Could not create snippet storage folder.", null); //$NON-NLS-1$
 				}
 			}	
 			try {

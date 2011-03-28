@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ public class DeleteCategoryAction extends AbstractCategoryAction {
 
 
 	public DeleteCategoryAction(SnippetsView viewer, PaletteContainer container) {
-		super(SnippetsMessages.Delete_1, viewer, container); //$NON-NLS-1$
+		super(SnippetsMessages.Delete_1, viewer, container);
 	}
 
 	public void run() {

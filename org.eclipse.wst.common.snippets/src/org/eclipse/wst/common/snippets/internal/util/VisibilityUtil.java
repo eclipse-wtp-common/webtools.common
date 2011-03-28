@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,11 @@ import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.wst.common.snippets.internal.Logger;
 
@@ -32,7 +30,7 @@ import org.eclipse.wst.common.snippets.internal.Logger;
 public class VisibilityUtil {
 	public static boolean isContentType(IEditorInput input, String[] filterContentTypes) {
 		boolean isMatch = false;
-		if (filterContentTypes == null) {
+		if (filterContentTypes == null || filterContentTypes.length == 0) {
 			isMatch = true;
 		}
 		else if (filterContentTypes.length >= 1) {
@@ -61,19 +59,10 @@ public class VisibilityUtil {
 						// Try the optimized method
 						contentDesc = file.getContentDescription();
 						if (contentDesc == null) {
-							// Dig a little deeper using its
-							// contents
-							if (file != null) {
-								contents = file.getContents();
-							}
-							else {
-								if (input instanceof IStorageEditorInput) {
-									IStorage storage = ((IStorageEditorInput) input).getStorage();
-									if (storage != null) {
-										contents = storage.getContents();
-									}
-								}
-							}
+							/*
+							 * Dig a little deeper using its contents
+							 */
+							contents = file.getContents();
 							contentDesc = Platform.getContentTypeManager().getDescriptionFor(contents, input.getName(), null);
 							if (contents != null) {
 								try {

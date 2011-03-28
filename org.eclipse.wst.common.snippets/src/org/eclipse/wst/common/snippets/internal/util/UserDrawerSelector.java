@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,7 +36,7 @@ public class UserDrawerSelector {
 		public String isValid(String name) {
 			// Don't allow blank names
 			if (name == null || name.length() < 1) {
-				return (SnippetsMessages.A_name_must_be_specified_1); //$NON-NLS-1$
+				return (SnippetsMessages.A_name_must_be_specified_1);
 			}
 			return null;
 		}
@@ -93,7 +93,7 @@ public class UserDrawerSelector {
 			for (int i = 0; i < modifiableCategories.size(); i++) {
 				userDrawers[i] = ((PaletteDrawer) modifiableCategories.get(i)).getLabel();
 			}
-			CComboSelectionDialog dlg = new CComboSelectionDialog(fShell, SnippetsMessages.New_Category_Title, (fSelectionPrompt != null ? fSelectionPrompt : SnippetsMessages.choose_or_create), userDrawers, 0, new CategoryNameValidator()) { //$NON-NLS-1$ //$NON-NLS-2$
+			CComboSelectionDialog dlg = new CComboSelectionDialog(fShell, SnippetsMessages.New_Category_Title, (fSelectionPrompt != null ? fSelectionPrompt : SnippetsMessages.choose_or_create), userDrawers, 0, new CategoryNameValidator()) {
 				protected Control createDialogArea(Composite parent) {
 					Control mainHook = super.createDialogArea(parent);
 					PlatformUI.getWorkbench().getHelpSystem().setHelp(mainHook, IHelpContextIds.ADD_TO_SNIPPETS_DIALOG_CATEGORY);
@@ -145,9 +145,9 @@ public class UserDrawerSelector {
 					defaultNewDrawerName = currentEditor.getEditorInput().getName();
 				}
 				if (defaultNewDrawerName == null) {
-					defaultNewDrawerName = SnippetsMessages.new_category_name; //$NON-NLS-1$
+					defaultNewDrawerName = SnippetsMessages.new_category_name;
 				}
-				InputDialog d = new InputDialog(fShell, SnippetsMessages.New_Category_Title, (fInputPrompt != null ? fInputPrompt : SnippetsMessages.force_create), defaultNewDrawerName, new CategoryNameValidator()) {//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputDialog d = new InputDialog(fShell, SnippetsMessages.New_Category_Title, (fInputPrompt != null ? fInputPrompt : SnippetsMessages.force_create), defaultNewDrawerName, new CategoryNameValidator()) {
 					protected Control createContents(Composite parent) {
 						Control mainHook = super.createContents(parent);
 						PlatformUI.getWorkbench().getHelpSystem().setHelp(mainHook, IHelpContextIds.ADD_TO_SNIPPETS_DIALOG_CATEGORY);

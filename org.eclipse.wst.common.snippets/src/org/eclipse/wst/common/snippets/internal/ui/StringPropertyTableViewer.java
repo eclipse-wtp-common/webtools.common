@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2008 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -255,7 +255,7 @@ public class StringPropertyTableViewer {
 	 */
 	public String[] getColumnNames() {
 		if (fColumnNames == null)
-			return new String[]{SnippetsMessages.Variable_Name_3, SnippetsMessages.Value_4}; //$NON-NLS-1$ //$NON-NLS-2$
+			return new String[]{SnippetsMessages.Variable_Name_3, SnippetsMessages.Value_4};
 		return fColumnNames;
 	}
 

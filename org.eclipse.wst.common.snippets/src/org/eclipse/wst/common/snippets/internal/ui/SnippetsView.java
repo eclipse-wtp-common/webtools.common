@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -91,7 +91,7 @@ public class SnippetsView extends ViewPart {
 
 	protected class CopyAction extends Action {
 		public CopyAction() {
-			super(SnippetsMessages.Copy_2); //$NON-NLS-1$
+			super(SnippetsMessages.Copy_2);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_COPY));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_COPY));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_COPY));
@@ -107,7 +107,7 @@ public class SnippetsView extends ViewPart {
 
 	protected class CutAction extends Action {
 		public CutAction() {
-			super(SnippetsMessages.Cut_2); //$NON-NLS-1$
+			super(SnippetsMessages.Cut_2);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_CUT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_CUT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_CUT));
@@ -124,7 +124,7 @@ public class SnippetsView extends ViewPart {
 
 	protected class DeleteAction extends Action {
 		public DeleteAction() {
-			super(SnippetsMessages.Delete_1); //$NON-NLS-1$
+			super(SnippetsMessages.Delete_1);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_DELETE));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_DELETE));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_DELETE));
@@ -275,7 +275,7 @@ public class SnippetsView extends ViewPart {
 
 	protected class PasteAction extends Action {
 		public PasteAction() {
-			super(SnippetsMessages.Paste_4); //$NON-NLS-1$
+			super(SnippetsMessages.Paste_4);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_PASTE));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_PASTE));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_PASTE));
@@ -315,7 +315,7 @@ public class SnippetsView extends ViewPart {
 				// if the selected entry isn't user owned
 				if (destination == null || destination.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
 					UserDrawerSelector selector = new UserDrawerSelector(getSite().getShell());
-					selector.setSelectionPrompt(SnippetsMessages.Cant_add_to_this); //$NON-NLS-1$
+					selector.setSelectionPrompt(SnippetsMessages.Cant_add_to_this);
 					SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) selector.getUserDrawer();
 					if (drawer != null)
 						destination = drawer;
@@ -352,7 +352,7 @@ public class SnippetsView extends ViewPart {
 				ISnippetsEntry entry = SnippetsView.this.getSelectedEntry();
 				if (entry == null || entry.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
 					UserDrawerSelector selector = new UserDrawerSelector(getSite().getShell());
-					selector.setSelectionPrompt(SnippetsMessages.Cant_add_to_this); //$NON-NLS-1$
+					selector.setSelectionPrompt(SnippetsMessages.Cant_add_to_this);
 					SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) selector.getUserDrawer();
 					if (drawer != null)
 						entry = drawer;
@@ -374,10 +374,10 @@ public class SnippetsView extends ViewPart {
 
 		public void update() {
 			if (getClipboard().getContents(SnippetTransfer.getTransferInstance()) == null && getClipboard().getContents(TextTransfer.getInstance()) != null) {
-				setText(SnippetsMessages.Paste_as_Snippet); //$NON-NLS-1$
+				setText(SnippetsMessages.Paste_as_Snippet);
 			}
 			else {
-				setText(SnippetsMessages.Paste_4); //$NON-NLS-1$
+				setText(SnippetsMessages.Paste_4);
 			}
 			setToolTipText(getText());
 		}

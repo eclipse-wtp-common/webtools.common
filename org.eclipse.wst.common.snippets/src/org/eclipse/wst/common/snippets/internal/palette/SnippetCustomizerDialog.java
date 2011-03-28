@@ -72,7 +72,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 	private class ExportAction extends PaletteCustomizationAction {
 		public ExportAction() {
 			setEnabled(false);
-			setText(SnippetsMessages.SnippetCustomizerDialog_1); //$NON-NLS-1$
+			setText(SnippetsMessages.SnippetCustomizerDialog_1);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_EXPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_EXPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_EXPORT));
@@ -111,7 +111,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 				try {
 					SnippetDefinitions definitions = getCategory(exportCategory, filename);
 					outputStream = new ZipOutputStream(new FileOutputStream(filename));
-					ZipEntry descriptorFile = new ZipEntry("snippets.xml");
+					ZipEntry descriptorFile = new ZipEntry("snippets.xml"); //$NON-NLS-1$
 					outputStream.putNextEntry(descriptorFile);
 					new UserModelDumper().write(definitions, outputStream);
 					ISnippetCategory existingCategory = definitions.getCategory(exportCategory.getId());
@@ -202,7 +202,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			if (existingCategory == null)
 				definitions.getCategories().add(exportCategory);
 			else {
-				String title = SnippetsMessages.SnippetCustomizerDialog_2; //$NON-NLS-1$
+				String title = SnippetsMessages.SnippetCustomizerDialog_2;
 				String message = NLS.bind(SnippetsMessages.SnippetCustomizerDialog_4, new String[]{existingCategory.getLabel()});
 				boolean answer = MessageDialog.openConfirm(getShell(), title, message);
 				if (answer) {
@@ -244,7 +244,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 	private class ImportAction extends PaletteCustomizationAction {
 		public ImportAction() {
 			setEnabled(false);
-			setText(SnippetsMessages.SnippetCustomizerDialog_0); //$NON-NLS-1$
+			setText(SnippetsMessages.SnippetCustomizerDialog_0);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
@@ -261,9 +261,9 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			fileDialog.setFilterExtensions(filterExtensions);
 			String filename = fileDialog.open();
 			try {
-				if (filename.toLowerCase().endsWith(".zip")) {
+				if (filename.toLowerCase().endsWith(".zip")) { //$NON-NLS-1$
 					ZipFile zip = new ZipFile(new File(filename));
-					ZipEntry entry = zip.getEntry("snippets.xml");
+					ZipEntry entry = zip.getEntry("snippets.xml"); //$NON-NLS-1$
 					loadMetadata(zip.getInputStream(entry));
 					Bundle bundle = Platform.getBundle(SnippetsPlugin.BUNDLE_ID);
 					unzip(zip, Platform.getStateLocation(bundle).toOSString());
@@ -296,7 +296,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 					boolean found = false;
 					for (int j = 0; j < currentCategories.size(); j++) {
 						if (((PaletteEntry) currentCategories.get(j)).getId().compareToIgnoreCase((((PaletteEntry) importCategories.get(i))).getId()) == 0) {
-							String title = SnippetsMessages.SnippetCustomizerDialog_2; //$NON-NLS-1$
+							String title = SnippetsMessages.SnippetCustomizerDialog_2;
 							String message = NLS.bind(SnippetsMessages.SnippetCustomizerDialog_3, new String[]{((PaletteEntry) currentCategories.get(j)).getLabel()});
 							boolean answer = MessageDialog.openConfirm(getShell(), title, message);
 							if (answer) {
@@ -391,7 +391,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
-			if (entry.getName().toLowerCase().equals("snippets.xml")) {
+			if (entry.getName().toLowerCase().equals("snippets.xml")) { //$NON-NLS-1$
 				continue;
 			}
 
