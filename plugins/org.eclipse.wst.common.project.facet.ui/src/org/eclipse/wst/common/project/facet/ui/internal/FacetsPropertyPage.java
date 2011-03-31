@@ -410,7 +410,7 @@ public final class FacetsPropertyPage
 	                    {
 	                        c2 = (ActionConfig) config;
 	                    }
-	                    else if( config != null )
+	                    else
 	                    {
 	                        final IAdapterManager m = Platform.getAdapterManager();
 	                        final String t = ActionConfig.class.getName();
