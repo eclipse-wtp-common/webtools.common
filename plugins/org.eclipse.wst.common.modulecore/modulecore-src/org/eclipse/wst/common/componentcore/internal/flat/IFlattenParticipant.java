@@ -162,5 +162,14 @@ public interface IFlattenParticipant {
 	 */
 	public void finalize(IVirtualComponent component, 
 			FlatComponentTaskModel dataModel, List<IFlatResource> resources);
+	
+	
+	/**
+	 * Return a list of references that this participant believes should be treated as child modules.
+	 * @param rootComponent
+	 * @param dataModel
+	 * @return
+	 */
+	public List<IVirtualReference> getChildModules(IVirtualComponent rootComponent, FlatComponentTaskModel dataModel);
 
 }
