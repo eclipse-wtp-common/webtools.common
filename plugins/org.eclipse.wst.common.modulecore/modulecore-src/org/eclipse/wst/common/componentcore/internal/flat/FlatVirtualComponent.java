@@ -247,10 +247,48 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 					children.removeAll(duplicates);
 					children.add(cm);
 				}
-			}
+			}	
     	}
+    	addUsedReferencesFromParticipants(util, vc, root);    	
 	}
 	
+	/**
+	 * Add references provided by participants (e.g., components provided by a child to the receiving parent by 
+	 * mapping it to ../
+	 * @param util
+	 * @param vc
+	 * @param root
+	 * @throws CoreException
+	 */
+	
+	protected void addUsedReferencesFromParticipants(VirtualComponentFlattenUtility util, IVirtualComponent vc, IPath root) throws CoreException{		
+		List<IVirtualReference> references = null;
+		for( int i = 0; i < participants.length; i++ ) {
+			references = participants[i].getChildModules(vc, dataModel);
+			if (references == null || references.isEmpty()){
+				continue;
+			}
+			
+			for (IVirtualReference reference:references) {
+				IVirtualComponent virtualComp = reference.getReferencedComponent();
+				if (reference.getDependencyType() == DependencyType.USES ) {		
+					if( !isChildModule(reference)) {
+						addNonChildUsedReference(util, vc, reference, root.append(reference.getRuntimePath()));
+					} else {
+						ChildModuleReference cm = new ChildModuleReference(reference, root);
+						List<IChildModuleReference> duplicates = new ArrayList();
+						for( IChildModuleReference tmp : children ) {
+							if(tmp.getRelativeURI().equals(cm.getRelativeURI()))
+								duplicates.add(tmp);
+						}
+						children.removeAll(duplicates);
+						children.add(cm);
+					}
+				}	
+			}
+		}	
+	}
+
 	/**
 	 * Should we expose this used reference as a member file?
 	 * 

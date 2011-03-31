@@ -60,4 +60,8 @@ public class AbstractFlattenParticipant implements IFlattenParticipant {
 		return false;
 	}
 
+	public List<IVirtualReference> getChildModules(IVirtualComponent rootComponent, FlatComponentTaskModel dataModel) {
+		return null;
+	}
+
 }
