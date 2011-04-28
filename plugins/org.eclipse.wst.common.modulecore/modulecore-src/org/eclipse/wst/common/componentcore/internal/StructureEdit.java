@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,8 +113,9 @@ public class StructureEdit implements IEditModelHandler {
 	 * 
 	 * @param aProject
 	 *            The IProject that contains the WTP Modules model to load
-	 * @return A ModuleCore edit facade to access the WTP Modules Model, null
-	 *         for non-flexible projects
+	 * @return A ModuleCore edit facade to access the WTP Modules Model or
+	 *         <code>null</code> if the project is inaccessible or not a
+	 *         flexible project
 	 */
 	public static StructureEdit getStructureEditForRead(IProject aProject) {
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
@@ -124,17 +125,19 @@ public class StructureEdit implements IEditModelHandler {
 	/**
 	 * 
 	 * <p>
-	 * Each ModuleCore edit facade is tied to a specific project. A project may have multiple
-	 * ModuleCore edit facades live at any given time.
+	 * Each ModuleCore edit facade is tied to a specific project. A project
+	 * may have multiple ModuleCore edit facades live at any given time.
 	 * </p>
 	 * <p>
-	 * Use to acquire a ModuleCore facade for a specific project that may be used to modify the
-	 * model.
+	 * Use to acquire a ModuleCore facade for a specific project that may be
+	 * used to modify the model.
 	 * </p>
 	 * 
 	 * @param aProject
 	 *            The IProject that contains the WTP Modules model to load
-	 * @return A ModuleCore edit facade to access the WTP Modules Model
+	 * @return A ModuleCore edit facade to access the WTP Modules Model or
+	 *         <code>null</code> if the project is inaccessible or not a
+	 *         flexible project
 	 */
 	public static StructureEdit getStructureEditForWrite(IProject aProject) {
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
@@ -143,9 +146,10 @@ public class StructureEdit implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * A convenience API to fetch the {@see ModuleCoreNature}&nbsp;for a particular module URI. The
-	 * module URI must be of the valid form, or an exception will be thrown. The module URI must be
-	 * contained by a project that has a {@see ModuleCoreNature}&nbsp;or null will be returned.
+	 * A convenience API to fetch the {@see ModuleCoreNature}&nbsp;for a
+	 * particular module URI. The module URI must be of the valid form, or an
+	 * exception will be thrown. The module URI must be contained by a project
+	 * that has a {@see ModuleCoreNature}&nbsp;or null will be returned.
 	 * </p>
 	 * <p>
 	 * <b>This method may return null. </b>
@@ -154,6 +158,9 @@ public class StructureEdit implements IEditModelHandler {
 	 * @param aModuleURI
 	 *            A valid, fully-qualified module URI
 	 * @return The ModuleCoreNature of the project associated with aModuleURI
+	 *         or <code>null</code> if the URI has no containing project, its
+	 *         containing project is either inaccessible or not a flexible
+	 *         project
 	 * @throws UnresolveableURIException
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
