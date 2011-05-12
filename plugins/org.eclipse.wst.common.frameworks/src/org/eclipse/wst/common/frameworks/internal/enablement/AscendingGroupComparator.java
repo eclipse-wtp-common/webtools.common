@@ -28,15 +28,14 @@ public class AscendingGroupComparator implements Comparator {
 	private static AscendingGroupComparator singleton;
 
 	public int compare(Object o1, Object o2) {
+		FunctionGroup group1 = (FunctionGroup) o1;
+		FunctionGroup group2 = (FunctionGroup) o2;
 		if (o2 == null && o1 != null)
 			return -1;
 		if (o1 == null && o2 != null)
 			return 1;
 		if (o1 == null && o2 == null)
 			return 0;
-
-		FunctionGroup group1 = (FunctionGroup) o1;
-		FunctionGroup group2 = (FunctionGroup) o2;
 
 		if (group1.getPriority() > group2.getPriority())
 			return 1;

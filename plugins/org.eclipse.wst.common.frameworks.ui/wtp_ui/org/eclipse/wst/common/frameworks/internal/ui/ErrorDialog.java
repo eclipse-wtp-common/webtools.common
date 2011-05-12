@@ -43,7 +43,7 @@ public class ErrorDialog extends MessageDialog {
 	private Throwable detail;
 	private int detailButtonID = -1;
 	private Text text;
-	private String message;
+	private String message2;
 	//Workaround. SWT does not seem to set the default button if
 	//there is not control with focus. Bug: 14668
 	private int defaultButtonIndex = 0;
@@ -56,8 +56,7 @@ public class ErrorDialog extends MessageDialog {
 		super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
 		defaultButtonIndex = defaultIndex;
 		this.detail = detail;
-		message = dialogMessage;
-		setShellStyle(getShellStyle() | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		message2 = dialogMessage;
 	}
 
 	//Workaround. SWT does not seem to set rigth the default button if
@@ -181,9 +180,9 @@ public class ErrorDialog extends MessageDialog {
 			label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_BEGINNING));
 		}
 		// create message
-		if (message != null) {
+		if (message2 != null) {
 			Label label = new Label(composite, SWT.WRAP);
-			label.setText(message);
+			label.setText(message2);
 			GridData data = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
 			data.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
 			label.setLayoutData(data);
