@@ -520,7 +520,9 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 				if( item.getData() instanceof IVirtualReference) {
 					setRuntimePathSafe((IVirtualReference)item.getData(), (String) value);
 					if(tableIndex >= 0) {
-						IPath deployPath = ((IVirtualReference)item.getData()).getRuntimePath().append(((IVirtualReference)item.getData()).getArchiveName());
+						IPath deployPath = ((IVirtualReference)item.getData()).getRuntimePath();
+						if( ((IVirtualReference)item.getData()).getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_USES ) 
+							deployPath = deployPath.append(((IVirtualReference)item.getData()).getArchiveName());
 						components[tableIndex].setText(AddModuleDependenciesPropertiesPage.DEPLOY_COLUMN, deployPath.makeRelative().toString());
 					}
 				} else if( item.getData() instanceof ComponentResourceProxy) {
