@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2009 IBM Corporation and others.
+ * Copyright (c) 2007, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -432,9 +432,51 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Waits until all validation jobs are finished. This method will block the
+	 * Waits until all the validation jobs and all the other auto build jobs are finished. 
+	 * This method will block the
 	 * calling thread until all such jobs have finished executing, or until this
-	 * thread is interrupted. If there are no validation jobs that are
+	 * thread is interrupted. If there are no relevant jobs that are
+	 * currently waiting, running, or sleeping, this method returns immediately.
+	 * Feedback on how the join is progressing is provided to the progress
+	 * monitor.
+	 * <p>
+	 * If this method is called while the job manager is suspended, only jobs
+	 * that are currently running will be joined. Once there are no jobs in the
+	 * family in the {@link Job#RUNNING} state, this method returns.
+	 * </p>
+	 * <p>
+	 * Note that there is a deadlock risk when using join. If the calling thread
+	 * owns a lock or object monitor that the joined thread is waiting for,
+	 * deadlock will occur. This method can also result in starvation of the
+	 * current thread if another thread continues to add jobs of the given
+	 * family, or if a job in the given family reschedules itself in an infinite
+	 * loop.
+	 * </p>
+	 * 
+	 * <p>If you are interested in only waiting for the validation jobs, see the
+	 * joinValidationOnly method.
+	 * 
+	 * @param monitor
+	 * 		Progress monitor for reporting progress on how the wait is
+	 * 		progressing, or <code>null</code> if no progress monitoring is
+	 * 		required.
+	 * @exception InterruptedException
+	 * 		if this thread is interrupted while waiting
+	 * @exception OperationCanceledException
+	 * 		if the progress monitor is canceled while waiting
+	 * 
+	 * @see #joinValidationOnly(IProgressMonitor)
+	 */
+	public void join(IProgressMonitor monitor) throws InterruptedException, OperationCanceledException {
+		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, monitor);
+		Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB, monitor);
+	}
+	
+	/**
+	 * Waits until all the validation jobs are finished. 
+	 * This method will block the
+	 * calling thread until all such jobs have finished executing, or until this
+	 * thread is interrupted. If there are no relevant jobs that are
 	 * currently waiting, running, or sleeping, this method returns immediately.
 	 * Feedback on how the join is progressing is provided to the progress
 	 * monitor.
@@ -461,8 +503,7 @@ public final class ValidationFramework {
 	 * @exception OperationCanceledException
 	 * 		if the progress monitor is canceled while waiting
 	 */
-	public void join(IProgressMonitor monitor) throws InterruptedException, OperationCanceledException {
-		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, monitor);
+	public void joinValidationOnly(IProgressMonitor monitor) throws InterruptedException, OperationCanceledException {
 		Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB, monitor);
 	}
 	
