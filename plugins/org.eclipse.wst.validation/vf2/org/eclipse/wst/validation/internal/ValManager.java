@@ -1039,7 +1039,6 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 		 * Map validator id's to Integers. The integers correspond to bits in the ValProperty instances.
 		 */
 		private final Map<String, Integer> _map = new HashMap<String, Integer>(100);
-		private final Map<Integer, String> _reverseMap = new HashMap<Integer, String>(100);
 		
 		/** Next available bit. */
 		private int _next;
@@ -1055,39 +1054,9 @@ public final class ValManager implements IValChangedListener, IFacetedProjectLis
 			
 			i = _next++;
 			_map.put(id, i);
-			_reverseMap.put(i, id);
 			
 			return i;
-		}
-		
-		/**
-		 * Answer the validator id for the index.
-		 * @param index
-		 * @return null if the index number has not been set.
-		 */
-		public synchronized String getId(Integer index){
-			return _reverseMap.get(index);
-		}
-		
-		public synchronized void reset(){
-			_map.clear();
-			_reverseMap.clear();
-			_next = 0;
-		}
-		
-		/**
-		 * Answer the ids for the bit in the bitset. This is used for debugging. 
-		 * @param bs
-		 */
-		public synchronized String[] getIds(BitSet bs){
-			List<String> list = new LinkedList<String>();
-			for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) {
-				String id = getId(i);
-				if (id != null)list.add(id);
-			}
-			String[] s = new String[list.size()];
-			return list.toArray(s);
-		}		
+		}				
 	}
 	
 	/**

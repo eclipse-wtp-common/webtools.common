@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -73,16 +73,13 @@ public class ValidatorTypeFilter {
 		// doesn't implement A, then the isInstance call will return false.
 		//
 		// So, instead of using Class.isInstance, do the checking myself.
+		final String filterClassName = filterClass.getName();
 		for (Class cl = objectClass; cl != null; cl = cl.getSuperclass()) {
-			if (cl.getName().equals(filterClass.getName())) {
-				return true;
-			}
+			if (cl.getName().equals(filterClassName))return true;
 			Class[] clInterfaces = cl.getInterfaces();
 			for (int i = 0; i < clInterfaces.length; i++) {
-				if (clInterfaces[i].getName().equals(filterClass.getName())) {
-					return true;
-				}
-				return isInstance(clInterfaces[i], filterClass);
+				if (clInterfaces[i].getName().equals(filterClassName))return true;
+				if (isInstance(clInterfaces[i], filterClass))return true;
 			}
 		}
 		return false;
