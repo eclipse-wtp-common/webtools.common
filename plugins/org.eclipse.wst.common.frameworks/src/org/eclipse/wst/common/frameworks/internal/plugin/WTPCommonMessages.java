@@ -51,4 +51,5 @@ public class WTPCommonMessages {
 	public static final String PROJECT_EXISTS_SAMENAME_ERROR = "43"; //$NON-NLS-1$
 	public static final String RUNTIME_NONE = "44"; //$NON-NLS-1$
 	public static final String EAR_WILL_BE_CREATED = "45"; //$NON-NLS-1$
+	public static final String SAME_MODULE_AND_EAR_NAME_DIFFERENT_CASE = "46"; //$NON-NLS-1$
 }
