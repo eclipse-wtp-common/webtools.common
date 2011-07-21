@@ -45,6 +45,7 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.logger.proxy.Logger;
@@ -435,11 +436,17 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected List getResources(IFile aFile) {
 
 		List resources = new ArrayList();
-		List allResources = resourceSet.getResources();
+		List allResources = null;
+		if (resourceSet instanceof ProjectResourceSetImpl) {
+            ProjectResourceSetImpl projResSet =(ProjectResourceSetImpl)resourceSet;
+            allResources = projResSet.getImmutableResources();
+        } else {
+            allResources = resourceSet.getResources();
+        }
 		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			URI resURI = res.getURI();
-			String resURIString = "";
+			String resURIString = ""; //$NON-NLS-1$
 			if (resURI.path() != null) {
 				IPath resURIPath;
 				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
@@ -448,7 +455,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
 				resURIString = resURIPath.toString();
 			}
-			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
+			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1) //$NON-NLS-1$
 				resources.add(res);
 		}
 		return resources;

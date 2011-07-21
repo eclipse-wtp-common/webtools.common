@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.21.2.1.2.4 $$  $$Date: 2010/02/18 04:36:00 $$ 
+ *  $$Revision: 1.21.2.1.2.5 $$  $$Date: 2011/07/21 20:45:23 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -22,8 +22,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.*;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.*;
 import org.eclipse.emf.ecore.EObject;
@@ -45,6 +44,247 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		public static final int MODULE_NAME_INDX = 2;
 		public static final int CONTENT_TYPE_INDX = 3;
 	}
+	public class ImmutableEList<E extends Object & Resource> extends ResourcesEList<E> implements EList<E> {
+		
+		
+		private SynchronizedResourcesEList delegate;
+
+		public ImmutableEList(Collection<? extends E> collection) {
+
+		    size = collection.size();
+
+		    // Conditionally create the data.
+		    //
+		    if (size > 0)
+		    { 
+		      // Allow for a bit-shift of growth.
+		      //
+		      data = newData(size + size / 8 + 1); 
+		      collection.toArray(data);
+		    
+		    }
+			delegate = (SynchronizedResourcesEList)collection;
+			
+		}
+
+		@Override
+		public void setData(int size, Object[] data) {
+			super.setData(size, data);
+			delegate.lock.acquire();
+			delegate.setData(size, data);
+			delegate.lock.release();
+		}
+
+		@Override
+		public E setUnique(int index, E object) {
+			Object temp;
+			super.setUnique(index, object);
+			delegate.lock.acquire();
+			temp = delegate.setUnique(index, object);
+			delegate.lock.release();
+			return (E) temp;
+		}
+
+		@Override
+		public void addUnique(E object) {
+			super.addUnique(object);
+			delegate.lock.acquire();
+			delegate.addUnique(object);
+			delegate.lock.release();
+		}
+
+		@Override
+		public void addUnique(int index, E object) {
+			super.addUnique(index, object);
+			delegate.lock.acquire();
+			delegate.addUnique(index, object);
+			delegate.lock.release();
+		}
+
+		@Override
+		public boolean addAllUnique(Collection<? extends E> collection) {
+			boolean temp;
+			super.addAllUnique(collection);
+			delegate.lock.acquire();
+			temp = delegate.addAllUnique(collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean addAllUnique(int index, Collection<? extends E> collection) {
+			boolean temp;
+			super.addAllUnique(index, collection);
+			delegate.lock.acquire();
+			temp = delegate.addAllUnique(index, collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean addAllUnique(Object[] objects, int start, int end) {
+			boolean temp;
+			super.addAllUnique(objects, start, end);
+			delegate.lock.acquire();
+			temp = delegate.addAllUnique(objects, start, end);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean addAllUnique(int index, Object[] objects, int start, int end) {
+			boolean temp;
+			super.addAllUnique(index, objects, start, end);
+			delegate.lock.acquire();
+			temp = delegate.addAllUnique(index, objects, start, end);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public E remove(int index) {
+			Object temp;
+			super.remove(index);
+			delegate.lock.acquire();
+			temp = delegate.remove(index);
+			delegate.lock.release();
+			return (E)temp;
+		}
+
+		@Override
+		public E move(int targetIndex, int sourceIndex) {
+			Object temp;
+			super.move(targetIndex, sourceIndex);
+			delegate.lock.acquire();
+			temp = delegate.move(targetIndex, sourceIndex);
+			delegate.lock.release();
+			return (E) temp;
+		}
+
+		@Override
+		public E set(int index, E object) {
+			Object temp;
+			super.set(index, object);
+			delegate.lock.acquire();
+			temp = delegate.set(index, object);
+			delegate.lock.release();
+			return (E) temp;
+		}
+
+		@Override
+		public boolean add(E object) {
+			boolean temp;
+			super.add(object);
+			delegate.lock.acquire();
+			temp = delegate.add(object);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public void add(int index, E object) {
+			super.add(index, object);
+			delegate.lock.acquire();
+			delegate.add(index, object);
+			delegate.lock.release();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends E> collection) {
+			boolean temp;
+			super.addAll(collection);
+			delegate.lock.acquire();
+			temp = delegate.addAll(collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends E> collection) {
+			boolean temp;
+			super.addAll(index, collection);
+			delegate.lock.acquire();
+			temp = delegate.addAll(index, collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean remove(Object object) {
+			boolean temp;
+			super.remove(object);
+			delegate.lock.acquire();
+			temp = delegate.remove(object);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> collection) {
+			boolean temp;
+			super.removeAll(collection);
+			delegate.lock.acquire();
+			temp = delegate.removeAll(collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> collection) {
+			boolean temp;
+			super.retainAll(collection);
+			delegate.lock.acquire();
+			temp = delegate.retainAll(collection);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public void move(int index, E object) {
+			super.move(index, object);
+			delegate.lock.acquire();
+			delegate.move(index, object);
+			delegate.lock.release();
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public NotificationChain basicAdd(E object, NotificationChain notifications) {
+			NotificationChain temp = super.basicAdd(object, notifications);
+			delegate.lock.acquire();
+			delegate.basicAdd(object, notifications);
+			delegate.lock.release();
+			return temp;
+			
+		}
+
+		@Override
+		public NotificationChain basicRemove(Object object, NotificationChain notifications) {
+			NotificationChain temp = super.basicRemove(object, notifications);
+			delegate.lock.acquire();
+			delegate.basicRemove(object, notifications);
+			delegate.lock.release();
+			return temp;
+		}
+
+		@Override
+		public void clear() {
+			super.clear();
+			delegate.lock.acquire();
+			delegate.clear();
+			delegate.lock.release();
+		}
+
+		@Override
+		public NotificationChain basicSet(int index, E object, NotificationChain notifications) {
+			NotificationChain temp = super.basicSet(index, object, notifications);
+			delegate.lock.acquire();
+			delegate.basicSet(index, object, notifications);
+			delegate.lock.release();
+			return temp;
+		}
+	}
 	
 	public class SynchronizedResourcesEList<E extends Object & Resource> extends ResourcesEList<E> implements EList<E> {
 
@@ -52,7 +292,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private final ILock lock = Job.getJobManager().newLock();
+		protected final ILock lock = Job.getJobManager().newLock();
 
 		public void move(int newPosition, E object) {
 			
@@ -881,11 +1121,22 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	}
 	
 	public EList<Resource> getResources() {
+		 return primGetResources();
+	}
+	private EList<Resource> primGetResources() {
 		 if (resources == null)
 		    {
 		      resources = new SynchronizedResourcesEList<Resource>();
 		    }
 		    return resources;
+	}
+	/**
+	 * Creating a copy of the resources list
+	 * @return
+	 */
+	public EList<Resource> getImmutableResources() {
+		 EList<Resource> resources = primGetResources();
+		 return new ImmutableEList<Resource>(resources);
 	}
 	@Override
 	public void eNotify(Notification notification) {
