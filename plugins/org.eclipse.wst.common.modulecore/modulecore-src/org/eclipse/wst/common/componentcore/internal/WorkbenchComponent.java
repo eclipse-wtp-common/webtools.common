@@ -166,5 +166,7 @@ public interface WorkbenchComponent extends EObject {
 	ComponentResource[] findResourcesBySourcePath(IPath aSourcePath, int resourceFlag);
 	
 	boolean exists(IPath aSourcePath, int resourceFlag);
+	
+	final String DEFAULT_ROOT_SOURCE_TAG = "defaultRootSource";
 
 } // WorkbenchComponent

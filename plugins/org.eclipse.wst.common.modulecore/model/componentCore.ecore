@@ -28,6 +28,7 @@
         lowerBound="1" eType="#//WorkbenchComponent" eOpposite="#//WorkbenchComponent/resources"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="resourceType" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tag" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath">
     <eAnnotations source="keywords">

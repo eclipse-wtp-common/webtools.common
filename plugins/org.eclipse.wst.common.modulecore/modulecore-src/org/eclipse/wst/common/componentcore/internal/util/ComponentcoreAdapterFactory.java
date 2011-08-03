@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreAdapterFactory.java,v 1.6 2005/10/18 22:27:18 cbridgha Exp $
+ * $Id: ComponentcoreAdapterFactory.java,v 1.6.28.1 2011/08/03 19:41:59 rsanchez Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
@@ -66,7 +66,7 @@ public class ComponentcoreAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * The switch the delegates to the <code>createXXX</code> methods.
+	 * The switch that delegates to the <code>createXXX</code> methods.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated

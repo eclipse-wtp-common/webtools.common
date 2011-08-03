@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -107,7 +107,8 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			new IPathTranslator(SOURCE_PATH, MODULE_CORE_PKG.getComponentResource_SourcePath(), DOM_ATTRIBUTE),
 			new IPathTranslator(RUNTIME_PATH, MODULE_CORE_PKG.getComponentResource_RuntimePath(), DOM_ATTRIBUTE),
 			new Translator(RESOURCE_TYPE, MODULE_CORE_PKG.getComponentResource_ResourceType(), DOM_ATTRIBUTE),
-			new Translator(EXCLUSIONS, MODULE_CORE_PKG.getComponentResource_Exclusions())
+			new Translator(EXCLUSIONS, MODULE_CORE_PKG.getComponentResource_Exclusions()),
+			new Translator(TAG, MODULE_CORE_PKG.getComponentResource_Tag(),DOM_ATTRIBUTE)
 		});
 		return result;
 	}

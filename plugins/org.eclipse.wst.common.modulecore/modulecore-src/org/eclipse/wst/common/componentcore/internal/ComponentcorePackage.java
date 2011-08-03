@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.9 2009/06/09 20:02:04 jsholl Exp $
+ * $Id: ComponentcorePackage.java,v 1.9.4.1 2011/08/03 19:41:59 rsanchez Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -191,13 +191,22 @@ public interface ComponentcorePackage extends EPackage {
 	int COMPONENT_RESOURCE__RESOURCE_TYPE = 4;
 
 	/**
+	 * The feature id for the '<em><b>Tag</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPONENT_RESOURCE__TAG = 5;
+
+	/**
 	 * The number of structural features of the '<em>Component Resource</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPONENT_RESOURCE_FEATURE_COUNT = 5;
+	int COMPONENT_RESOURCE_FEATURE_COUNT = 6;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentTypeImpl <em>Component Type</em>}' class.
@@ -574,6 +583,17 @@ public interface ComponentcorePackage extends EPackage {
 	EAttribute getComponentResource_ResourceType();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getTag <em>Tag</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Tag</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentResource#getTag()
+	 * @see #getComponentResource()
+	 * @generated
+	 */
+	EAttribute getComponentResource_Tag();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.componentcore.internal.ComponentType <em>Component Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -784,7 +804,7 @@ public interface ComponentcorePackage extends EPackage {
 	 * @return the meta object for data type '<em>IPath</em>'.
 	 * @see org.eclipse.core.runtime.IPath
 	 * @model instanceClass="org.eclipse.core.runtime.IPath"
-	 *        annotation="keywords datatype='null'" 
+	 *        annotation="keywords datatype='null'"
 	 * @generated
 	 */
 	EDataType getIPath();
@@ -796,7 +816,7 @@ public interface ComponentcorePackage extends EPackage {
 	 * @return the meta object for data type '<em>URI</em>'.
 	 * @see org.eclipse.emf.common.util.URI
 	 * @model instanceClass="org.eclipse.emf.common.util.URI"
-	 *        annotation="keywords datatype='null'" 
+	 *        annotation="keywords datatype='null'"
 	 * @generated
 	 */
 	EDataType getURI();
@@ -930,6 +950,14 @@ public interface ComponentcorePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute COMPONENT_RESOURCE__RESOURCE_TYPE = eINSTANCE.getComponentResource_ResourceType();
+
+		/**
+		 * The meta object literal for the '<em><b>Tag</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_RESOURCE__TAG = eINSTANCE.getComponentResource_Tag();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentTypeImpl <em>Component Type</em>}' class.

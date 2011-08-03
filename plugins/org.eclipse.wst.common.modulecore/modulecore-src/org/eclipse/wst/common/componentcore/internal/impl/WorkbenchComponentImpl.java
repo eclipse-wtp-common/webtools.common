@@ -226,6 +226,17 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		}	
 		return null;
 	}
+	
+	private IPath getFirstTaggedRootSource(){
+		List res = getResources();
+		for (Iterator iter = res.iterator(); iter.hasNext();) {
+			ComponentResource element = (ComponentResource) iter.next();
+			if (element.getRuntimePath().equals(new Path("/")) &&  DEFAULT_ROOT_SOURCE_TAG.equals(element.getTag()))
+				return element.getSourcePath();
+		}	
+		return null;		
+	}
+
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -572,8 +583,13 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	}
 	
 	public IPath getDefaultSourceRoot() {
-		if (defaultSourceRoot == null)
-			defaultSourceRoot = getFirstRootSource();
+		if (defaultSourceRoot == null){
+			defaultSourceRoot = getFirstTaggedRootSource();
+			if (defaultSourceRoot == null)
+			{
+				defaultSourceRoot = getFirstRootSource();
+			}
+		}
 		return defaultSourceRoot;
 	}
 	

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreSwitch.java,v 1.7 2009/06/09 20:02:03 jsholl Exp $
+ * $Id: ComponentcoreSwitch.java,v 1.7.4.1 2011/08/03 19:41:59 rsanchez Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
@@ -74,11 +74,13 @@ public class ComponentcoreSwitch {
 		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		List eSuperTypes = theEClass.getESuperTypes();
-		return
-			eSuperTypes.isEmpty() ?
-				defaultCase(theEObject) :
-				doSwitch((EClass)eSuperTypes.get(0), theEObject);
+		else {
+			List eSuperTypes = theEClass.getESuperTypes();
+			return
+				eSuperTypes.isEmpty() ?
+					defaultCase(theEObject) :
+					doSwitch((EClass)eSuperTypes.get(0), theEObject);
+		}
 	}
 
 	/**
@@ -131,13 +133,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Workbench Component</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Workbench Component</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Workbench Component</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Workbench Component</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -146,13 +148,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Component Resource</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Component Resource</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Component Resource</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Component Resource</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -161,13 +163,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Component Type</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Component Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Component Type</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Component Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -176,13 +178,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Property</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Property</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Property</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Property</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -191,13 +193,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Referenced Component</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Referenced Component</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Referenced Component</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Referenced Component</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -206,13 +208,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Project Components</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Project Components</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Project Components</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Project Components</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -221,13 +223,13 @@ public class ComponentcoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>EObject</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>EObject</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch, but this is the last case anyway.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>EObject</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>EObject</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject)
 	 * @generated
 	 */
