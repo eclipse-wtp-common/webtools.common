@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.4 2010/05/13 04:04:35 canderson Exp $
+ * $Id: ComponentResourceImpl.java,v 1.5 2011/08/10 21:40:14 rsanchez Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -37,6 +37,7 @@ import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil.ESynchron
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getComponent <em>Component</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getResourceType <em>Resource Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getTag <em>Tag</em>}</li>
  * </ul>
  * </p>
  *
@@ -91,7 +92,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * @generated
 	 * @ordered
 	 */
-	protected EList exclusions = null;
+	protected EList exclusions;
 	
 	/**
 	 * The default value of the '{@link #getResourceType() <em>Resource Type</em>}' attribute.
@@ -112,6 +113,26 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * @ordered
 	 */
 	protected String resourceType = RESOURCE_TYPE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getTag() <em>Tag</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTag()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String TAG_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getTag() <em>Tag</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTag()
+	 * @generated
+	 * @ordered
+	 */
+	protected String tag = TAG_EDEFAULT;
 
 	protected IProject owningProject;
 	protected static final int VIRTUAL = 0;
@@ -248,6 +269,27 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getTag() {
+		return tag;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setTag(String newTag) {
+		String oldTag = tag;
+		tag = newTag;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.COMPONENT_RESOURCE__TAG, oldTag, tag));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
@@ -315,6 +357,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 				return getComponent();
 			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
 				return getResourceType();
+			case ComponentcorePackage.COMPONENT_RESOURCE__TAG:
+				return getTag();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -342,6 +386,9 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
 				setResourceType((String)newValue);
 				return;
+			case ComponentcorePackage.COMPONENT_RESOURCE__TAG:
+				setTag((String)newValue);
+				return;
 		}
 		eDynamicSet(eFeature, newValue);
 	}
@@ -368,6 +415,9 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
 				setResourceType(RESOURCE_TYPE_EDEFAULT);
 				return;
+			case ComponentcorePackage.COMPONENT_RESOURCE__TAG:
+				setTag(TAG_EDEFAULT);
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -389,6 +439,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 				return getComponent() != null;
 			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
 				return RESOURCE_TYPE_EDEFAULT == null ? resourceType != null : !RESOURCE_TYPE_EDEFAULT.equals(resourceType);
+			case ComponentcorePackage.COMPONENT_RESOURCE__TAG:
+				return TAG_EDEFAULT == null ? tag != null : !TAG_EDEFAULT.equals(tag);
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -410,6 +462,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		result.append(exclusions);
 		result.append(", resourceType: ");
 		result.append(resourceType);
+		result.append(", tag: ");
+		result.append(tag);
 		result.append(')');
 		return result.toString();
 	}

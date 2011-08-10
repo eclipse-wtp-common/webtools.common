@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Red Hat
+ * Copyright (c) 2010, 2011 Red Hat and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
  *    Konstantin Komissarchik - misc. UI cleanup
+ *    Roberto Sanchez (IBM) - Handle tags in mappings
  *    
  * API in these packages is provisional in this release
  ******************************************************************************/
@@ -91,6 +92,7 @@ import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceDa
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.util.VirtualReferenceUtilities;
+import org.eclipse.wst.common.componentcore.resources.ITaggedVirtualResource;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -911,13 +913,13 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		ComponentResource[] allMappings = findAllExposedMappings();
 		for( int i = 0; i < allMappings.length; i++ ) {
 			resourceMappings.add(new ComponentResourceProxy(
-					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
+					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath(), allMappings[i].getTag()
 			));
 		}
 		ComponentResource[] onlyHiddenMappings = findOnlyHiddenMappings();
 		for( int i = 0; i < onlyHiddenMappings.length; i++ ) {
 			hiddenMappings.add(new ComponentResourceProxy(
-					onlyHiddenMappings[i].getSourcePath(), onlyHiddenMappings[i].getRuntimePath()
+					onlyHiddenMappings[i].getSourcePath(), onlyHiddenMappings[i].getRuntimePath(), onlyHiddenMappings[i].getTag()
 			));
 		}
 		if(editReferenceButton != null)
@@ -1020,9 +1022,14 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 	
 	public static class ComponentResourceProxy {
 		public IPath source, runtimePath;
+		public String tag;
 		public ComponentResourceProxy(IPath source, IPath runtimePath) {
+			this(source, runtimePath, null);
+		}
+		public ComponentResourceProxy(IPath source, IPath runtimePath, String tag) {
 			this.source = source;
 			this.runtimePath = runtimePath;
+			this.tag = tag;
 		}
 	}
 	
@@ -1042,7 +1049,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		ComponentResource[] allMappings = findAllExposedMappings();
 		for( int i = 0; i < allMappings.length; i++ ) {
 			resourceMappings.add(new ComponentResourceProxy(
-					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
+					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath(), allMappings[i].getTag()
 			));
 		}
 		refresh();
@@ -1110,9 +1117,14 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 	protected boolean addNewResourceMappings() {
 		ComponentResourceProxy[] proxies = resourceMappings.toArray(new ComponentResourceProxy[resourceMappings.size()]);
 		IVirtualFolder rootFolder = rootComponent.getRootFolder();
+		IVirtualFolder subFolder = null;
 		for( int i = 0; i < proxies.length; i++ ) {
-			try {
-				rootFolder.getFolder(proxies[i].runtimePath).createLink(proxies[i].source, 0, null);
+			try {			
+				subFolder= rootFolder.getFolder(proxies[i].runtimePath);
+				subFolder.createLink(proxies[i].source, 0, null);
+				if (subFolder instanceof ITaggedVirtualResource){
+					((ITaggedVirtualResource) subFolder).tagResource(proxies[i].source, proxies[i].tag, null);
+				}
 			} catch( CoreException ce ) {
 				ModuleCoreUIPlugin.logError(ce);
 			}
