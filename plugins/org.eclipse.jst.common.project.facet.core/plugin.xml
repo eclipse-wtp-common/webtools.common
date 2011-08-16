@@ -67,35 +67,15 @@
       <default-version provider="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDefaultVersionProvider"/>
     </project-facet>
 
-    <project-facet-version facet="java" version="1.3">
-      <constraint>
-        <conflicts facet="wst.web"/>
-      </constraint>
-    </project-facet-version>
+    <project-facet-version facet="java" version="1.3"/>
 
-    <project-facet-version facet="java" version="1.4">
-      <constraint>
-        <conflicts facet="wst.web"/>
-      </constraint>
-    </project-facet-version>
+    <project-facet-version facet="java" version="1.4"/>
 
-    <project-facet-version facet="java" version="1.5">
-      <constraint>
-        <conflicts facet="wst.web"/>
-      </constraint>
-    </project-facet-version>
+    <project-facet-version facet="java" version="1.5"/>
 
-    <project-facet-version facet="java" version="1.6">
-      <constraint>
-        <conflicts facet="wst.web"/>
-      </constraint>
-    </project-facet-version>
+    <project-facet-version facet="java" version="1.6"/>
 
-    <project-facet-version facet="java" version="1.7">
-      <constraint>
-        <conflicts facet="wst.web"/>
-      </constraint>
-    </project-facet-version>
+    <project-facet-version facet="java" version="1.7"/>
 
     <action facet="java" type="install" id="java.install">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
