@@ -154,11 +154,12 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder, I
 			if (aProjectRelativeLocation.isUNC()){
 				aProjectRelativeLocation = aProjectRelativeLocation.makeUNC(false);
 			}
+			IPath absolutePath = aProjectRelativeLocation.makeAbsolute();
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent aComponent = moduleCore.getComponent();
 			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			for (ComponentResource resource:resources){
-				if (resource.getSourcePath().equals(aProjectRelativeLocation)){
+				if (resource.getSourcePath().equals(absolutePath)){
 					resource.setTag(tag);
 					return true;
 				}
