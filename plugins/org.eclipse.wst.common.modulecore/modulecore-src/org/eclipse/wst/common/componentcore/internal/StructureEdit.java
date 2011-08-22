@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -193,6 +193,44 @@ public class StructureEdit implements IEditModelHandler {
 		return null;
 	}
 	
+	
+	/**
+	 * <p>
+	 * For {@see WorkbenchComponent}s that are contained within a project, the containing project
+	 * can be determined with the {@see WorkbenchComponent}'s fully-qualified module URI.
+	 * </p>
+	 * <p>
+	 * The following method will return the corresponding project for the supplied module URI,
+	 * if it can be determined.
+	 * </p>
+	 * <p>
+	 * The method may return an inaccessible project.	
+	 * </p>
+	 * <p>
+	 * <b>This method may return null. </b>
+	 * </p>
+	 * 
+	 * @param aModuleURI
+	 *            A valid, fully-qualified module URI
+	 * @param onlyAccessibleProjects
+	 *            True if the method should return only accessible projects. 
+	 * @return The project that contains the module referenced by the module URI
+	 * @throws UnresolveableURIException
+	 *             If the supplied module URI is invalid or unresolveable.
+	 */
+	public static IProject getContainingProject(URI aModuleURI, boolean onlyAccessibleProjects) throws UnresolveableURIException {
+		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
+		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
+		if (projectName == null || projectName.length() == 0)
+			throw new UnresolveableURIException(aModuleURI);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if (!onlyAccessibleProjects)
+			return project;
+		if (project.isAccessible())
+			return project;
+		return null;
+	}
+	
 	/**
 	 * <p>
 	 * For {@see WorkbenchComponent}s that are contained within a project, the containing project
@@ -216,14 +254,7 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public static IProject getContainingProject(URI aModuleURI) throws UnresolveableURIException {
-		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
-		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
-		if (projectName == null || projectName.length() == 0)
-			throw new UnresolveableURIException(aModuleURI);
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		if (project.isAccessible())
-			return project;
-		return null;
+		return getContainingProject(aModuleURI, true);
 	}
 
 	/**

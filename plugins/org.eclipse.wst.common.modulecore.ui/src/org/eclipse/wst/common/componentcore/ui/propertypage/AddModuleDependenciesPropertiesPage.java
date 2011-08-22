@@ -902,7 +902,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 
 	protected void initialize() {
 		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(IVirtualComponent.REQUESTED_REFERENCE_TYPE, IVirtualComponent.DISPLAYABLE_REFERENCES);
+		options.put(IVirtualComponent.REQUESTED_REFERENCE_TYPE, IVirtualComponent.DISPLAYABLE_REFERENCES_ALL);
 		IVirtualReference[] refs = rootComponent.getReferences(options);
 		IVirtualComponent comp;
 		originalReferences.addAll(Arrays.asList(refs));

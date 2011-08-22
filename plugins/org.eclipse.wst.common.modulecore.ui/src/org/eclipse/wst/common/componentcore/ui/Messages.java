@@ -45,6 +45,7 @@ public class Messages extends NLS {
 	public static String ProjectConversionError;
 	public static String ExistingFolderError;
 	public static String Revert;
+	public static String ErrorEntryNotFound;
 	
 	static {
 		// initialize resource bundle
