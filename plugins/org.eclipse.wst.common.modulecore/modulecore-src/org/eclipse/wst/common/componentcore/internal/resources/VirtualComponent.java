@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
@@ -41,6 +42,7 @@ import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.builder.IDependencyGraph;
+import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
 import org.eclipse.wst.common.componentcore.resolvers.ReferenceResolverUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -656,11 +658,20 @@ public class VirtualComponent implements IVirtualComponent {
 						if (referencedComponent==null) 
 							continue;
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
-						if( vReference != null ){
+						if (vReference != null && vReference.getReferencedComponent() != null){
 							vReference.setArchiveName( referencedComponent.getArchiveName() );
+							references.add(vReference);
 						}
-						if (vReference != null && vReference.getReferencedComponent() != null)
-							references.add(vReference); 
+						else {
+							if (vReference != null && vReference.getReferencedComponent() == null){
+								// If none of the resolvers used by StructureEdit.createVirtualReference could find a reference with 
+								// a non-null referenced component, try to find it ourselves.  
+								vReference = getReferenceForNonResolvableComponent(this, referencedComponent);
+							}
+							if (vReference != null && vReference.getReferencedComponent() != null){
+								references.add(vReference);
+							}
+						}
 					}
 				}
 			}
@@ -671,7 +682,33 @@ public class VirtualComponent implements IVirtualComponent {
 				core.dispose();
 		}		
 	}
+		
 	
+	/*
+	 * Similar to org.eclipse.wst.common.componentcore.resolvers.DefaultReferenceResolver#resolve(IVirtualComponent context, ReferencedComponent referencedComponent)
+	 */
+	private IVirtualReference getReferenceForNonResolvableComponent(VirtualComponent context, ReferencedComponent referencedComponent) {
+		IVirtualComponent targetComponent = null;
+		IProject targetProject = null;
+		URI uri = referencedComponent.getHandle();
+		if (uri == null)
+			return null;
+		boolean isClassPathURI = ModuleURIUtil.isClassPathURI(uri);
+		if( !isClassPathURI ){
+			try { 
+				targetProject = StructureEdit.getContainingProject(uri, false);
+			} catch(UnresolveableURIException uurie) {
+				return null;
+			} 
+
+			targetComponent = new NonResolvableVirtualComponent(targetProject, null);
+			VirtualReference vRef = new VirtualReference(context, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue());
+			vRef.setArchiveName(referencedComponent.getArchiveName());
+			return vRef;
+		}
+		return null;
+	}
+
 	/**
 	 * This is an internal method and should not be called except by the 
 	 * {@link org.eclipse.wst.common.component.internal.builder.DependencyGraphImpl}
