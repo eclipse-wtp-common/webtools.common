@@ -43,6 +43,7 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
@@ -398,21 +399,41 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected List getResources(IFile aFile) {
 
 		List resources = new ArrayList();
-		List allResources = resourceSet.getResources();
-		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
-			Resource res = (Resource) iterator.next();
-			URI resURI = res.getURI();
-			String resURIString = ""; //$NON-NLS-1$
-			if (resURI.path() != null) {
-				IPath resURIPath;
-				if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
-					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
-				else
-					resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
-				resURIString = resURIPath.toString();
+		String aFileString = URI.decode(aFile.getFullPath().toString());
+		IPath aFilePath = new Path(aFileString).removeFirstSegments(1);
+		if (!aFilePath.isEmpty())
+		{
+			aFileString = aFilePath.toString();
+		}
+		if (aFileString.length() > 0)
+		{
+			List allResources = null;
+			if (resourceSet instanceof ProjectResourceSetImpl) {
+	            ProjectResourceSetImpl projResSet =(ProjectResourceSetImpl)resourceSet;
+	            allResources = projResSet.getImmutableResources();
+	        } else {
+	            allResources = resourceSet.getResources();
+	        }
+			for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
+				Resource res = (Resource) iterator.next();
+				URI resURI = res.getURI();
+				String resURIString = ""; //$NON-NLS-1$
+				if (resURI.path() != null) {
+					IPath resURIPath;
+					if (WorkbenchResourceHelper.isPlatformResourceURI(resURI))
+						resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
+					else
+						resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
+					resURIString = resURIPath.toString();
+				}
+	
+				if (resURIString.length() > 0)
+				{
+					if (aFileString.equals(resURIString))
+					//if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1) //$NON-NLS-1$
+						resources.add(res);
+				}
 			}
-			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1) //$NON-NLS-1$
-				resources.add(res);
 		}
 		return resources;
 	}

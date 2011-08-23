@@ -3,13 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.wst.common.modulecore.ui; singleton:=true
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.0.101.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.wst.common.modulecore;bundle-version="[1.1.300,2.0.0)",
+ org.eclipse.wst.common.modulecore;bundle-version="[1.2.101,2.0.0)",
  org.eclipse.wst.common.frameworks;bundle-version="[1.1.300,2.0.0)",
  org.eclipse.wst.common.project.facet.core;bundle-version="[1.4.0,2.0.0)",
  org.eclipse.jem.util;bundle-version="[2.0.200,3.0.0)",

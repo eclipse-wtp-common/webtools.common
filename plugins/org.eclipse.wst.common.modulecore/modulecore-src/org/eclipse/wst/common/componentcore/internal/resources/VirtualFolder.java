@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,12 +24,12 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.ITaggedVirtualResource;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
-public class VirtualFolder extends VirtualContainer implements IVirtualFolder { 
-
+public class VirtualFolder extends VirtualContainer implements IVirtualFolder, ITaggedVirtualResource { 
 
 	/**
 	 * p> Creates an unassigned mapping contained by the component identified by aComponentHandle
@@ -145,6 +145,63 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 				moduleCore.dispose();
 			}
 		}
+	}
+
+
+	public boolean tagResource(IPath aProjectRelativeLocation, String tag, IProgressMonitor monitor) {
+		StructureEdit moduleCore = null;
+		try {
+			if (aProjectRelativeLocation.isUNC()){
+				aProjectRelativeLocation = aProjectRelativeLocation.makeUNC(false);
+			}
+			IPath absolutePath = aProjectRelativeLocation.makeAbsolute();
+			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent aComponent = moduleCore.getComponent();
+			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+			for (ComponentResource resource:resources){
+				if (resource.getSourcePath().equals(absolutePath)){
+					resource.setTag(tag);
+					return true;
+				}
+			}
+			return false;
+		}
+		finally {
+			if (moduleCore != null) {
+				moduleCore.saveIfNecessary(monitor);
+				moduleCore.dispose();
+			}
+		}
+		
+	}
+
+	public IPath getFirstTaggedResource(String tag) {
+		WorkbenchComponent aComponent = null;
+		IPath path = null;
+		
+		aComponent = getReadOnlyComponent();
+		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+		for (ComponentResource resource:resources){
+			if (tag.equals(resource.getTag())){
+				path = resource.getSourcePath();
+				break;
+			}
+		}		
+		return path;
+	}
+
+	public IPath[] getTaggedResources(String tag) {
+		WorkbenchComponent aComponent = null;
+		List<IPath> paths = new ArrayList<IPath>();
+		
+		aComponent = getReadOnlyComponent();
+		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+		for (ComponentResource resource:resources){
+			if (tag.equals(resource.getTag())){
+				paths.add(resource.getSourcePath());
+			}
+		}		
+		return paths.toArray(new IPath[0]);
 	}
 
 }

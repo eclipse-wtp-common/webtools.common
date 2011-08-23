@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackageImpl.java,v 1.10 2009/06/09 20:02:04 jsholl Exp $
+ * $Id: ComponentcorePackageImpl.java,v 1.11 2011/08/10 21:40:14 rsanchez Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -284,6 +284,15 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getComponentResource_Tag() {
+		return (EAttribute)componentResourceEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getComponentType() {
 		return componentTypeEClass;
 	}
@@ -510,6 +519,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__EXCLUSIONS);
 		createEReference(componentResourceEClass, COMPONENT_RESOURCE__COMPONENT);
 		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__RESOURCE_TYPE);
+		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__TAG);
 
 		componentTypeEClass = createEClass(COMPONENT_TYPE);
 		createEAttribute(componentTypeEClass, COMPONENT_TYPE__COMPONENT_TYPE_ID);
@@ -581,6 +591,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		initEAttribute(getComponentResource_Exclusions(), ecorePackage.getEString(), "exclusions", "", 0, -1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEReference(getComponentResource_Component(), this.getWorkbenchComponent(), this.getWorkbenchComponent_Resources(), "component", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getComponentResource_ResourceType(), ecorePackage.getEString(), "resourceType", "", 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getComponentResource_Tag(), ecorePackage.getEString(), "tag", null, 0, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(componentTypeEClass, ComponentType.class, "ComponentType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getComponentType_ComponentTypeId(), ecorePackage.getEString(), "componentTypeId", "", 1, 1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,19 @@ public interface IVirtualComponent extends IAdaptable {
 	public static final String REQUESTED_REFERENCE_TYPE = "REQUESTED_REFERENCE_TYPE";
 	public static final String HARD_REFERENCES = "HARD_REFERENCES";
 	public static final String NON_DERIVED_REFERENCES = "NON_DERIVED_REFERENCES";
+	
+	/**
+	 * Retrieve all component references displayable to the user, excluding references to components that might not
+	 * exist (i.e. calls to these component's {@link IVirtualComponent#exists()} return false)
+	 */
 	public static final String DISPLAYABLE_REFERENCES = "DISPLAYABLE_REFERENCES";
+	
+	/**
+	 * Retrieve all component references displayable to the user, including references to components that might not
+	 * exist (i.e. calls to these component's {@link IVirtualComponent#exists()} return false)
+	 */
+	public static final String DISPLAYABLE_REFERENCES_ALL = "DISPLAYABLE_REFERENCES_ALL";
+
 	public static final String FLATTENABLE_REFERENCES = "FLATTENABLE_REFERENCES";
 		
 	/**

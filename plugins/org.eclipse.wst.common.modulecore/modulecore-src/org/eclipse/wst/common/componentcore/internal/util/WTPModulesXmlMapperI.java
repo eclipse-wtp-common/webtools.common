@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,5 +33,5 @@ public interface WTPModulesXmlMapperI {
 	String RESOURCE_TYPE = "resource-type";//$NON-NLS-1$
 	String ARCHIVE_NAME="archiveName";//$NON-NLS-1$
 	String PROJECT_VERSION="project-version"; //$NON-NLS-1$
-	
+	String TAG="tag";//$NON-NLS-1$
 }
