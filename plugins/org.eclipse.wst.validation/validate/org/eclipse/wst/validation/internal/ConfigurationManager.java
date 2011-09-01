@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2009 IBM Corporation and others.
+ * Copyright (c) 2001, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -107,8 +108,10 @@ public final class ConfigurationManager implements ConfigurationConstants {
 			gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
 			if (gp == null) {
 				gp = new GlobalConfiguration(root);
-				PreferencesWrapper prefs = PreferencesWrapper.getPreferences(null, null);
-//				prefs.addPropertyChangeListener(gp);
+				
+				Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
+				if(prefs != null)
+					prefs.addPropertyChangeListener(gp);
 				
 				gp.getVersion(); // initialize the configuration's version attribute
 				gp.load(); // initialize this instance from the stored values
