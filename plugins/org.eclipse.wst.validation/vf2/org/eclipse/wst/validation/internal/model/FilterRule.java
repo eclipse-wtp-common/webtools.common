@@ -14,7 +14,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -22,6 +24,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
@@ -206,6 +210,8 @@ public abstract class FilterRule implements IAdaptable {
 	
 	public static final class ProjectNature extends FilterRule {
 		
+		private String patternLabel = null;
+		
 		private ProjectNature(IConfigurationElement rule) {
 			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
 			
@@ -213,6 +219,9 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public ProjectNature(String projectNature) {
 			super(projectNature);
+			
+			IProjectNatureDescriptor nature = ResourcesPlugin.getWorkspace().getNatureDescriptor(projectNature);
+			patternLabel = nature.getLabel();
 		}
 
 		public String getDisplayableType() {
@@ -232,6 +241,14 @@ public abstract class FilterRule implements IAdaptable {
 			return Boolean.FALSE;
 		}
 		
+		public String toString()
+		{
+			if(patternLabel != null && patternLabel.length() > 0){
+				return getDisplayableType() + ": " + patternLabel.concat(" - ").concat(_pattern); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			return getDisplayableType() + ": " + _pattern; //$NON-NLS-1$
+		}		
 	}
 	
 	public static final class FileExt extends FilterRuleCaseSensitive {
@@ -363,6 +380,7 @@ public abstract class FilterRule implements IAdaptable {
 	public static final class Facet extends FilterRule {
 		
 		private final String _versionExpression;
+		private String _facetLabel;
 		
 		private Facet(IConfigurationElement rule){
 			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
@@ -373,6 +391,9 @@ public abstract class FilterRule implements IAdaptable {
 		public Facet(String facetId, String versionExpression) {
 			super(facetId);
 			_versionExpression = versionExpression;
+			
+			IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetId);
+			_facetLabel = facet.getLabel();
 		}
 
 		public String getType() {
@@ -397,9 +418,20 @@ public abstract class FilterRule implements IAdaptable {
 		
 		@Override
 		public String toString() {
+			String facetLabel = _facetLabel;
 			StringBuffer b = new StringBuffer(200);
 			b.append(getDisplayableType());
 			b.append(": "); //$NON-NLS-1$
+			
+			//Dispay facet Labels when selecting Settings
+			if(_facetLabel == null){
+				IProjectFacet facet = ProjectFacetsManager.getProjectFacet(_pattern);
+				facetLabel = facet.getLabel();
+			}
+
+			b.append(facetLabel);
+			b.append(" - "); //$NON-NLS-1$
+			
 			b.append(_pattern);
 			
 			if (_versionExpression !=  null){
@@ -409,7 +441,6 @@ public abstract class FilterRule implements IAdaptable {
 			}
 			return b.toString();
 		}
-		
 	}
 	
 	public static final class ContentType extends FilterRule {
@@ -475,10 +506,14 @@ public abstract class FilterRule implements IAdaptable {
 		
 		@Override
 		public String toString() {
-			if (_exactMatch)return NLS.bind(ValMessages.ContentTypeExact, getDisplayableType(), _pattern);
-			return NLS.bind(ValMessages.ContentTypeNotExact, getDisplayableType(), _pattern);
+			try {
+				if (_exactMatch)return NLS.bind(ValMessages.ContentTypeExact, getDisplayableType(), _type.getName().concat(" - ").concat(_pattern)); //$NON-NLS-1$
+					return NLS.bind(ValMessages.ContentTypeNotExact, getDisplayableType(), _type.getName().concat(" - ").concat(_pattern)); //$NON-NLS-1$
+			}catch(NullPointerException npe) {
+				if (_exactMatch)return NLS.bind(ValMessages.ContentTypeExact, getDisplayableType(), _pattern);
+					return NLS.bind(ValMessages.ContentTypeNotExact, getDisplayableType(), _pattern);
+			}
 		}
-		
 	}
 	
 	public static final class FilePattern extends FilterRuleCaseSensitive {
