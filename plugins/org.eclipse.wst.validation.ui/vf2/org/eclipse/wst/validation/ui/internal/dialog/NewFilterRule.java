@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 IBM Corporation and others.
+ * Copyright (c) 2005, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.ui.internal.dialog;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.resources.IProject;
@@ -38,6 +39,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
 import org.eclipse.wst.validation.internal.model.FilterRule;
 import org.eclipse.wst.validation.ui.internal.HelpContextIds;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
@@ -419,9 +423,11 @@ public class NewFilterRule extends Wizard {
 			IProjectNatureDescriptor[] pn = ResourcesPlugin.getWorkspace().getNatureDescriptors();
 			String items[] = new String[pn.length];
 			_ids = new String[pn.length];
+			String natureLabel = null;
 			for (int i=0; i<pn.length; i++){
+				natureLabel = pn[i].getLabel();
 				_ids[i] = pn[i].getNatureId();
-				items[i] = pn[i].getLabel() + " - " + _ids[i]; //$NON-NLS-1$
+				items[i] = natureLabel.length() == 0 ? _ids[i] : natureLabel + " - " + _ids[i]; //$NON-NLS-1$
 			}
 			_natures = new Combo(control, SWT.DROP_DOWN);
 			_natures.setItems(items);
@@ -453,7 +459,8 @@ public class NewFilterRule extends Wizard {
 	
 	public static class FacetPage extends WizardPage implements FilterWizardPage {
 		
-		private Text	_pattern;
+		private Combo facets;
+		private String [] ids;
 		
 		public FacetPage(){
 			super("facet", ValUIMessages.FrFacit, null); //$NON-NLS-1$
@@ -464,11 +471,24 @@ public class NewFilterRule extends Wizard {
 			Composite control = new Composite(parent, SWT.NONE);
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
-			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrFacitLabel);
-			_pattern = new Text(control, SWT.BORDER);
-			_pattern.setFocus();
-			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
-			_pattern.addModifyListener(new ModifyListener(){
+			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrNewFacitLabel);
+			
+			Set<IProjectFacet> projectFacets = ProjectFacetsManager.getProjectFacets();
+			
+			Object[] projectFacetsArray = projectFacets.toArray();
+			String items[] = new String[projectFacetsArray.length];
+			ids = new String[projectFacetsArray.length];
+			
+			for(int i = 0; i < projectFacetsArray.length; i++)
+			{
+				ProjectFacet facet = (ProjectFacet)projectFacetsArray[i];
+				ids[i] = facet.getId();
+				items[i] = facet.getLabel() + " - " + ids[i]; //$NON-NLS-1$
+			}
+			
+			facets = new Combo(control, SWT.DROP_DOWN);
+			facets.setItems(items);
+			facets.addModifyListener(new ModifyListener(){
 
 				public void modifyText(ModifyEvent e) {
 					getContainer().updateButtons();
@@ -479,14 +499,18 @@ public class NewFilterRule extends Wizard {
 
 		public FilterRule getFilterRule() {
 			if (!isPageComplete())return null;
-			FilterRule rule = FilterRule.createFacet(_pattern.getText());
+			
+			int i = facets.getSelectionIndex();
+			if (i == -1) return null;
+			
+			FilterRule rule = FilterRule.createFacet(ids[i]);
 			return rule;
 		}
 		
 		public boolean isPageComplete() {
-			if (_pattern == null)return false;
-			if (_pattern.getText() == null)return false;
-			return _pattern.getText().trim().length() > 0;
+			if (facets == null)return false;
+			if (facets.getText() == null)return false;
+			return facets.getText().trim().length() > 0;
 		}
 		
 	}
@@ -512,6 +536,8 @@ public class NewFilterRule extends Wizard {
 			for (IContentType type : types){
 				String name = type.getName();
 				if (name == null)name = type.getId();
+				else
+					name = name + " - " + type.getId(); //$NON-NLS-1$
 				_map.put(name, type);
 			}
 			String items[] = new String[_map.size()];
