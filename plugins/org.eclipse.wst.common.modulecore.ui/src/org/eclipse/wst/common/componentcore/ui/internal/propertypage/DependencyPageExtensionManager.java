@@ -40,6 +40,7 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.IDependencyPageProvi
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 public class DependencyPageExtensionManager {
+	private static final String DEFAULT_WEIGHT = "100"; //$NON-NLS-1$
 	private static DependencyPageExtensionManager manager = null;
 	public static DependencyPageExtensionManager getManager() {
 		if( manager == null )
@@ -48,22 +49,37 @@ public class DependencyPageExtensionManager {
 	}
 	
 	private HashMap<String, IDependencyPageProvider> providers = null;
+	private HashMap<String, String> providerWeight;
 	
 	public IDependencyPageProvider getProvider(IFacetedProject project) {
 		if( providers == null )
 			loadProviders();
-		Iterator<IDependencyPageProvider> i = providers.values().iterator();
-		IDependencyPageProvider temp;
-		while(i.hasNext()) {
-			temp = i.next();
-			if( temp.canHandle(project))
-				return temp;
+		IDependencyPageProvider foundProvider = null;
+		int highestWeight = 0;
+		for (Iterator iterator = providers.keySet().iterator(); iterator.hasNext();) {
+			String id = (String) iterator.next();
+			IDependencyPageProvider temp = providers.get(id);
+			if( temp.canHandle(project)) {
+				int weight = Integer.valueOf(providerWeight.get(id)).intValue();
+				if (foundProvider == null) {
+					foundProvider = temp;
+					highestWeight = weight;
+				}
+				else {
+					if (highestWeight < weight) {
+						foundProvider = temp;
+						highestWeight = weight;
+					}
+				}
+			}
 		}
-		return null;
+		return foundProvider;
 	}
 	
 	private void loadProviders() {
 		HashMap<String, IDependencyPageProvider> temp = new HashMap<String, IDependencyPageProvider>();
+		HashMap<String, String> tempProviderWeight = new HashMap<String, String>();
+		String weight;
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
 				ModuleCoreUIPlugin.PLUGIN_ID, "moduleDependencyPropertyPage"); //$NON-NLS-1$
@@ -71,12 +87,15 @@ public class DependencyPageExtensionManager {
 			try {
 				temp.put(cf[i].getAttribute("id"),  //$NON-NLS-1$
 					(IDependencyPageProvider)cf[i].createExecutableExtension("class"));  //$NON-NLS-1$
+				weight = cf[i].getAttribute("weight"); //$NON-NLS-1$
+				tempProviderWeight.put(cf[i].getAttribute("id"),(weight == null) ? DEFAULT_WEIGHT : weight); //$NON-NLS-1$
 			} catch( CoreException ce ) 
 			{
 				ModuleCoreUIPlugin.log( ce );
 			}
 		}
 		providers = temp;
+		providerWeight = tempProviderWeight;
 	}
 	
 	public WizardFragment[] loadAllReferenceWizardFragments() {
