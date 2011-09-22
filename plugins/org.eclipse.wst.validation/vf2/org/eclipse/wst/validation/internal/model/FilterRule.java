@@ -221,7 +221,10 @@ public abstract class FilterRule implements IAdaptable {
 			super(projectNature);
 			
 			IProjectNatureDescriptor nature = ResourcesPlugin.getWorkspace().getNatureDescriptor(projectNature);
-			patternLabel = nature.getLabel();
+			
+			if(nature != null){
+				patternLabel = nature.getLabel();
+			}
 		}
 
 		public String getDisplayableType() {
@@ -393,7 +396,10 @@ public abstract class FilterRule implements IAdaptable {
 			_versionExpression = versionExpression;
 			
 			IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetId);
-			_facetLabel = facet.getLabel();
+			
+			if(facet != null){
+				_facetLabel = facet.getLabel();
+			}
 		}
 
 		public String getType() {
