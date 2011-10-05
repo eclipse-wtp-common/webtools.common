@@ -161,9 +161,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			}
 			fpjwc.dispose();
 		}
-		IDataModel nestedProjectDM = model.getNestedModel(NESTED_PROJECT_DM);
-		if (nestedProjectDM != null){
-			nestedProjectDM.removeListener(dataModelListener);
+		if (model != null){
+			IDataModel nestedProjectDM = model.getNestedModel(NESTED_PROJECT_DM);
+			if (nestedProjectDM != null){
+				nestedProjectDM.removeListener(dataModelListener);
+			}
 		}
 		setDataModel(null);
 		super.dispose();
