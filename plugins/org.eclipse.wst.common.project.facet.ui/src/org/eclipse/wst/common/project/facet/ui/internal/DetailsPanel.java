@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2011 Oracle and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Roberto Sanchez Herrera - [348784] Remove IFacetedProjectListener on dispose
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -23,6 +24,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -74,16 +77,25 @@ public final class DetailsPanel
             }
         );
         
-        this.facetsSelectionPanel.getFacetedProjectWorkingCopy().addListener
-        (
-            new IFacetedProjectListener()
+        final IFacetedProjectListener facetedProjectListener = new IFacetedProjectListener()
+        {
+            public void handleEvent( final IFacetedProjectEvent event ) 
             {
-                public void handleEvent( final IFacetedProjectEvent event ) 
+                refresh();
+            }
+        };
+        
+        this.facetsSelectionPanel.getFacetedProjectWorkingCopy().addListener( facetedProjectListener, IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED );
+        
+        addDisposeListener
+        (
+            new DisposeListener()
+            {
+                public void widgetDisposed( final DisposeEvent e )
                 {
-                    refresh();
-                }
-            }, 
-            IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED
+                	facetsSelectionPanel.getFacetedProjectWorkingCopy().removeListener( facetedProjectListener );
+                }				
+            }
         );
         
         refresh();
