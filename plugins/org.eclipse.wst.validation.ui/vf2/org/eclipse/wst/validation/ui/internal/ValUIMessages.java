@@ -104,6 +104,7 @@ public class ValUIMessages extends NLS {
 	public static String FrFacit;
 	public static String FrFacitLabel;
 	public static String FrContentType;
+	public static String FrNewFacitLabel;
 	public static String FrContentTypeLabel;
 	public static String FrMsgSev;
 	
