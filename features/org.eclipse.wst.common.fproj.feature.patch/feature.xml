@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.wst.common.fproj.feature.patch"
+      label="%featureName"
+      version="3.3.1.qualifier"
+      provider-name="%providerName">
+
+    <description>%description</description>
+
+    <copyright>%copyright</copyright>
+
+    <license url="%licenseURL">%license</license>
+
+   <requires>
+      <import feature="org.eclipse.wst.common.fproj" version="3.3.0.v201102150115-377DF8s7355397B4B9B " patch="true"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.wst.common.project.facet.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
