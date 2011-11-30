@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_core.feature.patch"
       label="%featureName"
-      version="3.2.4.qualifier"
+      version="3.3.1.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,7 +18,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.wst.common_core.feature" version="3.2.4.v201103101400-7B7DFEuF7RZHOaLjSqMqRK" patch="true"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="3.3.1.v201107190400-7B7DFO5F7RZHOeJ-SxQ1NJ" patch="true"/>
    </requires>
 
 
