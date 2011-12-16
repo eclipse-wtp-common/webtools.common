@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.jst.common.ui;singleton:=true
-Bundle-Version: 1.0.4.qualifier
+Bundle-Version: 1.0.5.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.jst.common.ui.internal.JstCommonUIPlugin
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
