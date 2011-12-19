@@ -43,6 +43,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
 import org.eclipse.wst.validation.internal.model.FilterRule;
+import org.eclipse.wst.validation.internal.model.ValidatorHelper;
 import org.eclipse.wst.validation.ui.internal.HelpContextIds;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
@@ -95,7 +96,11 @@ public class NewFilterRule extends Wizard {
 	
 	private IWizardPage returnOrBuildPage(int selectedFilter) {
 			IWizardPage page =  null;
-			if (_project != null && selectedFilter == 2)selectedFilter = 4;
+			if (_project != null){
+				if(selectedFilter == 2) selectedFilter = 4;
+				else if(selectedFilter == 3) selectedFilter = 5;
+			}
+			
 			switch (selectedFilter){
 			case 0:
 				page = new FileExtPage();
@@ -111,6 +116,9 @@ public class NewFilterRule extends Wizard {
 				break;
 			case 4:
 				page = new ContentTypePage();
+				break;
+			case 5:
+				page = new TargetRuntimePage();
 				break;
 			}
 		addPage(page);
@@ -136,19 +144,19 @@ public class NewFilterRule extends Wizard {
 			String[] desc = null;
 			if (_project != null){
 				labels = new String[]{ValUIMessages.LabelExtension, ValUIMessages.LabelFile,
-						ValUIMessages.LabelContentType};
+						ValUIMessages.LabelContentType, ValUIMessages.LabelTargetRuntime};
 				
 				desc = new String[]{ValUIMessages.DescExtension, ValUIMessages.DescFile,
-						ValUIMessages.DescContentType};
+						ValUIMessages.DescContentType, ValUIMessages.DescTargetRuntime};
 			}
 			else {
 				labels = new String[]{ValUIMessages.LabelExtension, ValUIMessages.LabelFile,
 						ValUIMessages.LabelProjects, ValUIMessages.LabelFacets,
-						ValUIMessages.LabelContentType};
+						ValUIMessages.LabelContentType, ValUIMessages.LabelTargetRuntime};
 				
 				desc = new String[]{ValUIMessages.DescExtension, ValUIMessages.DescFile,
 						ValUIMessages.DescProjects, ValUIMessages.DescFacets, 
-						ValUIMessages.DescContentType};
+						ValUIMessages.DescContentType, ValUIMessages.DescTargetRuntime};
 			}
 			
 			Composite control = new Composite(parent, SWT.NONE);
@@ -572,6 +580,66 @@ public class NewFilterRule extends Wizard {
 			FilterRule rule = FilterRule.createContentType(type.getId(), _exactMatch.getSelection());
 			return rule;
 		}
+		
+		public boolean isPageComplete() {
+			if (_pattern == null)return false;
+			if (_pattern.getText() == null)return false;
+			return _pattern.getText().trim().length() > 0;
+		}
+		
+	}
+	
+	public static class TargetRuntimePage extends WizardPage implements FilterWizardPage {
+		
+		private Combo	_pattern;
+		private String [] ids;
+		
+		public TargetRuntimePage(){
+			super("targetRuntime", ValUIMessages.FrTargetRuntimeLabel, null); //$NON-NLS-1$
+		}
+
+		public void createControl(Composite parent) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, HelpContextIds.FRContentType);
+			Composite control = new Composite(parent, SWT.NONE);
+			setControl(control);
+			control.setLayout(new GridLayout(2, false));
+			(new Label(control, SWT.NONE)).setText("Target Runtime"); //$NON-NLS-1$
+
+			Object[] targetRuntimes = ValidatorHelper.getRuntimes();
+			
+			String items[] = new String[targetRuntimes.length];
+			ids = new String[targetRuntimes.length];
+			
+			for(int i = 0; i < targetRuntimes.length; i++)
+			{
+				ids[i] = ValidatorHelper.getRuntimeID(targetRuntimes[i]);
+				items[i] = ValidatorHelper.getRuntimeName(targetRuntimes[i]);
+			}
+			
+			_pattern = new Combo(control, SWT.DROP_DOWN | SWT.READ_ONLY);
+			_pattern.setFocus();
+			_pattern.setLayoutData(new GridData(300, SWT.DEFAULT));
+			_pattern.setVisibleItemCount(20);
+			_pattern.setItems(items);
+			_pattern.addModifyListener(new ModifyListener(){
+
+				public void modifyText(ModifyEvent e) {
+					getContainer().updateButtons();
+				}
+				
+			});
+		}
+		
+		public FilterRule getFilterRule() {
+			if (!isPageComplete())return null;
+			
+			int i = _pattern.getSelectionIndex();
+			if (i == -1) return null;
+			
+			FilterRule rule = FilterRule.createTargetRuntime(ids[i]);
+			return rule;
+		}
+		
 		
 		public boolean isPageComplete() {
 			if (_pattern == null)return false;
