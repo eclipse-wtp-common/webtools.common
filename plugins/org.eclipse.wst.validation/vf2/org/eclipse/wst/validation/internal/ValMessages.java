@@ -67,6 +67,7 @@ public class ValMessages extends NLS {
 	public static String RuleContentType;
 	public static String RuleFacet;
 	public static String RulePattern;
+	public static String RuleTargetRuntime;
 	
 	public static String ContentTypeExact;
 	public static String ContentTypeNotExact;
