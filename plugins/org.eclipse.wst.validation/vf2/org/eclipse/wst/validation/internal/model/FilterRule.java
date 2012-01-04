@@ -95,6 +95,11 @@ public abstract class FilterRule implements IAdaptable {
 			return new Facet(pattern, null);
 		}
 		
+		if (ExtensionConstants.Rule.targetRuntime.equals(type)){
+			String pattern = des.getString();
+			return new TargetRuntime(pattern);
+		}
+		
 		if (ExtensionConstants.Rule.pattern.equals(type)){
 			String pattern = des.getString();
 			boolean caseSensitive = des.getBoolean();
@@ -123,6 +128,10 @@ public abstract class FilterRule implements IAdaptable {
 	
 	public static FilterRule createContentType(String contentType, boolean exactMatch){
 		return new ContentType(contentType, exactMatch);
+	}
+	
+	public static FilterRule createTargetRuntime(String targetRuntime){
+		return new TargetRuntime(targetRuntime);
 	}
 		
 	protected FilterRule(String pattern){
@@ -383,7 +392,7 @@ public abstract class FilterRule implements IAdaptable {
 	public static final class Facet extends FilterRule {
 		
 		private final String _versionExpression;
-		private String _facetLabel;
+		private String _facetLabel = null;
 		
 		private Facet(IConfigurationElement rule){
 			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
@@ -395,10 +404,14 @@ public abstract class FilterRule implements IAdaptable {
 			super(facetId);
 			_versionExpression = versionExpression;
 			
-			IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetId);
-			
-			if(facet != null){
-				_facetLabel = facet.getLabel();
+			try
+			{
+				IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetId);
+				if(facet != null){
+					_facetLabel = facet.getLabel();
+				}
+			} catch(IllegalArgumentException ex) {
+				//do nothing
 			}
 		}
 
@@ -522,6 +535,42 @@ public abstract class FilterRule implements IAdaptable {
 		}
 	}
 	
+	public static final class TargetRuntime extends FilterRule {
+		
+		private String patternLabel = null;
+		
+		private TargetRuntime(IConfigurationElement rule) {
+			super(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
+		}
+	
+		public TargetRuntime(String targetRuntime) {
+			super(targetRuntime);
+			
+			String runtime = ValidatorHelper.getRuntimeName(targetRuntime);
+			
+			if(runtime != null){
+				patternLabel = runtime;
+			}
+		}
+		
+		public String getType() {
+			return ExtensionConstants.Rule.targetRuntime;
+		}
+		
+		public String getDisplayableType() {
+			return ValMessages.RuleTargetRuntime;
+		}
+		
+		@Override
+		public String toString() {
+			if(patternLabel != null && patternLabel.length() > 0){
+				return getDisplayableType() + ": " + patternLabel.concat(" - ").concat(_pattern); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			return getDisplayableType() + ": " + _pattern; //$NON-NLS-1$
+		}
+	}
+	
 	public static final class FilePattern extends FilterRuleCaseSensitive {
 		
 		private final Pattern _compiledPattern;
@@ -556,7 +605,7 @@ public abstract class FilterRule implements IAdaptable {
 			return _compiledPattern.matcher(name).matches();
 		}		
 	}
-	
+
 	/**
 	 * Save your settings into the serializer.
 	 * @param ser
@@ -571,5 +620,4 @@ public abstract class FilterRule implements IAdaptable {
 		if (_pattern != null)h += _pattern.hashCode();
 		return h;
 	}
-	
 }

@@ -103,6 +103,9 @@ public interface ExtensionConstants {
 		/** contentType - filter by content type. */
 		String contentType = "contentType"; //$NON-NLS-1$
 		
+		/** targetRuntime - filter by targetRuntime. */
+		String targetRuntime = "targetRuntime"; //$NON-NLS-1$
+		
 		/** pattern - filter paths by regular expression. */
 		String pattern = "pattern"; //$NON-NLS-1$
 	}
