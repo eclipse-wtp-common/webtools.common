@@ -444,12 +444,19 @@ public abstract class FilterRule implements IAdaptable {
 			
 			//Dispay facet Labels when selecting Settings
 			if(_facetLabel == null){
-				IProjectFacet facet = ProjectFacetsManager.getProjectFacet(_pattern);
-				facetLabel = facet.getLabel();
+				try
+				{
+					IProjectFacet facet = ProjectFacetsManager.getProjectFacet(_pattern);
+					facetLabel = facet.getLabel();		
+				} catch(IllegalArgumentException ex) {
+					//do nothing
+				}				
 			}
-
-			b.append(facetLabel);
-			b.append(" - "); //$NON-NLS-1$
+			
+			if(facetLabel != null && facetLabel.length() > 0){
+				b.append(facetLabel);
+				b.append(" - "); //$NON-NLS-1$
+			}
 			
 			b.append(_pattern);
 			

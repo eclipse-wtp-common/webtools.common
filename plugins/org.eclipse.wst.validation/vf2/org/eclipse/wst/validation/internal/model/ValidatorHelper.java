@@ -73,9 +73,15 @@ public final class ValidatorHelper {
 	 */
 	public static String getRuntimeName(String id)
 	{
-		IRuntime runtime = RuntimeManager.getRuntime(id);
-		if(runtime != null)
-			return runtime.getLocalizedName();
+		try
+		{
+			IRuntime runtime = RuntimeManager.getRuntime(id);
+			if(runtime != null)
+				return runtime.getLocalizedName();
+			
+		} catch(IllegalArgumentException ex){
+			//do nothing
+		}
 		
 		return null;
 	}
