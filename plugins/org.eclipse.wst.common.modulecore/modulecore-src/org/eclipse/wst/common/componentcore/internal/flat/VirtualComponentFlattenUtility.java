@@ -112,7 +112,7 @@ public class VirtualComponentFlattenUtility {
 		if( vf != null && vf.getName() != null )
 			vfName = vf.getName();
 		if( f != null )
-			 mf = new FlatFile(f, vfName == null ? f.getName() : vfName, path);
+			 mf = new FlatFile(f, vfName == null ? f.getName() : vfName, path.makeRelative());
 		else {
 			File f2 = (File)file.getAdapter(File.class);
 			if( f2 != null )
