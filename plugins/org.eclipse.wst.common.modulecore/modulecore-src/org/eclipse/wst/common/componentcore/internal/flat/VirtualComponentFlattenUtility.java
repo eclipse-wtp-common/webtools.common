@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 /**
@@ -104,18 +105,22 @@ public class VirtualComponentFlattenUtility {
 	}
 	
 	public void addFile(IVirtualComponent current, IPath path, IAdaptable file) {
+		IVirtualFile vf = (IVirtualFile)file.getAdapter(IVirtualFile.class);
 		IFile f = (IFile)file.getAdapter(IFile.class);
 		IFlatFile mf = null;
+		String vfName = null;
+		if( vf != null && vf.getName() != null )
+			vfName = vf.getName();
 		if( f != null )
-			 mf = createModuleFile(f, path.makeRelative());
+			 mf = new FlatFile(f, vfName == null ? f.getName() : vfName, path);
 		else {
 			File f2 = (File)file.getAdapter(File.class);
 			if( f2 != null )
-				mf = new FlatFile(f2, f2.getName(), path.makeRelative());
+				mf = new FlatFile(f2, vfName == null ? f2.getName() : vfName, path.makeRelative());
 		}
 		if( mf != null ) {
 			if (handler == null || handler.shouldAddComponentFile(current, mf)) {
-				if( mf.getModuleRelativePath().isEmpty()) {
+				if( mf.getModuleRelativePath().segmentCount() == 0) {
 					members.remove(mf);
 					members.add(mf);
 				}
