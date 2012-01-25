@@ -320,12 +320,23 @@ public final class ValBuilderJob extends WorkspaceJob {
 			// Check for file ADDED and REMOVED events, which means that the file may have moved to a new
 			// project. To be safe we clear it's cached list of validators.
 			if (((kind & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) != 0)	&& resource.getType() == IResource.FILE) {
-				ValManager.getDefault().clearValProperty(resource);
+				ValManager.getDefault().clearValProperty(resource.getProject());
 			}
 
 			if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
-				ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build, 
-					_request.getBuildKind(), _operation, _subMonitor.newChild(1));
+				ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build,
+						_request.getBuildKind(), _operation, _subMonitor.newChild(1));
+			}
+			
+			if ((kind & (IResourceDelta.REMOVED)) != 0){
+				
+				IResource project = resource.getProject();
+				if (!_operation.isValidatedProject(project))
+				{
+					ValManager.getDefault().validate(_request.getProject(), project, IResourceDelta.REMOVED, ValType.Build,
+						_request.getBuildKind(), _operation, _subMonitor.newChild(1));
+					_operation.addValidatedProject(project);
+				}				
 			}
 					
 			IDependencyIndex index = ValidationFramework.getDefault().getDependencyIndex();
@@ -335,18 +346,14 @@ public final class ValBuilderJob extends WorkspaceJob {
 					Validator val = dr.getValidator();
 					if (Friend.shouldValidate(val, dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 						_operation.getState().put(ValidationState.TriggerResource, resource);
-						ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
-						if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val); 
-						ValManager.getDefault().validate(val, _operation, dr.getResource(), 
-							IResourceDelta.NO_CHANGE, _monitor, event);
+						ValidationEvent event = new ValidationEvent(dr.getResource(), delta.getKind(), delta);
+						if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val);
+							ValManager.getDefault().validate(val, _operation, dr.getResource(),
+									delta.getKind(), _monitor, event);
+						}
 					}
 				}
-			}
-					
 			return true;
 		}
-
-		
 	}
-
 }

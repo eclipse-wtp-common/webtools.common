@@ -106,7 +106,11 @@ public class MarkerManager {
 	 */
 	public void deleteMarkers(IResource resource, long operationStartTime, int depth){
 		try {
-			hook(resource); 
+			hook(resource);
+
+			if(!resource.exists())
+				return;
+
 			IMarker[] markers = resource.findMarkers(null, true, depth);
 			String markerType;
 			for (IMarker marker : markers){
