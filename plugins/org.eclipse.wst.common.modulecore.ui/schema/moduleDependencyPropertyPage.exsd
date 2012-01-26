@@ -13,6 +13,7 @@
    <element name="extension">
       <annotation>
          <appinfo>
+            <meta.element />
          </appinfo>
       </annotation>
       <complexType>
@@ -43,6 +44,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="weight" type="string">
+            <annotation>
+               <documentation>
+                  Default weight is 100. Make higher is wanting to override
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -63,6 +71,13 @@
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.wst.common.componentcore.ui.propertypage.IDependencyPageProvider"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="weight" type="string">
+            <annotation>
+               <documentation>
+                  Default weight is 100. Make higher is wanting to override
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
