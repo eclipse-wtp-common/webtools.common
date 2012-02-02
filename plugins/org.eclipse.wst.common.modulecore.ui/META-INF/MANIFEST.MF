@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.wst.common.modulecore.ui; singleton:=true
-Bundle-Version: 1.0.101.qualifier
+Bundle-Version: 1.0.200.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
