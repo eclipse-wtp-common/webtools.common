@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 IBM Corporation and others.
+ * Copyright (c) 2010, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -102,16 +102,25 @@ public class VerifierRegistry {
 	 * @return List of IConfigurationElements representing instances of IDeploymentAssemblyVerifier
 	 */
 	public List getVerifierExtensions(String facetTypeID, IRuntime runtime) {
-		
+		// Identifier used by verifiers that will run for any runtime
+		String allRuntimes = "org.eclipse.wst.common.modulecore.ui.deploymentAssemblyVerifier.anyruntime"; //$NON-NLS-1$
 		String runtimeID = null;
 		if (runtime == null)
 			runtimeID = "None"; //$NON-NLS-1$
 		else
 			runtimeID = runtime.getRuntimeType().getId();
-		List verifiers = getVerifiers(facetTypeID, runtimeID);
+		// Get the verifiers specific for the target runtime
+		List verifiers = getVerifiers(facetTypeID, runtimeID);		
 		if (verifiers == null)
-			return Collections.EMPTY_LIST;
-		return verifiers;
+			verifiers = Collections.EMPTY_LIST;
+		// Get the verifiers for any runtime
+		List genericVerifiers = getVerifiers(facetTypeID, allRuntimes);
+		if (genericVerifiers == null)
+			genericVerifiers = Collections.EMPTY_LIST;
+		// Merge both verifiers into one list and return
+		List result = new ArrayList(verifiers);
+		result.addAll(genericVerifiers);
+		return result;
 	}
 
 

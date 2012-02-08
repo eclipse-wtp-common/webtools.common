@@ -225,6 +225,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
             <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="contentType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="targetRuntime" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="pattern" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
       </complexType>
@@ -243,6 +244,23 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
             <annotation>
                <documentation>
                   A version expression that can be used to futher qualify the match. If not specifed, then versions are not used as a criteria for selecting the facet. The syntax of this expression, is the same syntax that is used by the facet framework.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="targetRuntime">
+      <annotation>
+         <documentation>
+            Used to filter on target runtimes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The target runtime id.
                </documentation>
             </annotation>
          </attribute>

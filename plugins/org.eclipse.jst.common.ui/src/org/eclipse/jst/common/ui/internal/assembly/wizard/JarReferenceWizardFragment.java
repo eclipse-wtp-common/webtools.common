@@ -67,6 +67,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveCom
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.componentcore.ui.ModuleCoreUIPlugin;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
 import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
 import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
@@ -220,7 +221,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 		if (labelProvider == null) {
 			labelProvider = new LabelProvider() {
 				public Image getImage(Object element) {
-					return null;
+					return ModuleCoreUIPlugin.getInstance().getImage("jar_obj");
 				}
 
 				public String getText(Object element) {

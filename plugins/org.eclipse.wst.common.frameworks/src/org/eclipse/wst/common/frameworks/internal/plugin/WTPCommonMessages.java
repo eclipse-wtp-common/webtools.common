@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,4 +51,6 @@ public class WTPCommonMessages {
 	public static final String PROJECT_EXISTS_SAMENAME_ERROR = "43"; //$NON-NLS-1$
 	public static final String RUNTIME_NONE = "44"; //$NON-NLS-1$
 	public static final String EAR_WILL_BE_CREATED = "45"; //$NON-NLS-1$
+	public static final String SAME_MODULE_AND_EAR_NAME_DIFFERENT_CASE = "46"; //$NON-NLS-1$
+	public static final String EAR_NAME_USED_BY_NON_EAR_PROJECT = "47"; //$NON-NLS-1$
 }

@@ -73,12 +73,14 @@ public class ValUIMessages extends NLS {
 	public static String LabelFacets;
 	public static String LabelContentType;
 	public static String LabelEnableProjectSpecific;
+	public static String LabelTargetRuntime;
 	
 	public static String DescExtension;
 	public static String DescFile;
 	public static String DescProjects;
 	public static String DescFacets;
 	public static String DescContentType;
+	public static String DescTargetRuntime;
 	
 	public static String Validation;
 	public static String ValidationStatus;
@@ -104,8 +106,10 @@ public class ValUIMessages extends NLS {
 	public static String FrFacit;
 	public static String FrFacitLabel;
 	public static String FrContentType;
+	public static String FrNewFacitLabel;
 	public static String FrContentTypeLabel;
 	public static String FrMsgSev;
+	public static String FrTargetRuntimeLabel;
 	
 	public static String RebuildTitle;
 	public static String RebuildMsg;

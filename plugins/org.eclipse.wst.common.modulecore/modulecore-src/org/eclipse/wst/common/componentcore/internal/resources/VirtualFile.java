@@ -128,6 +128,10 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 		if( IFile.class.equals(adapter)) {
 			return getUnderlyingFile();
 		}
+		if( IVirtualFile.class.equals(adapter))
+			return this;
+		if( IVirtualResource.class.equals(adapter))
+			return this;
 		return null;
 	}
 }

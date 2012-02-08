@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +65,9 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	
 	public static final String FORCE_VERSION_COMPLIANCE = "FacetProjectCreationDataModelProvider.FORCE_VERSION_COMPLIANCE";
 	
+	private List<IFacetedProjectListener> facetedProjectListeners = new ArrayList<IFacetedProjectListener>();
+	private IDataModelListener dataModelListener;
+	
 	public FacetProjectCreationDataModelProvider() {
 		super();
 	}
@@ -87,45 +91,42 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		
 		model.setProperty(FACETED_PROJECT_WORKING_COPY, fpjwc);
 		
-		fpjwc.addListener
-		(
-		    new IFacetedProjectListener()
-		    {
-                public void handleEvent( final IFacetedProjectEvent event )
+		IFacetedProjectListener projectFacetChangedListener = new IFacetedProjectListener()
+	    {
+            public void handleEvent( final IFacetedProjectEvent event )
+            {
+                for( IFacetedProject.Action action : fpjwc.getProjectFacetActions() )
                 {
-                    for( IFacetedProject.Action action : fpjwc.getProjectFacetActions() )
+                    final Object config = action.getConfig();
+                    
+                    if( config != null && config instanceof IDataModel )
                     {
-                        final Object config = action.getConfig();
+                        final IDataModel dm = (IDataModel) config;
                         
-                        if( config != null && config instanceof IDataModel )
+                        if( dm.getAllProperties().contains( FacetInstallDataModelProvider.MASTER_PROJECT_DM ) )
                         {
-                            final IDataModel dm = (IDataModel) config;
-                            
-                            if( dm.getAllProperties().contains( FacetInstallDataModelProvider.MASTER_PROJECT_DM ) )
-                            {
-                                dm.setProperty( FacetInstallDataModelProvider.MASTER_PROJECT_DM, model );
-                            }
+                            dm.setProperty( FacetInstallDataModelProvider.MASTER_PROJECT_DM, model );
                         }
                     }
                 }
-		    },
-		    IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
-		);
+            }
+	    };
+	    this.facetedProjectListeners.add(projectFacetChangedListener);    
+		fpjwc.addListener(projectFacetChangedListener, IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED	);
 
-        fpjwc.addListener
-        (
-            new IFacetedProjectListener()
+		IFacetedProjectListener availableRuntimeChangedListener = new IFacetedProjectListener()
+        {
+            public void handleEvent( final IFacetedProjectEvent event )
             {
-                public void handleEvent( final IFacetedProjectEvent event )
-                {
-                    model.notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
-                }
-            },
-            IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED
-        );
+                model.notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
+            }
+        };
+        this.facetedProjectListeners.add(availableRuntimeChangedListener);
+        fpjwc.addListener(availableRuntimeChangedListener, IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED);
 		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
-		projectDataModel.addListener(new IDataModelListener() {
+		
+		dataModelListener = new IDataModelListener() {
 			public void propertyChanged(DataModelEvent event) 
 			{
 			    final String prop = event.getPropertyName();
@@ -146,15 +147,27 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
                     fpjwc.setProjectLocation( location == null ? null : new Path( location ) );
                 }
 			}
-		});
+		};
+			
+		projectDataModel.addListener(dataModelListener);
 		model.addNestedModel(NESTED_PROJECT_DM, projectDataModel);
 	}
 
 	@Override
 	public void dispose() {
 		if(fpjwc != null){
+			for (IFacetedProjectListener listener:this.facetedProjectListeners){
+				fpjwc.removeListener(listener);
+			}
 			fpjwc.dispose();
 		}
+		if (model != null){
+			IDataModel nestedProjectDM = model.getNestedModel(NESTED_PROJECT_DM);
+			if (nestedProjectDM != null){
+				nestedProjectDM.removeListener(dataModelListener);
+			}
+		}
+		setDataModel(null);
 		super.dispose();
 	}
 	

@@ -12,6 +12,9 @@
 
 package org.eclipse.wst.common.componentcore.ui.internal.propertypage;
 
+
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -19,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -27,6 +31,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -88,13 +93,36 @@ public class FolderMappingWizardFragment extends WizardFragment {
 				Object first = sel.getFirstElement();
 				if( first instanceof IContainer) {
 					selected = (IContainer)first;
-					if(!isComplete) {
-						isComplete = true;
-						handle.update();
-					}
+					String errorMessage=validateFolder();
+					if (errorMessage !=  null)
+						handle.setMessage(errorMessage,IMessageProvider.ERROR);
+					else
+						handle.setMessage(Messages.AddFolderMappings, IMessageProvider.NONE);
+					handle.update();
 				}
 			}
 		};
+	}
+	
+	protected String validateFolder() {
+		IContainer c = getSelected();
+		IPath p = c.getProjectRelativePath().makeAbsolute();					
+		ArrayList<Object> currentRefs = (ArrayList<Object>)getTaskModel().getObject(IReferenceWizardConstants.ALL_DIRECTIVES);
+		if (!currentRefs.isEmpty())
+			for (int j = 0; j < currentRefs.size(); j++) 
+			{
+				Object ref = currentRefs.get(j);
+				if (ref instanceof ComponentResourceProxy)
+				{					
+					ComponentResourceProxy folder = (ComponentResourceProxy) ref;
+					if (p.equals(folder.source)){						
+						isComplete=false;				
+						return NLS.bind(Messages.ExistingFolderError, folder.source); 						
+					}
+				}							
+			}	
+		isComplete = true;
+		return null;
 	}
 	
 	public IContainer getSelected() {
