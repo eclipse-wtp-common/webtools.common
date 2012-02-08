@@ -61,6 +61,7 @@ public abstract class FilterRule implements IAdaptable {
 		if (ExtensionConstants.Rule.contentType.equals(name))return ContentType.createContentType(rule);
 		if (ExtensionConstants.Rule.facet.equals(name))return new Facet(rule);
 		if (ExtensionConstants.Rule.pattern.equals(name))return FilePattern.createFilePattern(rule);
+		if (ExtensionConstants.Rule.targetRuntime.equals(name))return new TargetRuntime(rule);
 		return null;
 	}
 	
@@ -570,6 +571,10 @@ public abstract class FilterRule implements IAdaptable {
 		
 		@Override
 		public String toString() {
+			if(patternLabel == null){
+				patternLabel = ValidatorHelper.getRuntimeName(_pattern);
+			}
+
 			if(patternLabel != null && patternLabel.length() > 0){
 				return getDisplayableType() + ": " + patternLabel.concat(" - ").concat(_pattern); //$NON-NLS-1$ //$NON-NLS-2$
 			}
