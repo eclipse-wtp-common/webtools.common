@@ -378,5 +378,24 @@
          </include>
       </validator>
    </extension>
-  
+   
+   <!-- New Test Validator to test exclude/include target runtime rule -->
+   <extension
+       id="TargetRuntimeValidator"
+       name="J2EE Test"
+       point="org.eclipse.wst.validation.validatorV2">
+    	<validator
+          class="org.eclipse.wst.validation.tests.TestValidator">       		
+       		<include>
+          		<rules>
+               		<facet id="java" version="1.5"/>
+          		</rules>
+       		</include>
+       		<exclude>
+    			<rules>
+        			<targetRuntime id="JBoss v5.0"/>
+        		</rules>
+    		</exclude>
+    	</validator>    
+ 	</extension>
 </plugin>

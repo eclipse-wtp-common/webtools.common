@@ -24,6 +24,7 @@ public class ValidationTestSuite extends TestSuite {
 		suite.addTest(TestSuite7.suite());
 		suite.addTest(TestSuite8.suite());
         suite.addTest(TestSuite9.suite());
+        suite.addTest(TestSuite10.suite());
         return suite;
     }
 
