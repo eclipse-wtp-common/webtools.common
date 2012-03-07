@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2006 IBM Corporation and others.
+ * Copyright (c) 2001, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.common.uriresolver.URIHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -189,19 +190,20 @@ public class Cache
   protected CacheEntry cacheResource(String uri)
   {
 	  CacheEntry cacheEntry = null;
-	  URLConnection conn = null;
 	  InputStream is = null;
 	  OutputStream os = null;
 	  try
 	  {
 		  URL url = new URL(uri);
-		  conn = url.openConnection();
-		  conn.connect();
+		  final URLConnection conn = url.openConnection();
 		  // Determine if this resource can be cached.
 		  if(conn.getUseCaches())
 		  {
-		    is = conn.getInputStream();//url.openStream();
-		  
+			is = URIHelper.getInputStream(uri, 0);
+	    	if (is == null) {
+	    	  uncached.add(uri);
+	    	  return cacheEntry;
+	    	}
 		    Random rand = new Random();
 			String fileName = rand.nextInt() + CACHE_EXTENSION;
 		    File file = new File(cacheLocation, fileName);
