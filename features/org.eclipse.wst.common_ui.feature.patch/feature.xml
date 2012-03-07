@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_ui.feature.patch"
       label="%featureName"
-      version="3.2.5.qualifier"
+      version="3.3.2.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,7 +18,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.wst.common_ui.feature" version="3.2.5.v201106210700-7C78FPpEdhO_pXpe8kUjodMvUz-MxOK" patch="true"/>
+      <import feature="org.eclipse.wst.common_ui.feature" version="3.3.2.v201111030500-7C79FVsEdhO_sfog9oNekiJkS7Nz00OK" patch="true"/>
    </requires>
          
    <plugin

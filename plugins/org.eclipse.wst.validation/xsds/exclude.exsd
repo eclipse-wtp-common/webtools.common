@@ -134,7 +134,7 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The target runtime id, for example &quot;org.eclipse.jst.server.generic.runtime.jboss5&quot;.
+                  The target runtime id.
                </documentation>
             </annotation>
          </attribute>
