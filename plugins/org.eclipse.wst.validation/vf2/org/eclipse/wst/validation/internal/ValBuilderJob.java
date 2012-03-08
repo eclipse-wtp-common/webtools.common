@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2010 IBM Corporation and others.
+ * Copyright (c) 2007, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -317,6 +317,12 @@ public final class ValBuilderJob extends WorkspaceJob {
 			boolean isChanged = (kind & IResourceDelta.CHANGED) != 0;
 			if (isChanged &&  (delta.getFlags() & InterestedFlags) == 0)return true;
 			
+			// Check for file ADDED and REMOVED events, which means that the file may have moved to a new
+			// project. To be safe we clear it's cached list of validators.
+			if (((kind & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) != 0)	&& resource.getType() == IResource.FILE) {
+				ValManager.getDefault().clearValProperty(resource);
+			}
+
 			if ((kind & (IResourceDelta.ADDED | IResourceDelta.CHANGED)) != 0){
 				ValManager.getDefault().validate(_request.getProject(), resource, delta.getKind(), ValType.Build, 
 					_request.getBuildKind(), _operation, _subMonitor.newChild(1));

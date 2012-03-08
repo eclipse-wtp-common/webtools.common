@@ -2,9 +2,9 @@
 <!-- Schema file written by PDE -->
 <schema targetNamespace="org.eclipse.wst.validation" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appinfo>
+      <appInfo>
          <meta.schema plugin="org.eclipse.wst.validation" id="validator-v2" name="Validator V2"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          This is used to register a validator to the validation framework (version 2). In addition to specifying the validator to invoke, it registers a set of default filter rules, to control which resources are passsed to the validator.
       </documentation>
@@ -12,9 +12,9 @@
 
    <element name="extension">
       <annotation>
-         <appinfo>
+         <appInfo>
             <meta.element />
-         </appinfo>
+         </appInfo>
       </annotation>
       <complexType>
          <sequence>
@@ -39,9 +39,9 @@
                <documentation>
                   The short user friendly name of the validator.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -65,9 +65,9 @@
                <documentation>
                   The class that implements the validator.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.validation.AbstractValidator"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="build" type="boolean">
@@ -112,7 +112,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
    <element name="include">
       <annotation>
          <documentation>
-            This contains a set of inclusion rules, which are used in filtering which resources get validated. At least one of these rules must be satisfied in order for the validator to be called on the particular resource.
+            This contains a set of inclusion rules, which are used in filtering which resources get validated. At least one of these rules must be satisfied in order for the validator to be called on the particular resource. Only &quot;Project Nature&quot; and &quot;Facet&quot; rules are being considered for activating the validator.
          </documentation>
       </annotation>
       <complexType>
@@ -125,7 +125,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
    <element name="exclude">
       <annotation>
          <documentation>
-            This contains a set of exclusion rules, used in filtering which resources get validated. If any of these rules are matched, then the validator is not called on this resource.
+            This contains a set of exclusion rules, used in filtering which resources get validated. If any of these rules are matched, then the validator is not called on this resource.  Only &quot;Project Nature&quot; and &quot;Facet&quot; rules are being considered to prevent activating the validator.
          </documentation>
       </annotation>
       <complexType>
@@ -225,6 +225,7 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
             <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="contentType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="targetRuntime" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="pattern" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
       </complexType>
@@ -249,6 +250,23 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
       </complexType>
    </element>
 
+   <element name="targetRuntime">
+      <annotation>
+         <documentation>
+            Used to filter on target runtimes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The target runtime id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <element name="group">
       <annotation>
          <documentation>
@@ -261,9 +279,9 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                <documentation>
                   The fully qualified ID of the validation group to which this validator belongs.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="identifier"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -312,9 +330,9 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                <documentation>
                   A short, one line label that is displayed to the end user, that describes the message category.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="severity">
@@ -363,18 +381,27 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
    </element>
 
    <annotation>
-      <appinfo>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         Provisional API.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
          <meta.section type="since"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          WebTools 3.0.
       </documentation>
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="examples"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          An example of a validator that will be called on resources that have html or htm file extensions.
 &lt;pre&gt;
@@ -396,24 +423,15 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
 
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="copyright"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          Copyright (c) 2007,2008 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a
 href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appinfo>
-         <meta.section type="apiInfo"/>
-      </appinfo>
-      <documentation>
-         Provisional API.
       </documentation>
    </annotation>
 

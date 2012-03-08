@@ -2,15 +2,20 @@
 <!-- Schema file written by PDE -->
 <schema targetNamespace="org.eclipse.wst.validation" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appinfo>
+      <appInfo>
          <meta.schema plugin="org.eclipse.wst.validation" id="exclude" name="Validator Exclusion"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          A way to add additional exclusion filters to a V2 validator.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="validator" minOccurs="1" maxOccurs="unbounded"/>
@@ -34,9 +39,9 @@
                <documentation>
                   The short user friendly name for the exclusion.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -57,9 +62,9 @@
                <documentation>
                   The fully qualifed validator id that is being extended.
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="identifier"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -119,6 +124,23 @@
       </complexType>
    </element>
 
+   <element name="targetRuntime">
+      <annotation>
+         <documentation>
+            Used to filter on project natures.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The target runtime id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <element name="file">
       <complexType>
          <attribute name="name" type="string" use="required">
@@ -168,6 +190,7 @@
             <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="contentType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="targetRuntime" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="pattern" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
       </complexType>
@@ -208,6 +231,7 @@
          </attribute>
       </complexType>
    </element>
+
    <element name="pattern">
       <annotation>
          <documentation>
@@ -234,18 +258,18 @@
    </element>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="since"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          WebTools 3.0
       </documentation>
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="examples"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          &lt;!-- A plug-in is turning off the T1A validator for projects that have the ModuleCoreNature --&gt;
  &lt;extension
@@ -262,19 +286,17 @@
        &lt;/exclude&gt;
     &lt;/validator&gt;
  &lt;/extension&gt;
-
       </documentation>
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="apiInfo"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          Provisional API.
       </documentation>
    </annotation>
-
 
 
 
