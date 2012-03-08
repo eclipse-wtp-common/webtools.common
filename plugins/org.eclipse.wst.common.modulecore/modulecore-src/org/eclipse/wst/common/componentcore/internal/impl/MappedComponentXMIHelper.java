@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,11 +58,20 @@ public class MappedComponentXMIHelper extends MappedXMIHelper {
 	private URI resolveURIFromComponent(URI relative, URI base) {
 		IVirtualComponent component = getComponent(base);
 		if (component != null) {
-			IVirtualFile virtualFile = component.getRootFolder().getFile(new Path(relative.toString()));
+			// If the relative URI has a fragment, remove it before resolving. 
+			boolean hasFragment = relative.hasFragment();
+			URI tmpURI = hasFragment?relative.trimFragment():relative;
+			IVirtualFile virtualFile = component.getRootFolder().getFile(new Path(tmpURI.toString()));
 			if (virtualFile != null) {
 				IPath resolvingPath = virtualFile.getWorkspaceRelativePath();
-				if (resolvingPath !=null) 
-					return URI.createPlatformResourceURI(resolvingPath.toString());
+				if (resolvingPath !=null) {
+					URI result = URI.createPlatformResourceURI(resolvingPath.toString());
+					// If the original URI had a fragment, add the fragment to the result.
+					if (hasFragment){
+						result = result.appendFragment(relative.fragment());
+					}
+					return result;
+				}
 			}
 		}
 		return null;
