@@ -62,6 +62,8 @@ public final class ValOperation {
 	 */
 	private final Map<String, Set<IResource>> 	_validated = new HashMap<String, Set<IResource>>(20);
 	
+	private final Set<IResource>	_validatedProjects = new HashSet<IResource>(20);
+	
 	public ValOperation(){
 		_multiProject = false;
 	}
@@ -116,6 +118,19 @@ public final class ValOperation {
 	}
 	
 	/**
+	 * Remember that this resource has been validated
+	 *  
+	 * @param resource resource that has been validated.
+	 */
+	
+	public void addValidatedProject(IResource resource){
+		synchronized(_validatedProjects){
+			if (resource != null)
+				_validatedProjects.add(resource);
+		}
+	}
+	
+	/**
 	 * Answer if this resource has already been validated as a side-effect of some other validation by the
 	 * given validator.
 	 * 
@@ -128,6 +143,18 @@ public final class ValOperation {
 			if (set == null)return false;
 			
 			return set.contains(resource);
+		}
+	}
+	
+	/**
+	 * Answer if this resource has been validated
+	 * 
+	 * @param resource
+	 */
+	
+	public boolean isValidatedProject(IResource resource){
+		synchronized(_validatedProjects){
+			return _validatedProjects.contains(resource);
 		}
 	}
 
