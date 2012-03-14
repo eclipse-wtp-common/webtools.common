@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,12 +22,6 @@ package org.eclipse.wst.validation;
  * </p>
  * <p>The methods {@link ValidationFramework#getProjectSettings(org.eclipse.core.resources.IProject)} and 
  * {@link ValidationFramework#getWorkspaceSettings()} can be used to retrieve IMutableValidator's.
- * <p>
- * <b>Provisional API:</b> This class/interface is part of an interim API that is still under development and expected to 
- * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
- * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
- * (repeatedly) as the API evolves.
- * </p>
  * @noextend This interface is not intended to be extended by clients.
  * @noimplement This interface is not intended to be implemented by clients.
 

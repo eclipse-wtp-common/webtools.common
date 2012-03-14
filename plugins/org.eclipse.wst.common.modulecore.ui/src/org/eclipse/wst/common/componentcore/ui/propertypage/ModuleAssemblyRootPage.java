@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Red Hat and Others
+ * Copyright (c) 2010, 2012 Red Hat and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *    Rob Stryker - initial implementation and ongoing maintenance
  *    Konstantin Komissarchik - misc. UI cleanup
  *    
- * API in these packages is provisional in this release
+ *
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 

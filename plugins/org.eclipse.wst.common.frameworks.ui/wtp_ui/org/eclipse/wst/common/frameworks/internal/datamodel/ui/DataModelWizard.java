@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,10 +34,6 @@ import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
-
-/**
- * This class is EXPERIMENTAL and is subject to substantial changes.
- */
 public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	
 	private IDataModel dataModel;
@@ -161,7 +157,6 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	// TODO need to implement this. Perhaps in the PageGroupManager
-	//
 	protected void resetAfterFinishError() {
 		// IWizardPage[] pages = getPages();
 		// for (int i = 0; i < pages.length; i++) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,9 +65,6 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}
  * </b>.
  * </p>
- * <p>
- * This class is experimental until fully documented.
- * </p>
  * 
  * @see ModuleCoreNature
  * @see ArtifactEditModel
@@ -84,9 +81,6 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	private BinaryComponentHelper binaryComponentHelper;
 	private final IProject project;
 	
-	/**
-	 * 
-	 */
 	protected ArtifactEdit() {
 		super();
 		artifactEditModel = null;

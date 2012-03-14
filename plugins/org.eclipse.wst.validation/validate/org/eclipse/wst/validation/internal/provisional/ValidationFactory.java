@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,15 +20,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * 
  * @plannedfor 1.0
  * 
- * [issue: LM - 2 issues.
- *  1. I don't think the name 'factory' provides a good description of 
- *     this interface. Unless I'm mistaken the ValidationFactory doesn't
- *     actually create validators but simply returns existing validators.
- *     Looking at the implementation this is currently the case. I suggest
- *     renaming this to ValidatorRegistry or something similar.
- *  2. I think the common way for creating a factory is to create a class
- *     with a static method such as getFactory. If this is to be a factory
- *     it should probably be structured as per the convention.]
  */
 public interface ValidationFactory {
 	

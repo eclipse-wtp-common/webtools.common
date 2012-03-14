@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,6 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPa
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 
-/**
- * This interface is EXPERIMENTAL and is subject to substantial changes.
- */
 public abstract class DMWizardExtensionFactory {
 
 	public DMWizardExtensionFactory() {

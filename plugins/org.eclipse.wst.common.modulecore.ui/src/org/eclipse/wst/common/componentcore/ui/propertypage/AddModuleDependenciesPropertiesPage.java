@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2011 Red Hat and others
+ * Copyright (c) 2010, 2012 Red Hat and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *    Konstantin Komissarchik - misc. UI cleanup
  *    Roberto Sanchez (IBM) - Handle tags in mappings
  *    
- * API in these packages is provisional in this release
+ *
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
 
