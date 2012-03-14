@@ -19,9 +19,9 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.wst.common_core.feature" version="3.4.0"/>
-   </requires>
+   <includes
+         id="org.eclipse.wst.common_core.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.wst.common.frameworks.ui"
