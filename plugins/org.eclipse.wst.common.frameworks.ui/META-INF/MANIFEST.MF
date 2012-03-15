@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.wst.common.frameworks.ui; singleton:=true
-Bundle-Version: 1.2.100.qualifier
+Bundle-Version: 1.2.200.qualifier
 Bundle-Activator: org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.frameworks.internal.datamodel.ui;x-internal:=true,
