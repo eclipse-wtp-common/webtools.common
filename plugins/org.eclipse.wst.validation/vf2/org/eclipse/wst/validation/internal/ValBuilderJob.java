@@ -346,10 +346,10 @@ public final class ValBuilderJob extends WorkspaceJob {
 					Validator val = dr.getValidator();
 					if (Friend.shouldValidate(val, dr.getResource(), ValType.Build, new ContentTypeWrapper())){
 						_operation.getState().put(ValidationState.TriggerResource, resource);
-						ValidationEvent event = new ValidationEvent(dr.getResource(), delta.getKind(), delta);
+						ValidationEvent event = new ValidationEvent(dr.getResource(), IResourceDelta.NO_CHANGE, delta);
 						if (val.shouldClearMarkers(event))mm.clearMarker(dr.getResource(), val);
 							ValManager.getDefault().validate(val, _operation, dr.getResource(),
-									delta.getKind(), _monitor, event);
+									IResourceDelta.NO_CHANGE, _monitor, event);
 						}
 					}
 				}
