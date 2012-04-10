@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation and others.
+ * Copyright (c) 2011, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,7 +48,7 @@ public class DefaultDeploymentAssemblyVerifier extends AbstractDeploymentAssembl
 		ArrayList<ComponentResourceProxy> mappings = data.getResourceMappings();
 		if (mappings == null)
 			return status;		
-		int severity = Status.ERROR;
+		int severity = Status.WARNING;
 		String msg = null;
 		IProject project = data.getComponent().getProject();
 		for (ComponentResourceProxy mapping:mappings){
@@ -69,7 +69,7 @@ public class DefaultDeploymentAssemblyVerifier extends AbstractDeploymentAssembl
 		if (references == null){
 			return status;
 		}
-		int severity = Status.ERROR;
+		int severity = Status.WARNING;
 		String msg = null;
 		for (IVirtualReference reference:references){
 			if (!reference.getReferencedComponent().exists()){

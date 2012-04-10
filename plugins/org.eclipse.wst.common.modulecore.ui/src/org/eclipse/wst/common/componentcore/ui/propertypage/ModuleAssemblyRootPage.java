@@ -359,6 +359,9 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 		if(element.getSeverity() == IStatus.ERROR) {
 			imageType = ISharedImages.IMG_OBJS_ERROR_TSK;
 		}
+		else if (element.getSeverity() == IStatus.INFO){
+			imageType = ISharedImages.IMG_OBJS_INFO_TSK;
+		}
 		else {
 			imageType = ISharedImages.IMG_OBJS_WARN_TSK;
 		}
