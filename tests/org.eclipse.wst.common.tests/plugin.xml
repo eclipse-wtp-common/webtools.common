@@ -105,6 +105,20 @@
       <operationExtension
             id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
    </extension>
+  <extension
+        point="org.eclipse.wst.common.modulecore.flattenParticipantProvider">
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider"
+           weight="5">
+     </flattenParticipantProvider>
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider2">
+     </flattenParticipantProvider>
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider3"
+           weight="10">
+     </flattenParticipantProvider>
+  </extension>
    
    
    <!-- Uncomment the below hook to test specific operation extension ids when needed -->
