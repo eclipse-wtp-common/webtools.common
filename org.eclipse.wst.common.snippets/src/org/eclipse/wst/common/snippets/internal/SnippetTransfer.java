@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,8 +84,12 @@ public class SnippetTransfer extends ByteArrayTransfer {
 	 * object if the recorded time and the decoded time match.
 	 */
 	public Object nativeToJava(TransferData transferData) {
-		long startTime = Long.valueOf(new String((byte[]) super.nativeToJava(transferData))).longValue();
-		return this.startTime == startTime ? object : null;
+		byte[] bytes = (byte[]) super.nativeToJava(transferData);
+		if (bytes != null) {
+			long clipboardTime = Long.valueOf(new String(bytes)).longValue();
+			return this.startTime == clipboardTime ? object : null;
+		}
+		return null;
 	}
 
 }
