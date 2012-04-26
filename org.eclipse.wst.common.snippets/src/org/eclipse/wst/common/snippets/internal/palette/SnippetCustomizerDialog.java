@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2011 IBM Corporation and others.
+ * Copyright (c) 2004, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
@@ -45,6 +45,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
+import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
@@ -245,23 +246,26 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		public ImportAction() {
 			setEnabled(false);
 			setText(SnippetsMessages.SnippetCustomizerDialog_0);
-			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
-			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
-			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
+			SnippetsPluginImageHelper pluginImageHelper = SnippetsPluginImageHelper.getInstance();
+			setImageDescriptor(pluginImageHelper.getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
+			setDisabledImageDescriptor(pluginImageHelper.getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
+			setHoverImageDescriptor(pluginImageHelper.getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IHelpContextIds.CUSTOMIZE_IMPORT_BUTTON);
 		}
 
 		protected void handleImport() {
 			final FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
 			fileDialog.setText(SnippetsMessages.Import_Snippets);
-//			fileDialog.setFileName("snippets.xml"); //$NON-NLS-1$
 			String[] filterExtensions = new String[2];
 			filterExtensions[0] = "*.xml; *.zip"; //$NON-NLS-1$
 			filterExtensions[1] = "*.*"; //$NON-NLS-1$
 			fileDialog.setFilterExtensions(filterExtensions);
 			String filename = fileDialog.open();
+			if (filename == null)
+				return;
+
 			try {
-				if (filename.toLowerCase().endsWith(".zip")) { //$NON-NLS-1$
+				if (filename.toLowerCase(Locale.US).endsWith(".zip")) { //$NON-NLS-1$
 					ZipFile zip = new ZipFile(new File(filename));
 					ZipEntry entry = zip.getEntry("snippets.xml"); //$NON-NLS-1$
 					loadMetadata(zip.getInputStream(entry));
@@ -272,16 +276,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 					loadMetadata(new FileInputStream(filename));
 				}
 			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			catch (ZipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.logException(e);
 			}
 		}
 
