@@ -1,5 +1,6 @@
 # copied from eclipse.platform.debug/.gitignore
 /*/bin/ 
+*/bin/ 
 *~ 
 *.rej 
 *.bak 
@@ -30,3 +31,5 @@ temp.folder
 src.zip
 .fbwarnings
 javaCompiler...args
+org.eclipse.wst.common.snippets.tests/bin/
+org.eclipse.wst.common.snippets/bin/
