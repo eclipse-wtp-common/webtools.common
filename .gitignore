@@ -1,0 +1,32 @@
+# copied from eclipse.platform.debug/.gitignore
+bin/
+*~
+*.rej
+*.bak
+javacore.*
+heapdump.*
+core.*
+Snap.*
+
+# suggested by github
+*.log
+*.sql
+*.sqlite
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*.stackdump
+
+#from many .cvsignore files
+build.xml
+temp.folder
+@dot
+src.zip
+.fbwarnings
+javaCompiler...args
