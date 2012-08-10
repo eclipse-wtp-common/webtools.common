@@ -1,12 +1,11 @@
 # copied from eclipse.platform.debug/.gitignore
-/*/bin/ 
-*/bin/ 
-*~ 
-*.rej 
-*.bak 
-javacore.* 
-heapdump.* 
-core.* 
+bin/
+*~
+*.rej
+*.bak
+javacore.*
+heapdump.*
+core.*
 Snap.*
 
 # suggested by github
@@ -31,5 +30,3 @@ temp.folder
 src.zip
 .fbwarnings
 javaCompiler...args
-org.eclipse.wst.common.snippets.tests/bin/
-org.eclipse.wst.common.snippets/bin/
