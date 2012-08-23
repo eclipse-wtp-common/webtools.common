@@ -339,7 +339,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 			}
 			message += path.lastSegment() + "\'"; //$NON-NLS-1$
 		}
-		MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Warning", message); //$NON-NLS-1$
+		MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.WarningTitleDialog, message);
 	}
 	
 	private static ViewerFilter getDialogViewerFilter() {

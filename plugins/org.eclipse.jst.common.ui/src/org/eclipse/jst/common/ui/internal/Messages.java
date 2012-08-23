@@ -35,6 +35,7 @@ public class Messages extends NLS {
 	public static String ManifestEntrySourceColumn;
 	public static String ConfigureParentLink;
 	public static String InvalidArchivesWarning;
+	public static String WarningTitleDialog;
 	
 	static {
 		// initialize resource bundle
