@@ -8,7 +8,7 @@
  * Contributors:
  *    Rob Stryker - initial implementation and ongoing maintenance
  *    Konstantin Komissarchik - misc. UI cleanup
- *    
+ *    Roberto Sanchez (IBM) - Fix label truncation of Revert button
  *
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.ui.propertypage;
@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -30,6 +31,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -342,7 +344,16 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	
     public void createControl(Composite parent){
     	super.createControl(parent);
-    	getDefaultsButton().setText(Messages.Revert);
+    	Button defaultButton = getDefaultsButton();
+    	defaultButton.setText(Messages.Revert);
+		int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+		Object layoutData = defaultButton.getLayoutData();
+		if (layoutData instanceof GridData){
+			GridData data = (GridData) defaultButton.getLayoutData();
+			Point minButtonSize = defaultButton.computeSize(SWT.DEFAULT,SWT.DEFAULT, true);
+			data.widthHint = Math.max(widthHint, minButtonSize.x);
+			defaultButton.setLayoutData(data);
+		}
     }
     
     public void refreshProblemsView(){
