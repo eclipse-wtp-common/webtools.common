@@ -13,6 +13,8 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.io.File;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -20,6 +22,9 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,7 +40,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelSynchHelper;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 
-public class NewProjectGroup implements IProjectCreationPropertiesNew {
+public class NewProjectGroup implements IProjectCreationPropertiesNew{
 	private IDataModel model;
 	public Text projectNameField = null;
 	protected Text locationPathField = null;
@@ -133,6 +138,19 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		GridDataFactory.defaultsFor(browseButton).applyTo(browseButton);
 		browseButton.setFont(font);
 		browseButton.setText(defBrowseButtonLabel);
+		GC gc = new GC(projectGroup);
+		gc.setFont(projectGroup.getFont());
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
+		int widthHint = Dialog.convertHorizontalDLUsToPixels(fontMetrics, IDialogConstants.BUTTON_WIDTH);
+		Object layoutData = browseButton.getLayoutData();
+		//This if statement fixes the truncated value of the browse button text
+		if (layoutData instanceof GridData){
+			GridData dataForBrowseButton = (GridData) layoutData;
+			Point minButtonSize = browseButton.computeSize(SWT.DEFAULT,SWT.DEFAULT, true);
+			dataForBrowseButton.widthHint = Math.max(widthHint, minButtonSize.x);
+			browseButton.setLayoutData(dataForBrowseButton);
+		}
 		browseButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
