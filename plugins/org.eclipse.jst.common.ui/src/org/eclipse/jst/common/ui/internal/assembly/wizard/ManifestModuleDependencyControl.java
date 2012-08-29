@@ -642,7 +642,8 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 	}
 
 	public boolean performCancel() {
-		return false;
+		return true;//false; Not sure why this value was on false, and ModuleAssemblyRootPage was set on true
+		//Problem seems to be corrected, but need to verify there is not new derived problems .
 	}
 
 	public void setVisible(boolean visible) {
