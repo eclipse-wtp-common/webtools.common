@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ public class CacheURIResolverExtension implements URIResolverExtension
 	 */
 	public String resolve(IFile file, String baseLocation, String publicId, String systemId)
 	{ 
-      if(CachePlugin.getDefault().isCacheEnabled())
+      if(CachePlugin.isRunning() && CachePlugin.getDefault().isCacheEnabled())
       {
 		  String resource = null;
 		  if(systemId != null)
