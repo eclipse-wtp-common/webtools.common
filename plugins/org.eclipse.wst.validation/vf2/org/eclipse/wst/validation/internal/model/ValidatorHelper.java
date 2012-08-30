@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 IBM Corporation and others.
+ * Copyright (c) 2005, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,10 @@ package org.eclipse.wst.validation.internal.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.validation.internal.ValidatorMutable;
@@ -96,5 +99,20 @@ public final class ValidatorHelper {
 		IRuntime runtime = (IRuntime) targetRuntime;
 		
 		return runtime.getLocalizedName();
+	}
+	
+	/**
+	 * Return the target runtime of the given IProject
+	 * @param project
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static IRuntime getTargetRuntime(IProject project) throws CoreException {
+		IFacetedProject facetedProject = ProjectFacetsManager.create(project);
+		
+		if(facetedProject != null)
+			return facetedProject.getRuntime();
+		
+		return null;
 	}
 }
