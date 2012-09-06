@@ -246,7 +246,7 @@ public class EventManager implements IResourceChangeListener {
 				deleting((IProject) event.getResource());
 			} else if ((event.getType() == IResourceChangeEvent.PRE_CLOSE) && isProject) {
 				closing((IProject) event.getResource());
-			} else if (event.getType() == IResourceChangeEvent.POST_BUILD) {
+			} else if (event.getType() == IResourceChangeEvent.PRE_BUILD) {
 				postAutoChange(event.getDelta());
 			}
 		}
