@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2008 IBM Corporation and others.
+ * Copyright (c) 2001, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -246,7 +246,7 @@ public class EventManager implements IResourceChangeListener {
 				deleting((IProject) event.getResource());
 			} else if ((event.getType() == IResourceChangeEvent.PRE_CLOSE) && isProject) {
 				closing((IProject) event.getResource());
-			} else if (event.getType() == IResourceChangeEvent.POST_BUILD) {
+			} else if (event.getType() == IResourceChangeEvent.PRE_BUILD) {
 				postAutoChange(event.getDelta());
 			}
 		}
