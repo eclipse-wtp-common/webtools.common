@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -115,7 +115,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 		
 		boolean error = false;
 		File f = getIndexLocation();
-		if (!f.exists()){
+		if (!f.exists() || f.length() == 0){
 			_dependsOn = new HashMap<IResource,Set<Depends>>(100);
 			_dependents = new HashMap<IResource,Set<Depends>>(100);
 		}
