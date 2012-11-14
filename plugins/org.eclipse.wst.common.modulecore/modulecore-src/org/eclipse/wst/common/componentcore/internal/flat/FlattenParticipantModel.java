@@ -96,7 +96,6 @@ public class FlattenParticipantModel {
 		private IFlattenParticipantProvider delegate;
 		public FlattenParticipantProviderWrapper(IConfigurationElement element) {
 			this.cf = element;
-			System.out.println(element.getAttribute("class"));
 			String s = element.getAttribute("weight");
 			try {
 				weight = Integer.parseInt(s);
