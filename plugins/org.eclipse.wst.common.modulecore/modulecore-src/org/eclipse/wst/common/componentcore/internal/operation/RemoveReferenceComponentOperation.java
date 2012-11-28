@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
@@ -49,8 +51,10 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		if (sourceComp == null || !sourceComp.getProject().isAccessible() || sourceComp.isBinary()) return;
-		
-		IVirtualReference [] existingReferencesArray = sourceComp.getReferences();
+
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(IVirtualComponent.REQUESTED_REFERENCE_TYPE, IVirtualComponent.DISPLAYABLE_REFERENCES_ALL);
+		IVirtualReference [] existingReferencesArray = sourceComp.getReferences(options);
 		if(existingReferencesArray == null || existingReferencesArray.length == 0){
 			return;
 		}
