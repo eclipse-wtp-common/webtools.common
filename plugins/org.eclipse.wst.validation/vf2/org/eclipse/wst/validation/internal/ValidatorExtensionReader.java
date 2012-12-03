@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2010 IBM Corporation and others.
+ * Copyright (c) 2007, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,8 +78,11 @@ public class ValidatorExtensionReader {
 					if (v != null)v2 = v.asV2Validator();
 
 					if (v2 == null){
-						String msg = NLS.bind("Plug-in configuration error, extension {0} references validator id {1} but this id does not exist.",  //$NON-NLS-1$
-							extensionPoint.getUniqueIdentifier(), id);
+						String msg = (ext.getUniqueIdentifier() != null) ?
+						NLS.bind("Plug-in configuration error, extension \"{0}\" references validator id \"{1}\" but this id does not exist.",  //$NON-NLS-1$
+							ext.getUniqueIdentifier(), id) : 
+						NLS.bind("Plug-in configuration error, extension in \"{0}\" references validator id \"{1}\" but this id does not exist.",  //$NON-NLS-1$
+							ext.getNamespaceIdentifier(), id);
 						CoreException ex = new CoreException(new Status(IStatus.ERROR, ValidationPlugin.PLUGIN_ID, msg));
 						ValidationPlugin.getPlugin().handleException(ex);
 					}
