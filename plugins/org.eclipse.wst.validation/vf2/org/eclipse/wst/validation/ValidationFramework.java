@@ -502,6 +502,15 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Cancels all of the validation jobs. Any executing jobs will be asked to
+	 * cancel, but there is no guarantee that they will do so. Jobs in other states will
+	 * either be dequeued or discarded.
+	 */
+	public void cancel() {
+		Job.getJobManager().cancel(ValidationBuilder.FAMILY_VALIDATION_JOB);
+	}
+
+	/**
 	 * Suspends, or undoes the suspension of, validation on the current project.
 	 * If <b>suspend</b> is true then validation is suspended and if it's false
 	 * then validation is not suspended on the project. The value of this
