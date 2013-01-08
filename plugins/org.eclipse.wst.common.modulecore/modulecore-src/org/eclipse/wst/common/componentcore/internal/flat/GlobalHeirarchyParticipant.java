@@ -16,6 +16,7 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.flat.FlatVirtualComponent.FlatComponentTaskModel;
@@ -58,15 +59,18 @@ public class GlobalHeirarchyParticipant extends AbstractFlattenParticipant {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf2 = registry.getConfigurationElementsFor(ModulecorePlugin.PLUGIN_ID, "heirarchyFlattenParticipant"); //$NON-NLS-1$
 		for( int i = 0; i < cf2.length; i++ ) {
+			String clazz = cf2[i].getAttribute("class");
 			try {
 				IFlattenParticipant o = (IFlattenParticipant)cf2[i].createExecutableExtension("class");
 				if( o != null )
 					list.add(o);
 				else {
-					// TODO log a warning
+					ModulecorePlugin.log(IStatus.WARNING, 0, 
+							"Unable to create global heirarchy participant " + clazz, null);
 				}
 			} catch(CoreException ce) {
-				// TODO log a warning
+				ModulecorePlugin.log(IStatus.WARNING, 0, 
+						"Unable to create global heirarchy participant " + clazz, ce);
 			}
 		}
 	}
