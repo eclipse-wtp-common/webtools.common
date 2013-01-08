@@ -78,7 +78,7 @@ public class WrappedRuntimeException extends RuntimeException implements IWrappe
 	 * @return The nested exception held by the receiver.
 	 */
 	@Override
-	public java.lang.Throwable getCause() {
+	public synchronized java.lang.Throwable getCause() {
 		return getNestedException();
 	}
 	
