@@ -91,15 +91,50 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 		}
 		return new IFlattenParticipant[]{};
 	}
-	
+
+	private Object lock = new Object();
+	private volatile int sequenceID;
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.wst.common.componentcore.internal.flat.IFlatVirtualComponent#fetchResources()
 	 */
 	public IFlatResource[] fetchResources() throws CoreException {
-		if( members == null)
-			cacheResources();
-		return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
+		// If not a subclass of FlatVirtualComponent, use a proxy to provide some thread safety.
+		if (this.getClass() == FlatVirtualComponent.class) {
+			int mySequenceID;
+			synchronized (lock) {
+				// Check if there is a previous fully calculated result and return it if so.
+				if (members != null) {
+					return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
+				}
+				// Establish a "when" relative to calls from other threads.
+				// This may be overkill if it's not possible for a later thread to make
+				// a call and calculate different results from this thread.
+				mySequenceID = ++sequenceID;
+			}
+			// Perform the actual calculation on a proxy so this instance's "members" and "children" remain unset.
+			FlatVirtualComponent proxyComponent = new FlatVirtualComponent(this.component, this.dataModel);
+			proxyComponent.cacheResources();
+			// Update using the proxy results if we determine there is no calculation ongoing in some other thread
+			synchronized (lock) {
+				// See if this thread is still the most recent one to perform the calculation.
+				if (sequenceID == mySequenceID) {
+					// Since the most recent, save the results for future calls.
+					members = proxyComponent.members;
+					children = proxyComponent.children;
+				}
+			}
+			// Return the results of this thread's calculation.
+			return (FlatResource[]) proxyComponent.members.toArray(new FlatResource[proxyComponent.members.size()]);
+		}
+		// Else a subclass of FlatVirtualResource. Use original thread unsafe implementation
+		// since behavior of some methods may be overridden.
+		else {
+			if( members == null)
+				cacheResources();
+			return (FlatResource[]) members.toArray(new FlatResource[members.size()]);
+		}
 	}
 	
 	/*
@@ -107,9 +142,41 @@ public class FlatVirtualComponent implements IFlatVirtualComponent, ShouldInclud
 	 * @see org.eclipse.wst.common.componentcore.internal.flat.IFlatVirtualComponent#getChildModules()
 	 */
 	public IChildModuleReference[] getChildModules() throws CoreException {
-		if( members == null )
-			cacheResources();
-		return (ChildModuleReference[]) children.toArray(new ChildModuleReference[children.size()]);
+		// If not a subclass of FlatVirtualComponent, use a proxy to provide some thread safety.
+		if (this.getClass() == FlatVirtualComponent.class) {
+			int mySequenceID;
+			synchronized (lock) {
+				// Check if there is a previous fully calculated result and return it if so.
+				if (members != null) {
+					return (ChildModuleReference[]) children.toArray(new ChildModuleReference[children.size()]);
+				}
+				// Establish a "when" relative to calls from other threads.
+				// This may be overkill if it's not possible for a later thread to make
+				// a call and calculate different results from this thread.
+				mySequenceID = ++sequenceID;
+			}
+			// Perform the actual calculation on a proxy so this instance's "members" and "children" remain unset.
+			FlatVirtualComponent proxyComponent = new FlatVirtualComponent(this.component, this.dataModel);
+			proxyComponent.cacheResources();
+			// Update using the proxy results if we determine there is no calculation ongoing in some other thread
+			synchronized (lock) {
+				// See if this thread is still the most recent one to perform the calculation.
+				if (sequenceID == mySequenceID) {
+					// Since the most recent, save the results for future calls.
+					members = proxyComponent.members;
+					children = proxyComponent.children;
+				}
+			}
+			// Return the results of this thread's calculation.
+			return (ChildModuleReference[]) proxyComponent.children.toArray(new ChildModuleReference[proxyComponent.children.size()]);
+		}
+		// Else a subclass of FlatVirtualResource. Use original thread unsafe implementation
+		// since behavior of some methods may be overridden.
+		else {
+			if( members == null )
+				cacheResources();
+			return (ChildModuleReference[]) children.toArray(new ChildModuleReference[children.size()]);
+		}
 	}
 	
 	
