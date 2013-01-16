@@ -1439,6 +1439,10 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			Attr domAttr = (Attr) child.getAttributes().getNamedItem(map.getDOMName(mofObject));
 			if (domAttr != null) {
 				domValue = domAttr.getValue();
+				// do not use default attribute value if Translator.IGNORE_DEFAULT_ATTRIBUTE_VALUE style bit is used
+				if (domValue != null && ! domAttr.getSpecified() && map.isIgnoreDefaultAttributeValue()) {
+					domValue = null;
+				}
 				try {
 					domValue = map.convertStringToValue((String) domValue, mofObject);
 				} catch (FeatureValueConversionException e) {

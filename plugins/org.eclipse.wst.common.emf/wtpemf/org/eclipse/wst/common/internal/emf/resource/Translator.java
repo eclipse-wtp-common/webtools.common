@@ -77,6 +77,12 @@ public class Translator {
 	 * SourceLinkTranslator)
 	 */
 	public final static int STRING_RESULT_OK = 1 << 12;
+	
+	/**
+	 * Style bit that indicates that absent attributes should not use default value from schema document.
+	 * Absent attributes will instead use default EMF values.
+	 */
+	public final static int IGNORE_DEFAULT_ATTRIBUTE_VALUE = 1 << 13;
 
 	protected String[] fDOMNames;
 	protected String fDOMPath = ""; //$NON-NLS-1$
@@ -295,6 +301,10 @@ public class Translator {
 
 	public boolean isEnumWithHyphens() {
 		return (fStyle & ENUM_FEATURE_WITH_HYPHENS) != 0;
+	}
+	
+	public boolean isIgnoreDefaultAttributeValue() {
+		return (fStyle & IGNORE_DEFAULT_ATTRIBUTE_VALUE) != 0;
 	}
 
 	/**
