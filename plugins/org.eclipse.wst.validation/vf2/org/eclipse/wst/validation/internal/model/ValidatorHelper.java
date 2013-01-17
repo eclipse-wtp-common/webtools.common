@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2012 IBM Corporation and others.
+ * Copyright (c) 2005, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -110,7 +110,7 @@ public final class ValidatorHelper {
 	public static IRuntime getTargetRuntime(IProject project) throws CoreException {
 		IFacetedProject facetedProject = ProjectFacetsManager.create(project);
 		
-		if(facetedProject != null)
+		if(facetedProject != null && facetedProject.getRuntime() != null)
 			return facetedProject.getRuntime();
 		
 		return null;

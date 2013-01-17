@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.validation.internal.ContentTypeWrapper;
 import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
@@ -571,12 +572,14 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public Boolean matchesProject(IProject project){
 			try {
-				return ValidatorHelper.getTargetRuntime(project).getName().equals(_pattern);
+				IRuntime runtime = ValidatorHelper.getTargetRuntime(project);
+				if(runtime != null)
+					return runtime.getName().equals(_pattern);
 			} catch (CoreException e) {
 				//do nothing
 			}
 			
-			return false;
+			return Boolean.FALSE;
 		}
 		
 		@Override
