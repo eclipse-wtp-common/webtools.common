@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,7 +32,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 		return Singleton.disabledResourceManager;
 	}
 	
-	private Set<IResource> _disabled = new HashSet<IResource>(100);
+	private Set<IPath> _disabled = new HashSet<IPath>(100);
 	private Set<IProject>	_loadedProjects = new HashSet<IProject>(40);
 	
 	private DisabledResourceManager(){
@@ -43,9 +43,9 @@ public class DisabledResourceManager implements IProjectChangeListener {
 		// We check for two reasons, 1) we may save some work, 2) we force the project to be loaded 
 		if (isDisabled(resource))return;
 		
-		Set<IResource> copy = new HashSet<IResource>(_disabled.size()+2);
+		Set<IPath> copy = new HashSet<IPath>(_disabled.size()+2);
 		copy.addAll(_disabled);
-		copy.add(resource);
+		copy.add(resource.getFullPath());
 		save(copy, resource.getProject());
 		_disabled = copy;
 	}
@@ -54,18 +54,19 @@ public class DisabledResourceManager implements IProjectChangeListener {
 		// We check for two reasons, 1) we may save some work, 2) we force the project to be loaded 
 		if (!isDisabled(resource))return;
 		
-		Set<IResource> copy = new HashSet<IResource>(_disabled.size()+2);
+		Set<IPath> copy = new HashSet<IPath>(_disabled.size()+2);
 		copy.addAll(_disabled);
-		copy.remove(resource);
+		copy.remove(resource.getFullPath());
 		save(copy, resource.getProject());
 		_disabled = copy;		
 	}
 		
-	private void save(Set<IResource> disabled, IProject project) {
+	private void save(Set<IPath> disabled, IProject project) {
 		Serializer ser = new Serializer(200);
-		for (IResource resource : disabled){
-			if (project == resource.getProject()){
-				ser.put(resource.getProjectRelativePath().toPortableString());
+		String name = project.getName();
+		for (IPath fullPath : disabled){
+			if (name.equals(fullPath.segment(0))){
+				ser.put(fullPath.removeFirstSegments(1).toPortableString());
 			}
 		}
 		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
@@ -79,17 +80,21 @@ public class DisabledResourceManager implements IProjectChangeListener {
 	}
 	
 	private void load(IProject project){
-		Set<IResource> copy = new HashSet<IResource>(_disabled.size()+10);
+		Set<IPath> copy = new HashSet<IPath>(_disabled.size()+10);
 		copy.addAll(_disabled);
 		PreferencesWrapper prefs = PreferencesWrapper.getPreferences(project, null);
 		String disabled = prefs.get(PrefConstants.disabled, ""); //$NON-NLS-1$
 		if (disabled.length() > 0){
 			Deserializer des = new Deserializer(disabled);
-			while(des.hasNext()){
+			IPath projectPath = project.getFullPath();
+			while (des.hasNext()) {
 				String pathString = des.getString();
 				IPath path = Path.fromPortableString(pathString);
-				IResource resource = project.findMember(path);
-				copy.add(resource);
+				/*
+				 * technically, devices aren't preserved during append(), but
+				 * there shouldn't be any for in-workspace paths
+				 */
+				copy.add(projectPath.append(path));
 			}
 		}
 		_disabled = copy;
@@ -107,7 +112,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 	 */
 	public boolean isDisabled(IResource resource){
 		IProject project = resource.getProject();
-		if (_loadedProjects.contains(project))return _disabled.contains(resource);
+		if (_loadedProjects.contains(project))return _disabled.contains(resource.getFullPath());
 		return isDisabled(resource, project); 		
 	}
 	
@@ -120,7 +125,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 	}
 	
 	public void addDisabled(IResource resource){
-		_disabled.add(resource);
+		_disabled.add(resource.getFullPath());
 	}
 
 	public void projectChanged(IProject project, int type) {
@@ -136,9 +141,10 @@ public class DisabledResourceManager implements IProjectChangeListener {
 	
 	private synchronized void projectRemoved(IProject project) {
 		_loadedProjects.remove(project);
-		Set<IResource> copy = new HashSet<IResource>(100);
-		for (IResource resource : _disabled){
-			if (resource.getProject() != project)copy.add(resource);
+		Set<IPath> copy = new HashSet<IPath>(100);
+		String projectName = project.getName();
+		for (IPath fullPath : _disabled){
+			if (!projectName.equals(fullPath.segment(0))) copy.add(fullPath);
 		}
 		_disabled = copy;
 	}
