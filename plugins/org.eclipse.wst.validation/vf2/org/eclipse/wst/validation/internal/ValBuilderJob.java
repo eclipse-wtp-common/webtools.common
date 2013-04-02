@@ -333,7 +333,7 @@ public final class ValBuilderJob extends WorkspaceJob {
 				IResource project = resource.getProject();
 				if (!_operation.isValidatedProject(project))
 				{
-					ValManager.getDefault().validate(_request.getProject(), project, IResourceDelta.REMOVED, ValType.Build,
+					ValManager.getDefault().validate(_request.getProject(), delta.getResource(), IResourceDelta.REMOVED, ValType.Build,
 						_request.getBuildKind(), _operation, _subMonitor.newChild(1));
 					_operation.addValidatedProject(project);
 				}				
