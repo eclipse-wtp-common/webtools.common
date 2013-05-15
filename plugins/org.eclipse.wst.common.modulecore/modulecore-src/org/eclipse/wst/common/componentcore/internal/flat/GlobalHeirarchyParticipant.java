@@ -30,7 +30,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
  * to accept child module nestings it may otherwise be unable to know about. 
  */
 public class GlobalHeirarchyParticipant extends AbstractFlattenParticipant {
-	private ArrayList<IFlattenParticipant> list = new ArrayList<IFlattenParticipant>();
+	private ArrayList<IFlattenParticipant> list = null;
 	
 	@Override
 	public boolean isChildModule(IVirtualComponent rootComponent,
@@ -55,7 +55,11 @@ public class GlobalHeirarchyParticipant extends AbstractFlattenParticipant {
 		return false;
 	}
 	
-	private void ensureLoaded() {
+	private synchronized void ensureLoaded() {
+		if( list != null ) 
+			return;
+		
+		list = new ArrayList<IFlattenParticipant>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf2 = registry.getConfigurationElementsFor(ModulecorePlugin.PLUGIN_ID, "heirarchyFlattenParticipant"); //$NON-NLS-1$
 		for( int i = 0; i < cf2.length; i++ ) {
