@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -187,6 +188,7 @@ public class ComponentResolver implements URIResolverExtension {
 
 		// Only return results for Flexible projects
 		if (virtualResources != null) {
+			IVirtualFile virtualFile = null;
 			for (int i = 0; i < virtualResources.length && resolvedPath == null; i++) {
 				IPath resolvedRuntimePath = null;
 				if (systemId.startsWith(ROOT_PATH_STRING)) {
@@ -198,8 +200,17 @@ public class ComponentResolver implements URIResolverExtension {
 				}
 				else {
 					resolvedRuntimePath = new Path(virtualResources[i].getRuntimePath().removeLastSegments(1).append(systemId).toString());
+					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+					IFile fileResolvedRuntime = root.getFile(resolvedRuntimePath);
+					if(fileResolvedRuntime.exists()) {
+						IPath resolvedRuntimeLocation = fileResolvedRuntime.getLocation();
+						virtualFile = ComponentCore.createFile(fileResolvedRuntime.getProject(), resolvedRuntimePath.removeFirstSegments(1));
+					}
 				}
-				IVirtualFile virtualFile = ComponentCore.createFile(file.getProject(), resolvedRuntimePath);
+				
+				if(virtualFile == null)
+					virtualFile = ComponentCore.createFile(file.getProject(), resolvedRuntimePath);
+				
 				IFile resolvedFile = null;
 				if (virtualFile.getWorkspaceRelativePath().segmentCount() > 1) {
 					resolvedFile = virtualFile.getUnderlyingFile();
