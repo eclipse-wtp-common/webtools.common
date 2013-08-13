@@ -200,11 +200,14 @@ public class ComponentResolver implements URIResolverExtension {
 				}
 				else {
 					resolvedRuntimePath = new Path(virtualResources[i].getRuntimePath().removeLastSegments(1).append(systemId).toString());
-					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					IFile fileResolvedRuntime = root.getFile(resolvedRuntimePath);
-					if(fileResolvedRuntime.exists()) {
-						IPath resolvedRuntimeLocation = fileResolvedRuntime.getLocation();
-						virtualFile = ComponentCore.createFile(fileResolvedRuntime.getProject(), resolvedRuntimePath.removeFirstSegments(1));
+					if (resolvedRuntimePath.segmentCount() > 1)
+					{
+						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+						IFile fileResolvedRuntime = root.getFile(resolvedRuntimePath);
+						if(fileResolvedRuntime.exists()) {
+							IPath resolvedRuntimeLocation = fileResolvedRuntime.getLocation();
+							virtualFile = ComponentCore.createFile(fileResolvedRuntime.getProject(), resolvedRuntimePath.removeFirstSegments(1));
+						}
 					}
 				}
 				
