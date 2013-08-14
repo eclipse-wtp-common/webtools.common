@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -99,7 +99,7 @@ public class FlatFolder extends FlatResource implements IFlatFolder {
 		if (container != null) {
 			if (IContainer.class.equals(cl) || IFolder.class.equals(cl) || IResource.class.equals(cl))
 				return container;
-			if( File.class.equals(cl))
+			if( File.class.equals(cl)&& container.getLocation()!= null)
 				return container.getLocation().toFile();
 		}
 		return null;
