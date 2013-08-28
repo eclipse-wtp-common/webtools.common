@@ -16,7 +16,7 @@
       splitindex="true" 
       use="true"
       failonerror="true"
-      executable="${env.JAVA_5_HOME}/bin/javadoc">
+      executable="${env.JAVA_6_HOME}/bin/javadoc">
       <doctitle>Faceted Project Framework</doctitle>
       <header><![CDATA[<b>Faceted Project Framework</b><br/>Version 1.3]]></header>
       <footer><![CDATA[<b>Faceted Project Framework</b><br/>Version 1.3]]></footer>
