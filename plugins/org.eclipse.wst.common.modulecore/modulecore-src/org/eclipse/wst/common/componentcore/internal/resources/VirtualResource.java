@@ -116,6 +116,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public IPath[] getProjectRelativePaths() {
 
 		WorkbenchComponent aComponent = getReadOnlyComponent();
+		IPath defaultSrcRoot = ((WorkbenchComponentImpl)aComponent).getDefaultSourceRoot();
 		if (aComponent != null) {
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
 			// still need some sort of loop here to search subpieces of the
@@ -130,7 +131,7 @@ public abstract class VirtualResource implements IVirtualResource {
 					if (searchPath.isAbsolute())
 						searchPath = searchPath.makeRelative();
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
-					estimatedPaths = findBestMatches(componentResources);
+					estimatedPaths = findBestMatches(componentResources, defaultSrcRoot);
 				}
 				while (estimatedPaths.length == 0 && canSearchContinue(componentResources, searchPath));
 				if (estimatedPaths == null || estimatedPaths.length == 0)
@@ -157,7 +158,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		return (searchPath.segmentCount() > 0);
 	}
 
-	private IPath[] findBestMatches(ComponentResource[] theComponentResources) {
+	private IPath[] findBestMatches(ComponentResource[] theComponentResources, IPath defaultRoot) {
 		List result = new ArrayList();
 		int currentMatchLength = 0;
 		int bestMatchLength = -1;
@@ -177,6 +178,13 @@ public abstract class VirtualResource implements IVirtualResource {
 					IPath sourcePath = theComponentResources[i].getSourcePath();
 					IPath subpath = aRuntimePath.removeFirstSegments(currentMatchLength);
 					estimatedPath = sourcePath.append(subpath);
+				} else if( currentMatchLength == currentPath.segmentCount() && currentMatchLength == bestMatchLength) {
+					// We match the same length. If the new one has the default label, then choose the new one
+					bestMatchLength = currentMatchLength;
+					IPath sourcePath = theComponentResources[i].getSourcePath();
+					IPath subpath = aRuntimePath.removeFirstSegments(currentMatchLength);
+					if( sourcePath.equals(defaultRoot))
+						estimatedPath = sourcePath.append(subpath);
 				}
 			}
 		}
