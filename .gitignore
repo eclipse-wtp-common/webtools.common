@@ -30,3 +30,6 @@ temp.folder
 src.zip
 .fbwarnings
 javaCompiler...args
+
+# maven
+target/
