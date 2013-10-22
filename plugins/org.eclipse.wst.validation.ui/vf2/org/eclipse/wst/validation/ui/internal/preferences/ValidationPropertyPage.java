@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2009 IBM Corporation and others.
+ * Copyright (c) 2001, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -568,6 +568,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 		protected void columnClicked(int columnToEdit) {
 			IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
 			ValidatorMutable val = (ValidatorMutable) selection.getFirstElement();
+			
+			// In Mac OS, val can be null (see bugs 397349 and 412826)
+			if (val == null) return;
 
 			switch (columnToEdit) {
 			case 1:
