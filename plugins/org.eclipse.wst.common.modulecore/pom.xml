@@ -16,12 +16,12 @@
   <parent>
     <groupId>org.eclipse.webtools.common</groupId>
     <artifactId>org.eclipse.webtools.common</artifactId>
-    <version>3.5.0-SNAPSHOT</version>
+    <version>3.6.0-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.modulecore</artifactId>
-  <version>1.2.300-SNAPSHOT</version>
+  <version>1.2.301-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
