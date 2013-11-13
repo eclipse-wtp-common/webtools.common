@@ -116,7 +116,6 @@ public abstract class VirtualResource implements IVirtualResource {
 	public IPath[] getProjectRelativePaths() {
 
 		WorkbenchComponent aComponent = getReadOnlyComponent();
-		IPath defaultSrcRoot = ((WorkbenchComponentImpl)aComponent).getDefaultSourceRoot();
 		if (aComponent != null) {
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
 			// still need some sort of loop here to search subpieces of the
@@ -131,6 +130,7 @@ public abstract class VirtualResource implements IVirtualResource {
 					if (searchPath.isAbsolute())
 						searchPath = searchPath.makeRelative();
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
+					IPath defaultSrcRoot = ((WorkbenchComponentImpl)aComponent).getDefaultSourceRoot();
 					estimatedPaths = findBestMatches(componentResources, defaultSrcRoot);
 				}
 				while (estimatedPaths.length == 0 && canSearchContinue(componentResources, searchPath));
