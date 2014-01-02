@@ -34,7 +34,6 @@
     <module>features/org.eclipse.wst.common_core.feature</module>
     <module>features/org.eclipse.wst.common_sdk.feature</module>
     <module>features/org.eclipse.wst.common_ui.feature</module>
-    <module>features/org.eclipse.wst.common_ui.feature.patch</module>
 
     <module>plugins/org.eclipse.jem.util</module>
     <module>plugins/org.eclipse.jst.common.ui</module>
