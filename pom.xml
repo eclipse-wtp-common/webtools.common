@@ -28,10 +28,8 @@
 
   <modules>
     <module>features/org.eclipse.jst.common.fproj.enablement.jdt.feature</module>
-    <module>features/org.eclipse.jst.common.fproj.enablement.jdt.feature.patch</module>
     <module>features/org.eclipse.jst.common.fproj.enablement.jdt.sdk.feature</module>
     <module>features/org.eclipse.wst.common.fproj.feature</module>
-    <module>features/org.eclipse.wst.common.fproj.feature.patch</module>
     <module>features/org.eclipse.wst.common.fproj.sdk.feature</module>
 
     <module>plugins/org.eclipse.jst.common.fproj.enablement.jdt.sdk</module>
