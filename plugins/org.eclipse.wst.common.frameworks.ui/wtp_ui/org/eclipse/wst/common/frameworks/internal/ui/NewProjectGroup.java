@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2009 IBM Corporation and others.
+ * Copyright (c) 2003, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.util.BidiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -89,6 +90,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew{
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		projectNameField.setLayoutData(data);
 		projectNameField.setFont(font);
+		BidiUtils.applyBidiProcessing(projectNameField, BidiUtils.BTD_DEFAULT);
 		synchHelper.synchText(projectNameField, PROJECT_NAME, new Control[]{projectLabel});
 	}
 
