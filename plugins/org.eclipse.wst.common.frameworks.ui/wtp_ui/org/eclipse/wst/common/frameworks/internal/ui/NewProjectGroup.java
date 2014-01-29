@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2013 IBM Corporation and others.
+ * Copyright (c) 2003, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.io.File;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.equinox.bidi.StructuredTextTypeHandlerFactory;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -134,6 +135,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew{
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		locationPathField.setLayoutData(data);
 		locationPathField.setFont(font);
+		BidiUtils.applyBidiProcessing(locationPathField, StructuredTextTypeHandlerFactory.FILE);
 
 		// browse button
 		browseButton = new Button(projectGroup, SWT.PUSH);
