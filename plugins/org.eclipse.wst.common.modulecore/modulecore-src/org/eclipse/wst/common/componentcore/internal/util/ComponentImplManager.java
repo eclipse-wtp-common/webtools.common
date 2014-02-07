@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2014 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -203,7 +203,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		return createComponent(project, true);
 	}
 
-	public IVirtualComponent createComponent(IProject project, boolean checkSettings) {
+	public synchronized IVirtualComponent createComponent(IProject project, boolean checkSettings) {
 		try {
 			IVirtualComponent component = ComponentCacheManager.instance().getComponent(project);
 			if(component != null) {
@@ -246,7 +246,7 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		return createArchiveComponent(aProject, aComponentName, new Path("/"));
 	}
 	
-	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName, IPath path) {
+	public synchronized IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName, IPath path) {
 		path = path == null ? new Path("/") : path; //$NON-NLS-1$
 		try {
 			IVirtualComponent component = ComponentCacheManager.instance().getArchiveComponent(aProject, aComponentName);
@@ -349,7 +349,9 @@ public class ComponentImplManager implements ISynchronizerExtender{
 					if(isValidComponentImplFactory(project)) {
 						return componentsMap.get(project);
 					} else {
-						componentsMap.remove(project);
+						IVirtualComponent component = componentsMap.remove(project);
+						if(component instanceof VirtualComponent)
+							((VirtualComponent)component).dispose();
 					}
 				}
 				return null;
