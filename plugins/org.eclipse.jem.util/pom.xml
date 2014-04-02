@@ -22,6 +22,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.jem.util</artifactId>
-  <version>2.1.100-SNAPSHOT</version>
+  <version>2.1.200-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
