@@ -22,5 +22,24 @@
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.snippets.tests</artifactId>
   <version>1.0.400-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
+  <packaging>eclipse-test-plugin</packaging>
+
+  <properties>
+    <testSuite>${project.artifactId}</testSuite>
+    <testClass>org.eclipse.wst.common.snippets.tests.AllTests</testClass>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <useUIHarness>true</useUIHarness>
+          <useUIThread>true</useUIThread>  
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
