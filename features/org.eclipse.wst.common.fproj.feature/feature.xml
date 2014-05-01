@@ -6,7 +6,7 @@
       provider-name="%providerName"
       plugin="org.eclipse.wst.common.project.facet.core"
       license-feature="org.eclipse.license"
-      license-feature-version="1.0.0.qualifier">
+      license-feature-version="1.0.1.qualifier">
 
    <description>
       %description
