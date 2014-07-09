@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2011 IBM Corporation and others.
+ * Copyright (c) 2003, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1286,11 +1286,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		Text textNode = DOMUtilities.getChildTextNode(parent);
 		if (textNode != null) {
 			textNode.setData(text);
-		} else if (text != null) {
-			/*
-			 * https://bugs.eclipse.org/339136 - let's not create one if we
-			 * really don't have to
-			 */
+		} else {
 			textNode = createTextNode(parent.getOwnerDocument(), map, text);
 			if (!isEmptyTag((Element) parent)) {
 				DOMUtilities.insertBeforeNode(parent, textNode, null);
