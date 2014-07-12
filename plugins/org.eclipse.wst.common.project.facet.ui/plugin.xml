@@ -65,6 +65,10 @@
       id="org.eclipse.wst.common.project.facet.ui.FacetsPropertyPage"
       name="%project.facets"
       objectClass="org.eclipse.core.resources.IProject">
+      <filter
+        name="open"
+        value="true">
+      </filter>
     </page>
     <page
       adaptable="true"
