@@ -89,12 +89,48 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	    {
 	     super.clear();
 	    }
+	    
+	    @Override
+		public synchronized Object [] data()
+		{
+			return super.data();
+		}
+
+	    @Override
+	    protected synchronized void ensureSafety()
+	    {
+	    	super.ensureSafety();
+	    }
+	    
+	    @Override
+	    protected synchronized Object [] newData(int capacity)
+	    {
+	    	return super.newData(capacity);
+	    }
+	    
+	    @Override
+	    public synchronized boolean addAllUnique(int index, Collection collection) 
+	    {
+	    	return super.addAllUnique(index, collection);
+	    }
+	    
+	    @Override
+	    public synchronized void addUnique(int index, Object object) 
+	    {
+	    	super.addUnique(index, object);
+	    }
+	    
 
 
 	    @Override
 		public synchronized Object set(int index, Object object)
 	    {
 	    return super.set(index, object);
+	    }
+	    
+	    @Override
+	    public synchronized void setData(int size, Object [] data){
+	    	super.setData(size, data);
 	    }
 
 	    @Override
