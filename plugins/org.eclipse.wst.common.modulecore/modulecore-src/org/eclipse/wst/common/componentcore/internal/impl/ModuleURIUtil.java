@@ -116,15 +116,12 @@ public class ModuleURIUtil {
 	}
 	
 	public static URI trimToRelativePath(URI aURI, int aStartIndex) {
-		StringBuffer relativePath = new StringBuffer();
+		URI relativeURI = URI.createURI(""); //$NON-NLS-1$
 		for (int segmentIndex = aStartIndex; segmentIndex < aURI.segmentCount(); segmentIndex++) {
-			relativePath.append(aURI.segment(segmentIndex));
-			if (segmentIndex < (aURI.segmentCount() - 1))
-				relativePath.append(IPath.SEPARATOR);
+			relativeURI = relativeURI.appendSegment(aURI.segment(segmentIndex));
 		}
-		return URI.createURI(relativePath.toString());
-	}
-	
+		return relativeURI;
+	}	
 	
 	/**
 	 * @param aModuleResourcePath
