@@ -26,6 +26,10 @@
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.git</tycho.scmUrl>
+  </properties>
+
   <modules>
     <module>docs/org.eclipse.wst.common.api.doc</module>
     <module>docs/org.eclipse.wst.validation.doc.isv</module>
