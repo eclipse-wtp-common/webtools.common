@@ -26,6 +26,10 @@
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.tests.git</tycho.scmUrl>
+  </properties>
+
   <modules>
     <module>features/org.eclipse.wst.common_tests.feature</module>
 
