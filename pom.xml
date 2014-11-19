@@ -26,6 +26,10 @@
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.fproj.git</tycho.scmUrl>
+  </properties>
+
   <modules>
     <module>features/org.eclipse.jst.common.fproj.enablement.jdt.feature</module>
     <module>features/org.eclipse.jst.common.fproj.enablement.jdt.sdk.feature</module>
