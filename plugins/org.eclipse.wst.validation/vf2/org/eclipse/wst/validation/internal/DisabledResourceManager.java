@@ -121,7 +121,7 @@ public class DisabledResourceManager implements IProjectChangeListener {
 			load(project);
 			_loadedProjects.add(project);
 		}
-		return _disabled.contains(resource);
+		return _disabled.contains(resource.getFullPath());
 	}
 	
 	public void addDisabled(IResource resource){
