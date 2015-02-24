@@ -42,7 +42,6 @@ import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -56,7 +55,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
-import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
@@ -769,7 +767,6 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		TreeViewer tempViewer = new TreeViewer(tree);
 		final TreeViewerTableColumnSortToggler sortController = new TreeViewerTableColumnSortToggler(tempViewer);
 		
-		TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(tempViewer,new FocusCellOwnerDrawHighlighter(tempViewer));
 		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(tempViewer) {
 			private final int SPACE = 32;
 			protected boolean isEditorActivationEvent(
@@ -781,10 +778,10 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 			}
 		};
 		
-		TreeViewerEditor.create(tempViewer, focusCellManager, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+		TreeViewerEditor.create(tempViewer,null, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
 				| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
 				| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
+		
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(400, true));
@@ -797,6 +794,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		TreeColumn projectColumn = new TreeColumn(tree, SWT.NONE, SOURCE_COLUMN);
 		projectColumn.setText(Messages.SourceColumn);
 		projectColumn.setResizable(true);
+		
 		projectColumn.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				sortController.toggleSort(0);
