@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2014 Oracle and Others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Rastislav Wagner - [444850] FacetsSelectionPanel wont disable menu when it should
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -67,6 +68,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
@@ -334,6 +337,13 @@ public final class FacetsSelectionPanel
                 }
             }
         );
+        
+        this.tree.addMenuDetectListener(new MenuDetectListener() {
+			
+			public void menuDetected(MenuDetectEvent arg0) {
+				updatePopupMenu();
+			}
+		});
         
         final TabFolder tabFolder = new TabFolder( this.sform2, SWT.NONE );
         tabFolder.setLayoutData( gdhhint( gdhfill(), 80 ) );
@@ -710,19 +720,12 @@ public final class FacetsSelectionPanel
     
     private void handleSelectionChangedEvent()
     {
-        Object selection = ( (IStructuredSelection) this.treeViewer.getSelection() ).getFirstElement();
-
-        if( selection != null && selection instanceof IProjectFacet )
-        {
-            selection = getSelectedVersion( (IProjectFacet ) selection );
-        }
+        Object selection = getCurrentSelection();
         
         if( selection != this.selection )
         {
             this.selection = selection;
-
             notifySelectionChangedListeners();
-            updatePopupMenu();
         }
     }
     
@@ -814,8 +817,6 @@ public final class FacetsSelectionPanel
         }
 
         this.fpjwc.setSelectedPreset( null );
-        
-        updatePopupMenu();
     }
 
     private void handleMouseDownEvent( final Event event )
@@ -1085,17 +1086,17 @@ public final class FacetsSelectionPanel
         }
         
         this.fpjwc.setFixedProjectFacets( fixedFacets );
-        
-        updatePopupMenu();
     }
     
     private void updatePopupMenu()
     {
-        if( this.selection instanceof IProjectFacetVersion )
+    	Object selection = getCurrentSelection();
+    	
+        if(selection instanceof IProjectFacetVersion )
         {
             this.tree.setMenu( this.popupMenu );
 
-            final IProjectFacet f = ( (IProjectFacetVersion) this.selection ).getProjectFacet();
+            final IProjectFacet f = ( (IProjectFacetVersion) selection ).getProjectFacet();
             
             if( this.fpjwc.isFixedProjectFacet( f ) )
             {
@@ -1115,6 +1116,16 @@ public final class FacetsSelectionPanel
         {
             this.tree.setMenu( null );
         }
+    }
+    
+    private Object getCurrentSelection(){
+    	Object selection = ( (IStructuredSelection) this.treeViewer.getSelection() ).getFirstElement();
+
+        if( selection != null && selection instanceof IProjectFacet )
+        {
+            return getSelectedVersion( (IProjectFacet ) selection );
+        }
+        return null;
     }
     
     private TreeItem getTreeItem( final int x,
