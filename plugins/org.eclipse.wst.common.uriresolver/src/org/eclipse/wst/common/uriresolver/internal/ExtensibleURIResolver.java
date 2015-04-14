@@ -49,7 +49,16 @@ public class ExtensibleURIResolver implements URIResolver
 
 	public String resolve(String baseLocation, String publicId, String systemId)
 	{
+		boolean debug = 
+				"-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN".equals(publicId)  //$NON-NLS-1$
+				&& "http://java.sun.com/dtd/application_1_3.dtd".equals(systemId); //$NON-NLS-1$
+
+		
 		String result = systemId;
+		
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Initial result: " + result);
+		}
 
 		// compute the project that holds the resource
 		//
@@ -58,10 +67,27 @@ public class ExtensibleURIResolver implements URIResolver
 
 		URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
 		List list = resolverRegistry.getExtensionDescriptors(project);
+		
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Resolvers in URIResolverExtensionRegistry");
+			for (Iterator i = list.iterator(); i.hasNext();){
+				URIResolverExtensionDescriptor d = (URIResolverExtensionDescriptor) i.next();
+				System.out.println(d.getResolver());
+			}
+		}
 
 		// get the list of applicable pre-normalized resolvers from the
 		// extension registry
 		//
+		
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Pre-normalized resolvers in URIResolverExtensionRegistry");
+			for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();){
+				URIResolverExtension resolver = (URIResolverExtension) i.next();
+				System.out.println(resolver);
+			}
+		}
+		
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();)
 		{
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
@@ -69,16 +95,37 @@ public class ExtensibleURIResolver implements URIResolver
 			if(tempresult != null)
 			{
 			  result = tempresult;
+			  if (debug){
+				  System.out.println("ExtensibleURIResolver - Result returned by pre-normalized resolver " + resolver + ": " + result);
+			  }
 			}
 		}
 
 		// normalize the uri
 		//
+		
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Before normalize, base location: " +  baseLocation + ", result: " + result);
+		}
+		
 		result = normalize(baseLocation, result);
 
+		if (debug){
+			System.out.println("ExtensibleURIResolver - After normalize, base location: " +  baseLocation + ", result: " + result);
+		}
+		
 		// get the list of applicable post-normalized resolvers from the
 		// extension registry
-		//		
+		//	
+		
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Post-normalized resolvers in URIResolverExtensionRegistry");
+			for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();){
+				URIResolverExtension resolver = (URIResolverExtension) i.next();
+				System.out.println(resolver);
+			}
+		}
+		
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
 		{ 
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
@@ -86,9 +133,13 @@ public class ExtensibleURIResolver implements URIResolver
 			if(tempresult != null)
 			{
 			  result = tempresult;
+			  System.out.println("ExtensibleURIResolver - Result returned by post-normalized resolver " + resolver + ": " + result);
 			}
 		}
 
+		if (debug){
+			System.out.println("ExtensibleURIResolver - Final result: " + result);
+		}
 		return result;
 	}
     
