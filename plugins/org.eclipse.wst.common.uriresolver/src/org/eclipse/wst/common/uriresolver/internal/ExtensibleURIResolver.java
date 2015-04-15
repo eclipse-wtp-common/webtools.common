@@ -133,9 +133,7 @@ public class ExtensibleURIResolver implements URIResolver
 			if(tempresult != null)
 			{
 			  result = tempresult;
-			  if (debug){
-				  System.out.println("ExtensibleURIResolver - Result returned by post-normalized resolver " + resolver + ": " + result);
-			  }
+			  System.out.println("ExtensibleURIResolver - Result returned by post-normalized resolver " + resolver + ": " + result);
 			}
 		}
 
