@@ -46,29 +46,16 @@ public class EMF2SAXDocumentHandler extends DefaultHandler {
 	 */
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-		// The following flag and all its usage is to debug bugzilla 459564. Needs to be removed. 
-		boolean debug = 
-				"-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN".equals(publicId)  //$NON-NLS-1$
-				&& "http://java.sun.com/dtd/application_1_3.dtd".equals(systemId); //$NON-NLS-1$
 		InputSource result = null;
 		this.resource.setDoctypeValues(publicId, systemId);
 
 		try {
 			EntityResolver entityResolver = this.resource.getEntityResolver();
 
-			if (debug){
-				System.out.println("Entity resolver: " + entityResolver); //$NON-NLS-1$
-			}
-			
 			if (entityResolver != null)
 				result = entityResolver.resolveEntity(publicId, systemId);
 			else
 				result = super.resolveEntity(publicId, systemId);
-			
-			if (debug){
-				System.out.println("Result from entity resolver " + entityResolver +  //$NON-NLS-1$
-						"for publicId and systemId: " + publicId + ", " +  systemId + ": " + result.getSystemId());  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			}
 		} catch (IOException ioe) {
 			throw new SAXException(ioe);
 		}
