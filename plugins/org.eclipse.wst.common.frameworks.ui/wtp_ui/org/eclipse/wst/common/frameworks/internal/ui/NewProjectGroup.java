@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2014 IBM Corporation and others.
+ * Copyright (c) 2003, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ * Dario G. Flores Luis - Set Browse button min default size.
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.ui;
@@ -152,7 +153,10 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew{
 		if (layoutData instanceof GridData){
 			GridData dataForBrowseButton = (GridData) layoutData;
 			Point minButtonSize = browseButton.computeSize(SWT.DEFAULT,SWT.DEFAULT, true);
+			
 			dataForBrowseButton.widthHint = Math.max(widthHint, minButtonSize.x);
+			dataForBrowseButton.heightHint = Math.max(dataForBrowseButton.heightHint,minButtonSize.y);
+			
 			browseButton.setLayoutData(dataForBrowseButton);
 		}
 		browseButton.addSelectionListener(new SelectionAdapter() {
