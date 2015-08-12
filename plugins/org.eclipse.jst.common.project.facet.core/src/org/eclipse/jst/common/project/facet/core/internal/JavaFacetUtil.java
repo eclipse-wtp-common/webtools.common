@@ -105,7 +105,7 @@ public final class JavaFacetUtil
         
     {
         final IJavaProject jproj = JavaCore.create( project );
-        final Map<?,?> options = jproj.getOptions( false );
+        final Map<String, String> options = jproj.getOptions( false );
         JavaCore.setComplianceOptions( level, options );
         jproj.setOptions( options );
     }
