@@ -157,6 +157,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 				}				
 			}
 			catch (EOFException e){
+				error = true;
 				Tracing.log("Unable to read the dependency index file because of EOF exception");  //$NON-NLS-1$
 			}
 			catch (IOException e){
