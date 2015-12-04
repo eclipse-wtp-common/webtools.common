@@ -40,8 +40,8 @@
           <dependencies>
             <dependency>
               <type>p2-installable-unit</type>
+              <groupId>org.eclipse.webtools.common</groupId>
               <artifactId>org.eclipse.jst.common.project.facet.core</artifactId>
-              <version>0.0.0</version>
             </dependency>
           </dependencies>
         </configuration>
