@@ -55,5 +55,8 @@
     <module>plugins/org.eclipse.wst.internet.cache</module>
     <module>plugins/org.eclipse.wst.validation</module>
     <module>plugins/org.eclipse.wst.validation.ui</module>
+    
+    <!-- dependencies -->
+    <module>../webtools.common.fproj/plugins/org.eclipse.jst.common.project.facet.core</module>
   </modules>
 </project>
