@@ -40,5 +40,8 @@
     <module>tests/org.eclipse.wst.common.tests.validation.guard</module>
     <module>tests/org.eclipse.wst.common.uriresolver.tests</module>
     <module>tests/org.eclipse.wst.internet.cache.tests</module>
+        
+    <!-- dependencies -->
+    <module>../webtools.common.fproj/plugins/org.eclipse.jst.common.project.facet.core</module>
   </modules>
 </project>
