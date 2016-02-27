@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2005 IBM Corporation and others. All rights reserved.   This
+ * Copyright (c) 2005, 2016 IBM Corporation and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -36,6 +36,8 @@ public class SnippetsMessages extends NLS {
 	public static String Variable_Name_3;
 	public static String Value_4;
 	public static String Name_5;
+
+	public static String NameCannotBeEmpty;
 	public static String Description_6;
 	public static String Default_Value_7;
 	public static String Remove_15;

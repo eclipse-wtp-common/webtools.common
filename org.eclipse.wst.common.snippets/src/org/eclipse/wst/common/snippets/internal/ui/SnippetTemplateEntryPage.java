@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.editors.ISnippetEditor;
 import org.eclipse.wst.common.snippets.internal.editors.VariableItemEditor;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
@@ -61,6 +62,16 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 	public void modifyText(ModifyEvent e) {
 		if (editor != null && editor.getItem() != null && editor.getItem().getLabel().trim().length() == 0) {
 			getPageContainer().showProblem(""); //$NON-NLS-1$
+		}
+		else {
+			getPageContainer().clearProblem();
+		}
+	}
+
+	protected void handleNameChanged(String text) {
+		super.handleNameChanged(text);
+		if (text.length() < 1) {
+			getPageContainer().showProblem(SnippetsMessages.NameCannotBeEmpty);
 		}
 		else {
 			getPageContainer().clearProblem();
