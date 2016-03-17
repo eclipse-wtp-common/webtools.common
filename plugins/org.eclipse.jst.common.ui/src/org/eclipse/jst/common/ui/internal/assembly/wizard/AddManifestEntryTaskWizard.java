@@ -226,7 +226,6 @@ public class AddManifestEntryTaskWizard extends TaskWizard {
 			newRefs.add(ref);
 			possible = newRefs.toArray(new IVirtualReference[newRefs.size()]);
 		}
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if (newInput != null) {
 				possible = null;
