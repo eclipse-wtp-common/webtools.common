@@ -12,7 +12,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.environment.tests.EnvironmentTests;
 import org.eclipse.wst.common.frameworks.artifactedit.tests.ArtifactEditAPITests;
@@ -31,9 +31,8 @@ public class AutomatedBVT extends TestSuite {
 
 	static {
 		try {
-			IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
-			URL url = pluginDescriptor.getInstallURL();
-			AutomatedBVT.baseDirectory = Platform.asLocalURL(url).getFile() + "TestData" + java.io.File.separatorChar;
+			URL url = Platform.getBundle("org.eclipse.wst.common.tests").getEntry("");
+			AutomatedBVT.baseDirectory = FileLocator.toFileURL(url).getFile() + "TestData" + java.io.File.separatorChar;
 		} catch (Exception e) {
 			System.err.println("Using working directory since a workspace URL could not be located.");
 		}

@@ -13,8 +13,8 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -117,8 +117,7 @@ public class ArtifactEditTest extends TestCase {
 
 	private IPath getLocalPath() {
 
-		IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
-		URL url = pluginDescriptor.getInstallURL();
+		URL url = Platform.getBundle("org.eclipse.wst.common.tests").getEntry("");
 
 		try {
 			url = new URL(url.toString() + zipFilePath);
@@ -128,7 +127,7 @@ public class ArtifactEditTest extends TestCase {
 		}
 
 		try {
-			url = Platform.asLocalURL(url);
+			url = FileLocator.toFileURL(url);
 			printLocalPath(url);
 		} catch (IOException e) {
 			e.printStackTrace();

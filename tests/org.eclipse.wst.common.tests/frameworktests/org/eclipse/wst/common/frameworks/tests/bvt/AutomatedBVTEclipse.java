@@ -9,7 +9,7 @@ package org.eclipse.wst.common.frameworks.tests.bvt;
 import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 
 /**
@@ -19,10 +19,9 @@ public class AutomatedBVTEclipse extends AutomatedBVT {
 	
 	public AutomatedBVTEclipse(){
 		super();
-		IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
-        URL url = pluginDescriptor.getInstallURL();
+        URL url = Platform.getBundle("org.eclipse.wst.common.tests").getEntry("");
         try {
-        	AutomatedBVT.baseDirectory = Platform.asLocalURL(url).getFile() + "TestData"+ java.io.File.separatorChar;
+        	AutomatedBVT.baseDirectory = FileLocator.toFileURL(url).getFile() + "TestData"+ java.io.File.separatorChar;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
