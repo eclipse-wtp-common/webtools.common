@@ -21,7 +21,7 @@
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>
-  <artifactId>org.eclipse.wst.common.modulecore</artifactId>
-  <version>1.2.450-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
+  <artifactId>org.eclipse.wst.common_core.feature.patch</artifactId>
+  <version>3.8.1-SNAPSHOT</version>
+  <packaging>eclipse-feature</packaging>
 </project>
