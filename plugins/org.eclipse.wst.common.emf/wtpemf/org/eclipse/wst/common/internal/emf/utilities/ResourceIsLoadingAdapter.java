@@ -13,11 +13,13 @@
  */
 package org.eclipse.wst.common.internal.emf.utilities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /**
@@ -40,8 +42,10 @@ public class ResourceIsLoadingAdapter extends AdapterImpl {
          * removeIsLoadingSupport() will coordinate with this 
          * synchronization.
          */
-        synchronized(aResource.eAdapters()) {
-        	adapter = (ResourceIsLoadingAdapter) getAdapter(aResource.eAdapters(), ResourceIsLoadingAdapter.class);
+        EList<Adapter> resourceAdapters = aResource.eAdapters();
+		synchronized(resourceAdapters) {
+			ArrayList<Adapter> resourceAdaptersCopy = new ArrayList<Adapter>(resourceAdapters);
+        	adapter = (ResourceIsLoadingAdapter) getAdapter(resourceAdaptersCopy, ResourceIsLoadingAdapter.class);
         }
         
         return adapter;
