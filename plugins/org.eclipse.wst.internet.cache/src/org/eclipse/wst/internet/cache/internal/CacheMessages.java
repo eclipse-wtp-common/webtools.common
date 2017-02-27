@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2017 IBM Corporation and others.
  * All rights reserved.   This program and the accompanying materials
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,9 @@ public class CacheMessages extends NLS {
 	public static String _UI_PREF_PROMPT_FOR_DISAGREED_LICENSES;
 	public static String _UI_CACHE_MONITOR_NAME;
 	public static String _UI_CACHE_MONITOR_CACHING;
+
+	public static String _NOT_A_VALID_NUMBER;
+	public static String _NUMBER_MUST_BE_GREATER_THAN_ZERO;
 
 	// Cache license dialog
 	public static String _UI_CACHE_DIALOG_LICENSE_STATEMENT1;

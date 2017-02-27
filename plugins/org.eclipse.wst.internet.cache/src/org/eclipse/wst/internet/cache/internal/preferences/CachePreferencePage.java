@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2006 IBM Corporation and others.
+ * Copyright (c) 2001, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.wst.internet.cache.internal.preferences;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -95,6 +96,7 @@ public class CachePreferencePage extends PreferencePage implements
    */
   protected Control createContents(Composite parent)
   {
+    initializeDialogUnits(parent);
     noDefaultAndApplyButton();
 
     composite = new Composite(parent, SWT.NULL);
@@ -187,26 +189,41 @@ public class CachePreferencePage extends PreferencePage implements
       });
       
       
-      // Created the cache duration setting
+      // Create the cache duration setting
       Composite durationWrapper = new Composite(composite, SWT.NONE);
-      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-      gridData.horizontalSpan = 2;
-      durationWrapper.setLayoutData(gridData);
+      durationWrapper.setLayoutData(GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(2, 1).create());
       GridLayout gl = new GridLayout(2, false);
       durationWrapper.setLayout(gl);
       
       Label cacheDurationLabel = new Label(durationWrapper, SWT.NONE);
       cacheDurationLabel.setText(CacheMessages._UI_PREF_CACHE_CACHE_DURATION_LABEL);
-      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
       cacheDurationLabel.setLayoutData(gridData);
       
-      cacheDuration = new Text(durationWrapper, SWT.BORDER | SWT.LEFT);
-      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-      cacheDuration.setLayoutData(gridData);
+      cacheDuration = new Text(durationWrapper, SWT.BORDER | SWT.TRAIL);
       cacheDuration.setText(Long.toString(CachePlugin.getDefault().getCacheTimeout()));
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData.minimumWidth = gridData.widthHint = convertWidthInCharsToPixels(6);
+      cacheDuration.setLayoutData(gridData);
       cacheDuration.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-	            CachePlugin.getDefault().setCacheTimeout(Long.parseLong(cacheDuration.getText()));
+				try {
+					long newTimeout = Long.parseLong(cacheDuration.getText());
+					CachePlugin.getDefault().setCacheTimeout(newTimeout);
+
+					if (newTimeout < 1) {
+						setValid(newTimeout > 0);
+						setErrorMessage(CacheMessages._NUMBER_MUST_BE_GREATER_THAN_ZERO);
+					}
+					else {
+						setValid(true);
+						setErrorMessage(null);
+					}
+				}
+				catch (NumberFormatException e1) {
+					setValid(false);
+					setErrorMessage(CacheMessages._NOT_A_VALID_NUMBER);
+				}
 			}
       });
       

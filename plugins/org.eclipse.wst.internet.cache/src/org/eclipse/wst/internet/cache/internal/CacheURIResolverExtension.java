@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2012 IBM Corporation and others.
+ * Copyright (c) 2001, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,7 +35,7 @@ public class CacheURIResolverExtension implements URIResolverExtension
 		    resource = URIHelper.normalize(systemId, baseLocation, null);
 		  } 
 		  
-		  if(resource != null && (resource.startsWith("http:") || resource.startsWith("ftp:")))
+		  if(resource != null && (resource.startsWith("http:") || resource.startsWith("ftp:"))) //$NON-NLS-1$ //$NON-NLS-2$
 		  {
 		    // Handle resources prespecified to cache.
 		    ToCacheResource toCacheResource = ToCacheRegistryReader.getInstance().getResourceToCache(resource);

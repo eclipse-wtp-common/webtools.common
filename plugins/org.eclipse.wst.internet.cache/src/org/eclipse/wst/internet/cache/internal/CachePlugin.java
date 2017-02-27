@@ -25,7 +25,7 @@ public class CachePlugin extends AbstractUIPlugin
   /**
    * The ID of this plugin.
    */
-  public static final String PLUGIN_ID = "org.eclipse.wst.internet.cache";
+  public static final String PLUGIN_ID = "org.eclipse.wst.internet.cache"; //$NON-NLS-1$
 
   /**
    * The shared instance.
@@ -167,7 +167,7 @@ public class CachePlugin extends AbstractUIPlugin
   /**
    * Set the timeout for caching
    * 
-   * @param timeout a timeout in ms
+   * @param timeout a timeout in minutes
    */
   public void setCacheTimeout(long timeout) 
   {
@@ -175,9 +175,9 @@ public class CachePlugin extends AbstractUIPlugin
   }
 
   /**
-   * Returns the number of ms to cache a resource, or 86400000 (1 day) as default
+   * Returns the number of minutes to cache a resource, or 1440 (1 day) as default
    * 
-   * @return a number of ms to cache a resource. The default is 86400000 (1 day)
+   * @return a number of minutes to cache a resource. The default is 1440 (1 day)
    */
   public long getCacheTimeout() 
   {
@@ -187,7 +187,7 @@ public class CachePlugin extends AbstractUIPlugin
 			return l;
 	}
 	// 1 day
-	return 86400000;
+	return 1440;
   }
 
   

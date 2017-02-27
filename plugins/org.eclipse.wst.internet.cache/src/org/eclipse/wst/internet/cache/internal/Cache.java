@@ -53,16 +53,16 @@ public class Cache
   /**
    * String instances.
    */
-  private static final String URI = "uri";
-  private static final String LOCATION ="location";
-  private static final String ENTRY = "entry";
-  private static final String CACHE = "cache";
-  private static final String LAST_MODIFIED = "lastModified";
-  private static final String EXPIRATION_TIME = "expirationTime";
-  private static final String FILE_PROTOCOL = "file:///";
-  private static final String CACHE_FILE = "cache.xml";
-  private static final String CACHE_EXTENSION = ".cache";
-  private static final String CACHE_PREFIX = "wtpcache";
+  private static final String URI = "uri"; //$NON-NLS-1$
+  private static final String LOCATION ="location"; //$NON-NLS-1$
+  private static final String ENTRY = "entry"; //$NON-NLS-1$
+  private static final String CACHE = "cache"; //$NON-NLS-1$
+  private static final String LAST_MODIFIED = "lastModified"; //$NON-NLS-1$
+  private static final String EXPIRATION_TIME = "expirationTime"; //$NON-NLS-1$
+  private static final String FILE_PROTOCOL = "file:///"; //$NON-NLS-1$
+  private static final String CACHE_FILE = "cache.xml"; //$NON-NLS-1$
+  private static final String CACHE_EXTENSION = ".cache"; //$NON-NLS-1$
+  private static final String CACHE_PREFIX = "wtpcache"; //$NON-NLS-1$
   private static final String CACHE_SUFFIX = null;
 
 	
@@ -145,12 +145,16 @@ public class Cache
 	  {
 		return null;
 	  }
-	  return FILE_PROTOCOL + cacheLocation.toString() + "/" + result.getLocalFile();
+	  return FILE_PROTOCOL + cacheLocation.toString() + IPath.SEPARATOR + result.getLocalFile();
   }
 
+  /**
+   * Return the preferred timeout in milliseconds
+   * @return
+   */
   private static long getTimeout()
   {
-    return CachePlugin.getDefault().getCacheTimeout();
+    return CachePlugin.getDefault().getCacheTimeout() * 60000;
   }
 
   /**
@@ -202,10 +206,10 @@ public class Cache
 		  URLConnection conn = url.openConnection();
 		  /* XXX: This should really be implemented using HttpClient or similar */
 		  int allowedRedirects = 5;
-		  while(conn.getHeaderField("Location") != null && allowedRedirects > 0)
+		  while(conn.getHeaderField("Location") != null && allowedRedirects > 0) //$NON-NLS-1$
 		  {
 			  allowedRedirects--;
-			  url = new URL(actualUri = conn.getHeaderField("Location"));
+			  url = new URL(actualUri = conn.getHeaderField("Location")); //$NON-NLS-1$
 			  conn = url.openConnection();
 		  }
 		  // Determine if this resource can be cached.
@@ -420,9 +424,10 @@ public class Cache
       Result output = new StreamResult(stateLocation.toString() + "/" + CACHE_FILE);
       transformer.transform(input, output);
 
-      }catch(Exception e)
+      }
+      catch(Exception e)
 	  {
-		  System.out.println("Unable to store internet cache.");
+		  System.err.println("Unable to store internet cache."); //$NON-NLS-1$
 	  }
 	  cacheInstance = null;
   }
