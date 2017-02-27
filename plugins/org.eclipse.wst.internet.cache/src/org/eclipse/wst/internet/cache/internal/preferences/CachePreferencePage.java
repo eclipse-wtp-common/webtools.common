@@ -209,7 +209,6 @@ public class CachePreferencePage extends PreferencePage implements
 			public void modifyText(ModifyEvent e) {
 				try {
 					long newTimeout = Long.parseLong(cacheDuration.getText());
-					CachePlugin.getDefault().setCacheTimeout(newTimeout);
 
 					if (newTimeout < 1) {
 						setValid(newTimeout > 0);
@@ -218,6 +217,7 @@ public class CachePreferencePage extends PreferencePage implements
 					else {
 						setValid(true);
 						setErrorMessage(null);
+						CachePlugin.getDefault().setCacheTimeout(newTimeout);
 					}
 				}
 				catch (NumberFormatException e1) {

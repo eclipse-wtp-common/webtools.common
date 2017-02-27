@@ -221,12 +221,12 @@ public class Cache
 	    	  return cacheEntry;
 	    	}
 		    Random rand = new Random();
-			String fileName = rand.nextInt() + CACHE_EXTENSION;
+			String fileName = Math.abs(rand.nextInt()) + CACHE_EXTENSION;
 		    File file = new File(cacheLocation, fileName);
 		    // If the file already exists we need to change the file name.
 		    while(!file.createNewFile())
 		    {
-			  fileName = rand.nextInt() + CACHE_EXTENSION;
+			  fileName = Math.abs(rand.nextInt()) + CACHE_EXTENSION;
 			  file = new File(cacheLocation,fileName);
 		    }
 		    os = new BufferedOutputStream(new FileOutputStream(file));
