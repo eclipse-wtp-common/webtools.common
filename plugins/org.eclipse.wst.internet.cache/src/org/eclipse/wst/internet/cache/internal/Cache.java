@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2015 IBM Corporation and others.
+ * Copyright (c) 2001, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.internet.cache.internal;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -63,10 +64,7 @@ public class Cache
   private static final String CACHE_EXTENSION = ".cache";
   private static final String CACHE_PREFIX = "wtpcache";
   private static final String CACHE_SUFFIX = null;
-  /**
-   * The default timeout for a cache entry is 1 day.
-   */
-  private static final long TIMEOUT = 86400000;
+
 	
   /**
    * The one and only instance of the cache.
@@ -149,7 +147,12 @@ public class Cache
 	  }
 	  return FILE_PROTOCOL + cacheLocation.toString() + "/" + result.getLocalFile();
   }
-  
+
+  private static long getTimeout()
+  {
+    return CachePlugin.getDefault().getCacheTimeout();
+  }
+
   /**
    * Get the list of uncached resources.
    * 
@@ -206,8 +209,8 @@ public class Cache
 			  conn = url.openConnection();
 		  }
 		  // Determine if this resource can be cached.
-		  if(conn.getUseCaches())
-		  {
+		  if(CachePlugin.getDefault().isIgnoreNoCacheHeader() || conn.getUseCaches())
+          {
 			is = URIHelper.getInputStream(actualUri, 0);
 	    	if (is == null) {
 	    	  uncached.add(uri);
@@ -222,7 +225,7 @@ public class Cache
 			  fileName = rand.nextInt() + CACHE_EXTENSION;
 			  file = new File(cacheLocation,fileName);
 		    }
-		    os = new FileOutputStream(file);
+		    os = new BufferedOutputStream(new FileOutputStream(file));
 		    byte[] bytes = new byte[1024];
 		    int bytelength;
 		    while((bytelength = is.read(bytes)) != -1)
@@ -233,7 +236,7 @@ public class Cache
 		    long expiration = conn.getExpiration();
 			if(expiration == 0)
 			{
-			  expiration = System.currentTimeMillis() + TIMEOUT;
+			  expiration = System.currentTimeMillis() + getTimeout();
 			}
 		    cacheEntry = new CacheEntry(uri, fileName, lastModified, expiration);
 		    cache.put(uri,cacheEntry);
@@ -300,7 +303,7 @@ public class Cache
 			long expiration = conn.getExpiration();
 		    if(expiration == 0)
 			{
-			  expiration = System.currentTimeMillis() + TIMEOUT;
+			  expiration = System.currentTimeMillis() + getTimeout();
 			}
 			
 		    is = conn.getInputStream();
@@ -331,7 +334,7 @@ public class Cache
 			long expiration = conn.getExpiration();
 			if(expiration == 0)
 			{
-			  expiration = System.currentTimeMillis() + TIMEOUT;
+			  expiration = System.currentTimeMillis() + getTimeout();
 			}
 			cacheEntry.setExpiration(expiration);
 		  }

@@ -26,6 +26,8 @@ public class CacheMessages extends NLS {
 	public static String _UI_BUTTON_DELETE_ENTRY;
 	public static String _UI_PREF_CACHE_ENTRIES_TITLE;
 	public static String _UI_PREF_CACHE_CACHE_OPTION;
+	public static String _UI_PREF_CACHE_IGNORE_NO_CACHE_HEADER;
+	public static String _UI_PREF_CACHE_CACHE_DURATION_LABEL;
 	public static String _UI_PREF_CACHE_ABOUT;
 	public static String _UI_PREF_PROMPT_FOR_DISAGREED_LICENSES;
 	public static String _UI_CACHE_MONITOR_NAME;

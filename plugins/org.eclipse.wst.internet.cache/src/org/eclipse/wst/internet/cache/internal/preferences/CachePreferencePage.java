@@ -16,6 +16,8 @@ import java.util.Arrays;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -27,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -49,7 +52,11 @@ public class CachePreferencePage extends PreferencePage implements
   protected Button deleteButton;
 
   protected Button enabledButton;
-  
+
+  protected Button ignoreNoCacheButton;
+
+  protected Text cacheDuration;
+
   protected Button disagreedLicensesButton;
 
   protected List entries;
@@ -109,31 +116,52 @@ public class CachePreferencePage extends PreferencePage implements
     new Label(composite, SWT.None);
     try
     {
-      // Created the disable cache option.
-      enabledButton = new Button(composite, SWT.CHECK | SWT.LEFT);
-      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-      gridData.horizontalSpan = 2;
-      enabledButton.setLayoutData(gridData);
-      enabledButton.setText(CacheMessages._UI_PREF_CACHE_CACHE_OPTION);
-      enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
-          .getBoolean(PreferenceConstants.CACHE_ENABLED));
-      enabledButton.addSelectionListener(new SelectionListener()
-      {
-
-        public void widgetDefaultSelected(SelectionEvent e)
+        // Created the disable cache option.
+        enabledButton = new Button(composite, SWT.CHECK | SWT.LEFT);
+        gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+        gridData.horizontalSpan = 2;
+        enabledButton.setLayoutData(gridData);
+        enabledButton.setText(CacheMessages._UI_PREF_CACHE_CACHE_OPTION);
+        enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
+            .getBoolean(PreferenceConstants.CACHE_ENABLED));
+        enabledButton.addSelectionListener(new SelectionListener()
         {
-          widgetSelected(e);
 
-        }
+          public void widgetDefaultSelected(SelectionEvent e)
+          {
+            widgetSelected(e);
 
-        public void widgetSelected(SelectionEvent e)
-        {
-          boolean disabled = enabledButton.getSelection();
-          CachePlugin.getDefault().setCacheEnabled(!disabled);
-        }
+          }
 
-      });
-      
+          public void widgetSelected(SelectionEvent e)
+          {
+            boolean disabled = enabledButton.getSelection();
+            CachePlugin.getDefault().setCacheEnabled(!disabled);
+          }
+
+        });
+        
+        
+        
+        // Created the ignore no-cache header option.
+        ignoreNoCacheButton = new Button(composite, SWT.CHECK | SWT.LEFT);
+        gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+        gridData.horizontalSpan = 2;
+        ignoreNoCacheButton.setLayoutData(gridData);
+        ignoreNoCacheButton.setText(CacheMessages._UI_PREF_CACHE_IGNORE_NO_CACHE_HEADER);
+        ignoreNoCacheButton.setSelection(CachePlugin.getDefault().isIgnoreNoCacheHeader());
+        ignoreNoCacheButton.addSelectionListener(new SelectionListener() {
+          public void widgetDefaultSelected(SelectionEvent e) {
+            widgetSelected(e);
+          }
+          public void widgetSelected(SelectionEvent e) {
+            boolean ignoreNoCacheHeader = ignoreNoCacheButton.getSelection();
+            CachePlugin.getDefault().setIgnoreNoCacheHeader(ignoreNoCacheHeader);
+          }
+        });
+
+        
+        
       disagreedLicensesButton = new Button(composite, SWT.CHECK | SWT.LEFT);
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
       gridData.horizontalSpan = 2;
@@ -157,6 +185,33 @@ public class CachePreferencePage extends PreferencePage implements
         }
 
       });
+      
+      
+      // Created the cache duration setting
+      Composite durationWrapper = new Composite(composite, SWT.NONE);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData.horizontalSpan = 2;
+      durationWrapper.setLayoutData(gridData);
+      GridLayout gl = new GridLayout(2, false);
+      durationWrapper.setLayout(gl);
+      
+      Label cacheDurationLabel = new Label(durationWrapper, SWT.NONE);
+      cacheDurationLabel.setText(CacheMessages._UI_PREF_CACHE_CACHE_DURATION_LABEL);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      cacheDurationLabel.setLayoutData(gridData);
+      
+      cacheDuration = new Text(durationWrapper, SWT.BORDER | SWT.LEFT);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      cacheDuration.setLayoutData(gridData);
+      cacheDuration.setText(Long.toString(CachePlugin.getDefault().getCacheTimeout()));
+      cacheDuration.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+	            CachePlugin.getDefault().setCacheTimeout(Long.parseLong(cacheDuration.getText()));
+			}
+      });
+      
+
+      
 
       // Create the entities group.
       Label entriesLabel = new Label(composite, SWT.WRAP);

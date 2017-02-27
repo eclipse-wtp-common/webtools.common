@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2012 IBM Corporation and others.
+ * Copyright (c) 2001, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -138,6 +138,58 @@ public class CachePlugin extends AbstractUIPlugin
 	  return getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED);
 	return true;
   }
+  
+  
+  /**
+   * Set whether or not the cache job should ignore a no-cache header
+   * 
+   * @param enabled If true the cache will ignore no-cache header, false to respect no-cache header
+   */
+  public void setIgnoreNoCacheHeader(boolean ignore) 
+  {
+	getPluginPreferences().setValue(PreferenceConstants.IGNORE_NO_CACHE_HEADER, ignore);
+  }
+
+  /**
+   * Returns true if the cache is ignoring no-cache header, false otherwise.
+   * 
+   * @return True if the cache is ignoring no-cache header, false otherwise.
+   */
+  public boolean isIgnoreNoCacheHeader() 
+  {
+	if (getPluginPreferences().contains(PreferenceConstants.IGNORE_NO_CACHE_HEADER))
+	  return getPluginPreferences().getBoolean(PreferenceConstants.IGNORE_NO_CACHE_HEADER);
+	return false;
+  }
+
+  
+  
+  /**
+   * Set the timeout for caching
+   * 
+   * @param timeout a timeout in ms
+   */
+  public void setCacheTimeout(long timeout) 
+  {
+	getPluginPreferences().setValue(PreferenceConstants.CACHE_DURATION, timeout);
+  }
+
+  /**
+   * Returns the number of ms to cache a resource, or 86400000 (1 day) as default
+   * 
+   * @return a number of ms to cache a resource. The default is 86400000 (1 day)
+   */
+  public long getCacheTimeout() 
+  {
+	if (getPluginPreferences().contains(PreferenceConstants.CACHE_DURATION)) {
+		long l = getPluginPreferences().getLong(PreferenceConstants.CACHE_DURATION); 
+		if( l > 0 )
+			return l;
+	}
+	// 1 day
+	return 86400000;
+  }
+
   
   static boolean isRunning() {
 	  return plugin != null;
