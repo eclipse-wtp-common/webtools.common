@@ -124,7 +124,7 @@ public class CachePreferencePage extends PreferencePage implements
         gridData.horizontalSpan = 2;
         enabledButton.setLayoutData(gridData);
         enabledButton.setText(CacheMessages._UI_PREF_CACHE_CACHE_OPTION);
-        enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
+        enabledButton.setSelection(CachePlugin.getDefault().getPreferenceStore()
             .getBoolean(PreferenceConstants.CACHE_ENABLED));
         enabledButton.addSelectionListener(new SelectionListener()
         {
@@ -137,8 +137,8 @@ public class CachePreferencePage extends PreferencePage implements
 
           public void widgetSelected(SelectionEvent e)
           {
-            boolean disabled = enabledButton.getSelection();
-            CachePlugin.getDefault().setCacheEnabled(!disabled);
+            boolean enabled = enabledButton.getSelection();
+            CachePlugin.getDefault().setCacheEnabled(enabled);
           }
 
         });
