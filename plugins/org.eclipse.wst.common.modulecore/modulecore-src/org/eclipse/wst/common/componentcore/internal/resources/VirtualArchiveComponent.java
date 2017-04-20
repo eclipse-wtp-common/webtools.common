@@ -279,9 +279,8 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		String osPath = null;
 		IPath loc = null;
 		if (getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
-			Object adapted = getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
-			if (adapted instanceof IPath) {
-				IPath resolvedpath = (IPath) adapted;
+			IPath resolvedpath = Platform.getAdapterManager().getAdapter(this, IPath.class);
+			if (resolvedpath != null) {
 				osPath = resolvedpath.toOSString();
 			} 
 		} else if(!archivePath.isAbsolute()) {
