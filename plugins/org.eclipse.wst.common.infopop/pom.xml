@@ -15,9 +15,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.eclipse.webtools.common</groupId>
-    <artifactId>org.eclipse.webtools.common</artifactId>
+    <artifactId>org.eclipse.webtools.common.plugins</artifactId>
     <version>3.6.0-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>

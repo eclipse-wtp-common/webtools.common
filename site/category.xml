@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+    <feature id="org.eclipse.wst.common_ui.feature" version="0.0.0"><category name="common"/></feature>
+    <feature id="org.eclipse.wst.common_core.feature" version="0.0.0"><category name="common"/></feature>
+    <feature id="org.eclipse.jst.common.fproj.enablement.jdt" version="0.0.0"><category name="common"/></feature>
+    <feature id="org.eclipse.wst.common.fproj" version="0.0.0"><category name="common"/></feature>
+
+    <feature id="org.eclipse.wst.common_sdk.feature" version="0.0.0"><category name="common.sdk"/></feature>
+    <feature id="org.eclipse.wst.common.fproj.sdk" version="0.0.0"><category name="common.sdk"/></feature>
+    <feature id="org.eclipse.jst.common.fproj.enablement.jdt.sdk" version="0.0.0"><category name="common.sdk"/></feature>
+     
+    <feature id="org.eclipse.wst.common_tests.feature" version="0.0.0"><category name="common.tests"/></feature>
+
+    <category-def name="common" label="Web Tools Platform (WTP) Common"><description>
+    Common plugins shared by WTP features
+    </description></category-def>
+    <category-def name="common.sdk" label="Web Tools Platform (WTP) Common SDK"><description>
+    These features provide functionality with the executable code and the source code and are recommended for those extending or debugging WTP.
+    </description></category-def>
+    <category-def name="common.tests" label="Web Tools Platform (WTP) Common Tests"><description>
+    These features provide Unit tests for WTP. WTP Committers, or others testing WTP, will need these in at least their PDE Targets.
+    </description></category-def>
+
+</site>

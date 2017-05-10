@@ -17,7 +17,6 @@
     <groupId>org.eclipse.webtools.common</groupId>
     <artifactId>org.eclipse.webtools.common.tests</artifactId>
     <version>3.6.0-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>
@@ -30,22 +29,4 @@
     <testClass>org.eclipse.wst.validation.tests.testcase.ValidationTestSuite</testClass>
   </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-surefire-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <dependencies>
-            <dependency>
-              <type>p2-installable-unit</type>
-              <groupId>org.eclipse.webtools.common</groupId>
-              <artifactId>org.eclipse.jst.common.project.facet.core</artifactId>
-            </dependency>
-          </dependencies>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
