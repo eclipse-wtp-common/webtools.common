@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Ui_Plug-in
+Bundle-SymbolicName: org.eclipse.wst.common.tests.ui; singleton:=true
+Bundle-Version: 1.1.300.qualifier
+Bundle-ClassPath: ui.jar
+Bundle-Activator: org.eclipse.wst.common.tests.ui.UiPlugin
+Bundle-Vendor: %Eclipse
+Bundle-Localization: plugin
+Export-Package: org.eclipse.wst.common.tests.ui,
+ org.eclipse.wst.common.tests.ui.manager,
+ org.eclipse.wst.common.tests.ui.wizard
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.wst.common.frameworks.ui,
+ org.eclipse.wst.common.tests,
+ org.eclipse.wst.common.environment
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.4

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension-point id="suites" name="%suites" schema="schema/suites.exsd"/>
+
+
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%Test_Collector"
+            visible="true"
+            id="testCollector">
+         <menu
+               label="%WTP_Tests"
+               path="additions"
+               id="org.eclipse.wst.common.tests.collector.testsMenu">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="%Open"
+               tooltip="%Test_Collector"
+               class="org.eclipse.wst.common.tests.collector.TestCollectorActionDelegate"
+               menubarPath="org.eclipse.wst.common.tests.collector.testsMenu/group1"
+               id="org.eclipse.wst.common.tests.collector.testsAction">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>

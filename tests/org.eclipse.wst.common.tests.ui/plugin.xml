@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+         <suite
+            class="org.eclipse.wst.common.tests.ui.DataModelUIAPITests"
+            name="DataModel UI API Tests">
+         </suite>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.ui.DataModelWizardExtension">
+      <DataModelWizard
+            class="org.eclipse.wst.common.tests.ui.TestDataModelWizard"
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.ui.wizardPageGroup">
+      <wizardPageGroup
+            pageGroupID="foo"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory"/>
+      </wizardPageGroup>
+      <wizardPageGroup
+            pageGroupID="bar"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory2"/>
+      </wizardPageGroup>
+      <wizardPageGroup
+            pageGroupID="foobar"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory3"/>
+      </wizardPageGroup>
+      <wizardPage
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory
+               className="org.eclipse.wst.common.tests.ui.wizard.Test2PageWizardExtensionFactory">
+         </factory>
+      </wizardPage>
+      <wizardPage
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory
+               className="org.eclipse.wst.common.tests.ui.wizard.Test2PageWizardExtensionFactory2">
+         </factory>
+      </wizardPage>
+   </extension>
+  
+     <!--
+   		A picture of the operation tree
+  		/**
+		 * Operations are organized as follows: <code>
+		 *	    D
+		 *     / \
+		 *    /   \
+		 *   B     F
+		 *  / \   / \
+		 * A   C E   G
+		 * </code>
+		 */
+       -->
+   
+  <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.tests.ui.manager">
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.D"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.F"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.B"/>
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.B"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.C"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.A"/>
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.F"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.G"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.E"/>
+   </extension>
+  
+
+</plugin>

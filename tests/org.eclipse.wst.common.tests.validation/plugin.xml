@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test1" name="%Test1.Validator.Name">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="test1">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test2" name="%Test2.Validator.Name">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator2"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="jsp">
+               </fileext>
+               <file name="somefile.txt" type="file"/>
+               <fileext
+                     ext="jspx">
+               </fileext>
+               <fileext
+                     ext="java">
+               </fileext>
+               <fileext
+                     ext="test2">
+               </fileext>
+            </rules>
+         </include>
+         <include>
+            <rules>
+               <projectNature id="org.eclipse.sample" />
+               <facet id="com.ibm.vf.test.facet2"/>
+            </rules>
+         </include>
+         <include>
+            <rules>
+               <contentType
+                     id="com.ibm.vf.test.contentType2">
+               </contentType>
+            </rules>
+         </include>
+         <exclude>
+            <rules>
+               <facet
+                     id="org.eclipse.wst.wid.facet">
+               </facet>
+            </rules>
+         </exclude>         
+         <messageCategory id="bad" label="%Message.bad" severity="error"/>
+         <messageCategory id="sortof" label="%Message.sortof" severity="warning"/>
+         <messageCategory id="nice" label="%Message.nice" severity="ignore"/>
+         <messageCategory id="long" label="%Message.long" severity="ignore"/>
+         
+      </validator>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test3" name="%Test3.Validator.Name">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator3"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="html">
+               </fileext>
+               <fileext
+                     ext="htm">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <extension point="org.eclipse.wst.validation.validatorV2" id="Test4" name="%Test4.Validator.Name">
+      <validator build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator4"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="test4">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <extension id="Test5" name="%Test5.Validator.Name" point="org.eclipse.wst.validation.validatorV2">
+      <validator build="false" class="org.eclipse.wst.validation.tests.TestValidator5" manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="test5">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <extension point="org.eclipse.wst.validation.validatorDelegates">
+      <delegate
+            class="org.eclipse.wst.validation.tests.TestValidator5D"
+            name="%Test5D.Validator.Name"
+            target="org.eclipse.wst.validation.tests.TestValidator5">
+      </delegate>
+   </extension>
+   <extension
+         id="Test6"
+         name="%Test6.Validator.Name"
+         point="org.eclipse.wst.validation.validatorV2">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator6"
+            manual="false">
+         <include>
+            <rules>
+               <contentType id="org.eclipse.core.runtime.xml"></contentType>
+               <contentType id="org.eclipse.wst.xml.core.xmlsource"></contentType>
+               <contentType id="org.eclipse.wst.xml.core.xslsource"></contentType>
+               <contentType id="org.eclipse.jst.jsp.core.tldsource"></contentType>
+            </rules>
+         </include>
+         <exclude>
+            <rules>
+               <file
+                     caseSensitive="true"
+                     name=".project"
+                     type="file">
+               </file>
+            </rules>
+         </exclude>
+      </validator>
+   </extension>
+	<extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test7" name="%Test7.Validator.Name">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator7"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="test1">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+	<extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test8" name="Test8">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator8"
+            manual="false">
+         <include>
+            <rules>
+               <file name="file.specific" type="file"/>
+               <file name="source/full.specific" type="full"/>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+	<extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="T1A" name="T1A Validator">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.T1AValidator"
+            manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="test1">
+               </fileext>
+            </rules>
+         </include>
+         <group
+               id="org.eclipse.wst.common.tests.validation.t1group">
+         </group>
+      </validator>
+     </extension>
+     
+	<extension point="org.eclipse.wst.validation.validatorV2" id="T1B" name="T1B Validator">
+      <validator build="false" class="org.eclipse.wst.validation.tests.T1B"
+            markerId="org.eclipse.wst.common.tests.validation.t1bmarker">
+         <include>
+            <rules>
+               <fileext
+                     ext="t1b">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+     </extension>
+     
+	<extension point="org.eclipse.wst.validation.validatorV2" id="T1C" name="T1C">
+      <validator build="false" class="org.eclipse.wst.validation.tests.T1C" manual="false">
+         <include>
+            <rules>
+               <fileext
+                     ext="t1c">
+               </fileext>
+            </rules>
+         </include>
+         <exclude>
+            <rules>
+               <file
+                     caseSensitive="false"
+                     name="ignore"
+                     type="folder">
+               </file>
+            </rules>
+         </exclude>
+         <group
+               id="org.eclipse.wst.common.tests.validation.t1group">
+         </group>
+      </validator>
+   </extension>
+     
+ <extension id="t2a" name="T2A" point="org.eclipse.wst.validation.validator">
+    <validator>
+       <helper
+             class="org.eclipse.wst.validation.tests.T2AHelper">
+       </helper>
+       <run
+             class="org.eclipse.wst.validation.tests.T2A"
+             enabled="false">
+       </run>
+    </validator>
+ </extension>
+ <extension
+       id="t2b"
+       name="T2B"
+       point="org.eclipse.wst.validation.validator">
+    <validator>
+       <helper
+             class="org.eclipse.wst.validation.tests.T2AHelper">
+       </helper>
+       <run
+             class="org.eclipse.wst.validation.tests.T2B"
+             enabled="true">
+       </run>
+    </validator>
+ </extension>
+ <extension
+       id="t1bmarker"
+       name="T1B Message"
+       point="org.eclipse.core.resources.markers">
+       <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+ </extension>
+ <extension
+       point="org.eclipse.wst.validation.validatorGroup">
+    <group
+          id="t1group">
+       <listener
+             class="org.eclipse.wst.validation.tests.T1Group">
+       </listener>
+    </group>
+ </extension>
+ <extension id="exclude1" point="org.eclipse.wst.validation.exclude">
+    <validator
+          id="org.eclipse.wst.common.tests.validation.T1A">
+       <exclude>
+          <rules>
+             <projectNature
+                   id="org.eclipse.jst.j2ee.ModuleCoreNature">
+             </projectNature>
+          </rules>
+       </exclude>
+    </validator>
+ </extension>
+ 
+     <extension point="org.eclipse.wst.validation.validatorV2" id="T4A" name="T4A">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T4A" manual="false">
+         <include>
+            <rules>
+               <fileext ext="test1"></fileext>
+               <facet id="java" version="1.5"/>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+ 
+     <extension point="org.eclipse.wst.validation.validatorV2" id="T4B" name="T4B">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T4B" manual="false">
+         <include>
+            <rules>
+               <fileext ext="test1"></fileext>
+               <facet id="java" version="1.6"/>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+ 
+     <extension point="org.eclipse.wst.validation.validatorV2" id="T5A" name="T5A">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T5A" manual="false">
+         <include>
+            <rules>
+               <pattern regex=".*/second/third/.*"></pattern>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+ 
+     <extension point="org.eclipse.wst.validation.validatorV2" id="T5B" name="T5B">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T5B" manual="false">
+         <include>
+            <rules>
+               <pattern regex=".*/secondx/third/.*"></pattern>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <extension point="org.eclipse.wst.validation.validatorV2" id="T5C" name="T5C">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T5C" manual="false">
+         <include>
+            <rules>
+               <fileext ext="test1"></fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+	<extension id="exclude2" point="org.eclipse.wst.validation.exclude">
+    <validator id="org.eclipse.wst.common.tests.validation.T5C">
+       <exclude>
+          <rules>
+                <pattern regex=".*/second/third/.*"></pattern>
+          </rules>
+       </exclude>
+    </validator>
+	</extension>
+   
+    <extension point="org.eclipse.wst.validation.validatorV2" id="T6A" name="T6A">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T6A">
+         <include>
+            <rules>
+               <fileext ext="t6a"></fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+    <extension point="org.eclipse.wst.validation.validatorV2" id="T7A" name="T7A">
+      	<validator build="false" class="org.eclipse.wst.validation.tests.T7A">
+         <include>
+            <rules>
+               <fileext ext="t7a"></fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <!-- New Test Validator to test exclude/include target runtime rule -->
+   <extension
+       id="TargetRuntimeValidator"
+       name="J2EE Test"
+       point="org.eclipse.wst.validation.validatorV2">
+    	<validator
+          class="org.eclipse.wst.validation.tests.TestValidator">       		
+       		<include>
+          		<rules>
+               		<facet id="java" version="1.5"/>
+          		</rules>
+       		</include>
+       		<exclude>
+    			<rules>
+        			<targetRuntime id="JBoss v5.0"/>
+        		</rules>
+    		</exclude>
+    	</validator>    
+ 	</extension>
+</plugin>

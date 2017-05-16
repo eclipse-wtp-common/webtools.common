@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
+
+   <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+         <suite
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests"
+            name="IDataModel API Tests">
+         </suite>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.DataModelProviderExtension">
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestProvider1"
+            id="testprovider1"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestProvider2"
+            id="testprovider2"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestExtendedProvider"
+            id="testExtendedProvider"/>
+      <DataModelProvider
+            class="bogusClass"
+            id="bogus"/>
+      <ProviderDefinesType
+      		providerType="testProviderBase"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <ProviderDefinesType
+      		providerType="testProviderBogus"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <ProviderImplementsType
+      		providerType="testProviderBogus"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModelBogus"/>		
+      <ProviderImplementsType
+      		providerType="testProviderBogus"
+      		providerID="fake.nonregistered.functiongroup.ITestDataModel"
+	 />	   		
+	  <!-- Test for incomplete id's, classes' and duplicates
+      <DataModelProvider
+            class=""
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id=""/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      -->
+   </extension>
+   
+    <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+      <suite
+            class=" org.eclipse.wst.common.frameworks.tests.bvt.AutomatedBVT"
+            name="Common Framework BVT Tests"/>
+   </extension>
+   
+   <!--
+   		A picture of the operation tree
+   
+                        R
+                       / \
+                      /   \
+                     /     \
+                    A       B
+                   / \     / \
+                  /   \   /   \
+                 C     D E     F
+                                \
+                                 H
+                                /
+                               G
+   -->
+   
+  <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.frameworks.datamodel.tests.extended">
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.R"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.B"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.A"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.A"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.D"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.C"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.B"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.F"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.E"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.F"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.G"/>
+      <operationExtension
+            id="APre2"
+            preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.manager.TestExtendedOperation"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
+   </extension>
+  <extension
+        point="org.eclipse.wst.common.modulecore.flattenParticipantProvider">
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider"
+           weight="5">
+     </flattenParticipantProvider>
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider2">
+     </flattenParticipantProvider>
+     <flattenParticipantProvider
+           class="org.eclipse.wst.common.tests.flatten.ExampleFlattenParticipantProvider3"
+           weight="10">
+     </flattenParticipantProvider>
+  </extension>
+   
+   
+   <!-- Uncomment the below hook to test specific operation extension ids when needed -->
+   <!--
+   <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.frameworks.datamodel.tests.extended">
+      <operationExtension
+            id="org.eclipse.jst.j2ee.internal.web.archive.operations.WebComponentExportOperation"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloPreOperationExtension"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloPostOperationExtension"/>
+   </extension>
+   -->
+  
+</plugin>

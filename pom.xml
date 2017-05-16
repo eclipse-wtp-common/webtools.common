@@ -23,14 +23,19 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <artifactId>org.eclipse.webtools.common</artifactId>
 =======
   <artifactId>org.eclipse.webtools.common.fproj</artifactId>
 >>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
+=======
+  <artifactId>org.eclipse.webtools.common.tests</artifactId>
+>>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.git</tycho.scmUrl>
   </properties>
@@ -83,3 +88,20 @@
 >>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
   </modules>
 </project>
+=======
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.tests.git</tycho.scmUrl>
+  </properties>
+
+  <modules>
+    <module>features/org.eclipse.wst.common_tests.feature</module>
+
+    <module>tests/org.eclipse.wst.common.tests</module>
+    <module>tests/org.eclipse.wst.common.tests.collector</module>
+    <module>tests/org.eclipse.wst.common.tests.ui</module>
+    <module>tests/org.eclipse.wst.common.tests.validation</module>
+    <module>tests/org.eclipse.wst.common.tests.validation.guard</module>
+    <module>tests/org.eclipse.wst.common.uriresolver.tests</module>
+    <module>tests/org.eclipse.wst.internet.cache.tests</module>
+  </modules>
+</project>
+>>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
