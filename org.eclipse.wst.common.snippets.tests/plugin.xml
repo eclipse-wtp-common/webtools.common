@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+    	<!--======================================================================================-->
+	<!-- Snippet View contributions                                                           -->
+	<!--======================================================================================-->
+	<extension
+		point="org.eclipse.wst.common.snippets.SnippetContributions">
+		<category
+			label="%unittest_category_label"
+			id="org.eclipse.wst.common.snippets.tests.category0"
+			contenttypes="org.eclipse.core.runtime.text">
+			<item
+				label="%unittest_item0_label"
+				id="org.eclipse.wst.common.snippets.tests.item0">
+				<content>%unittest_item0_content</content>
+			</item>
+			<item
+				label="%unittest_item1_label"
+				id="org.eclipse.wst.common.snippets.tests.item1">
+				<content>%unittest_item1_content</content>
+				<variable
+					description="%unittest_item1_varA"
+					id="variableA" />
+				<variable
+					description="%unittest_item1_varB"
+					id="variableB"
+					default="bfoo" />
+			</item>
+		</category>
+	</extension>
+ <extension
+       point="org.eclipse.wst.common.snippets.SnippetProvider">
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.TextSnippetProvider2"
+          priority="101">
+       <enablement>
+          <instanceof
+                value="org.eclipse.ui.texteditor.ITextEditor">
+          </instanceof></enablement>
+    </provider>
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.DummyProvider"
+          priority="2">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.common.snippets.tests.helpers.CommonApplicableInterface">
+          </instanceof>
+       </enablement>
+    </provider>
+    <provider
+          class="org.eclipse.wst.common.snippets.tests.helpers.ComplexProvider"
+          priority="20">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.common.snippets.tests.helpers.SApplicableEditor">
+          </instanceof></enablement>
+    </provider>
+ </extension>
+
+</plugin>

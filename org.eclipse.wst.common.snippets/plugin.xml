@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+	<extension-point
+		id="SnippetContributions"
+		name="%Snippets_View_Contributions_Extension.name"
+		schema="schema/SnippetContributions.exsd" />
+		
+ <extension-point 
+ 	id="SnippetProvider" 
+ 	name="%extension-point.name.0" 
+ 	schema="schema/SnippetProvider.exsd"/>
+
+	<!-- the view itself -->
+	<extension point="org.eclipse.ui.views">
+		<view
+			name="%Snippets.name"
+			icon="$nl$/icons/snippets_view.gif"
+			category="org.eclipse.ui"
+			class="org.eclipse.wst.common.snippets.internal.ui.SnippetsView"
+			id="org.eclipse.wst.common.snippets.internal.ui.SnippetsView">
+		</view>
+	</extension>
+
+	<extension point="org.eclipse.ui.popupMenus">
+		<!-- Default Text Editor -->
+		<viewerContribution
+			targetID="#TextEditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add"
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate">
+			</action>
+		</viewerContribution>
+		<!-- Structured Text Editors -->
+		<viewerContribution
+			targetID="org.eclipse.core.runtime.xml.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.core.runtime.xml.source2.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.javascript.core.javascriptsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.html.core.htmlsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.dtd.core.dtdsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.css.core.csssource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.jspsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.jspfragmentsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.tagsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.tldsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.xsd.core.xsdsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.wsdl.wsdlsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.j2ee.webDD.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<!-- Java source Editor -->
+		<viewerContribution
+			targetID="#CompilationUnitEditorContext"
+			id="org.eclipse.wst.common.snippets.actions.compilationuniteditor">
+			<action
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add"
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate">
+			</action>
+		</viewerContribution>
+	</extension>
+	
+ <extension point="org.eclipse.wst.common.snippets.SnippetProvider">
+    <provider
+          class="org.eclipse.wst.common.snippets.ui.TextSnippetProvider"
+          priority="100">
+       <enablement>
+          <or>
+             <adapt type="org.eclipse.ui.texteditor.ITextEditor"/>
+             <instanceof value="org.eclipse.ui.texteditor.ITextEditor"/>
+          </or>
+       </enablement>
+    </provider>
+ </extension>
+</plugin>

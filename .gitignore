@@ -33,6 +33,7 @@ javaCompiler...args
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # maven
 =======
 # maven 
@@ -40,4 +41,7 @@ javaCompiler...args
 =======
 # maven 
 >>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
+=======
+# maven
+>>>>>>> 116810bbf2ad893cddb1990480cf3a55f15f3708
 target/
