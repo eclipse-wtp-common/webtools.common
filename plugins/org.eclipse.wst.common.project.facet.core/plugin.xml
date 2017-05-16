@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension-point 
+    id="facets"
+    name="Project Facets Extension Point"
+    schema="schemas/facets.exsd"/>
+
+  <extension-point 
+    id="runtimes"
+    name="Runtimes Extension Point"
+    schema="schemas/runtimes.exsd"/>
+
+  <extension-point 
+    id="runtimeBridges"
+    name="Runtime Bridges Extension Point"
+    schema="schemas/runtimeBridges.exsd"/>
+
+  <extension-point 
+    id="defaultFacets"
+    name="Default Facets Extension Point"
+    schema="schemas/defaultFacets.exsd"/>
+
+  <extension-point 
+    id="validators"
+    name="Faceted Project Validators Extension Point"
+    schema="schemas/validators.exsd"/>
+    
+  <extension-point 
+    id="listeners" 
+    name="%extPointListeners" 
+    schema="schemas/listeners.exsd"/>
+    
+  <extension-point 
+    id="presets" 
+    name="%extPointPresets" 
+    schema="schemas/presets.exsd"/>
+  
+  <extension-point 
+    id="detectors" 
+    name="%extPointDetectors" 
+    schema="schemas/detectors.exsd"/>
+  
+  <extension-point 
+    id="aliases" 
+    name="%extPointAliases" 
+    schema="schemas/aliases.exsd"/>
+
+  <extension-point 
+    id="groups" 
+    name="%extPointGroups" 
+    schema="schemas/groups.exsd"/>
+  
+  <extension
+    id="nature"
+    point="org.eclipse.core.resources.natures">
+    <runtime>
+      <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
+    </runtime>
+    <builder id="org.eclipse.wst.common.project.facet.core.builder"/>
+  </extension>
+  
+  <extension
+    id="builder"
+    name="%builderName"
+    point="org.eclipse.core.resources.builders">
+    <builder hasNature="true">
+      <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectValidationBuilder"/>
+    </builder>
+  </extension>
+  
+  <extension 
+    point="org.eclipse.core.resources.markers"
+    id="validation.marker"
+    name="%validationMarkerName">
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="true"/>
+  </extension>
+  
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectAdapter" 
+      adaptableType="org.eclipse.core.resources.IProject">
+      <adapter type="org.eclipse.wst.common.project.facet.core.IFacetedProject"/>
+    </factory>
+  </extension>
+
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester1"
+      type="org.eclipse.core.resources.IResource"
+      namespace="org.eclipse.wst.common.project.facet.core"
+      properties="projectFacet"
+      class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester">
+    </propertyTester>
+    <propertyTester
+      id="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester2"
+      type="org.eclipse.wst.common.project.facet.core.IProjectFacetVersion"
+      namespace="org.eclipse.wst.common.project.facet.core"
+      properties="projectFacet"
+      class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester">
+    </propertyTester>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.presets">
+    <dynamic-preset id="default.configuration">
+      <factory class="org.eclipse.wst.common.project.facet.core.DefaultConfigurationPresetFactory"/>
+    </dynamic-preset>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.presets">
+    <dynamic-preset id="minimal.configuration">
+      <factory class="org.eclipse.wst.common.project.facet.core.MinimalConfigurationPresetFactory"/>
+    </dynamic-preset>
+  </extension>
+  <extension
+        point="org.eclipse.equinox.preferences.preferences">
+  </extension>
+  
+
+</plugin>

@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+
+<plugin>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+    
+    <category id="cat1">
+      <label>Category 1</label>
+      <description>This is the category description.</description>
+    </category>
+
+    <project-facet id="facet1">
+      <label>Facet 1</label>
+      <description>This is the description of facet1.</description>
+    </project-facet>
+    
+    <project-facet-version facet="facet1" version="1.0">
+      <action type="install">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+      </action>
+      <action type="uninstall">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+      </action>
+      <action type="version-change">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet1" version="1.2">
+      <action type="install">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+      </action>
+      <action type="uninstall">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+      </action>
+      <action type="version-change">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet1" version="1.2.1"/>
+    <project-facet-version facet="facet1" version="1.3"/>
+    <project-facet-version facet="facet1" version="2.0"/>
+
+    <action facet="facet1" version="[1.2.1-2.0]" type="install">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+    </action>
+    
+    <action facet="facet1" version="[1.2.1-2.0]" type="uninstall">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+    </action>
+    
+    <action facet="facet1" version="[1.2.1-2.0]" type="version-change">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+    </action>
+    
+    <project-facet id="facet2">
+      <version-comparator class="org.eclipse.wst.common.project.facet.core.tests.support.CustomVersionComparator"/>
+      <member category="cat1"/>
+    </project-facet>
+    
+    <project-facet-version facet="facet2" version="3.5">
+      <constraint>
+        <requires facet="facet1" version="1.0"/>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="3.5#a">
+      <constraint>
+        <and>
+          <requires facet="facet1" version="[1.2-1.3)"/>
+        </and>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="4.7">
+      <constraint>
+        <or>
+          <requires facet="facet1" version="[1.3"/>
+        </or>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="4.7#b">
+      <constraint>
+        <or>
+          <requires facet="facet1" version="1.3"/>
+          <requires facet="facet1" version="2.0"/>
+        </or>
+      </constraint>
+    </project-facet-version>
+        
+    <project-facet-version facet="facet2" version="4.7#c">
+      <constraint>
+        <and>
+          <or>
+            <requires facet="facet1" version="1.2.1"/>
+            <requires facet="facet1" version="1.3"/>
+            <requires facet="facet1" version="2.0"/>
+          </or>
+          <conflicts facet="facet3a"/>
+          <conflicts facet="facet3b" version="1.0"/>
+          <conflicts group="group1"/>
+        </and>
+      </constraint>
+      <group-member id="group1"/>
+    </project-facet-version>
+    
+    <project-facet id="facet2ext">
+      <member category="cat1"/>
+    </project-facet>
+    
+    <project-facet-version facet="facet2ext" version="1.0"/>
+
+    <category id="cat2"/>
+    
+    <project-facet id="facet3a"> <!-- Tests a facet with no description. -->
+      <member category="cat2"/>
+    </project-facet>
+    
+    <project-facet-version facet="facet3a" version="1.0"/>
+    <project-facet-version facet="facet3a" version="2.0"/>
+    
+    <action facet="facet3a" version="[1.0-2.0]" type="install">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aInstallDelegate"/>
+    </action>
+
+    <action facet="facet3a" version="[1.0-2.0]" type="uninstall">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aUninstallDelegate"/>
+    </action>
+    
+    <action facet="facet3a" version="[1.0-2.0]" type="version-change">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aVersionChangeDelegate"/>
+    </action>
+
+    <project-facet id="facet3b">
+      <member category="cat2"/>
+      <description></description> <!-- Tests a facet with an empty description. -->
+    </project-facet>
+    
+    <project-facet-version facet="facet3b" version="1.0"/>
+    <project-facet-version facet="facet3b" version="2.0"/>
+    
+    <project-facet id="facet3c">
+      <member category="cat2"/>
+    </project-facet>
+    
+    <project-facet-version facet="facet3c" version="1.0">
+      <group-member id="group1"/>
+    </project-facet-version>
+
+    <project-facet-version facet="facet3c" version="2.0">
+      <group-member id="group1"/>
+    </project-facet-version>
+
+  </extension>
+  
+  <!-- PresetsTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.presets">
+  
+    <static-preset id="pt_preset1">
+      <label>Preset 1</label>
+      <description>This is the description for the first preset.</description>
+      <facet id="facet1" version="2.0"/>
+      <facet id="facet2" version="3.5#a"/>
+      <facet id="facet2ext" version="1.0"/>
+    </static-preset>
+
+    <static-preset id="pt_preset2">
+      <facet id="facet3a" version="1.0"/>
+      <facet id="facet3b" version="1.0"/>
+      <facet id="facet3c" version="1.0"/>
+    </static-preset>
+    
+    <static-preset id="pt_preset3" extends="pt_preset1">
+      <facet id="facet3a" version="1.0"/>
+      <facet id="facet1" version="1.2.1"/>  <!-- Tests that the version in derived preset wins. -->
+    </static-preset>      
+
+    <dynamic-preset id="pt_dyn_preset">
+      <factory class="org.eclipse.wst.common.project.facet.core.tests.PresetsTests$PresetFactory"/>
+    </dynamic-preset>      
+
+    <static-preset id="pt_static_extending_dynamic_preset_1" extends="pt_dyn_preset">
+      <label>Static Extending Dynamic Preset</label>
+      <description>This is the static-dynamic description.</description>
+      <facet id="facet2" version="3.5#a"/>
+      <facet id="facet3b" version="1.0"/>
+    </static-preset>
+
+    <static-preset id="pt_static_extending_dynamic_preset_2" extends="pt_static_extending_dynamic_preset_1">
+      <label>Static Extending Dynamic Preset 2</label>
+      <description>This is the static-dynamic description 2.</description>
+      <facet id="facet1" version="1.2.1"/>
+      <facet id="facet3a" version="1.0"/>
+    </static-preset>
+
+    <!-- References facet that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset1">
+      <facet id="abc" version="1.0"/>
+    </static-preset>
+
+    <!-- References facet version that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset2">
+      <facet id="facet2" version="99.98"/>
+    </static-preset>
+
+    <!-- References base preset that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset3" extends="does.not.exist">
+      <facet id="facet2" version="3.5#a"/>
+    </static-preset>
+    
+    <!-- The following four presets form a cycle. -->
+    
+    <static-preset id="pt_cycle_preset1" extends="pt_cycle_preset3">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+    
+    <static-preset id="pt_cycle_preset2" extends="pt_cycle_preset1">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+
+    <static-preset id="pt_cycle_preset3" extends="pt_cycle_preset2">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+
+    <static-preset id="pt_cycle_preset4" extends="pt_cycle_preset3">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+    
+  </extension>  
+
+  <!-- Facet Constraint Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="fct_f1"/>
+    
+    <project-facet-version facet="fct_f1" version="1.0">
+      <constraint>
+        <conflicts facet="fct_f2"/>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet id="fct_f2"/>
+    
+    <project-facet-version facet="fct_f2" version="1.0">
+      <constraint>
+        <conflicts facet="fct_f4"/>
+      </constraint>
+    </project-facet-version>
+  
+    <project-facet id="fct_f3"/>
+    
+    <project-facet-version facet="fct_f3" version="1.0">
+      <constraint>
+        <requires facet="fct_f2" version="1.0"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet id="fct_f4"/>
+    
+    <project-facet-version facet="fct_f4" version="1.0">
+    </project-facet-version>
+  
+    <project-facet id="fct_f5"/>
+    
+    <project-facet-version facet="fct_f5" version="1.0">
+      <constraint>
+        <requires facet="fct_f2" version="1.0" soft="true"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet id="fct_f6"/>
+    
+    <project-facet-version facet="fct_f6" version="1.0"/>
+    <project-facet-version facet="fct_f6" version="2.3"/>
+    <project-facet-version facet="fct_f6" version="3.7"/>
+    <project-facet-version facet="fct_f6" version="4.0"/>
+    <project-facet-version facet="fct_f6" version="4.5"/>
+    
+    <project-facet id="fct_f7"/>
+    
+    <project-facet-version facet="fct_f7" version="1.0">
+      <constraint>
+        <requires facet="fct_f6"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="fct_f7" version="2.0">
+      <constraint>
+        <requires facet="fct_f6" version="[5.0-6.5)"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet id="fct_f8"/>
+    
+    <project-facet-version facet="fct_f8" version="1.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+          
+    <project-facet-version facet="fct_f8" version="2.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="fct_f8" version="3.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet id="fct_f9"/>
+    
+    <project-facet-version facet="fct_f9" version="1.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet id="fct_f10"/>
+
+    <project-facet-version facet="fct_f10" version="1.0">
+      <constraint>
+        <requires group="fct_g1"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="fct_f10" version="2.0">
+      <constraint>
+        <requires group="fct_g1" soft="true"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <group id="fct_g1">
+      <label>FCT Group 1</label>
+      <description>This is the description.</description>
+    </group>
+
+  </extension>
+
+  <!-- Default Version Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="dvt_f1"/>
+    
+    <project-facet-version facet="dvt_f1" version="1.0"/>
+    <project-facet-version facet="dvt_f1" version="2.0"/>
+    <project-facet-version facet="dvt_f1" version="3.0"/>
+    <project-facet-version facet="dvt_f1" version="4.0"/>
+
+    <project-facet id="dvt_f2">
+      <default-version version="2.0"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f2" version="1.0"/>
+    <project-facet-version facet="dvt_f2" version="2.0"/>
+    <project-facet-version facet="dvt_f2" version="3.0"/>
+    <project-facet-version facet="dvt_f2" version="4.0"/>
+
+    <project-facet id="dvt_f3">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF3DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f3" version="1.0"/>
+    <project-facet-version facet="dvt_f3" version="2.0"/>
+    <project-facet-version facet="dvt_f3" version="3.0"/>
+    <project-facet-version facet="dvt_f3" version="4.0"/>
+
+    <project-facet id="dvt_f4">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF3DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f4" version="1.0"/>
+    <project-facet-version facet="dvt_f4" version="2.0"/>
+    <project-facet-version facet="dvt_f4" version="3.0"/>
+    <project-facet-version facet="dvt_f4" version="4.0"/>
+
+    <project-facet id="dvt_f5">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF5DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f5" version="1.0"/>
+    <project-facet-version facet="dvt_f5" version="2.0"/>
+    <project-facet-version facet="dvt_f5" version="3.0"/>
+    <project-facet-version facet="dvt_f5" version="4.0"/>
+
+    <project-facet id="dvt_f6">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF6DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f6" version="1.0"/>
+    <project-facet-version facet="dvt_f6" version="2.0"/>
+    <project-facet-version facet="dvt_f6" version="3.0"/>
+    <project-facet-version facet="dvt_f6" version="4.0"/>
+
+    <project-facet id="dvt_f7">
+      <default-version version="5.0"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f7" version="1.0"/>
+    <project-facet-version facet="dvt_f7" version="2.0"/>
+    <project-facet-version facet="dvt_f7" version="3.0"/>
+    <project-facet-version facet="dvt_f7" version="4.0"/>
+
+  </extension>
+
+  <!-- FacetActionExecutionTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="fat_f1"/>
+    
+    <project-facet-version facet="fat_f1" version="1.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.FacetActionsTests$F1v1InstallDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="fat_f1" version="2.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.FacetActionsTests$F1v2InstallDelegate"/>
+      </action>
+    </project-facet-version>
+    
+  </extension>
+  
+  <!-- UI Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="ui_long_label1">
+      <label>This facet has a really really rather long label</label>
+      <description>And a short description.</description>
+    </project-facet> 
+  
+    <project-facet-version facet="ui_long_label1" version="1.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <category id="ui_long_label_category">
+      <label>Category for facets with long labels</label>
+    </category>
+
+    <project-facet id="ui_long_label2">
+      <label>This facet has a really really rather long label</label>
+      <member category="ui_long_label_category"/>
+    </project-facet> 
+  
+    <project-facet-version facet="ui_long_label2" version="1.2.3.4.5.6.7.8.9">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="ui_long_label2" version="9.8.7.6.5.4.3.2.1">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+  </extension>
+  
+  <!-- EventDeliveryTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="edt_f1"/>
+    <project-facet-version facet="edt_f1" version="1.0"/>
+    <project-facet-version facet="edt_f1" version="2.0"/>
+    <action facet="edt_f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f1" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f1" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="edt_f2"/>
+    <project-facet-version facet="edt_f2" version="1.1"/>
+    <project-facet-version facet="edt_f2" version="2.1"/>
+    <action facet="edt_f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f2" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f2" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="edt_f3"/>
+    <project-facet-version facet="edt_f3" version="1.2"/>
+    <project-facet-version facet="edt_f3" version="2.2"/>
+    <action facet="edt_f3" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f3" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f3" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="edt_f4"/>
+    <project-facet-version facet="edt_f4" version="1.3"/>
+    <project-facet-version facet="edt_f4" version="2.3"/>
+    <action facet="edt_f4" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f4" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f4" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.listeners">
+    <listener 
+      class="org.eclipse.wst.common.project.facet.core.tests.EventDeliveryTests$FullExtensionBasedListener"/>
+    <listener 
+      class="org.eclipse.wst.common.project.facet.core.tests.EventDeliveryTests$PartialExtensionBasedListener"
+      eventTypes="PRE_INSTALL,FIXED_FACETS_CHANGED"/>
+  </extension>
+
+  <!-- ProjectCreationTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="pct-f1"/>
+    <project-facet-version facet="pct-f1" version="1.0"/>
+    <action facet="pct-f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="pct-f2"/>
+    <project-facet-version facet="pct-f2" version="1.0"/>
+    <project-facet-version facet="pct-f2" version="2.0"/>
+    <action facet="pct-f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+  </extension>
+
+  <!-- AliasingSystemTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="ast-f1"/>
+    <project-facet-version facet="ast-f1" version="1.5"/>
+    <project-facet-version facet="ast-f1" version="1.6"/>
+    <action facet="ast-f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.aliases">
+    
+    <facet-version-alias facet="ast-f1" version="1.5" alias="5.0"/>
+    <facet-version-alias facet="ast-f1" version="1.6" alias="6.0"/>
+    
+  </extension>
+  
+  <!-- ProjectFacetGroupsTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="grp-f1"/>
+    <project-facet-version facet="grp-f1" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f1" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f1" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f2"/>
+    <project-facet-version facet="grp-f2" version="1.0"/>
+    <project-facet-version facet="grp-f2" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f2" version="2.0"/>
+    <action facet="grp-f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f3"/>
+    <project-facet-version facet="grp-f3" version="1.0"/>
+    <project-facet-version facet="grp-f3" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f3" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f3" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="grp-f4"/>
+    <project-facet-version facet="grp-f4" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f4" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f4" version="2.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f4" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="grp-f5"/>
+    <project-facet-version facet="grp-f5" version="1.0">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f5" version="1.2">
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f5" version="2.0"/>
+    <action facet="grp-f5" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="grp-f6"/>
+    <project-facet-version facet="grp-f6" version="1.0"/>
+    <project-facet-version facet="grp-f6" version="1.2">
+      <group-member id="grp-g1"/>
+      <group-member id="grp-g2"/>
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <project-facet-version facet="grp-f6" version="2.0">
+      <group-member id="grp-g1"/>
+      <group-member id="grp-g2"/>
+      <group-member id="grp-g3"/>
+    </project-facet-version>
+    <action facet="grp-f6" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.groups">
+  
+    <group id="grp-g1">
+      <label>Group 1</label>
+      <description>Description for Group 1.</description>
+      <include facet="grp-f1"/>
+      <include facet="grp-f2" versions="1.2"/>
+      <include facet="grp-f3" versions="[1.2-3.0)"/>
+    </group>
+    
+    <members group="grp-g1">
+      <include facet="grp-f4"/>
+      <include facet="grp-f5" versions="1.0,1.2"/>
+    </members>
+  
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <group id="grp-g2">
+      <label>Group 2</label>
+      <description>Description for Group 2.</description>
+    </group>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.groups">
+  
+    <members group="grp-g2">
+      <include facet="grp-f1"/>
+      <include facet="grp-f2" versions="1.2"/>
+      <include facet="grp-f3" versions="[1.2-3.0)"/>
+    </members>
+    
+    <members group="grp-g2">
+      <include facet="grp-f4"/>
+      <include facet="grp-f5" versions="1.0,1.2"/>
+    </members>
+  
+  </extension>
+  
+</plugin>

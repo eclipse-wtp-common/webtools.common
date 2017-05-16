@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>What's New for 3.1?</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="format.css">
+</head>
+
+<body>
+<p class="ueberschrift">What's New for 3.1?</p>
+
+<p>This document describes the API changes that have been made in the Faceted Project Framework for 
+the WTP 3.1 release. Both Java API and extension point changes are covered.</p>
+
+<ol>
+  <li><a href="#framework-exception">FacetedProjectFrameworkException</a></li>
+  <li><a href="#batching-validate-edit">Batching Validate Edit Calls</a></li>
+  <li><a href="#basic-wizard">Improvements to BasicFacetedProjectWizard</a></li>
+  <li><a href="#preferences">Managing Project Facet Preferences</a></li>
+</ol>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#framework-exception">1. FacetedProjectFrameworkException</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>A framework-specific subclass of CoreException has been introduced in order to allow IDelegate implementations 
+a way to signal that an exception is expected. An example of an expected exception is when a user 
+declines to make a necessary file writable. Marking an exception as expected can be used as a signal 
+by handlers to alter the way the exception is presented to the user (perhaps not displaying the 
+stack trace and/or not logging it).</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+interface FacetedProjectFrameworkException extends CoreException
+{
+    FacetedProjectFrameworkException( IStatus status );
+    boolean isExpected();
+    void setExcpeted( boolean expected );
+}
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#batching-validate-edit">2. Batching Validate Edit Calls</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>It is often desirable to batch IWorkspace.validateEdit() calls in order to reduce the number
+of prompts to the user. An API has been added to allow a facet action to specify the files that
+it intends to operate on. The framework will make a batched call to validateEdit prior to running 
+any of the actions.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">abstract class ActionConfig
+{</font>    
+    Set<IFile> getValidateEditFiles();
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#basic-wizard">3. Improvements to BasicFacetedProjectWizard</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The generic New Faceted Project wizard now allows the project to be added to working
+sets via UI on the first page.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">class BasicFacetedProjectWizard
+{</font>    
+    IWorkbench getWorkbench();
+    IStructuredSelection getSelection();
+<font color="#7B7B7B">}</font>
+
+class BasicFacetedProjectWizardFirstPage extends WizardNewProjectCreationPage
+{    
+}
+</pre>
+</td></tr></table>
+ 
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#preferences">4. Managing Project Facet Preferences</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>New facility for managing preferences associated with facets has been introduced. More information
+can be found in <a href="answers/projectFacetPreferences.html">FAQ</a>.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">class FacetedProjectFramework
+{</font>
+    Preferences getPreferences( IProjectFacet facet );
+<font color="#7B7B7B">}</font>
+
+<font color="#7B7B7B">interface IFacetedProject
+{</font>
+    Preferences getPreferences( IProjectFacet facet );
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+</body>
+</html>

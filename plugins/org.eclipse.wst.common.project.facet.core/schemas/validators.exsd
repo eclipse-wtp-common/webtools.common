@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="validators" name="Faceted Project Validators Extension Point"/>
+      </appInfo>
+      <documentation>
+         Used for declaring faceted project validators.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="validator" minOccurs="1" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="facet">
+      <annotation>
+         <documentation>
+            Used to reference one or more version of a project facet.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Specifies the project facet id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="validator">
+      <annotation>
+         <documentation>
+            Declares a faceted project validator. The validator can be restricted to projects containing specific facets.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The validator class name. Has to implement org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;p&gt;The following example declares a validator that applies to projects that have facet1 (version 1.3 or 2.5) and facet2 (any version) installed.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.validators&quot;&gt;
+  &lt;validator class=&quot;com.mycorp.MyValidator1&quot;&gt;
+    &lt;facet id=&quot;facet1&quot; version=&quot;1.3,2.5&quot;/&gt;
+    &lt;facet id=&quot;facet2&quot;/&gt;
+  &lt;/validator&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The second example declares a validator that applies to all faceted projects.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.validators&quot;&gt;
+  &lt;validator class=&quot;com.mycorp.MyValidator2&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

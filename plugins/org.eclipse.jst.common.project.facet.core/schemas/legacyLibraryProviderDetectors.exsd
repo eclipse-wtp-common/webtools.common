@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.jst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.jst.common.project.facet.core" id="legacyLibraryProviderDetectors" name="Legacy Library Provider Detectors Extension Point"/>
+      </appinfo>
+      <documentation>
+         Provides a migration path for existing code to Library Provider Framework by allowing registration of detectors that can identify legacy metadata in a project and return a library provider. The registered detectors are called when a call to LibraryProviderFramework.getCurrentProvider() is made and the project metadata maintained by the framework does not show a provider for the facet in question. The detectors should not alter project state, but only return a library provider representing the legacy configuration. The legacy library providers are typically configured as hidden (not available for installation) and only implement the uninstall action.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            Allows registering one or more legacy library provider detectors.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="detector" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="detector">
+      <annotation>
+         <documentation>
+            Registers a single legacy library provider detector.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the class name of the detector.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.jst.common.project.facet.core.libprov.LegacyLibraryProviderDetector:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         WTP 3.1
+
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;The following example registers two detectors:&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.jst.common.project.facet.core.legacyLibraryProviderDetectors&quot;&gt;
+  &lt;detector class=&quot;com.mycompany.Detector1&quot;/&gt;
+  &lt;detector class=&quot;com.mycompany.Detector2&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

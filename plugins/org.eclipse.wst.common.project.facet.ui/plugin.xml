@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension-point 
+    id="wizard"
+    name="Project Facet Wizard Pages Extension Point (Deprecated)"
+    schema="schemas/wizard-pages-old.exsd"/>
+
+  <extension-point 
+    id="wizardPages"
+    name="Project Facet Wizard Pages Extension Point"
+    schema="schemas/wizard-pages.exsd"/>
+
+  <extension-point 
+    id="images"
+    name="Project Facet Images Extension Point"
+    schema="schemas/images.exsd"/>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.IProjectFacet">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.ICategory">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+  
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.RuntimeDecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+  
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.FacetedProjectActionFilter$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.IFacetedProject">
+      <adapter type="org.eclipse.ui.IActionFilter"/>
+    </factory>
+  </extension>
+    
+  <extension point="org.eclipse.ui.propertyPages">
+    <page
+      adaptable="true"
+      class="org.eclipse.wst.common.project.facet.ui.internal.FacetsPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.FacetsPropertyPage"
+      name="%project.facets"
+      objectClass="org.eclipse.core.resources.IProject">
+      <filter
+        name="open"
+        value="true">
+      </filter>
+    </page>
+    <page
+      adaptable="true"
+      class="org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.RuntimesPropertyPage"
+      name="%runtimesPropertyPageLabel"
+      objectClass="org.eclipse.core.resources.IProject">
+      <filter
+        name="nature"
+        value="org.eclipse.wst.common.project.facet.core.nature">
+      </filter>
+    </page>
+  </extension>
+  
+  <extension point="org.eclipse.ui.newWizards">
+    <wizard
+      canFinishEarly="false"
+      class="org.eclipse.wst.common.project.facet.ui.BasicFacetedProjectWizard"
+      hasPages="true"
+      icon="images/newprj-wiz.gif"
+      id="org.eclipse.wst.common.project.facet.ui.BasicFacetedProjectWizard"
+      name="%basicFacetedProjectWizardName"
+      project="true"
+      category="org.eclipse.ui.Basic">
+    </wizard>
+  </extension>
+  
+  <extension point="org.eclipse.ui.commands">
+    <command
+      categoryId="org.eclipse.ui.category.file"
+      defaultHandler="org.eclipse.wst.common.project.facet.ui.internal.ConvertProjectToFacetedFormCommandHandler"
+      id="org.eclipse.wst.common.project.facet.ui.ConvertProjectToFacetedForm"
+      name="%convertToFacetedFormCommandName">
+    </command>
+  </extension>
+  
+  <extension point="org.eclipse.ui.menus">
+    <menuContribution locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+      <command commandId="org.eclipse.wst.common.project.facet.ui.ConvertProjectToFacetedForm" style="push">
+        <visibleWhen checkEnabled="false">
+          <and>
+            <count value="1"/>
+            <iterate ifEmpty="false" operator="and">
+              <adapt type="org.eclipse.core.resources.IProject">
+                <not>
+                  <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.wst.common.project.facet.core.nature"/>
+                </not>
+              </adapt>
+            </iterate>
+          </and>
+        </visibleWhen>
+      </command>
+    </menuContribution>
+  </extension>
+
+</plugin>

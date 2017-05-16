@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.jst.common.project.facet.core.internal.RuntimeClasspathProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
+      <adapter type="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+    </factory>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimeBridges">
+    <bridge
+      id="org.eclipse.jst.common.project.facet.core.JavaRuntimeBridge"
+      class="org.eclipse.jst.common.project.facet.core.internal.JavaRuntimeBridge"/>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+  
+    <runtime-component-type id="standard.jre"/>
+    <runtime-component-version type="standard.jre" version="1.3"/>
+    <runtime-component-version type="standard.jre" version="1.4"/>
+    <runtime-component-version type="standard.jre" version="1.5"/>
+    <runtime-component-version type="standard.jre" version="1.6"/>
+    <runtime-component-version type="standard.jre" version="1.7"/>
+    <runtime-component-version type="standard.jre" version="1.8"/>
+
+    <supported>
+      <facet id="java" version="1.3"/>
+      <runtime-component id="standard.jre" version="[1.3"/>
+    </supported>
+
+    <supported>
+      <facet id="java" version="1.4"/>
+      <runtime-component id="standard.jre" version="[1.4"/>
+    </supported>
+
+    <supported>
+      <facet id="java" version="1.5"/>
+      <runtime-component id="standard.jre" version="[1.5"/>
+    </supported>
+
+    <supported>
+      <facet id="java" version="1.6"/>
+      <runtime-component id="standard.jre" version="[1.6"/>
+    </supported>
+    
+    <supported>
+      <facet id="java" version="1.7"/>
+      <runtime-component id="standard.jre" version="[1.7"/>
+    </supported>
+
+    <supported>
+      <facet id="java" version="1.8"/>
+      <runtime-component id="standard.jre" version="[1.8"/>
+    </supported>
+
+    <adapter>
+      <runtime-component id="standard.jre"/>
+      <factory class="org.eclipse.jst.common.project.facet.core.internal.StandardJreClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+    </adapter>
+
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="java">
+      <label>%javaFacetLabel</label>
+      <description>%javaFacetDescription</description>
+      <default-version provider="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDefaultVersionProvider"/>
+    </project-facet>
+
+    <project-facet-version facet="java" version="1.3"/>
+
+    <project-facet-version facet="java" version="1.4"/>
+
+    <project-facet-version facet="java" version="1.5"/>
+
+    <project-facet-version facet="java" version="1.6"/>
+
+    <project-facet-version facet="java" version="1.7"/>
+
+    <project-facet-version facet="java" version="1.8"/>
+
+    <action facet="java" type="install" id="java.install">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
+    </action>
+
+    <action facet="java" type="uninstall">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUninstallDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetUninstallConfigFactory"/>
+    </action>
+
+    <action facet="java" type="version-change">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeConfigFactory"/>
+    </action>
+
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.listeners">
+     <listener
+       class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetRuntimeChangedListener"
+       eventTypes="PRIMARY_RUNTIME_CHANGED"/>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.validators">
+    <validator class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetValidator">
+      <facet id="java"/>
+    </validator>
+  </extension>    
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.detectors">
+    <detector class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDetector"/>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.aliases">
+    <facet-alias facet="java" alias="jst.java"/>
+    <facet-version-alias facet="java" version="1.5" alias="5.0"/>
+    <facet-version-alias facet="java" version="1.6" alias="6.0"/>
+  </extension>
+
+  <extension 
+    point="org.eclipse.core.resources.markers"
+    id="javaVersionMismatch"
+    name="%javaVersionMismatchMarkerName">
+    <super type="org.eclipse.wst.common.project.facet.core.validation.marker"/>
+    <attribute name="facetVersion"/>
+    <attribute name="compilerLevel"/>
+    <persistent value="true"/>
+  </extension>
+
+  <!--
+    ******************************
+    * Library Provider Framework *
+    ******************************
+  -->
+
+  <extension-point 
+   	id="libraryProviders" 
+   	name="%libraryProvidersExtensionPointName" 
+   	schema="schemas/libraryProviders.exsd"/>
+
+  <extension-point 
+    id="legacyLibraryProviderDetectors" 
+    name="%legacyLibraryProviderDetectorsExtensionPointName" 
+    schema="schemas/legacyLibraryProviderDetectors.exsd"/>
+   	
+  <extension-point 
+    id="downloadableLibraries" 
+    name="%downloadableLibrariesExtensionPointName" 
+    schema="schemas/downloadableLibraries.exsd"/>
+   	
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="user-library-provider" abstract="true">
+      <label>%userLibraryProviderLabel</label>
+      <priority>500</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.user.UserLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="runtime-library-provider">
+      <label>%runtimeLibraryProviderLabel</label>
+      <priority>600</priority>
+      <param name="message" value="%runtimeLibraryProviderMessage"/>
+      <enablement>
+        <with variable="context">
+          <test property="org.eclipse.jst.common.project.facet.core.canTargetRuntimeProvideLibrary" forcePluginActivation="true"/>
+        </with>
+      </enablement>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="org.eclipse.jst.common.project.facet.core.canTargetRuntimeProvideLibrary"
+      type="org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext"
+      namespace="org.eclipse.jst.common.project.facet.core"
+      properties="canTargetRuntimeProvideLibrary"
+      class="org.eclipse.jst.common.project.facet.core.libprov.internal.RuntimeLibraryProviderPropertyTester">
+    </propertyTester>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="unknown-library-provider" hidden="true">
+      <label>%unknownLibraryProviderLabel</label>
+      <param name="message" value="%unknownLibraryProviderMessage"/>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.UnknownLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="legacy-library-provider" hidden="true">
+      <label>%legacyLibraryProviderLabel</label>
+      <param name="message" value="%legacyLibraryProviderMessage"/>
+      <action type="INSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyLibraryProviderInstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="legacy-runtime-library-provider" extends="legacy-library-provider" hidden="true">
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyRuntimeLibraryProviderUninstallOperation"/>
+      </action>
+    </provider>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.legacyLibraryProviderDetectors">
+    <detector class="org.eclipse.jst.common.project.facet.core.libprov.internal.LegacyRuntimeLibraryProviderDetector"/>
+  </extension>
+
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="no-op-library-provider" abstract="true">
+      <label>%noOpLibraryProviderLabel</label>
+      <priority>-1000</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.NoOpLibraryProviderOperation"/>
+      </action>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jst.common.project.facet.core.libraryProviders">
+    <provider id="osgi-bundles-library-provider" abstract="true">
+      <priority>600</priority>
+      <action type="INSTALL">
+        <config class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderInstallOperationConfig"/>
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderInstallOperation"/>
+      </action>
+      <action type="UNINSTALL">
+        <operation class="org.eclipse.jst.common.project.facet.core.libprov.osgi.OsgiBundlesLibraryProviderUninstallOperation"/>
+      </action>
+      <enablement>
+        <with variable="provider">
+          <test property="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable" value="true" forcePluginActivation="true"/>
+        </with>
+      </enablement>
+    </provider>
+  </extension>
+  
+  <extension point="org.eclipse.jdt.core.classpathContainerInitializer">
+    <classpathContainerInitializer
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesContainerImpl$Initializer"
+      id="eclipse.fproj.jdt.libprov.osgi"/>
+  </extension>
+  
+  <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable"
+      type="org.eclipse.jst.common.project.facet.core.libprov.EnablementExpressionContext"
+      namespace="eclipse.fproj.jdt.libprov.osgi"
+      properties="bundleReferencesResolvable"
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesLibraryProviderResolvablePropertyTester">
+    </propertyTester>
+    <propertyTester
+      id="eclipse.fproj.jdt.libprov.osgi.bundleReferencesResolvable"
+      type="org.eclipse.jst.common.project.facet.core.libprov.ILibraryProvider"
+      namespace="eclipse.fproj.jdt.libprov.osgi"
+      properties="bundleReferencesResolvable"
+      class="org.eclipse.jst.common.project.facet.core.libprov.osgi.internal.OsgiBundlesLibraryProviderResolvablePropertyTester">
+    </propertyTester>
+  </extension>
+
+</plugin>

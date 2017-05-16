@@ -1,0 +1,776 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="facets" name="Project Facets Extension Point"/>
+      </appInfo>
+      <documentation>
+         This is the main extension point in the faceted project framework. It is used for defining project facets. A project facet can be thought of as a unit of functionality that the user can add to the project when the functionality is needed.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="project-facet"/>
+            <element ref="project-facet-version"/>
+            <element ref="category"/>
+            <element ref="preset"/>
+            <element ref="template"/>
+            <element ref="action"/>
+            <element ref="event-handler"/>
+            <element ref="group"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="label" type="string">
+      <annotation>
+         <documentation>
+            The localizable name that is presented to the user. If not specified, the id will be used for a label.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="description" type="string">
+      <annotation>
+         <documentation>
+            The description text.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="and">
+      <annotation>
+         <documentation>
+            A facet constraint operator that performs a conjunction over the results of evaluation of two or more sub-expressions. This operator will return true if and only if all sub-expressions evaluate to true.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="and"/>
+            <element ref="or"/>
+            <element ref="requires"/>
+            <element ref="conflicts"/>
+         </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="or">
+      <annotation>
+         <documentation>
+            A facet constraint operator that performs a disjunction over the results of evaluation of two or more sub-expressions. This operator will return true if any of the sub-expressions evaluate to true.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="and"/>
+            <element ref="or"/>
+            <element ref="requires"/>
+            <element ref="conflicts"/>
+         </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="requires">
+      <annotation>
+         <documentation>
+            A facet constraint operator that is used to declare a dependency of one facet on another facet or any member of a group of facets. This operator will return true if the dependency is satisfied. Note that the group attribute should not be used together with the facet and version attributes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  The id of the facet group that this facet is declaring a dependency on. Any member of the group will satisfy the dependency. This attribute should not be used in conjunction with the facet and version attributes.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  The id of the facet.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the match expression for the facet version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="soft" type="boolean">
+            <annotation>
+               <documentation>
+                  If set to true indicates that this is a soft dependency. A soft dependency will not prevent the facet from being installed if it is not met. The purpose of specifying a soft dependency is to control facet installation order. If facet A declares a soft dependency on facet B, facet A is guaranteed to be installed after B has been installed (assuming B is selected).
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="conflicts">
+      <annotation>
+         <documentation>
+            A facet constraint operator that is used to declare a conflict between this facet and another facet or this facet and a group of facets. This operator will return true if and only if the conflict is not present. Note that the group attribute should not be used together with the facet and version attributes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  The id of the facet group that this facet conflicts with. Note that it is safe for the declaring facet to be a member of this group. Conflicts between the facet and itself are ignored. This attribute should not be used in conjunction with the facet and version attributes.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  The id of the facet that this facet conflicts with. If the version attribute is specified, the conflict declaration will be limited to those versions covered by the version expression.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Used in conjunction with the facet attribute to limit the versions covered by the conflict declaration. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="constraint">
+      <annotation>
+         <documentation>
+            Specifies the constraint that has to be satisfied before this facet can be installed in a project. A constraint can be used to specify dependencies on other facets as well as conflicts.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="and"/>
+            <element ref="or"/>
+            <element ref="requires"/>
+            <element ref="conflicts"/>
+         </choice>
+         <attribute name="ignore-problems" type="string">
+            <annotation>
+               <documentation>
+                  Used to control how the framework reports problems when the entities referenced by this constraint are not defined. When a problem is encountered, the framework will prune the constraint expression in a way that maintains as much of the expression as possible while removing the part that has the problem. For instance, if a problem is found in one branch of an OR expression, only that branch is removed. Once the problem has been handled, the framework will (by default) log an error with information about the problem. The framework can be told not to log anything in specific circumstances by using the ignore-problems attribute.&lt;br/&gt;
+
+If the ignore-problems attribute is specified at multiple levels in the constraint expression, the one that&apos;s closest to the source of the problem takes affect.&lt;br/&gt;
+
+Currently, the following rules are supported. Multiple rules can be specified by separating them with a comma. The master &quot;not-defined&quot; rule is a short hand notation for specifying all of the *-not-defined rules at the same time.&lt;br/&gt;&lt;/br/&gt;
+
+not-defined&lt;br/&gt;
+facet-not-defined&lt;br/&gt;
+facet-version-not-defined&lt;br/&gt;
+group-not-defined
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="group-member">
+      <annotation>
+         <documentation>
+            Makes this facet a member of the group specified in the id attribute. A facet can be a member of any number of groups. Groups are auto-created when referenced by this extension point. The facet groups are primarily used when specifying conflict constraints.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the facet group to add this facet to. Groups are auto-created when referenced by this extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="project-facet">
+      <annotation>
+         <documentation>
+            Declares a project facet. A project facet can be thought of as a unit of functionality that the user can add to the project when the functionality is needed. Note that a facet need to have a least one version declared in order to be useful. See project-facet-version for more details.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label" minOccurs="0" maxOccurs="1"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+            <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
+            <element ref="default-version" minOccurs="0" maxOccurs="1"/>
+            <element ref="member" minOccurs="0" maxOccurs="1"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Project facet identifier.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="project-facet-version">
+      <annotation>
+         <documentation>
+            Declares a project facet version. Each facet needs to have at leas one version declared in order to be useful.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="constraint" minOccurs="0" maxOccurs="1"/>
+            <element ref="group-member" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="action" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="event-handler" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="facet" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the project facet that this is a version of. The facet itself needs to be declared using the project-facet element.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The version string. Has to be compatible with the version comparator specified for this facet or use the standard decimal version notation (i.e. 1.23.005) if the facet does not specify a custom version comparator.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="version-comparator">
+      <annotation>
+         <documentation>
+            Specifies the version comparator for this project facet. If no version comparator is specified the default comparator will be used. The default version comparator can handle versions that are written in standard decimal notation.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The version comparator class name. Has to implement java.util.Comparator&amp;lt;String&amp;gt; interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.util.Comparator"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="category">
+      <annotation>
+         <documentation>
+            Declares a project facets category. Categories are groups of facets that the user will typically want to add or remove as a set.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label" minOccurs="0" maxOccurs="1"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The category id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="preset">
+      <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
+         <documentation>
+            Declares a preset. A preset represents a common configuration of facets and their versions that a user might want to utilize on several projects. Presets can be supplied via this extension point or created by the user.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The preset id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="template">
+      <annotation>
+         <documentation>
+            Declares a template. A template is simply a combination of fixed facets and an optional preset. Templates are used as a guide when creation projects.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label"/>
+            <element ref="fixed" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="preset"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The template id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="fixed">
+      <complexType>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="action">
+      <annotation>
+         <documentation>
+            Provides implementation of an action, such as install or uninstall, that a user can take on a project facet. Any action that&apos;s not implemented will not be available to the user. The action element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="config-factory" minOccurs="0" maxOccurs="1"/>
+            <element ref="delegate"/>
+         </sequence>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  Action type.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="install">
+                  </enumeration>
+                  <enumeration value="uninstall">
+                  </enumeration>
+                  <enumeration value="version-change">
+                  </enumeration>
+                  <enumeration value="runtime-changed">
+                  </enumeration>
+                  <enumeration value="INSTALL">
+                  </enumeration>
+                  <enumeration value="UNINSTALL">
+                  </enumeration>
+                  <enumeration value="VERSION_CHANGE">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  The id of the project facet that this action applies to. This attribute should not be used when embeding the action element inside the project-facet-version element.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  The version of the project facet that this action applies to. Multiple versions can be specified using version expression syntax. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. This attribute should not be used when embeding the action element inside the project-facet-version element.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  The action id. If not specified, a default id will be assigned using the &quot;[facet-id]#[version-expression]#[action-type]&quot; pattern.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="config-factory">
+      <annotation>
+         <documentation>
+            Specifies the factory that will construct a configuration object to be used for parameterizing the action delegate. A configuration object is not necessary if the delegate does not require parameterization.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The config factory class name. Has to implement org.eclipse.wst.common.project.facet.core.IActionConfigFactory interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IActionConfigFactory"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="delegate">
+      <annotation>
+         <documentation>
+            Specifies the delegate that should be invoked when an action or an event happens.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The delegate class name. Has to implement org.eclipse.wst.common.project.facet.core.IDelegate interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDelegate"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="event-handler">
+      <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
+         <documentation>
+            Adds an event handler for one of the events in the faceted project life cycle. The event-handler element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.&lt;br/&gt;&lt;br/&gt;
+
+&lt;b&gt;Deprecation Notes:&lt;/b&gt; This part of the facets extension point is deprecated. The org.eclipse.wst.common.project.facet.core.listeners extension point should be used instead.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="delegate"/>
+         </sequence>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  The type of the event.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="PRE_INSTALL">
+                  </enumeration>
+                  <enumeration value="POST_INSTALL">
+                  </enumeration>
+                  <enumeration value="PRE_UNINSTALL">
+                  </enumeration>
+                  <enumeration value="POST_UNINSTALL">
+                  </enumeration>
+                  <enumeration value="PRE_VERSION_CHANGE">
+                  </enumeration>
+                  <enumeration value="POST_VERSION_CHANGE">
+                  </enumeration>
+                  <enumeration value="RUNTIME_CHANGED">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  The id of the project facet that this event handler applies to. This attribute should not be used when embeding the event-handler element inside the project-facet-version element.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  The version of the project facet that this event handler applies to. Multiple versions can be specified using version expression syntax. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. This attribute should not be used when embeding the event-handler element inside the project-facet-version element.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="property">
+      <annotation>
+         <documentation>
+            Sets a property on the containing context.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The name of the property.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The value of the property.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="default-version">
+      <annotation>
+         <documentation>
+            Used to provide the facet version that should be selected by default. If a default version is not specified, the latest version will be used. Note that if a runtime is selected, the runtime can override this default with a version best suited for that runtime. The default can be specified either statically by using the &lt;code&gt;version&lt;/code&gt; attribute or dynamically by implementing the &lt;code&gt;org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider&lt;/code&gt; interface and using the &lt;code&gt;provider&lt;/code&gt; attribute.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the version that should be used as the default. This attribute is ignored if the &lt;code&gt;provider&lt;/code&gt; attribute is specified.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="provider" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the version provider that will be consulted in order to determine the default version. If this attribute is used, the &lt;code&gt;version&lt;/code&gt; attribute will be ignored if present.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="group">
+      <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
+         <documentation>
+            Describes a project facet group. A group is a named collection of project facet versions. It is used primarily as a parameter to the &quot;requires&quot; and &quot;conflicts&quot; constraints and allows a level of indirection where a facet does not need to know about all the members of the group. A given project facet version can belong to several groups. Groups are created automatically when used in the &quot;group-member&quot; element, so an explicit group declaration is optional. However, it does allow a label and a description to be associated with the group.
+
+&lt;p&gt;&lt;b&gt;DEPRECATED:&lt;/b&gt; Use groups extension point instead.&lt;/p&gt;
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Group identifier.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="member">
+      <annotation>
+         <documentation>
+            Adds the project facet as a member of a category.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="category" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The category id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;p&gt;The following example illustrates the various facilities exposed by this extension point. This example is taken from the &lt;i&gt;Building Project Facets&lt;/i&gt; tutorial.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.facets&quot;&gt;
+
+  &lt;category id=&quot;formgen.category&quot;&gt;
+    &lt;label&gt;FormGen&lt;/label&gt;
+    &lt;description&gt;Enables generation of HTML forms based on XML definition files.&lt;/description&gt;
+  &lt;/category&gt;
+
+  &lt;project-facet id=&quot;formgen.core&quot;&gt;
+    &lt;label&gt;FormGen Core&lt;/label&gt;
+    &lt;description&gt;
+      Enables generation of HTML forms based on XML definition files.
+    &lt;/description&gt;
+    &lt;category&gt;formgen.category&lt;/category&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet=&quot;formgen.core&quot; version=&quot;1.0&quot;&gt;
+    &lt;constraint&gt;
+      &lt;requires facet=&quot;jst.web&quot; version=&quot;2.2,2.3,2.4&quot;/&gt;
+    &lt;/constraint&gt;
+    &lt;action type=&quot;INSTALL&quot; id=&quot;formgen.core.install&quot;&gt;
+      &lt;config-factory class=&quot;com.formgen.eclipse.FormGenCoreFacetInstallConfig$Factory&quot;/&gt;
+      &lt;delegate class=&quot;com.formgen.eclipse.FormGenCoreFacetInstallDelegate&quot;/&gt;
+    &lt;/action&gt;
+  &lt;/project-facet-version&gt;
+
+  &lt;project-facet id=&quot;formgen.ext&quot;&gt;
+    &lt;label&gt;FormGen Extensions&lt;/label&gt;
+    &lt;description&gt;
+      Enables additional FormGen widgets.
+    &lt;/description&gt;
+    &lt;category&gt;formgen.category&lt;/category&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet=&quot;formgen.ext&quot; version=&quot;1.0&quot;&gt;
+    &lt;constraint&gt;
+      &lt;requires facet=&quot;formgen.core&quot; version=&quot;1.0&quot;/&gt;
+    &lt;/constraint&gt;
+    &lt;action type=&quot;INSTALL&quot;&gt;
+      &lt;delegate class=&quot;com.formgen.eclipse.FormGenExtFacetInstallDelegate&quot;/&gt;
+    &lt;/action&gt;
+  &lt;/project-facet-version&gt;
+
+  &lt;preset id=&quot;formgen.preset&quot;&gt;
+    &lt;label&gt;FormGen Web Project&lt;/label&gt;
+    &lt;description&gt;Creates a web project with FormGen functionality.&lt;/description&gt;
+    &lt;facet id=&quot;jst.java&quot; version=&quot;5.0&quot;/&gt;
+    &lt;facet id=&quot;jst.web&quot; version=&quot;2.2&quot;/&gt;
+    &lt;facet id=&quot;formgen.core&quot; version=&quot;1.0&quot;/&gt;
+    &lt;facet id=&quot;formgen.ext&quot; version=&quot;1.0&quot;/&gt;
+  &lt;/preset&gt;
+  
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+&lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;.
+      </documentation>
+   </annotation>
+
+</schema>

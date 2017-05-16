@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="presets" name="Faceted Project Presets"/>
+      </appinfo>
+      <documentation>
+         A preset represents a common configuration of facets and their versions that give a user a starting point when configuring a project. Presets can either be static or dynamic. Static presets are fully specified in this extension point. Dynamic presets are created using an extender-supplied factory that can take into account the context in which the preset will be used in. Static presets can also extend other presets.
+
+&lt;p&gt;To programmatically define a preset, use the &lt;code&gt;ProjectFacetsManager.definePreset()&lt;/code&gt; methods.&lt;/code&gt;
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="static-preset" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="dynamic-preset" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="static-preset">
+      <annotation>
+         <documentation>
+            Defines a static preset. A static preset is fully specified in the extension point.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label" minOccurs="0" maxOccurs="1"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+            <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The preset id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="extends" type="string">
+            <annotation>
+               <documentation>
+                  The id of the preset that this preset is extending. If the base preset includes a facet that&apos;s also specified by this preset (derived), the version of the facet specified in the derived preset wins.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="label" type="string">
+      <annotation>
+         <documentation>
+            The localizable name that is presented to the user. If not specified, the id will be used for a label.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="description" type="string">
+      <annotation>
+         <documentation>
+            The description text.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="facet">
+      <annotation>
+         <documentation>
+            Specifies the facet that is part of this preset.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The project facet id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The facet version.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="dynamic-preset">
+      <annotation>
+         <documentation>
+            Defines a dynamic preset. A dynamic preset uses a factory to synthesize the preset definition on the fly based on the context in which it will be used.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="factory"/>
+         </sequence>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  The preset id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="factory">
+      <annotation>
+         <documentation>
+            Specifies the factory.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The name of the factory class.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IPresetFactory"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         2.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.presets&quot;&gt;
+
+  &lt;!-- Defines a dynamic preset which will be synthesized by the provided factory. This particular preset
+       is actually supplied by the Faceted Project Framework. What it resolves to depends on the context.
+       If project does not target a runtime, it will contain only the fixed facets with their default
+       versions. If project targets one or more runtime, this preset will contain facets that are specified
+       to be the default for the primary runtime. --&gt;
+       
+  &lt;dynamic-preset id=&quot;default.configuration&quot;&gt;
+    &lt;factory class=&quot;org.eclipse.wst.common.project.facet.core.internal.DefaultConfigurationPresetFactory&quot;/&gt;
+  &lt;/dynamic-preset&gt;
+
+  &lt;!-- Creates a preset which extends the &quot;default.configuration&quot; preset and adds two facets. --&gt; 
+       
+  &lt;static-preset id=&quot;my.favorite.preset&quot; extends=&quot;default.configuration&quot;&gt;
+    &lt;label&gt;My Favorite Configuration&lt;/label&gt;
+    &lt;description&gt;Here is the description of my favorite configuration.&lt;/description&gt;
+    &lt;facet id=&quot;facet_a&quot; version=&quot;1.2&quot;/&gt;
+    &lt;facet id=&quot;facet_b&quot; version=&quot;2.0&quot;/&gt;
+  &lt;/static-preset&gt;
+  
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+&lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;.
+      </documentation>
+   </annotation>
+
+</schema>

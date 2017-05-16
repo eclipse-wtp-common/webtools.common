@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>What's New for 1.5?</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="format.css">
+</head>
+
+<body>
+<p class="ueberschrift">What's New for 1.5?</p>
+
+<p>This document describes the API changes that have been made in the Faceted
+Project Framework for WTP 1.5 release. Both Java API and extension point changes 
+are covered. Note that the Faceted Project Framework API remains provisional
+for the 1.5 release. This means it will continue undergoing further significant
+changes in future release(s).</p>
+
+<p><b>Attention:</b> All Java API and extension points that have been deprecated 
+in the 1.5 release will be removed in the 2.0 release. Until that point they 
+will continue to function and be fully supported.</p>
+
+<ol>
+  <li><a href="#vexprs">Version Expressions</a></li>
+  <li><a href="#actions">Action Definitions</a></li>
+  <li><a href="#wizard">Wizard Pages</a></li>
+  <li><a href="#event.handlers">Event Handlers</a></li>
+  <li><a href="#runtimes">Targeting Multiple Runtimes</a></li>
+  <li><a href="#presets">Descriptions for Presets</a></li>
+  <li><a href="#misc">Miscellaneous</a></li>
+</ol>
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="vexprs">1. Version Expressions</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>Version expressions are used in various context throughout the framework's
+extension points and Java API when multiple versions need to be specified. In
+the 1.0.x release, the vesion expressions were of the form "&lt;1.5,2.3,2.5,&gt=5.0",
+where commas indicate a disjunction (or). This syntax did not allow ranges to be
+specified and was unwieldy due to the need to escape the angle brackets in the
+plugin.xml files. So this syntax has been deprecated in the 1.5 release. The new
+syntax also uses commas to specify a disjunction, but now ranges can be
+specified using "[1.3-6.3)" notation. Square brackets mean inclusive, while
+parenthesis mean exclusive. Open ranges can also be specified using notation
+like "[1.3" and "6.3)".</p>
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="actions">2. Action Definitions</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>Action definitions have been made into first class entities with the new
+ability to be assigned an id and the creation of the browsing API. In addition,
+it is now possible to create constrained VERSION_CHANGE actions in order to
+designate precisely which versions the delegate is capable of changing from.
+Multiple VERSION_CHANGE delegates with different "from.versions" constraint
+can be specified.</p>
+
+<p><u>Extension Point Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  ...
+  &lt;action</font> id="string" <font color="#7B7B7B">... &gt;
+    ...
+    </font>
+    &lt;property name="from.versions" value="string"/&gt; <i>(0 or 1)</i>
+    <font color="#7B7B7B">
+    ...
+  &lt/action&gt;
+  ...
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+org.eclipse.wst.common.project.facet.core.IActionDefinition
+{
+   static final String PROP_FROM_VERSIONS;
+   String getId();
+   IProjectFacet getProjectFacet();
+   IVersionExpr getVersionExpr();
+   Action.Type getActionType();
+   Map getProperties();
+   Object getProperty( String name );
+   Object createConfigObject( IProjectFacetVersion fv, String pjname );
+}
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IProjectFacetVersion
+{
+   ...</font>
+   boolean supports( Set base, Action.Type type );
+   Set getActionDefinitions();
+   Set getActionDefinitions( Action.Type type );
+   IActionDefinition getActionDefinition( Set base, Action.Type type );
+   <font color="#7B7B7B">...
+}</font>
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.ProjectFacetsManager
+{
+    ...</font>
+    Set getActionDefinitions();
+    boolean isActionDefined( String id );
+    IActionDefinition getActionDefinition( String id );
+    <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+<p><u>Deprecated Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor=#FFF1C1>
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IProjectFacetVersion
+{
+   ...</font>
+   boolean supports( Action.Type type );
+   Object createActionConfig( Action.Type type, String pjname );
+   boolean isSameActionConfig( Action.Type type, IProjectFacetVersion fv );
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="wizard">3. Wizard Pages</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The extension point schema for defining wizard pages associated with the
+project facet actions has been revised to be more flexible.</p>
+
+<p><u>Deprecated Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor=#FFF1C1>
+<pre>
+&lt;extension point="org.eclipse.wst.common.project.facet.ui.wizard"&gt;
+  &lt;wizard-pages facet="..."&gt;
+    &lt;install&gt; <i>(0 or 1)</i>
+      &lt;page class="..."/&gt; <i>(1 or more)</i>
+    &lt;/install&gt;
+    &lt;uninstall&gt; <i>(0 or 1)</i>
+      &lt;page class="..."/&gt; <i>(1 or more)</i>
+    &lt;/uninstall&gt;
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;
+</pre>
+</td></tr></table>
+
+<p><u>Replacement Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+&lt;extension point="org.eclipse.wst.common.project.facet.ui.wizardPages"&gt;
+  &lt;wizard-pages action="..."&gt; <i>(1 or more)</i>
+    &lt;page class="..."/&gt; <i>(1 or more)</i>
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;
+</pre>
+</td></tr></table>
+
+<p>Note the new extension point id. The "action" attribute should contain the
+action that these pages are to be associated with. The action id can
+be explicitly specified via the new "id" attribute available on the "action"
+element of the core facets extension point. If not specified, the default id
+is generated using the "[facet-id]#[version-expression]#[action-type]" 
+pattern.</p>
+
+<p><u>Deprecated Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#FFF1C1">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.ui.ProjectFacetsUiManager
+{
+   ...</font>
+   List getWizardPages( Action.Type type, IProjectFacetVersion fv );
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+<p><u>Replacement Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.ui.ProjectFacetsUiManager
+{
+   ...</font>
+   List getWizardPages( String actionId );
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="event.handlers">4. Event Handlers</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>A new event handling facility has been added. This makes for a clear separation
+between actions (user initiated), and events (automatic). Prior to this change
+it was possible to register a "runtime-changed" action. That usage is now
+deprecated and should be converted to use event handler extension point. Various
+new events have also been added.</p>
+
+<p><u>Event Types</u></p>
+
+<p>PRE_INSTALL, POST_INSTALL, PRE_UNINSTALL, POST_UNINSTALL, PRE_VERSION_CHANGE,
+POST_VERSION_CHANGE, RUNTIME_CHANGED</p>
+
+<p><u>Extension Point Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  ...</font>
+  &lt;event-handler type="..." facet="..." version="..."&gt;
+    &lt;delegate class="..."/&gt;
+  &lt/event-handler&gt;
+  <font color="#7B7B7B">...
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>RUNTIME_CHANGED Event</u></p>
+
+<p>In the 1.0.x release it was possible to register a "runtime-changed" action.
+That usage is now deprecated and should be converted into a RUNTIME_CHANGED
+event handler. The RUNTIME_CHANGED event handler delegate gets passed in a
+config object that carries additional information about the event.</p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+org.eclipse.wst.common.project.facet.core.IRuntimeChangedEvent
+{
+    IRuntime getOldRuntime();
+    IRuntime getNewRuntime();
+}  
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="runtimes">5. Targeting Multiple Runtimes</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The ability for a project to target multiple runtimes has been further
+fleshed out during the 1.5 release.</p>
+   
+<p><u>Deprecated Java API</u></p>
+   
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#FFF1C1">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{
+   ...</font>
+   IRuntime getRuntime();
+   void setRuntime( IRuntime runtime );
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+     
+<p><u>Replacement Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{
+   ...</font>
+   Set getTargetedRuntimes();
+   void setTargetedRuntimes( Set runtimes, IProgressMonitor monitor );
+   void addTargetedRuntime( IRuntime runtime, IProgressMonitor monitor );
+   void removeTargetedRuntime( IRuntime runtime, IProgressMonitor monitor );
+   IRuntime getPrimaryRuntime();
+   void setPrimaryRuntime( IRuntime runtime, IProgressMonitor monitor );
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="presets">6. Descriptions for Presets</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>It is now possible to associate description with presets.</p>
+   
+<p><u>Extension Points Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  ...
+  &lt;preset&gt;
+    ...</font>
+    &lt;description&gt;...&lt/description&gt; <i>(0 or 1)</i>
+    <font color="#7B7B7B">...
+  &lt/preset&gt;
+  ...
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>Java API Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.ProjectFacetsManager
+{
+   ...</font>
+   IPreset definePreset( String name, String description, Set facets );
+   <font color="#7B7B7B">...
+}</font>
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IPreset
+{
+   ...</font>
+   String getDescription();
+   <font color="#7B7B7B">...
+}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="misc">7. Miscellaneous</a></font></p>
+<!--  ********************************************************************** -->
+
+<p><u>Java API Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IProjectFacetVersion
+{
+   ...</font>
+   boolean isValidFor( Set fixed );
+   boolean conflictsWith( IProjectFacetVersion fv );
+   String getPluginId();
+   <font color="#7B7B7B">...
+}</font>
+
+org.eclipse.wst.common.project.facet.core.IVersionExpr
+{
+   boolean evaluate( String version );
+   String toDisplayString();
+}
+</pre>
+</td></tr></table>
+
+<p></p>
+
+</body>
+</html>

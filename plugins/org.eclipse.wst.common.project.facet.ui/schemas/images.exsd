@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.ui" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="images" name="Project Facet Images Extension Point"/>
+      </appinfo>
+      <documentation>
+         Used for specifying the image that should be used with a facet, a category, or a runtime component type.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="image" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="image">
+      <annotation>
+         <documentation>
+            Specifies the image that should be used with the specified facet, category, or runtime component type. Only one of the &lt;i&gt;facet&lt;/i&gt;, &lt;i&gt;category&lt;/i&gt;, and &lt;i&gt;runtime-component-type&lt;/i&gt; attributes should be used.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  The project facet id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="category" type="string">
+            <annotation>
+               <documentation>
+                  The category id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="runtime-component-type" type="string">
+            <annotation>
+               <documentation>
+                  The runtime component type.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="path" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The relative path to the image within this plugin.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  This attribute is only applicable when specifying an image for a runtime component type. It specifies the version of the runtime component type that this image applies to. Multiple versions can be specified using version expression syntax. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. If omitted, the image applies to all versions of the runtime component type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;The following example associates images with two facets and a category.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.ui.images&quot;&gt;
+  &lt;image facet=&quot;facet1&quot; path=&quot;icons/facet1.gif&quot;/&gt;
+  &lt;image facet=&quot;facet2&quot; path=&quot;icons/facet2.gif&quot;/&gt;
+  &lt;image category=&quot;category1&quot; path=&quot;icons/category1.gif&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

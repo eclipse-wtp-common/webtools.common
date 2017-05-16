@@ -1,0 +1,43 @@
+/******************************************************************************
+ * Copyright (c) 2010 Oracle
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ ******************************************************************************/
+
+package org.eclipse.wst.common.project.facet.core.events.internal;
+
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+
+/**
+ * @author <a href="mailto:konstantin.komissarchik@oracle.com">Konstantin Komissarchik</a>
+ */
+
+public final class LegacyListenerAdapter
+
+    implements IFacetedProjectListener
+    
+{
+    private final org.eclipse.wst.common.project.facet.core.IFacetedProjectListener base;
+    
+    public LegacyListenerAdapter( final org.eclipse.wst.common.project.facet.core.IFacetedProjectListener base )
+    {
+        this.base = base;
+    }
+    
+    public void handleEvent( final IFacetedProjectEvent event )
+    {
+        this.base.projectChanged();
+    }
+    
+    public org.eclipse.wst.common.project.facet.core.IFacetedProjectListener getLegacyListener()
+    {
+        return this.base;
+    }
+
+}

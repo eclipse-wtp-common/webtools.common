@@ -22,11 +22,16 @@
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>
+<<<<<<< HEAD
   <artifactId>org.eclipse.webtools.common</artifactId>
+=======
+  <artifactId>org.eclipse.webtools.common.fproj</artifactId>
+>>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
+<<<<<<< HEAD
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.git</tycho.scmUrl>
   </properties>
 
@@ -55,5 +60,26 @@
     <module>plugins/org.eclipse.wst.internet.cache</module>
     <module>plugins/org.eclipse.wst.validation</module>
     <module>plugins/org.eclipse.wst.validation.ui</module>
+=======
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.fproj.git</tycho.scmUrl>
+  </properties>
+
+  <modules>
+    <module>features/org.eclipse.jst.common.fproj.enablement.jdt.feature</module>
+    <module>features/org.eclipse.jst.common.fproj.enablement.jdt.sdk.feature</module>
+    <module>features/org.eclipse.wst.common.fproj.feature</module>
+    <module>features/org.eclipse.wst.common.fproj.sdk.feature</module>
+
+    <module>plugins/org.eclipse.jst.common.fproj.enablement.jdt.sdk</module>
+    <module>plugins/org.eclipse.jst.common.project.facet.core</module>
+    <module>plugins/org.eclipse.jst.common.project.facet.ui</module>
+    <module>plugins/org.eclipse.wst.common.fproj.sdk</module>
+    <module>plugins/org.eclipse.wst.common.project.facet.core</module>
+    <module>plugins/org.eclipse.wst.common.project.facet.doc.api</module>
+    <module>plugins/org.eclipse.wst.common.project.facet.ui</module>
+
+    <module>tests/org.eclipse.wst.common.project.facet.core.tests</module>
+    <module>tests/org.eclipse.wst.common.project.facet.ui.tests</module>
+>>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
   </modules>
 </project>

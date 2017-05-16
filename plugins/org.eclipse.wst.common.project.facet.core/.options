@@ -1,0 +1,5 @@
+org.eclipse.wst.common.project.facet.core/delegate/calls = false
+org.eclipse.wst.common.project.facet.core/actionSorting = false
+org.eclipse.wst.common.project.facet.core/activation = false
+org.eclipse.wst.common.project.facet.core/events/project = false
+org.eclipse.wst.common.project.facet.core/events/project/stacktrace = false

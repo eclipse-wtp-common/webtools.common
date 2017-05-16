@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Faceted Project Framework Developer Guide">
+
+  <topic label="Programmer's Guide" href="guide/description.html">
+    <topic 
+      label="Tutorial" 
+      href="guide/tutorial/tutorial.html"/>
+    <topic 
+      label="Listening for Changes to Faceted Projects"
+      href="guide/listeners.html"/>
+    <topic 
+      label="Enabling UI Elements Based on Project Facets"
+      href="guide/enabling-based-on-facets.html"/>
+    <topic label="Questions &amp; Answers">
+       <topic href="guide/answers/projectFacetPreferences.html" label="Managing Preferences">
+       </topic>
+    </topic>
+    <topic 
+      label="New for 1.5"
+      href="guide/whatsnew150.html"/>
+    <topic 
+      label="New for 1.5.1"
+      href="guide/whatsnew151.html"/>
+    <topic 
+      label="New for 2.0"
+      href="guide/whatsnew20.html"/>
+    <topic 
+      label="New for 3.0.1"
+      href="guide/whatsnew301.html"/>
+    <topic 
+      label="New for 3.1"
+      href="guide/whatsnew310.html"/>
+  </topic>
+    
+  <topic label="Reference">
+    <topic label="API Reference" href="reference/api/overview-summary.html">
+      <topic 
+        label="org.eclipse.wst.common.project.facet.core"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.events"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/events/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.runtime"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/runtime/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.runtime.events"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/runtime/events/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.core.util"
+        href="reference/api/org/eclipse/wst/common/project/facet/core/util/package-summary.html"/>
+      <topic
+        label="org.eclipse.wst.common.project.facet.ui"
+        href="reference/api/org/eclipse/wst/common/project/facet/ui/package-summary.html"/>
+    </topic>
+  </topic>   
+      
+</toc>

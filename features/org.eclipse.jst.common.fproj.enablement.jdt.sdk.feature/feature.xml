@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
+      label="%featureName"
+      version="3.8.0.qualifier"
+      provider-name="%providerName"
+      plugin="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
+      license-feature="org.eclipse.license"
+      license-feature-version="1.0.1.qualifier">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="license.html">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.jst.common.fproj.enablement.jdt"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jst.common.project.facet.core.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jst.common.project.facet.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

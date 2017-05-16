@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="runtimes" name="Runtimes Extension Point"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="runtime-component-type" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="runtime-component-version" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapter" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="supported" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="unsupported" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="runtime-component-type">
+      <annotation>
+         <documentation>
+            Defines a runtime component type.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id that will be used to reference this runtime component type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="version-comparator">
+      <annotation>
+         <documentation>
+            Specifies the version comparator. If not specified, the default version comparator will be used. The default version comparator is capable of handing numerical versions that use decimal notation.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.util.Comparator"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="runtime-component-version">
+      <annotation>
+         <documentation>
+            Defines a runtime component version.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the runtime component type that this is a version of.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The version string.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="adapter">
+      <annotation>
+         <documentation>
+            Registers an adapter to be used with some set of runtime component types and versions.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="runtime-component"/>
+            <element ref="factory"/>
+            <element ref="type"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="runtime-component">
+      <annotation>
+         <documentation>
+            Used to reference multiple runtime component types and versions.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the runtime component type id. If this attribute is used, the &lt;code&gt;any&lt;/code&gt; attribute should not be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="any" type="string">
+            <annotation>
+               <documentation>
+                  Used to indicate that all runtime component types and versions should be matched. If this attribute is used, the &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;version&lt;/code&gt; attributes should not be used. Note that this attribute can only be used when the &lt;code&gt;runtime-component&lt;/code&gt; element appears beneath the &lt;code&gt;supported&lt;/code&gt; element.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="factory">
+      <annotation>
+         <documentation>
+            Specifies the adapter factory. The factory has to implement org.eclipse.core.runtime.IAdapterFactory interface.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.core.runtime.IAdapterFactory"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="type">
+      <annotation>
+         <documentation>
+            Specifies the type that this adapter will be adapting to.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="supported">
+      <annotation>
+         <documentation>
+            Specifies that these project facets are supported by these runtimes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="runtime-component" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="unsupported">
+      <annotation>
+         <documentation>
+            Specifies that these project facets are explicitly unsupported by these runtimes. Declarations of unsupported facets always win over the declarations of supported facets.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="runtime-component" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="facet">
+      <annotation>
+         <documentation>
+            Used to reference one or more version of a project facet.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Specifies the project facet id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

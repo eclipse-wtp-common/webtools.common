@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Enabling UI Elements Based on Project Facets</title>
+  <link type="text/css" rel="stylesheet" href="tutorial/tutorial.css"/>
+</head>
+
+<body>
+
+<h1 align="center">Enabling UI Elements Based on Project Facets</h1>
+
+<p>User interface elements often need to be selectively enabled based on the
+presence of a facet in a project. The two most common examples are project 
+properties pages and menu actions associated with a facet. The Faceted Project
+Framework provides a way to do that via a property tester that can be used in
+any extension point that supports the Eclipse Platform's common expression
+language.</p>
+
+<p>
+  <b>Property Name:</b> <code>org.eclipse.wst.common.project.facet.core.projectFacet</code><br/>
+  <b>Property Value:</b> <code>[facet.id](:[version.expr])?</code>
+</p>
+
+<p>As you can see from the format of the property value, you can either test
+using just the project facet id or you can also include a version expression if
+only certain versions should be matched.</p>
+
+<p>The following two examples demonstrate how the facets property tester can be
+used. To explore further, you can also download the 
+<a href="downloads/enablement-example.zip">complete runnable source</a> of these
+examples.</p>
+
+<p><b>Example 1</b></p>
+
+<p>Enables a project properties page based on the presence of a facet. Note the
+use of the <code>forcePluginActivation</code> attribute. This attribute makes
+sure that the property tester will be invoked even if the Faceted Project
+Framework plugins have not been activated yet. Omitting this attribute will cause
+the test expression to return false in that situation. Also note the use of the
+<code>adapt</code> operator to adapt the object to <code>IProject</code>. This
+is necessary as some views may represent project entities using other types. For
+instance, in the JDT's Package Explorer the projects are instances of
+<code>org.eclipse.jdt.core.IJavaProject</code>.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="code-text">org.eclipse.ui.propertyPages</span>"&gt;
+  &lt;page
+    id="<span class="code-text">ExampleFacetPropertiesPage</span>"
+    objectClass="<span class="code-text">org.eclipse.core.resources.IProject</span>"
+    adaptable="<span class="code-text">true</span>"
+    name="<span class="code-text">Example Facet Properties</span>"
+    class="<span class="code-text">org.eclipse.wst.project.facet.examples.enablement.ExampleFacetPropertiesPage</span>"&gt;
+    &lt;enabledWhen&gt;
+      &lt;adapt type="<span class="code-text">org.eclipse.core.resources.IProject</span>"&gt;
+        &lt;test 
+          forcePluginActivation="<span class="code-text">true</span>"
+          property="<span class="code-text">org.eclipse.wst.common.project.facet.core.projectFacet</span>"
+          value="<span class="code-text">example.facet1</span>"/&gt;
+      &lt;/adapt&gt;
+    &lt;/enabledWhen&gt;          
+  &lt;/page&gt;
+&lt;/extension&gt;</pre>
+</div>
+
+<p><b>Example 2</b></p>
+
+<p>Enables a menu action if either one of the two facets specified is installed
+in a project. Note the use of a version expression to match only certain versions.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="code-text">org.eclipse.ui.popupMenus</span>"&gt;
+  &lt;objectContribution
+    id="<span class="code-text">exampleFacetPopup</span>"
+    objectClass="<span class="code-text">org.eclipse.core.resources.IProject</span>"
+    adaptable="<span class="code-text">true</span>"&gt;
+    &lt;action
+      id="<span class="code-text">exampleFacetPopupAction</span>"
+      label="<span class="code-text">Example Facet Popup</span>"
+      class="<span class="code-text">org.eclipse.wst.project.facet.examples.enablement.ExampleFacetPopupAction</span>"
+      menubarPath="<span class="code-text">additions</span>"
+      enablesFor="<span class="code-text">+</span>"&gt;
+    &lt;/action&gt;
+    &lt;enablement&gt;
+      &lt;adapt type="<span class="code-text">org.eclipse.core.resources.IProject</span>"&gt;
+        &lt;or&gt;
+          &lt;test 
+            forcePluginActivation="<span class="code-text">true</span>"
+            property="<span class="code-text">org.eclipse.wst.common.project.facet.core.projectFacet</span>"
+            value="<span class="code-text">example.facet1:1.0</span>"/&gt;
+          &lt;test 
+            forcePluginActivation="<span class="code-text">true</span>"
+            property="<span class="code-text">org.eclipse.wst.common.project.facet.core.projectFacet</span>"
+            value="<span class="code-text">example.facet2:[1.1-2.2]</span>"/&gt;
+        &lt;/or&gt;
+      &lt;/adapt&gt;
+    &lt;/enablement&gt;
+  &lt;/objectContribution&gt;  
+&lt;/extension&gt;</pre>
+</div>
+
+<br/><br/><br/><br/>
+
+</body>
+
+</html>

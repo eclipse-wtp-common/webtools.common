@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: %providerName
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.jst.common.fproj.enablement.jdt.sdk; singleton:=true
+Bundle-Version: 1.4.200.qualifier
+Bundle-ClassPath: .
+Bundle-Localization: plugin
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

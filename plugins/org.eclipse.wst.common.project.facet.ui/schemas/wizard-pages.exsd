@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.ui">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="wizardPages" name="Project Facet Wizard Pages Extension Point"/>
+      </appInfo>
+      <documentation>
+         Used for associating wizard pages with a project facet action. For instance, wizard pages can be associated with the action of installing facet Abc or uninstalling facet FooBar.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="wizard-pages" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A fully qualified identifier of the target extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  An optional identifier of the extension instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name of the extension instance.
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="wizard-pages">
+      <annotation>
+         <documentation>
+            Used for associating wizard pages with a project facet action. For instance, wizard pages can be associated with the action of installing facet Abc or uninstalling facet FooBar.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="page" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="action" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The action id. If the action does not specify an explicit id, the default id is created using the following format: &quot;[facet-id]#[version-expression]#[action-type]&quot;.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="page">
+      <annotation>
+         <documentation>
+            Specifies one page in a sequence of wizard pages being associated with a project facet action.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The wizard page class name. Has to implement org.eclipse.wst.common.project.facet.ui.IFacetWizardPage interface.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.ui.IFacetWizardPage"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;p&gt;The following example associates wizard pages with install and uninstall actions of facet1.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.ui.wizardPages&quot;&gt;
+  &lt;wizard-pages action=&quot;facet1.install&quot;&gt;
+    &lt;page class=&quot;com.mycorp.Facet1InstallPage1&quot;/&gt;
+    &lt;page class=&quot;com.mycorp.Facet1InstallPage2&quot;/&gt;
+  &lt;/wizard-pages&gt;
+  &lt;wizard-pages action=&quot;facet1.uninstall&quot;&gt;
+    &lt;page class=&quot;com.mycorp.Facet1UninstallPage&quot;/&gt;
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2010 Oracle and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>
