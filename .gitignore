@@ -31,17 +31,4 @@ src.zip
 .fbwarnings
 javaCompiler...args
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# maven
-=======
-# maven 
->>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
-=======
-# maven 
->>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
-=======
-# maven
->>>>>>> 116810bbf2ad893cddb1990480cf3a55f15f3708
 target/

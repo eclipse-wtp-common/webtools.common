@@ -22,101 +22,19 @@
   </parent>
 
   <groupId>org.eclipse.webtools.common</groupId>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   <artifactId>org.eclipse.webtools.common</artifactId>
-=======
-  <artifactId>org.eclipse.webtools.common.fproj</artifactId>
->>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
-=======
-  <artifactId>org.eclipse.webtools.common.tests</artifactId>
->>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
-=======
-  <artifactId>org.eclipse.webtools.common.snippets</artifactId>
->>>>>>> 116810bbf2ad893cddb1990480cf3a55f15f3708
   <version>3.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.git</tycho.scmUrl>
   </properties>
 
   <modules>
-    <module>docs/org.eclipse.wst.common.api.doc</module>
-    <module>docs/org.eclipse.wst.validation.doc.isv</module>
-    <module>docs/org.eclipse.wst.validation.infopop</module>
-
-    <module>features/org.eclipse.wst.common_core.feature</module>
-    <module>features/org.eclipse.wst.common_sdk.feature</module>
-    <module>features/org.eclipse.wst.common_ui.feature</module>
-
-    <module>plugins/org.eclipse.jem.util</module>
-    <module>plugins/org.eclipse.jst.common.ui</module>
-    <module>plugins/org.eclipse.wst.common.core</module>
-    <module>plugins/org.eclipse.wst.common.emf</module>
-    <module>plugins/org.eclipse.wst.common.emfworkbench.integration</module>
-    <module>plugins/org.eclipse.wst.common.environment</module>
-    <module>plugins/org.eclipse.wst.common.frameworks</module>
-    <module>plugins/org.eclipse.wst.common.frameworks.ui</module>
-    <module>plugins/org.eclipse.wst.common.infopop</module>
-    <module>plugins/org.eclipse.wst.common.modulecore</module>
-    <module>plugins/org.eclipse.wst.common.modulecore.ui</module>
-    <module>plugins/org.eclipse.wst.common.ui</module>
-    <module>plugins/org.eclipse.wst.common.uriresolver</module>
-    <module>plugins/org.eclipse.wst.internet.cache</module>
-    <module>plugins/org.eclipse.wst.validation</module>
-    <module>plugins/org.eclipse.wst.validation.ui</module>
-=======
-    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.fproj.git</tycho.scmUrl>
-  </properties>
-
-  <modules>
-    <module>features/org.eclipse.jst.common.fproj.enablement.jdt.feature</module>
-    <module>features/org.eclipse.jst.common.fproj.enablement.jdt.sdk.feature</module>
-    <module>features/org.eclipse.wst.common.fproj.feature</module>
-    <module>features/org.eclipse.wst.common.fproj.sdk.feature</module>
-
-    <module>plugins/org.eclipse.jst.common.fproj.enablement.jdt.sdk</module>
-    <module>plugins/org.eclipse.jst.common.project.facet.core</module>
-    <module>plugins/org.eclipse.jst.common.project.facet.ui</module>
-    <module>plugins/org.eclipse.wst.common.fproj.sdk</module>
-    <module>plugins/org.eclipse.wst.common.project.facet.core</module>
-    <module>plugins/org.eclipse.wst.common.project.facet.doc.api</module>
-    <module>plugins/org.eclipse.wst.common.project.facet.ui</module>
-
-    <module>tests/org.eclipse.wst.common.project.facet.core.tests</module>
-    <module>tests/org.eclipse.wst.common.project.facet.ui.tests</module>
->>>>>>> 5f48a07d3516fa5c4baca8276da4de29170c0ab3
+    <module>docs</module>
+    <module>features</module>
+    <module>plugins</module> 
+    <module>tests</module> 
+    <module>site</module>
   </modules>
 </project>
-=======
-    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.tests.git</tycho.scmUrl>
-  </properties>
-
-  <modules>
-    <module>features/org.eclipse.wst.common_tests.feature</module>
-
-    <module>tests/org.eclipse.wst.common.tests</module>
-    <module>tests/org.eclipse.wst.common.tests.collector</module>
-    <module>tests/org.eclipse.wst.common.tests.ui</module>
-    <module>tests/org.eclipse.wst.common.tests.validation</module>
-    <module>tests/org.eclipse.wst.common.tests.validation.guard</module>
-    <module>tests/org.eclipse.wst.common.uriresolver.tests</module>
-    <module>tests/org.eclipse.wst.internet.cache.tests</module>
-  </modules>
-</project>
->>>>>>> 996353e9042b00642903ca56071dd13d1d7a3c09
-=======
-    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.snippets.git</tycho.scmUrl>
-  </properties>
-
-  <modules>
-    <module>org.eclipse.wst.common.snippets</module>
-    <module>org.eclipse.wst.common.snippets.tests</module>
-  </modules>
-</project>
->>>>>>> 116810bbf2ad893cddb1990480cf3a55f15f3708
