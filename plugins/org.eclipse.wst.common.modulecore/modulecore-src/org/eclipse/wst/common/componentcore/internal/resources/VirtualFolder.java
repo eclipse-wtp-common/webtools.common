@@ -178,32 +178,30 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder, I
 	}
 
 	public IPath getFirstTaggedResource(String tag) {
-		WorkbenchComponent aComponent = null;
-		IPath path = null;
-		
-		aComponent = getReadOnlyComponent();
-		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
-		for (ComponentResource resource:resources){
-			if (tag.equals(resource.getTag())){
-				path = resource.getSourcePath();
-				break;
-			}
-		}		
-		return path;
+		List<IPath> paths = internalGetTaggedResources(tag, true);
+		return !paths.isEmpty() ? paths.get(0) : null;
 	}
 
 	public IPath[] getTaggedResources(String tag) {
+		return internalGetTaggedResources(tag, false).toArray(new IPath[0]);
+	}
+	
+	private List<IPath> internalGetTaggedResources (String tag, boolean firstOnly) {
 		WorkbenchComponent aComponent = null;
 		List<IPath> paths = new ArrayList<IPath>();
 		
 		aComponent = getReadOnlyComponent();
-		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
-		for (ComponentResource resource:resources){
-			if (tag.equals(resource.getTag())){
-				paths.add(resource.getSourcePath());
+		if (aComponent != null) {
+			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+			for (ComponentResource resource:resources){
+				if (tag.equals(resource.getTag())){
+					paths.add(resource.getSourcePath());
+					if (firstOnly)
+						break;
+				}
 			}
-		}		
-		return paths.toArray(new IPath[0]);
+		}
+		return paths;
 	}
 
 }
