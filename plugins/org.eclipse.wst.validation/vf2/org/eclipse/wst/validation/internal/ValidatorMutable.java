@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2017 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
 import java.util.HashMap;
@@ -27,6 +37,7 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 	private int _changeCountMessages;
 	
 	private final String	_name;
+	private final String	_description;
 	private final String 	_sourceId;
 	private final boolean _isV1;
 	private final boolean _isV2;
@@ -44,6 +55,7 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 
 	public ValidatorMutable(Validator validator) {
 		_name = validator.getName();
+		_description = validator.getDescription();
 		_sourceId = validator.getSourceId();
 		_manual = validator.isManualValidation();
 		_build = validator.isBuildValidation();
@@ -90,6 +102,7 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 		}
 
 		_name = val._name;
+		_description = val._description;
 		_origBuild = val._origBuild;
 		_origDelegating = val._origDelegating;
 		_origManual = val._origManual;
@@ -109,6 +122,10 @@ public final class ValidatorMutable implements IAdaptable, IMutableValidator {
 
 	public String getName() {
 		return _name;
+	}
+
+	public String getDescription() {
+		return _description;
 	}
 
 	public boolean isManualValidation() {

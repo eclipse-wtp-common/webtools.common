@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2013 IBM Corporation and others.
+ * Copyright (c) 2001, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,16 +17,20 @@ import java.util.List;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MenuAdapter;
@@ -295,6 +299,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			addAutoSave(validatorGroup);
 			addConfirm(validatorGroup);
 
+			new Label(validatorGroup, SWT.NONE).setLayoutData(GridDataFactory.fillDefaults().span(2, 1).create());
+
 			_listLabel = new Label(validatorGroup, SWT.NONE);
 			GridData listLabelData = new GridData(GridData.FILL_HORIZONTAL);
 			listLabelData.horizontalSpan = 2;
@@ -355,6 +361,27 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 					super.focusGained(e);
 					if (_validatorsTable.getSelectionCount() == 0) {
 						_validatorsTable.select(0);
+					}
+				}
+			});
+
+			final StyledText _descriptionText = new StyledText(validatorGroup, SWT.READ_ONLY | SWT.WRAP | SWT.BORDER);
+			_descriptionText.setBackground(validatorGroup.getBackground());
+			GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, validatorGroup.getFont().getFontData()[0].getHeight() * 3).span(2,1).applyTo(_descriptionText);
+			_validatorList.addPostSelectionChangedListener(new ISelectionChangedListener() {
+				public void selectionChanged(SelectionChangedEvent event) {
+					ISelection selection = event.getSelection();
+					if (selection.isEmpty()) {
+						_descriptionText.setText(""); //$NON-NLS-1$
+					}
+					else {
+						String description = ((ValidatorMutable)((IStructuredSelection)selection).getFirstElement()).getDescription();
+						if (description != null) {
+							_descriptionText.setText(description);
+						}
+						else {
+							_descriptionText.setText(""); //$NON-NLS-1$
+						}
 					}
 				}
 			});

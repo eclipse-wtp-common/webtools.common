@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2010 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -507,7 +507,8 @@ public abstract class Validator implements Comparable<Validator> {
 	}
 
 	public abstract String getName();
-	
+	public abstract String getDescription();
+
 	/**
 	 * Answer the project that you were enabled on. 
 	 * 
@@ -691,7 +692,11 @@ public static class V1 extends Validator {
 	public String getName() {
 		return _vmd.getValidatorDisplayName();
 	}
-	
+
+	public String getDescription() {
+		return null;
+	}
+
 	public ValidatorMetaData getVmd(){
 		return _vmd;
 	}
@@ -850,6 +855,8 @@ public final static class V2 extends Validator implements IAdaptable {
 	
 	/** Name of the validator. */
 	private String			_name;
+	/** Longer description of the validator. */
+	private String			_description;
 	
 	/** 
 	 * We don't want to create the validator too early, as it may trigger new plug-ins to be loaded.
@@ -973,6 +980,7 @@ public final static class V2 extends Validator implements IAdaptable {
 
 		v._id = _id;
 		v._name = _name;
+		v._description = _description;
 		v._validatorGroupIds = _validatorGroupIds;
 		v._pendingValidationStarted = _pendingValidationStarted;
 				
@@ -1044,6 +1052,10 @@ public final static class V2 extends Validator implements IAdaptable {
 		return _name;
 	}
 	
+	public String getDescription() {
+		return _description;
+	}
+
 	public AbstractValidator getValidator() {
 		if (_validator == null){
 			try {
@@ -1142,7 +1154,14 @@ public final static class V2 extends Validator implements IAdaptable {
 			bumpChangeCountGlobal();
 		}
 	}
-	
+
+	public void setDescription(String description) {
+		if (!Misc.same(_description, description)){
+			_description = description;
+			bumpChangeCountGlobal();
+		}
+	}
+
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor){
 		return validate(resource, kind, operation, monitor, null);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 IBM Corporation and others.
+ * Copyright (c) 2005, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,7 +45,11 @@ public interface ExtensionConstants {
 	 * extension point.
 	 */
 	String sourceId = "sourceid"; //$NON-NLS-1$
-	
+	/**
+	 * description - user-visible description for the validator, e.g. for clarifying the contexts in which it would be used
+	 */
+	String description = "description"; //$NON-NLS-1$
+
 	/** 
 	 * version - the version of this definition. The attribute is a simple integer, and if not specified it
 	 * is assumed to be 1. This allows the filter settings to be changed in the future.
