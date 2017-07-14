@@ -21,6 +21,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.validation</artifactId>
-  <version>1.2.700-SNAPSHOT</version>
+  <version>1.2.701-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
