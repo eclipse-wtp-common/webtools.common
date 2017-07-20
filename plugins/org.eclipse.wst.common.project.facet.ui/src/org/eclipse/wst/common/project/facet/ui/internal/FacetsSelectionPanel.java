@@ -539,7 +539,7 @@ public final class FacetsSelectionPanel
         if( image == null )
         {
             final IDecorationsProvider decprov
-                = (IDecorationsProvider) facet.getAdapter( IDecorationsProvider.class );
+                = facet.getAdapter( IDecorationsProvider.class );
             
             ImageDescriptor imgdesc = decprov.getIcon();
             
@@ -564,7 +564,7 @@ public final class FacetsSelectionPanel
         if( image == null )
         {
             final IDecorationsProvider decprov
-                = (IDecorationsProvider) category.getAdapter( IDecorationsProvider.class );
+                = category.getAdapter( IDecorationsProvider.class );
             
             final ImageDescriptor imgdesc = decprov.getIcon();
             

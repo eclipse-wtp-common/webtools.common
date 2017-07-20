@@ -111,8 +111,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.internal.facets.FacetUtil;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
  
 public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependenciesControl implements Listener,
 		ILabelProviderListener {
@@ -177,7 +176,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 			if(path2.segmentCount() > 0) {
 				ref.setArchiveName(path2.lastSegment());
 			} else if(ref.getReferencedComponent() instanceof VirtualArchiveComponent && ((VirtualArchiveComponent)ref.getReferencedComponent()).getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE) ) {
-				File diskFile = (java.io.File)ref.getReferencedComponent().getAdapter(java.io.File.class);
+				File diskFile = ref.getReferencedComponent().getAdapter(java.io.File.class);
 				IPath filePath = null;
 				if (diskFile.exists()) {
 					filePath = new Path(diskFile.getAbsolutePath());
@@ -203,7 +202,7 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 	private IRuntime setRuntime() {
 		IRuntime aRuntime = null;
 		try {
-			aRuntime = getServerRuntime(project);
+			aRuntime = getFacetRuntime(project);
 		}
 		catch (CoreException e) {
 			ModuleCoreUIPlugin.log(e);
@@ -927,16 +926,14 @@ public class AddModuleDependenciesPropertiesPage extends AbstractIModuleDependen
 		hasInitialized = true;
 	}
 
-	private IRuntime getServerRuntime(IProject project2) throws CoreException {
+	private IRuntime getFacetRuntime(IProject project2) throws CoreException {
 		if (project == null)
 			return null;
 		IFacetedProject facetedProject = ProjectFacetsManager.create(project);
 		if (facetedProject == null)
 			return null;
-		org.eclipse.wst.common.project.facet.core.runtime.IRuntime runtime = facetedProject.getRuntime();
-		if (runtime == null)
-			return null;
-		return FacetUtil.getRuntime(runtime);
+		IRuntime runtime = facetedProject.getPrimaryRuntime();
+		return runtime;
 	}
 
 	protected IVirtualReference[] cloneReferences(IVirtualReference[] refs) {

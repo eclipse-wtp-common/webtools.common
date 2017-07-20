@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
-import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public class DeploymentAssemblyVerifierData {
 	
@@ -39,9 +39,19 @@ public class DeploymentAssemblyVerifierData {
 	public void setComponent(IVirtualComponent component) {
 		this.component = component;
 	}
+	
+	/**
+	 * Return the facet runtime (NOT SERVER RUNTIME) associated with this data
+	 * @return
+	 */
 	public IRuntime getRuntime() {
 		return runtime;
 	}
+	/**
+	 * Set the facet runtime (NOT SERVER RUNTIME) to be associated with this data
+	 * @param runtime set the runtime 
+	 * @return
+	 */
 	public void setRuntime(IRuntime runtime) {
 		this.runtime = runtime;
 	}

@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.server.core.IRuntime;
 
 public class VerifierRegistry {
 	/**
@@ -101,16 +100,13 @@ public class VerifierRegistry {
 	 * @param runtime
 	 * @return List of IConfigurationElements representing instances of IDeploymentAssemblyVerifier
 	 */
-	public List getVerifierExtensions(String facetTypeID, IRuntime runtime) {
+	public List getVerifierExtensions(String facetTypeID, String runtimeId) {
 		// Identifier used by verifiers that will run for any runtime
 		String allRuntimes = "org.eclipse.wst.common.modulecore.ui.deploymentAssemblyVerifier.anyruntime"; //$NON-NLS-1$
-		String runtimeID = null;
-		if (runtime == null)
-			runtimeID = "None"; //$NON-NLS-1$
-		else
-			runtimeID = runtime.getRuntimeType().getId();
+		if (runtimeId == null)
+			runtimeId = "None"; //$NON-NLS-1$
 		// Get the verifiers specific for the target runtime
-		List verifiers = getVerifiers(facetTypeID, runtimeID);		
+		List verifiers = getVerifiers(facetTypeID, runtimeId);		
 		if (verifiers == null)
 			verifiers = Collections.EMPTY_LIST;
 		// Get the verifiers for any runtime

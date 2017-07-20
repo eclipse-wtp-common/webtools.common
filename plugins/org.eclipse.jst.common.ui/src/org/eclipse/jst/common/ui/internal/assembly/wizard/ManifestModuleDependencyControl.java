@@ -334,7 +334,7 @@ public class ManifestModuleDependencyControl extends AbstractIModuleDependencies
 
 			// default impl
 			if( component.isBinary() ) {
-				IPath p = (IPath)component.getAdapter(IPath.class);
+				IPath p = component.getAdapter(IPath.class);
 				return p == null ? null : p.toString();
 			}
 			return component.getProject().getName();

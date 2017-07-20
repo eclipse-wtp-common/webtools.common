@@ -44,7 +44,7 @@ public final class ConvertProjectToFacetedFormCommandHandler
         if( currentSelection instanceof IStructuredSelection ) 
         {
             final Object element = ( (IStructuredSelection) currentSelection).getFirstElement();
-            project = (IProject) Platform.getAdapterManager().getAdapter( element, IProject.class );
+            project = Platform.getAdapterManager().getAdapter( element, IProject.class );
         } 
 
         if( project == null )

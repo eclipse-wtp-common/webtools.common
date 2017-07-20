@@ -76,7 +76,7 @@ public class DefaultDeploymentAssemblyVerifier extends AbstractDeploymentAssembl
 				String name;
 				if( reference.getReferencedComponent().isBinary() ) {
 					IVirtualComponent vc = reference.getReferencedComponent();
-					IPath p = (IPath)vc.getAdapter(IPath.class);
+					IPath p = vc.getAdapter(IPath.class);
 					name= p == null ? vc.getName() : p.toString();
 				}
 				else {

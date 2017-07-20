@@ -45,7 +45,7 @@ public final class RuntimeDecorationsProvider
             final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
             
             final IDecorationsProvider rcvDecorationsProvider 
-                = (IDecorationsProvider) rcv.getAdapter( IDecorationsProvider.class );
+                =  rcv.getAdapter( IDecorationsProvider.class );
             
             return rcvDecorationsProvider.getIcon();
         }

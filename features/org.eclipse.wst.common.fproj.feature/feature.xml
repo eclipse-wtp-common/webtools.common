@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common.fproj"
       label="%featureName"
-      version="3.7.0.qualifier"
+      version="3.7.1.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.wst.common.project.facet.core"
       license-feature="org.eclipse.license"

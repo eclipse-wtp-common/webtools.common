@@ -30,7 +30,7 @@ import org.eclipse.wst.common.componentcore.ui.propertypage.AddModuleDependencie
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public class DeploymentAssemblyVerifierHelper {
 	
@@ -47,7 +47,6 @@ public class DeploymentAssemblyVerifierHelper {
 	 */
 	public static IStatus verify(IVirtualComponent component,IRuntime runtime, ArrayList<IVirtualReference> currentReferences, ArrayList<ComponentResourceProxy> resourceMappings, boolean resourceMappingsChanged) {
 		IProject project = component.getProject();
-		
 		List verifiers = collectAllVerifiers(project,runtime);
 		if (verifiers.isEmpty()) return Status.OK_STATUS;
 		MultiStatus masterStatus = new MultiStatus(ModuleCoreUIPlugin.PLUGIN_ID, IStatus.OK, Messages.DeploymentAssemblyVerifierHelper_0,null); 
@@ -91,7 +90,9 @@ public class DeploymentAssemblyVerifierHelper {
 		List verifiers = new ArrayList();
 		for (Iterator iterator = facets.iterator(); iterator.hasNext();) {
 			IProjectFacetVersion facet = (IProjectFacetVersion)iterator.next();
-			verifiers.addAll(VerifierRegistry.instance().getVerifierExtensions(facet.getProjectFacet().getId(), runtime));	
+			String facetId = facet.getProjectFacet().getId();
+			String runtimeId = (runtime == null ? null : runtime.getProperty("id"));
+			verifiers.addAll(VerifierRegistry.instance().getVerifierExtensions(facetId, runtimeId));	
 		}
 		return verifiers;
 	}

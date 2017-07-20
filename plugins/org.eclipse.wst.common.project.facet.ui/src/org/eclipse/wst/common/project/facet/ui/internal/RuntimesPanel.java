@@ -715,7 +715,7 @@ public final class RuntimesPanel
             if( image == null )
             {
                 final IDecorationsProvider decprov
-                    = (IDecorationsProvider) r.getAdapter( IDecorationsProvider.class );
+                    =  r.getAdapter( IDecorationsProvider.class );
 
                 final ImageDescriptor imgdesc
                     = new DecoratedRuntimeImageDescriptor( decprov.getIcon(), isPrimary, valResult );
@@ -842,7 +842,7 @@ public final class RuntimesPanel
             final IRuntimeComponent comp = (IRuntimeComponent) element;
             
             final IRuntimeComponentLabelProvider provider
-                = (IRuntimeComponentLabelProvider) comp.getAdapter( IRuntimeComponentLabelProvider.class );
+                =  comp.getAdapter( IRuntimeComponentLabelProvider.class );
             
             if( provider == null )
             {
@@ -876,7 +876,7 @@ public final class RuntimesPanel
             if( image == null )
             {
                 final IDecorationsProvider decprov
-                    = (IDecorationsProvider) rcv.getAdapter( IDecorationsProvider.class );
+                    = rcv.getAdapter( IDecorationsProvider.class );
                 
                 this.imageRegistry.put( key, decprov.getIcon() );
                 image = this.imageRegistry.get( key );

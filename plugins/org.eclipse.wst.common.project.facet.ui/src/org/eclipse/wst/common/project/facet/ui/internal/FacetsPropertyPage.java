@@ -133,7 +133,7 @@ public final class FacetsPropertyPage
             control.dispose();
         }
         
-        this.project = (IProject) getElement().getAdapter( IProject.class );
+        this.project = getElement().getAdapter( IProject.class );
         
         try 
         {

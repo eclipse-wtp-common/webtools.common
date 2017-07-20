@@ -152,7 +152,7 @@ public class WTPProjectUtilities {
 		else if (object instanceof IResource)
 			result = ((IResource) object).getProject();
 		else if (object instanceof IAdaptable)
-			result = (IProject) ((IAdaptable) object).getAdapter(IProject.class);
+			result = ((IAdaptable) object).getAdapter(IProject.class);
 
 		return result;
 	}
