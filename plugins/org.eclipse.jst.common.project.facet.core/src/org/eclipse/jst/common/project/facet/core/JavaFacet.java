@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2014 Oracle
+ * Copyright (c) 2010, 2017 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Carl Anderson - Java 9 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -34,6 +35,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_1_6 = FACET.getVersion( "1.6" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_1_7 = FACET.getVersion( "1.7" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_1_8 = FACET.getVersion( "1.8" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_1_9 = FACET.getVersion( "1.9" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;

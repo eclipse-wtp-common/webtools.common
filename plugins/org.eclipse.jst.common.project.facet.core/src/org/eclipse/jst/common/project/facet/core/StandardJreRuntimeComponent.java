@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2014 Oracle
+ * Copyright (c) 2010, 2017 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Carl Anderson - Java 9 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -35,6 +36,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_1_6 = TYPE.getVersion( "1.6" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_1_7 = TYPE.getVersion( "1.7" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_1_8 = TYPE.getVersion( "1.8" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_1_9 = TYPE.getVersion( "1.9" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -85,9 +87,13 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_1_8;
         }
+        else if( jvmver.startsWith( "1.9" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_1_9;
+        }
         else 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_1_8;
+            rcv = StandardJreRuntimeComponent.VERSION_1_9;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();
