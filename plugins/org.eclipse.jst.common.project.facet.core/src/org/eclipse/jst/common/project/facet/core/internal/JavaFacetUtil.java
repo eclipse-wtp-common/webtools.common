@@ -62,7 +62,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_6, "JavaSE-1.6" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_7, "JavaSE-1.7" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_8, "JavaSE-1.8" ); //$NON-NLS-1$
-        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_1_9, "JavaSE-1.9" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_9, "JavaSE-9" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()
