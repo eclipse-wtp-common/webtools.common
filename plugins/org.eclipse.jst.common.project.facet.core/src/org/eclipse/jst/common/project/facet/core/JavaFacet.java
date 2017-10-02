@@ -36,10 +36,6 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_1_7 = FACET.getVersion( "1.7" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_1_8 = FACET.getVersion( "1.8" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_9 = FACET.getVersion( "9" ); //$NON-NLS-1$
-    
-    // temporary hack to be removed before WTP 3.9.1a
-    @Deprecated
-    public static final IProjectFacetVersion VERSION_1_9 = VERSION_9;
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;
