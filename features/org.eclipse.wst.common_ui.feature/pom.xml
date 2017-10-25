@@ -21,7 +21,7 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common_ui.feature</artifactId>
-  <version>3.9.1-SNAPSHOT</version>
+  <version>3.9.2-SNAPSHOT</version>
   <packaging>eclipse-feature</packaging>
 
   <build>
