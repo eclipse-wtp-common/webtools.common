@@ -8,6 +8,7 @@
  
   Contributors:
     Thanh Ha (Eclipse Foundation) - initial implementation
+    Nick Boldt (Red Hat Inc.) - support for Tycho 1.0 and upstream component builds
 -->
 
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
@@ -28,7 +29,23 @@
 
   <properties>
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/webtools-common/webtools.common.git</tycho.scmUrl>
+    <tycho.version>1.0.0</tycho.version>
+    <tycho-extras.version>1.0.0</tycho-extras.version>
   </properties>
+
+  <repositories>
+    <!-- To reference parent pom -->
+    <repository>
+      <id>Webtools Repository - Releases</id>
+      <name>Webtools Repository - Releases</name>
+      <url>https://repo.eclipse.org/content/repositories/webtools-releases/</url>
+    </repository>
+    <repository>
+      <id>Webtools Repository - Snapshots</id>
+      <name>Webtools Repository - Snapshots</name>
+      <url>https://repo.eclipse.org/content/repositories/webtools-snapshots/</url>
+    </repository>
+  </repositories>
 
   <modules>
     <module>docs</module>
