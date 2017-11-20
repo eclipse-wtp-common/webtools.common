@@ -31,4 +31,6 @@ src.zip
 .fbwarnings
 javaCompiler...args
 
+# generated files and libs
 target/
+*.jar
