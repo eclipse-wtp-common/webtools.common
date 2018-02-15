@@ -20,23 +20,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.wst.common.fproj"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.wst.common.project.facet.core.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.wst.common.project.facet.ui.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import feature="org.eclipse.wst.common.fproj"/>
+   </requires>
 
    <plugin
          id="org.eclipse.wst.common.project.facet.doc.api"

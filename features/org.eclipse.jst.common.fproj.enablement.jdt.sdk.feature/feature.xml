@@ -20,23 +20,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.jst.common.fproj.enablement.jdt"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.jst.common.project.facet.core.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jst.common.project.facet.ui.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import feature="org.eclipse.jst.common.fproj.enablement.jdt"/>
+   </requires>
 
    <plugin
          id="org.eclipse.jst.common.fproj.enablement.jdt.sdk"
