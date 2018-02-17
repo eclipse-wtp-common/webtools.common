@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2011 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -199,8 +199,8 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 			textEditor = (ITextEditor) editorPart;
 		}
 		if (textEditor == null) {
-			// MultiPageEditorPart has no accessors for the source
-			textEditor = (ITextEditor) editorPart.getAdapter(ITextEditor.class);
+			// MultiPageEditorPart has no accessors for the source page
+			textEditor = editorPart.getAdapter(ITextEditor.class);
 		}
 		if (textEditor == null) {
 			// any errors here probably aren't really exceptional

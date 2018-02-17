@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -109,7 +109,7 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 	protected PluginRecord getPluginRecordFor(SnippetDefinitions definitions, IConfigurationElement element) {
 		String id = element.getDeclaringExtension().getNamespace();
 		Bundle bundle = Platform.getBundle(id);
-		String version = (String) bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
+		String version = bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
 		PluginVersionIdentifier identifier = new PluginVersionIdentifier(version);
 
 		PluginRecord record = new PluginRecord();
