@@ -13,6 +13,7 @@ package org.eclipse.wst.common.internal.emf.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -430,7 +431,8 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 
 	@Override
 	public void eNotify(Notification notification) {
-	    Adapter[] eAdapters = eBasicAdapterArray();
+        Adapter[] originalEAdapters = eBasicAdapterArray();
+        Adapter[] eAdapters = Arrays.copyOf(originalEAdapters, originalEAdapters.length);
 	    if (eAdapters != null && eDeliver())
 	    {
 	      for (int i = 0, size = eAdapters.length; i < size; ++i)
