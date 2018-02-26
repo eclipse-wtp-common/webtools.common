@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.emf.common.util.URI;
@@ -215,7 +215,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			if (aProject.hasNature(IModuleConstants.MODULE_NATURE_ID))
 				return getModuleCoreNature(aProject);
 
-			IJobManager manager = Platform.getJobManager();
+			IJobManager manager = Job.getJobManager();
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();	
 			if (aMonitor != null)
 				aMonitor.beginTask("Add ModuleCore Nature", 5); //$NON-NLS-1$

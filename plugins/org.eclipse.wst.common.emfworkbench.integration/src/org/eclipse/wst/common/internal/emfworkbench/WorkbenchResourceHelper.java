@@ -24,7 +24,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
@@ -154,7 +154,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
         private ILock getSaveLock() {
             if (saveLock == null)
-                saveLock = Platform.getJobManager().newLock();
+                saveLock = Job.getJobManager().newLock();
             return saveLock;
         }
 
