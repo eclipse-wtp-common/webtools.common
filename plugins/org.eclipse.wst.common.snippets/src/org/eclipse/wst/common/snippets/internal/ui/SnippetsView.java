@@ -403,7 +403,7 @@ public class SnippetsView extends ViewPart {
 	}
 
 
-	class WorkaroundEditPart extends TemplateEditPart {
+	static class WorkaroundEditPart extends TemplateEditPart {
 		WorkaroundEditPart(PaletteTemplateEntry entry) {
 			super(entry);
 		}
@@ -418,15 +418,14 @@ public class SnippetsView extends ViewPart {
 
 	}
 
-	class WorkaroundPaletteEditPartFactory extends PaletteEditPartFactory {
+	static class WorkaroundPaletteEditPartFactory extends PaletteEditPartFactory {
 		protected EditPart createTemplateEditPart(EditPart parentEditPart, Object model) {
-			WorkaroundEditPart created = new WorkaroundEditPart((PaletteTemplateEntry) model) {
-			};
+			WorkaroundEditPart created = new WorkaroundEditPart((PaletteTemplateEntry) model);
 			return created;
 		}
 	}
 
-	class WorkaroundMouseListener implements org.eclipse.draw2d.MouseListener {
+	static class WorkaroundMouseListener implements org.eclipse.draw2d.MouseListener {
 		@Override
 		public void mouseDoubleClicked(org.eclipse.draw2d.MouseEvent me) {
 		}
