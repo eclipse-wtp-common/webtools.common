@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2011 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,14 +15,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.internal.ui.palette.editparts.TemplateEditPart;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.gef.ui.palette.DefaultPaletteViewerPreferences;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
+import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerPreferences;
 import org.eclipse.gef.ui.palette.customize.PaletteCustomizerDialog;
@@ -398,6 +402,46 @@ public class SnippetsView extends ViewPart {
 		}
 	}
 
+
+	class WorkaroundEditPart extends TemplateEditPart {
+		WorkaroundEditPart(PaletteTemplateEntry entry) {
+			super(entry);
+		}
+
+		@Override
+		public IFigure createFigure() {
+			IFigure fig = super.createFigure();
+			/* The listener itself being registered is the crux of the workaround */
+			fig.addMouseListener(new WorkaroundMouseListener());
+			return fig;
+		}
+
+	}
+
+	class WorkaroundPaletteEditPartFactory extends PaletteEditPartFactory {
+		protected EditPart createTemplateEditPart(EditPart parentEditPart, Object model) {
+			WorkaroundEditPart created = new WorkaroundEditPart((PaletteTemplateEntry) model) {
+			};
+			return created;
+		}
+	}
+
+	class WorkaroundMouseListener implements org.eclipse.draw2d.MouseListener {
+		@Override
+		public void mouseDoubleClicked(org.eclipse.draw2d.MouseEvent me) {
+		}
+
+		@Override
+		public void mousePressed(org.eclipse.draw2d.MouseEvent me) {
+		}
+
+		@Override
+		public void mouseReleased(org.eclipse.draw2d.MouseEvent me) {
+		}
+
+	}
+
+
 	protected class TransferDragSourceListenerImpl implements TransferDragSourceListener {
 		private Transfer fTransfer;
 
@@ -530,6 +574,9 @@ public class SnippetsView extends ViewPart {
 		PaletteViewerPreferences palettePreferences = new DefaultPaletteViewerPreferences(SnippetsPlugin.getDefault().getPreferenceStore());
 		SnippetsPlugin.getDefault().getPreferenceStore().setDefault(PaletteViewerPreferences.PREFERENCE_AUTO_COLLAPSE, PaletteViewerPreferences.COLLAPSE_ALWAYS);
 		fViewer.setPaletteViewerPreferences(palettePreferences);
+
+		/* Workaround for GEF selection behavior change */
+		fViewer.setEditPartFactory(new WorkaroundPaletteEditPartFactory());
 
 		fViewer.setPaletteRoot(getRoot());
 
