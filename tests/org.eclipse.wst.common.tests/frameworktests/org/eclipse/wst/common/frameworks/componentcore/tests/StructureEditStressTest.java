@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
@@ -97,7 +96,7 @@ public class StructureEditStressTest extends TestCase {
 			job.schedule();
 		}
 		try {
-			Platform.getJobManager().join(EDITMODEL_STRESS,null);
+			Job.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -130,7 +129,7 @@ public void testMultiThreadComponentAccess() {
 			job.schedule();
 		}
 		try {
-			Platform.getJobManager().join(EDITMODEL_STRESS,null);
+			Job.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
