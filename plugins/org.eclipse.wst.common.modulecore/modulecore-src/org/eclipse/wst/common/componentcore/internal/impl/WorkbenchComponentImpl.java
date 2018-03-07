@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2009 IBM Corporation and others.
+ * Copyright (c) 2003, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -220,7 +220,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		List res = getResources();
 		for (Iterator iter = res.iterator(); iter.hasNext();) {
 			ComponentResource element = (ComponentResource) iter.next();
-			if (element.getRuntimePath().equals(new Path("/")))
+			if (Path.ROOT.equals(element.getRuntimePath()))
 				return element.getSourcePath();
 			
 		}	
@@ -231,7 +231,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		List res = getResources();
 		for (Iterator iter = res.iterator(); iter.hasNext();) {
 			ComponentResource element = (ComponentResource) iter.next();
-			if (element.getRuntimePath().equals(new Path("/")) &&  DEFAULT_ROOT_SOURCE_TAG.equals(element.getTag()))
+			if (Path.ROOT.equals(element.getRuntimePath()) &&  DEFAULT_ROOT_SOURCE_TAG.equals(element.getTag()))
 				return element.getSourcePath();
 		}	
 		return null;		
