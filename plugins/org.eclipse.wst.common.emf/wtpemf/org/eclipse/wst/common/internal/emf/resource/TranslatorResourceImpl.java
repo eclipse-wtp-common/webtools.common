@@ -431,16 +431,19 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 
 	@Override
 	public void eNotify(Notification notification) {
-        Adapter[] originalEAdapters = eBasicAdapterArray();
-        Adapter[] eAdapters = Arrays.copyOf(originalEAdapters, originalEAdapters.length);
-	    if (eAdapters != null && eDeliver())
-	    {
-	      for (int i = 0, size = eAdapters.length; i < size; ++i)
-	      {
-	      	Adapter temp;
-	    	  if ((temp = eAdapters[i]) != null)
-	    		  temp.notifyChanged(notification);
-	      }
-	    }
-	  }
+		Adapter[] originalEAdapters = eBasicAdapterArray();
+		if (originalEAdapters != null)
+		{
+			Adapter[] eAdapters = Arrays.copyOf(originalEAdapters, originalEAdapters.length);
+			if (eAdapters != null && eDeliver())
+			{
+				for (int i = 0, size = eAdapters.length; i < size; ++i)
+				{
+					Adapter temp;
+					if ((temp = eAdapters[i]) != null)
+						temp.notifyChanged(notification);
+				}
+			}
+		}
+	}
 }
