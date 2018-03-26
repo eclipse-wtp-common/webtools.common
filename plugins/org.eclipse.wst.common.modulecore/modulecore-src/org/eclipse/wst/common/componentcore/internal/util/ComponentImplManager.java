@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.emf.workbench.ISynchronizerExtender;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
@@ -37,6 +38,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -203,7 +205,22 @@ public class ComponentImplManager implements ISynchronizerExtender{
 		return createComponent(project, true);
 	}
 
-	public synchronized IVirtualComponent createComponent(IProject project, boolean checkSettings) {
+	public IVirtualComponent createComponent(IProject project, boolean checkSettings) {
+		// acquire the lock that StructureEdit will need already, to prevent others from locking that before calling createComponent() - see bug 508685 and bug 511793
+		ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(project);
+		try{
+			if(null != lock){
+				lock.acquire();
+			}
+			return createComponentSynchronously(project, checkSettings);
+		} finally{
+			if(null != lock){
+				lock.release();
+			}
+		}
+	}
+
+	private synchronized IVirtualComponent createComponentSynchronously(IProject project, boolean checkSettings) {
 		try {
 			IVirtualComponent component = ComponentCacheManager.instance().getComponent(project);
 			if(component != null) {
