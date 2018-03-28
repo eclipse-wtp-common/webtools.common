@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2012, 2013 Eclipse Foundation and others.
+  Copyright (c) 2012, 2013, 2018 Eclipse Foundation and others.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Distribution License v1.0
   which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  
   Contributors:
     Thanh Ha (Eclipse Foundation) - initial implementation
-    Nick Boldt (Red Hat Inc.) - support for Tycho 1.0 and upstream component builds  
+    Nick Boldt (Red Hat Inc.) - support for Tycho 1.1 and upstream component builds  
 -->
 
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
