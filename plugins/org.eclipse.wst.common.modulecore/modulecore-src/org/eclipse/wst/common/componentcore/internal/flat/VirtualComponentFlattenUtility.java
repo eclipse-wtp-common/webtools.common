@@ -105,8 +105,9 @@ public class VirtualComponentFlattenUtility {
 	}
 	
 	public void addFile(IVirtualComponent current, IPath path, IAdaptable file) {
-		IVirtualFile vf = (IVirtualFile)file.getAdapter(IVirtualFile.class);
-		IFile f = (IFile)file.getAdapter(IFile.class);
+                IVirtualFile vf = file instanceof IFile ? null : (IVirtualFile)file.getAdapter(IVirtualFile.class);
+                IFile f = file instanceof IFile ? (IFile)file : (IFile)file.getAdapter(IFile.class);
+
 		IFlatFile mf = null;
 		String vfName = null;
 		if( vf != null && vf.getName() != null )
