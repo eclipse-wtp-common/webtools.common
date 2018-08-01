@@ -55,6 +55,7 @@
   
   <extension
     id="nature"
+    name="%FacetedProjectNatureName"
     point="org.eclipse.core.resources.natures">
     <runtime>
       <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
