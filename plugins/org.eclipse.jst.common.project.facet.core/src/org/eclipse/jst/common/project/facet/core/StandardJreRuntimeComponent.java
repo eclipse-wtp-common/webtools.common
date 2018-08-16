@@ -8,7 +8,7 @@
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Carl Anderson - Java 9 support
- *    John Collier - Java 10 support
+ *    John Collier - Java 10 and 11 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -39,6 +39,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_1_8 = TYPE.getVersion( "1.8" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_9 = TYPE.getVersion( "9" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_10 = TYPE.getVersion( "10" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_11 = TYPE.getVersion( "11" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -97,9 +98,13 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_10;
         }
+        else if( jvmver.startsWith( "11" ) ) //$NON-NLS-1$
+        {
+        	rcv = StandardJreRuntimeComponent.VERSION_11;
+        }
         else 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_10;
+            rcv = StandardJreRuntimeComponent.VERSION_11;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();

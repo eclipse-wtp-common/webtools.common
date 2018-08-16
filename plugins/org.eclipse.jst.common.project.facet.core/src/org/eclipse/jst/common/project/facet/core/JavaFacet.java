@@ -8,7 +8,7 @@
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Carl Anderson - Java 9 support
- *    John Collier - Java 10 support
+ *    John Collier - Java 10 and 11 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -38,6 +38,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_1_8 = FACET.getVersion( "1.8" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_9 = FACET.getVersion( "9" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_10 = FACET.getVersion( "10" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_11 = FACET.getVersion( "11" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;
