@@ -1,4 +1,4 @@
-org.eclipse.wst.validation/debug=true
+org.eclipse.wst.validation/debug=false
 
 # Set this to true if you wish performance information to be logged
 org.eclipse.wst.validation/timings=false

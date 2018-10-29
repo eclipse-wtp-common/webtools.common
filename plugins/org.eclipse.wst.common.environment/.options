@@ -1,7 +1,7 @@
 # Debugging options for the org.eclipse.wst.env plugin.
 
 # Turn on debugging master switch for the org.eclipse.wst.common.environment plugin.
-org.eclipse.wst.common.environment/debug=true
+org.eclipse.wst.common.environment/debug=false
 
 # Turn on different tracing level
 org.eclipse.wst.common.environment/trace/info=true
