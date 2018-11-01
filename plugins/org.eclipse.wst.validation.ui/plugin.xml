@@ -13,24 +13,13 @@
             adaptable="true"
             objectClass="org.eclipse.core.resources.IResource"
             id="ValidationMenuAction">
-         <menu
-               id="webtools"
-               label="WebTools"
-               path="group.edit"/>
          <action
                label="%VBF_UI_POPUP_RUNVALIDATION"
                class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
-               menubarPath="webtools/additions"
+               menubarPath="additions"
                enablesFor="+"
                id="ValidationAction">
          </action>
-         <visibility>
-            <not>
-               <systemProperty
-                     name="org.eclipse.wst.validation.ui.disable.validation.context.menu" value="true">
-               </systemProperty>
-            </not>
-         </visibility>
       </objectContribution>      
    </extension>
   
