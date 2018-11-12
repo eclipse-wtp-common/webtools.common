@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2013 IBM Corporation and others.
+ * Copyright (c) 2001, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,7 @@ public class ComponentResolver implements URIResolverExtension {
 	private static final String FILE_PROTOCOL2 = "file://"; //$NON-NLS-1$
 	private static final String ROOT_PATH_STRING = Path.ROOT.toString();
 	private static final String HTTP_PROTOCOL = "http:"; //$NON-NLS-1$
+	private static final String HTTPS_PROTOCOL = "https:"; //$NON-NLS-1$
 
 	/**
 	 * Various resolvers disagree on how many preceding slashes should
@@ -96,7 +97,7 @@ public class ComponentResolver implements URIResolverExtension {
 		/* Recompute the IFile, if needed, from the base location. */
 		if (file == null) {
 			// Generates Internal Error message if we continue with a http URI: org.eclipse.core.runtime.CoreException: No file system is defined for scheme: http
-			if (baseLocation == null || baseLocation.length() == 0 || baseLocation.startsWith("wbit:") || baseLocation.startsWith(HTTP_PROTOCOL)) { //$NON-NLS-1$
+			if (baseLocation == null || baseLocation.length() == 0 || baseLocation.startsWith("wbit:") || baseLocation.startsWith(HTTP_PROTOCOL) || baseLocation.startsWith(HTTPS_PROTOCOL)) { //$NON-NLS-1$
 				/*
 				 * We can't proceed if we lack both an IFile and a valid filesystem
 				 * reference
