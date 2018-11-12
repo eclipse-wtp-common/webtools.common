@@ -1,27 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+	<extension point="org.eclipse.ui.commands">
+		<command
+			description="%VBF_UI_POPUP_RUNVALIDATIONDESC"
+			id="org.eclipse.wst.validation.ValidationCommand"
+			name="%VBF_UI_POPUP_RUNVALIDATION_NOMNEMONIC" />
+	</extension>
 
-    
-<!-- ============================================== -->
-<!-- Popup Contributions                            -->
-<!-- ============================================== -->
-<!-- By saying "adaptable=true", this item will appear on both IProject and IJavaProject -->
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            objectClass="org.eclipse.core.resources.IResource"
-            id="ValidationMenuAction">
-         <action
-               label="%VBF_UI_POPUP_RUNVALIDATION"
-               class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
-               menubarPath="additions"
-               enablesFor="+"
-               id="ValidationAction">
-         </action>
-      </objectContribution>      
-   </extension>
+    <extension point="org.eclipse.ui.handlers">
+       <handler
+             class="org.eclipse.wst.validation.internal.ui.ValidationHandler"
+             commandId="org.eclipse.wst.validation.ValidationCommand">
+             <enabledWhen>
+	           <or>
+		        <with variable="activePart">
+					<test forcePluginActivation="true"
+						property="org.eclipse.ui.ide.editor.input"
+						value="ignored?"/>
+		        </with>
+				<with variable="selection">
+                    <iterate ifEmpty="false">
+	                    <adapt type="org.eclipse.core.resources.IResource">
+	                    </adapt>
+                    </iterate>
+                </with>
+               </or>
+             </enabledWhen>
+       </handler>
+	</extension>
+
+ 	<extension point="org.eclipse.ui.menus">
+     <menuContribution locationURI="popup:org.eclipse.ui.popup.any?endof=additions" allPopups="true">
+		<command commandId="org.eclipse.wst.validation.ValidationCommand" id="ValidationCommand" style="push" icon="icons/ok_tbl.gif" disabledIcon="icons/ok_tbl_disabled.gif">
+		   <visibleWhen checkEnabled="false">
+           <and>
+	           <not>
+		           <systemTest
+		                 property="org.eclipse.wst.validation.ui.disable.validation.context.menu" value="true">
+		           </systemTest>
+	           </not>
+	           <not>
+				<test forcePluginActivation="true"
+					property="org.eclipse.wst.common.core.productProperty"
+					args="org.eclipse.wst.validation.ui.disable.validation.context.menu"
+					value="true" />
+	           </not>
+	           <or>
+		        <with variable="activePart">
+					<test forcePluginActivation="true"
+						property="org.eclipse.ui.ide.editor.input"
+						value="ignored?"/>
+		        </with>
+				<with variable="selection">
+                    <iterate ifEmpty="false">
+	                    <adapt type="org.eclipse.core.resources.IResource">
+	                    </adapt>
+                    </iterate>
+                </with>
+               </or>
+              </and>
+			</visibleWhen>
+		</command>
+	</menuContribution>
+	</extension>
   
 
 <!-- ====================================================== -->
