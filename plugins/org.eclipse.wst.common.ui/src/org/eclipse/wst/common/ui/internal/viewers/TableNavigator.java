@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,7 +58,7 @@ public class TableNavigator extends TableCursor
 		 */
 		public void widgetSelected(SelectionEvent e) {
 			super.widgetSelected(e);
-			     if (sViewer instanceof TableTreeViewer)
+			     if (sViewer instanceof AbstractTreeViewer)
                  {
                    TableTreeItem tableTreeItem = (TableTreeItem)getRow().getData(TABLETREEITEM_ID);
                    StructuredSelection selection = new StructuredSelection(tableTreeItem.getData());
@@ -79,7 +79,7 @@ public class TableNavigator extends TableCursor
          	{
          	  if (currentTable.getItemCount() > 0 && currentTable.getSelectionCount() <= 0)
               {
-                 if (sViewer instanceof TableTreeViewer)
+                 if (sViewer instanceof AbstractTreeViewer)
                  {
                    TableTreeItem tableTreeItem = (TableTreeItem)getRow().getData(TABLETREEITEM_ID);
                    StructuredSelection selection = new StructuredSelection(tableTreeItem.getData());
@@ -299,13 +299,13 @@ public class TableNavigator extends TableCursor
 	               if (column == 0 && e.character == '+') 
 	               {
                	  	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);	               	
-	               	  ((TableTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), true);                       
+	               	  ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), true);                       
 	               	  refresh();
 	               }
 	               else if (column == 0 && e.character == '-') 
 	               {
 	               	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);	               	
-	               	  ((TableTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), false);                       
+	               	  ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), false);                       
                       refresh();
 	               }               
                }
@@ -316,10 +316,10 @@ public class TableNavigator extends TableCursor
                	  {
                     ((TableViewer)structuredViewer).editElement(row.getData(), column);   
                	  }
-               	  else if (structuredViewer instanceof TableTreeViewer)
+               	  else if (structuredViewer instanceof AbstractTreeViewer)
                	  {  
                	  	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);
-               	  	 ((TableTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
+               	  	 ((AbstractTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
                	  }
                }
         }
@@ -351,19 +351,19 @@ public class TableNavigator extends TableCursor
                         {
                      ((TableViewer)structuredViewer).editElement(row.getData(), column);   
                         }
-                        else if (structuredViewer instanceof TableTreeViewer && column == 1)
+                        else if (structuredViewer instanceof AbstractTreeViewer && column == 1)
                         {
                                  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);
-                                ((TableTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
+                                ((AbstractTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
                         }                                               
                
-                 if (structuredViewer instanceof TableTreeViewer && row.getData(TABLETREEITEM_ID) instanceof TableTreeItem)
+                 if (structuredViewer instanceof AbstractTreeViewer && row.getData(TABLETREEITEM_ID) instanceof TableTreeItem)
                  {              
                                    if (column == 0)
                                    {
                                     TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);                             
                                           boolean expandState = tableTreeItem.getExpanded();
-                       ((TableTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), !expandState);
+                       ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), !expandState);
                        refresh();
                     }
                  }
