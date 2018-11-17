@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Snippets_View.name
 Bundle-SymbolicName: org.eclipse.wst.common.snippets; singleton:=true
-Bundle-Version: 1.2.400.qualifier
+Bundle-Version: 1.2.500.qualifier
 Bundle-Activator: org.eclipse.wst.common.snippets.internal.SnippetsPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

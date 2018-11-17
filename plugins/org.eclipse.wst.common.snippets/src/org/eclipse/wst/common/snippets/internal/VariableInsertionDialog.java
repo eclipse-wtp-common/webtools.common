@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2004, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -42,7 +44,7 @@ import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 
 public class VariableInsertionDialog extends Dialog {
-	private List disposeListeners = new ArrayList();
+	private List<DisposeListener> disposeListeners = new ArrayList<>();
 	protected StyledText fDescriptionPane = null;
 	protected ISnippetItem fItem = null;
 
@@ -87,7 +89,7 @@ public class VariableInsertionDialog extends Dialog {
 	public void create() {
 		super.create();
 		for (int i = 0; i < disposeListeners.size(); i++) {
-			getShell().addDisposeListener((DisposeListener) disposeListeners.get(i));
+			getShell().addDisposeListener(disposeListeners.get(i));
 		}
 		getShell().setActive();
 	}
@@ -209,7 +211,7 @@ public class VariableInsertionDialog extends Dialog {
 		return composite;
 	}
 
-	private VerifyKeyListener createVerifyListener(Control control) {
+	static VerifyKeyListener createVerifyListener(Control control) {
 		final Control widget = control;
 		return new VerifyKeyListener() {
 			public void verifyKey(VerifyEvent event) {
@@ -317,7 +319,7 @@ public class VariableInsertionDialog extends Dialog {
 	/**
 	 * Specifically set the reporting name of a control for accessibility
 	 */
-	private void setAccessible(Control control, String name) {
+	static void setAccessible(Control control, String name) {
 		if (control == null)
 			return;
 		final String n = name;
