@@ -118,7 +118,8 @@ Multiple libraries can be defined in a single definition file.&lt;/p&gt;
     &lt;name&gt;EclipseLink 1.0.0&lt;/name&gt;
     &lt;download-provider&gt;Eclipse Foundation&lt;/download-provider&gt;
     &lt;download-url&gt;&lt;![CDATA[http://www.eclipse.org/downloads/...]]&gt;&lt;/download-url&gt;
-    &lt;license-url&gt;&lt;![CDATA[http://www.eclipse.org/legal/epl-v10.html]]&gt;&lt;/license-url&gt;&gt;
+    &lt;license-url&gt;&lt;![CDATA[https://www.eclipse.org/legal/epl-2.0/
+]]&gt;&lt;/license-url&gt;&gt;
     &lt;attributes&gt;
       &lt;component&gt;eclipselink/jlib/eclipselink.jar&lt;/component&gt;
       &lt;source&gt;eclipselink/jlib/eclipselink-src.zip&lt;/source&gt;
@@ -141,7 +142,9 @@ Multiple libraries can be defined in a single definition file.&lt;/p&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a
-href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+href=&quot;https://www.eclipse.org/legal/epl-2.0/
+&quot;&gt;https://www.eclipse.org/legal/epl-2.0/
+&lt;/a&gt;
       </documentation>
    </annotation>
 
