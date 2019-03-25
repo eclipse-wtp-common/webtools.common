@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %org.eclipse.wst.common.tests.collector
 Bundle-SymbolicName: org.eclipse.wst.common.tests.collector; singleton:=true
-Bundle-Version: 1.1.100.qualifier
+Bundle-Version: 1.1.200.qualifier
 Bundle-ClassPath: runtime/collector.jar
 Bundle-Activator: org.eclipse.wst.common.tests.collector.TestCollectorPlugin
 Bundle-Localization: plugin

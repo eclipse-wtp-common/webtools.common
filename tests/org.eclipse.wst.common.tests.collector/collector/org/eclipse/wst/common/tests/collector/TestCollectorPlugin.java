@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2015, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.wst.common.tests.collector;
 
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.BundleContext;
 
 
 public class TestCollectorPlugin extends Plugin {
@@ -20,13 +21,9 @@ public class TestCollectorPlugin extends Plugin {
 	public static TestCollectorPlugin instance = null;
 	public IExtensionPoint dataModelVerifierExt = null;
 	
-	/**
-	 * @param descriptor
-	 */
-	public TestCollectorPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
-		instance = this;
-		dataModelVerifierExt = descriptor.getExtensionPoint("DataModelVerifier");
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		dataModelVerifierExt = Platform.getExtensionRegistry().getExtensionPoint(PLUGIN_ID, "DataModelVerifier");
 	}
 
 }
