@@ -18,12 +18,13 @@ import org.osgi.framework.BundleContext;
 
 public class TestCollectorPlugin extends Plugin {
 	public static String PLUGIN_ID = "org.eclipse.wst.common.tests.collector";
-	public static TestCollectorPlugin instance = null;
+	/**
+	 * 	@deprecated - no one is known to use this, and no one should
+	 */
 	public IExtensionPoint dataModelVerifierExt = null;
 	
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		dataModelVerifierExt = Platform.getExtensionRegistry().getExtensionPoint(PLUGIN_ID, "DataModelVerifier");
 	}
-
 }
