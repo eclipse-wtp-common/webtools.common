@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -28,6 +28,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -240,9 +241,9 @@ public class ViewerDropAdapter extends DropTargetAdapter
       // Get the data from the item, if there is one.
       //
       Object target = event.item == null ? null : event.item.getData();
-      if (target instanceof TableTreeItem)
+      if (target instanceof Item)
       {
-        target = ((TableTreeItem)target).getData();
+        target = ((Item)target).getData();
       }
 
       // Do the logic to determine the hover information.

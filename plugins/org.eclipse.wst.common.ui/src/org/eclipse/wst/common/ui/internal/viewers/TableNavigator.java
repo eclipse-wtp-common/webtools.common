@@ -11,14 +11,31 @@
  *******************************************************************************/
 package org.eclipse.wst.common.ui.internal.viewers;
 
-import org.eclipse.swt.events.*;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
-
 import org.eclipse.swt.custom.TableCursor;
-import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TreeItem;
 
 
   /**
@@ -60,8 +77,8 @@ public class TableNavigator extends TableCursor
 			super.widgetSelected(e);
 			     if (sViewer instanceof AbstractTreeViewer)
                  {
-                   TableTreeItem tableTreeItem = (TableTreeItem)getRow().getData(TABLETREEITEM_ID);
-                   StructuredSelection selection = new StructuredSelection(tableTreeItem.getData());
+                   Item item = (Item)getRow().getData(TABLETREEITEM_ID);
+                   StructuredSelection selection = new StructuredSelection(item.getData());
                    sViewer.setSelection(selection, true);
                  }
 		}
@@ -81,7 +98,7 @@ public class TableNavigator extends TableCursor
               {
                  if (sViewer instanceof AbstractTreeViewer)
                  {
-                   TableTreeItem tableTreeItem = (TableTreeItem)getRow().getData(TABLETREEITEM_ID);
+                   Item tableTreeItem = (Item)getRow().getData(TABLETREEITEM_ID);
                    StructuredSelection selection = new StructuredSelection(tableTreeItem.getData());
                    sViewer.setSelection(selection, true);
                  }
@@ -294,17 +311,17 @@ public class TableNavigator extends TableCursor
                
                //jvh - look for + or - key
                // column == 0
-               if (row.getData(TABLETREEITEM_ID) instanceof TableTreeItem)
+               if (row.getData(TABLETREEITEM_ID) instanceof Item)
                {
 	               if (column == 0 && e.character == '+') 
 	               {
-               	  	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);	               	
+	               	  Item tableTreeItem = (Item)row.getData(TABLETREEITEM_ID);
 	               	  ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), true);                       
 	               	  refresh();
 	               }
 	               else if (column == 0 && e.character == '-') 
 	               {
-	               	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);	               	
+	               	  Item tableTreeItem = (Item)row.getData(TABLETREEITEM_ID);
 	               	  ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), false);                       
                       refresh();
 	               }               
@@ -318,7 +335,7 @@ public class TableNavigator extends TableCursor
                	  }
                	  else if (structuredViewer instanceof AbstractTreeViewer)
                	  {  
-               	  	  TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);
+	               	  Item tableTreeItem = (Item)row.getData(TABLETREEITEM_ID);
                	  	 ((AbstractTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
                	  }
                }
@@ -353,17 +370,17 @@ public class TableNavigator extends TableCursor
                         }
                         else if (structuredViewer instanceof AbstractTreeViewer && column == 1)
                         {
-                                 TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);
-                                ((AbstractTreeViewer)structuredViewer).editElement(tableTreeItem.getData(), column);   
+                                 TreeItem treeItem = (TreeItem)row.getData(TABLETREEITEM_ID);
+                                ((AbstractTreeViewer)structuredViewer).editElement(treeItem.getData(), column);
                         }                                               
                
-                 if (structuredViewer instanceof AbstractTreeViewer && row.getData(TABLETREEITEM_ID) instanceof TableTreeItem)
+                 if (structuredViewer instanceof AbstractTreeViewer && row.getData(TABLETREEITEM_ID) instanceof Item)
                  {              
                                    if (column == 0)
                                    {
-                                    TableTreeItem tableTreeItem = (TableTreeItem)row.getData(TABLETREEITEM_ID);                             
-                                          boolean expandState = tableTreeItem.getExpanded();
-                       ((AbstractTreeViewer)structuredViewer).setExpandedState(tableTreeItem.getData(), !expandState);
+                                          TreeItem treeItem = (TreeItem)row.getData(TABLETREEITEM_ID);
+                                          boolean expandState = treeItem.getExpanded();
+                       ((AbstractTreeViewer)structuredViewer).setExpandedState(treeItem.getData(), !expandState);
                        refresh();
                     }
                  }
