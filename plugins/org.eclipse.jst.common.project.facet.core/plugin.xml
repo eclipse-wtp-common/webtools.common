@@ -29,6 +29,7 @@
     <runtime-component-version type="standard.jre" version="9"/>
     <runtime-component-version type="standard.jre" version="10"/>
     <runtime-component-version type="standard.jre" version="11"/>
+    <runtime-component-version type="standard.jre" version="12"/>
 
     <supported>
       <facet id="java" version="1.3"/>
@@ -73,6 +74,11 @@
     <supported>
       <facet id="java" version="11"/>
       <runtime-component id="standard.jre" version="[11"/>
+    </supported>
+    
+    <supported>
+      <facet id="java" version="12"/>
+      <runtime-component id="standard.jre" version="[12"/>
     </supported>
 
     <adapter>

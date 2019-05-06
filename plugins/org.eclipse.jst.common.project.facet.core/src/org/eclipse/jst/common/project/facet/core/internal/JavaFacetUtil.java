@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2018 Oracle
+ * Copyright (c) 2010, 2019 Oracle
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Carl Anderson - Java 9 support
  *    John Collier - Java 10 and 11 support
+ *    Leon Keuroglian - Java 12 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core.internal;
@@ -66,6 +67,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_9, "JavaSE-9" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_10, "JavaSE-10" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_11, "JavaSE-11" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_12, "JavaSE-12" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()
