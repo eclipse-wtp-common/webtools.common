@@ -115,6 +115,8 @@
     
     <project-facet-version facet="java" version="11"/>
 
+    <project-facet-version facet="java" version="12"/>
+
     <action facet="java" type="install" id="java.install">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
       <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
