@@ -8,7 +8,7 @@
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Carl Anderson - Java 9 support
- *    John Collier - Java 10 and 11 support
+ *    John Collier - Java 10-11, 13 support
  *    Leon Keuroglian - Java 12 support
  ******************************************************************************/
 
@@ -42,6 +42,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_10 = TYPE.getVersion( "10" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_11 = TYPE.getVersion( "11" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_12 = TYPE.getVersion( "12" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_13 = TYPE.getVersion( "13" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -108,9 +109,13 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_12;
         }
+        else if( jvmver.startsWith( "13" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_13;
+        }
         else
         {
-            rcv = StandardJreRuntimeComponent.VERSION_12;
+            rcv = StandardJreRuntimeComponent.VERSION_13;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();

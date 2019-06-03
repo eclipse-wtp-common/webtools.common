@@ -8,7 +8,7 @@
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  *    Carl Anderson - Java 9 support
- *    John Collier - Java 10 and 11 support
+ *    John Collier - Java 10-11, 13 support
  *    Leon Keuroglian - Java 12 support
  ******************************************************************************/
 
@@ -41,6 +41,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_10 = FACET.getVersion( "10" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_11 = FACET.getVersion( "11" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_12 = FACET.getVersion( "12" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_13 = FACET.getVersion( "13" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;
