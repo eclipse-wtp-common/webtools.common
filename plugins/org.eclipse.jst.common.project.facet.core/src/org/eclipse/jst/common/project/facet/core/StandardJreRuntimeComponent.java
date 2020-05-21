@@ -43,6 +43,8 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_11 = TYPE.getVersion( "11" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_12 = TYPE.getVersion( "12" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_13 = TYPE.getVersion( "13" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_14 = TYPE.getVersion( "14" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_15 = TYPE.getVersion( "15" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -113,9 +115,17 @@ public final class StandardJreRuntimeComponent
         {
             rcv = StandardJreRuntimeComponent.VERSION_13;
         }
+        else if( jvmver.startsWith( "14" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_14;
+        }
+        else if( jvmver.startsWith( "15" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_15;
+        }
         else
         {
-            rcv = StandardJreRuntimeComponent.VERSION_13;
+            rcv = StandardJreRuntimeComponent.VERSION_15;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();
