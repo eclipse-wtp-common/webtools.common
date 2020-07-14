@@ -21,6 +21,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.frameworks</artifactId>
-  <version>1.2.201-SNAPSHOT</version>
+  <version>1.2.202-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

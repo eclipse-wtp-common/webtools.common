@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.wst.common.infopop; singleton:=true
-Bundle-Version: 1.0.300.qualifier
+Bundle-Version: 1.0.301.qualifier
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Eclipse-LazyStart: true

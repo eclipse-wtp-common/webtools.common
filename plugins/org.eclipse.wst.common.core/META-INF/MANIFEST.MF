@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.core; singleton:=true
 Automatic-Module-Name: org.eclipse.wst.common.core
-Bundle-Version: 1.3.0.qualifier
+Bundle-Version: 1.3.1.qualifier
 Bundle-Activator: org.eclipse.wst.common.core.search.SearchPlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.core.search,
