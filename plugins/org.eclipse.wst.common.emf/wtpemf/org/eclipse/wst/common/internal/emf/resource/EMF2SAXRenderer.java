@@ -51,6 +51,7 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#doLoad(java.io.InputStream, java.util.Map)
 	 */
+	@Override
 	public void doLoad(InputStream in, Map options) throws IOException {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -108,6 +109,7 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#doSave(java.io.OutputStream, java.util.Map)
 	 */
+	@Override
 	public void doSave(OutputStream outputStream, Map options) throws IOException {
 
 		/*
@@ -166,6 +168,7 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#prepareToAddContents()
 	 */
+	@Override
 	public void prepareToAddContents() {
 	}
 
@@ -174,6 +177,7 @@ public class EMF2SAXRenderer extends AbstractRendererImpl {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#getVersionID()
 	 */
+	@Override
 	public int getVersionID() {
 		return getResource().getVersionID();
 	}

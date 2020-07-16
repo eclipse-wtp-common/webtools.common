@@ -194,6 +194,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Set to false and notification of changes from both the DOM node and the MOF object will be
 	 * ignored.
 	 */
+	@Override
 	public boolean isNotificationEnabled() {
 		return fNotificationEnabled;
 	}
@@ -202,6 +203,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Set to false and notification of changes from both the DOM node and the MOF object will be
 	 * ignored.
 	 */
+	@Override
 	public void setNotificationEnabled(boolean isEnabled) {
 		fNotificationEnabled = isEnabled;
 	}
@@ -759,6 +761,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	/**
 	 * Remove the DOM adapters from the node AND all its child nodes, recursively.
 	 */
+	@Override
 	public void removeAdapters(Node node) {
 		EMF2DOMAdapter adapter = primGetExistingAdapter(node);
 		if (adapter != null) {
@@ -937,12 +940,14 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	/*
 	 * Return true if MOF object is a proxy.
 	 */
+	@Override
 	public boolean isMOFProxy() {
 		if (isRoot || target == null)
 			return false;
 		return ((InternalEObject) target).eIsProxy();
 	}
 
+	@Override
 	public EObject getEObject() {
 		if (isRoot)
 			return null;
@@ -953,20 +958,24 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Return the DOM node that the target of this adapter maps to. If the target MOF object maps to
 	 * more than one DOM node, this node is the top-most node.
 	 */
+	@Override
 	public Node getNode() {
 		return fNode;
 	}
 
+	@Override
 	public void setNode(Node aNode) {
 		fNode = aNode;
 	}
 
+	@Override
 	public void updateDOM() {
 		if (!isNotificationEnabled())
 			return;
 		primUpdateDOM();
 	}
 
+	@Override
 	public void updateMOF() {
 		if (!isNotificationEnabled())
 			return;
@@ -1608,6 +1617,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * @param map
 	 *            com.ibm.etools.mof2dom.AttributeTranslator
 	 */
+	@Override
 	final public void updateDOMFeature(Translator map, Node node, EObject mofObject) {
 		if (!isNotificationEnabled())
 			return;
@@ -1826,6 +1836,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * @param map
 	 *            com.ibm.etools.mof2dom.AttributeTranslator
 	 */
+	@Override
 	public void updateMOFFeature(Translator map, Node node, EObject mofObject) {
 		if (!isNotificationEnabled())
 			return;

@@ -83,14 +83,17 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 		return CompatibilityPackageMappingRegistry.INSTANCE.getPackageURIsToPrefixes();
 	}
 
+	@Override
 	public void addOriginalPackageURI(String packageUri, String originalUri) {
 		originalPackageURIs.put(packageUri, originalUri);
 	}
 
+	@Override
 	public int getFormat() {
 		return format;
 	}
 
+	@Override
 	public void setFormat(int format) {
 		if (!isPlatformPluginResourceURI())
 			this.format = format;
@@ -112,6 +115,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 		return IDUtil.getOrAssignID(eObject, this);
 	}
 
+	@Override
 	public boolean usesDefaultFormat() {
 		return format == CompatibilityXMIResource.FORMAT_EMF1;
 	}
@@ -210,6 +214,7 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 * 
 	 * @see org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource#removePreservingIds(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public void removePreservingIds(EObject rootObject) {
 		setPreserveIDs(true);
 		getContents().remove(rootObject);

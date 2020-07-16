@@ -55,6 +55,7 @@ public class CommandContext implements ICommandContext {
 	 * 
 	 * @see com.ibm.ws.rd.command.framework.ICommandContext#getProgressMonitor()
 	 */
+	@Override
 	public IProgressMonitor getProgressMonitor() {
 		if (monitor == null)
 			monitor = new NullProgressMonitor();
@@ -66,6 +67,7 @@ public class CommandContext implements ICommandContext {
 	 * 
 	 * @see com.ibm.ws.rd.command.framework.ICommandContext#getConfigurationProperties()
 	 */
+	@Override
 	public Map getConfigurationProperties() {
 		if (properties == null)
 			properties = new HashMap();
@@ -77,6 +79,7 @@ public class CommandContext implements ICommandContext {
 	 * 
 	 * @see com.ibm.ws.rd.command.framework.ICommandContext#getResourceSet()
 	 */
+	@Override
 	public ResourceSet getResourceSet() {
 		if (resourceSet == null)
 			resourceSet = new ResourceSetImpl();

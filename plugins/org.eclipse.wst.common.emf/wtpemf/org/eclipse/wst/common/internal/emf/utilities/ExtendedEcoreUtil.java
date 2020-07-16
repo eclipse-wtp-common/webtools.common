@@ -157,6 +157,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	public static FileNotFoundDetector getFileNotFoundDetector() {
 		if (FILE_NOT_FOUND_DETECTOR == null) {
 			FILE_NOT_FOUND_DETECTOR = new FileNotFoundDetector() {
+				@Override
 				public boolean isFileNotFound(WrappedException wrappedEx) {
 					if (getInnerFileNotFoundException(wrappedEx) != null)
 						return true;

@@ -26,16 +26,20 @@ public class IsLoadingDetector implements Adapter {
 	private IsLoadingDetector() {
 	}
 
+	@Override
 	public void notifyChanged(Notification notification) {
 	}
 
+	@Override
 	public Notifier getTarget() {
 		return null;
 	}
 
+	@Override
 	public void setTarget(Notifier newTarget) {
 	}
 
+	@Override
 	public boolean isAdapterForType(Object type) {
 		return type == this;
 	}

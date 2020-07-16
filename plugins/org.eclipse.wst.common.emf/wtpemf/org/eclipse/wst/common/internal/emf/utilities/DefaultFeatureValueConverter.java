@@ -301,6 +301,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 	 * @aValue to the type of
 	 * @aFeature.
 	 */
+	@Override
 	public Object convertValue(Object aValue, org.eclipse.emf.ecore.EStructuralFeature aFeature) {
 		if (aValue == null || aFeature == null || !(aFeature instanceof EAttribute))
 			return aValue; //nothing to convert

@@ -31,6 +31,7 @@ public interface TranslatorResource extends ReferencedResource {
 	/**
 	 * The public id of the XML document, if specified.
 	 */
+	@Override
 	String getPublicId();
 
 	/**
@@ -41,6 +42,7 @@ public interface TranslatorResource extends ReferencedResource {
 	/**
 	 * The system id of the XML document, if specified.
 	 */
+	@Override
 	String getSystemId();
 
 	/**
@@ -61,6 +63,7 @@ public interface TranslatorResource extends ReferencedResource {
 	/**
 	 * Returns the XML version of this document
 	 */
+	@Override
 	String getXMLVersion();
 
 	Translator getRootTranslator();

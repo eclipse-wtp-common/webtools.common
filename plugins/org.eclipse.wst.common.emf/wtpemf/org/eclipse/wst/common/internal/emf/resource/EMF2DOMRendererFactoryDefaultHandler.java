@@ -39,6 +39,7 @@ public class EMF2DOMRendererFactoryDefaultHandler implements RendererFactoryDefa
 	 * 
 	 * @see com.ibm.etools.emf2xml.RendererFactoryDefaultHandler#getDefaultRendererFactory()
 	 */
+	@Override
 	public RendererFactory getDefaultRendererFactory() {
 		return EMF2DOMRendererFactory.INSTANCE;
 	}

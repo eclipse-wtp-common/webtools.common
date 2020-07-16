@@ -41,6 +41,7 @@ public class DefaultTranslatorFactory implements VariableTranslatorFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.VariableTranslatorFactory#accepts(java.lang.String)
 	 */
+	@Override
 	public boolean accepts(String domName) {
 		return domName != null && domName.startsWith(XMLNS);
 	}
@@ -50,6 +51,7 @@ public class DefaultTranslatorFactory implements VariableTranslatorFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.VariableTranslatorFactory#accepts(org.eclipse.emf.common.notify.Notification)
 	 */
+	@Override
 	public boolean accepts(Notification notif) {
 		return notif.getFeature() == NamespaceAdapter.NOTIFICATION_FEATURE;
 	}
@@ -60,6 +62,7 @@ public class DefaultTranslatorFactory implements VariableTranslatorFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.VariableTranslatorFactory#create(java.lang.String)
 	 */
+	@Override
 	public Translator create(String domName) {
 		return new NamespaceTranslator(domName);
 	}
@@ -69,6 +72,7 @@ public class DefaultTranslatorFactory implements VariableTranslatorFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.VariableTranslatorFactory#create(org.eclipse.emf.ecore.EObject)
 	 */
+	@Override
 	public List create(Notifier target) {
 		if (!(target instanceof EObject))
 			return null;
@@ -87,6 +91,7 @@ public class DefaultTranslatorFactory implements VariableTranslatorFactory {
 	 * 
 	 * @see com.ibm.etools.emf2xml.impl.VariableTranslatorFactory#create(org.eclipse.emf.common.notify.Notification)
 	 */
+	@Override
 	public Translator create(Notification notif) {
 		Namespace ns = (Namespace) notif.getNewValue();
 		return create(ns);

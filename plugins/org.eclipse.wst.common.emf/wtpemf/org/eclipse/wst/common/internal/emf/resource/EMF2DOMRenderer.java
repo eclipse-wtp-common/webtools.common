@@ -57,6 +57,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl {
 	/**
 	 * @see com.ibm.etools.emf2xml.Renderer#doLoad(InputStream, Map)
 	 */
+	@Override
 	public void doLoad(InputStream in, Map options) throws IOException {
 		if ((in != null) || !useStreamsForIO()) {
 			loadDocument(in, options);
@@ -86,6 +87,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl {
 	/**
 	 * @see com.ibm.etools.emf2xml.Renderer#doSave(OutputStream, Map)
 	 */
+	@Override
 	public void doSave(OutputStream outputStream, Map options) throws IOException {
 		createDOMTreeIfNecessary();
 		serializeDocument(outputStream);
@@ -119,6 +121,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl {
 	/**
 	 * @see com.ibm.etools.emf2xml.Renderer#prepareToAddContents()
 	 */
+	@Override
 	public void prepareToAddContents() {
 		// createDOMTreeIfNecessary();
 	}
@@ -260,6 +263,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl {
 		}
 	}
 
+	@Override
 	public int getVersionID() {
 		return getResource().getVersionID();
 	}

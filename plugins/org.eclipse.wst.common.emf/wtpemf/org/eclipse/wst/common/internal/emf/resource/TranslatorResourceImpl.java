@@ -91,6 +91,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	/**
 	 * Return the first element in the EList.
 	 */
+	@Override
 	public EObject getRootObject() {
 		if (contents == null || contents.isEmpty())
 			return null;
@@ -102,6 +103,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		return systemId;
 	}
 
+	@Override
 	public void setDoctypeValues(String aPublicId, String aSystemId) {
 		boolean changed = !(StringUtil.stringsEqual(publicId, aPublicId) && StringUtil.stringsEqual(systemId, aSystemId));
 		publicId = aPublicId;
@@ -221,6 +223,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @return Renderer
 	 */
+	@Override
 	public Renderer getRenderer() {
 		return renderer;
 	}
@@ -277,6 +280,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		};
 	}
 
+	@Override
 	public void setDefaults() {
 		if (systemId != null && publicId != null)
 			return;
@@ -299,6 +303,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see com.ibm.etools.emf2xml.TranslatorResource#createEntityResolver()
 	 */
+	@Override
 	public EntityResolver getEntityResolver() {
 		return null;
 	}
@@ -312,6 +317,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	/**
 	 * @return
 	 */
+	@Override
 	public int getVersionID() {
 		return versionID;
 	}
@@ -319,6 +325,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	/**
 	 * @param i
 	 */
+	@Override
 	public void setVersionID(int i) {
 		versionID = i;
 	}
@@ -328,6 +335,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 * 
 	 * @see com.ibm.etools.emf2xml.TranslatorResource#usesDTD()
 	 */
+	@Override
 	public boolean usesDTD() {
 		return getPublicId() != null && getSystemId() != null;
 	}

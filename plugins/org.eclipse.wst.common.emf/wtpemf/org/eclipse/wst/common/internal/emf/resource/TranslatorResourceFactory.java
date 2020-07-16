@@ -60,6 +60,7 @@ public abstract class TranslatorResourceFactory extends ReferencedXMIFactoryImpl
 	 * 
 	 * @see com.ibm.etools.emf2xml.RendererFactory.Listener#updateRendererFactory(com.ibm.etools.emf2xml.RendererFactory)
 	 */
+	@Override
 	public void updateRendererFactory(RendererFactory newRendererFactory) {
 		//System.out.println("Updating renderer factory");
 		rendererFactory = newRendererFactory;

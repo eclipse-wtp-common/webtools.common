@@ -26,10 +26,12 @@ public abstract class EncoderDecoderAdapter implements EncoderDecoder {
 	/**
 	 * Returns a decoded version of the value.
 	 */
+	@Override
 	public abstract String decode(String value);
 
 	/**
 	 * Returns an encoded version of the value.
 	 */
+	@Override
 	public abstract String encode(String value);
 }

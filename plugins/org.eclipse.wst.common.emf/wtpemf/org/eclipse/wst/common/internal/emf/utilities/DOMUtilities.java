@@ -64,10 +64,12 @@ public class DOMUtilities {
 			int curIndex = 0;
 			String pathString = aPath;
 
+			@Override
 			public boolean hasNext() {
 				return pathString != null && prevIndex != -1;
 			}
 
+			@Override
 			public Object next() {
 				curIndex = pathString.indexOf('/', prevIndex);
 				String nodeString = null;
@@ -79,6 +81,7 @@ public class DOMUtilities {
 				return nodeString;
 			}
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
@@ -515,6 +518,7 @@ public class DOMUtilities {
 			 * 
 			 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
 			 */
+			@Override
 			public void error(SAXParseException arg0) throws SAXException {
 				throw arg0;
 			}
@@ -524,10 +528,12 @@ public class DOMUtilities {
 			 * 
 			 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
 			 */
+			@Override
 			public void fatalError(SAXParseException arg0) throws SAXException {
 				throw arg0;
 			}
 
+			@Override
 			public void warning(SAXParseException arg0) throws SAXException {
 				EcoreUtilitiesPlugin.logWarning(arg0);
 			}
@@ -663,6 +669,7 @@ public class DOMUtilities {
 				 * 
 				 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
 				 */
+				@Override
 				public void error(SAXParseException exception) throws SAXException {
 
 				}
@@ -672,6 +679,7 @@ public class DOMUtilities {
 				 * 
 				 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
 				 */
+				@Override
 				public void fatalError(SAXParseException exception) throws SAXException {
 
 				}
@@ -681,6 +689,7 @@ public class DOMUtilities {
 				 * 
 				 * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
 				 */
+				@Override
 				public void warning(SAXParseException exception) throws SAXException {
 
 				}

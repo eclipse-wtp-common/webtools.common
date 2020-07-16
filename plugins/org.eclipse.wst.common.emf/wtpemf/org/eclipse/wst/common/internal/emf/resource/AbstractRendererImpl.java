@@ -28,6 +28,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	/**
 	 * @see com.ibm.etools.emf2xml.Renderer#setResource(TranslatorResource)
 	 */
+	@Override
 	public void setResource(TranslatorResource aResource) {
 		resource = aResource;
 	}
@@ -35,6 +36,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	/**
 	 * @see com.ibm.etools.emf2xml.Renderer#getResource()
 	 */
+	@Override
 	public TranslatorResource getResource() {
 		return resource;
 	}
@@ -66,6 +68,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#accessForRead()
 	 */
+	@Override
 	public void accessForRead() {
 	}
 
@@ -74,6 +77,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#accessForWrite()
 	 */
+	@Override
 	public void accessForWrite() {
 	}
 
@@ -82,6 +86,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#isModified()
 	 */
+	@Override
 	public boolean isModified() {
 		return false;
 	}
@@ -91,6 +96,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#isShared()
 	 */
+	@Override
 	public boolean isShared() {
 		return false;
 	}
@@ -100,6 +106,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#isSharedForWrite()
 	 */
+	@Override
 	public boolean isSharedForWrite() {
 		return false;
 	}
@@ -109,6 +116,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#preDelete()
 	 */
+	@Override
 	public void preDelete() {
 	}
 
@@ -117,6 +125,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#preUnload()
 	 */
+	@Override
 	public void preUnload() {
 	}
 
@@ -125,6 +134,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#releaseFromRead()
 	 */
+	@Override
 	public void releaseFromRead() {
 	}
 
@@ -133,6 +143,7 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#releaseFromWrite()
 	 */
+	@Override
 	public void releaseFromWrite() {
 	}
 
@@ -141,13 +152,16 @@ public abstract class AbstractRendererImpl implements Renderer {
 	 * 
 	 * @see com.ibm.etools.emf2xml.Renderer#setBatchMode(boolean)
 	 */
+	@Override
 	public void setBatchMode(boolean isBatch) {
 	}
 
+	@Override
 	public boolean useStreamsForIO() {
 		return true;
 	}
 
+	@Override
 	public boolean isBatchMode() {
 		return false;
 	}

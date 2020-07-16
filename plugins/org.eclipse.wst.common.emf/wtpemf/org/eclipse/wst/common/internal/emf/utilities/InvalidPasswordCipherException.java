@@ -1,5 +1,5 @@
 /***************************************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * Copyright (c) 2003, 2020 IBM Corporation and others. All rights reserved. This program and the
  * accompanying materials are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
@@ -9,10 +9,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.utilities;
 
-
-import org.omg.CORBA.UserException;
-
-public class InvalidPasswordCipherException extends UserException {
+public class InvalidPasswordCipherException extends PasswordException {
 
 	/**
 	 * 

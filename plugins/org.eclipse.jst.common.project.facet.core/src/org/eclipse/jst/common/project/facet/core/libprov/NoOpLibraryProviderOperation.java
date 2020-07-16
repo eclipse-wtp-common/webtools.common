@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2020 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,6 @@ package org.eclipse.jst.common.project.facet.core.libprov;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperation;
-import org.eclipse.jst.common.project.facet.core.libprov.LibraryProviderOperationConfig;
 
 /**
  * This operation implementation can be used in situations when an install or an uninstall 

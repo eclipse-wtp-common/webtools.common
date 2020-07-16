@@ -131,6 +131,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	 * 
 	 * @see org.eclipse.wst.common.internal.emf.resource.ReferencedResource#getReadCount()
 	 */
+	@Override
 	public int getReadCount() {
 		return readReferenceCount;
 	}
@@ -140,6 +141,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	 * 
 	 * @see org.eclipse.wst.common.internal.emf.resource.ReferencedResource#getWriteCount()
 	 */
+	@Override
 	public int getWriteCount() {
 		return editReferenceCount;
 	}
@@ -149,6 +151,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#accessForRead
 	 */
+	@Override
 	public void accessForRead() {
 		checkDeleted();
 		if (!isNew())
@@ -159,6 +162,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#accessForWrite
 	 */
+	@Override
 	public void accessForWrite() {
 		checkDeleted();
 		editReferenceCount++;
@@ -211,6 +215,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * If the resource is no longer being accessed, then remove it from the resource set.
 	 */
+	@Override
 	public void unloadIfNecessary() {
 		if ((getTotalReferenceCount() <= 0) || (editReferenceCount <= 0 && isModified()))
 			unload();
@@ -228,6 +233,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#isNew
 	 */
+	@Override
 	public boolean isNew() {
 		return isNew;
 	}
@@ -235,6 +241,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#isReadOnly
 	 */
+	@Override
 	public boolean isReadOnly() {
 		return editReferenceCount <= 0;
 	}
@@ -242,6 +249,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#isShared
 	 */
+	@Override
 	public boolean isShared() {
 		return getTotalReferenceCount() > 1;
 	}
@@ -249,6 +257,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#isSharedForWrite
 	 */
+	@Override
 	public boolean isSharedForWrite() {
 		return editReferenceCount > 1;
 	}
@@ -262,6 +271,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#releaseFromRead
 	 */
+	@Override
 	public void releaseFromRead() {
 		readReferenceCount--;
 		if (readReferenceCount < 0)
@@ -272,6 +282,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#releaseFromWrite
 	 */
+	@Override
 	public void releaseFromWrite() {
 		editReferenceCount--;
 		if (editReferenceCount < 0)
@@ -282,6 +293,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#saveIfNecessary
 	 */
+	@Override
 	public void saveIfNecessary() throws Exception {
 		if (!isSharedForWrite()) // caller is the only referencer
 			save(Collections.EMPTY_MAP);
@@ -295,6 +307,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/*
 	 * @see ReferencedResource#needsToSave()
 	 */
+	@Override
 	public boolean needsToSave() {
 		return isModified() && !isSharedForWrite();
 	}
@@ -303,6 +316,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * @see ReferencedResource#setForceRefresh(boolean)
 	 */
+	@Override
 	public void setForceRefresh(boolean b) {
 		forceRefresh = b;
 	}
@@ -310,6 +324,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * @see ReferencedResource#shouldForceRefresh()
 	 */
+	@Override
 	public boolean shouldForceRefresh() {
 		return forceRefresh;
 	}
@@ -419,6 +434,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	/**
 	 * @see com.ibm.etools.emf.workbench.ReferencedResource#wasReverted()
 	 */
+	@Override
 	public boolean wasReverted() {
 		return false;
 	}
