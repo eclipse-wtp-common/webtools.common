@@ -36,8 +36,10 @@
         <artifactId>tycho-surefire-plugin</artifactId>
         <version>${tycho.version}</version>
         <configuration>
+          <useJDK>BREE</useJDK>
           <useUIHarness>true</useUIHarness>
           <useUIThread>true</useUIThread>  
+          <showEclipseLog>true</showEclipseLog>
           <dependencies>
             <dependency>
               <type>p2-installable-unit</type>
