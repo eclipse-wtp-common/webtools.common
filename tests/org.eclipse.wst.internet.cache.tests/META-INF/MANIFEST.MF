@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-SymbolicName: org.eclipse.wst.internet.cache.tests
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-ClassPath: tests.jar
 Bundle-Activator: org.eclipse.wst.internet.cache.tests.internal.CacheTestsPlugin
 Bundle-Localization: plugin
@@ -16,6 +16,6 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.wst.internet.cache.internal;x-internal:=true,
  org.eclipse.wst.internet.cache.tests.internal;x-internal:=true
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 
