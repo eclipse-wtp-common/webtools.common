@@ -1,15 +1,16 @@
 /******************************************************************************
- * Copyright (c) 2010, 2019 Oracle
+ * Copyright (c) 2010, 2021 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors:
- *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - initial implementation
  *    Carl Anderson - Java 9 support
  *    John Collier - Java 10-11, 13-15 support
  *    Leon Keuroglian - Java 12 support
+ *    Nitin Dahyabhai - Java 12, 16 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -44,6 +45,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_13 = FACET.getVersion( "13" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_14 = FACET.getVersion( "14" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_15 = FACET.getVersion( "15" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_16 = FACET.getVersion( "16" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;

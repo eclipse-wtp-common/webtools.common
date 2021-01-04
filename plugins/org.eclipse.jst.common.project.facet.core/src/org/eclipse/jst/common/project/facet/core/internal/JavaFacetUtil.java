@@ -1,20 +1,22 @@
 /******************************************************************************
- * Copyright (c) 2010, 2019 Oracle
+ * Copyright (c) 2010, 2021 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors:
- *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    Konstantin Komissarchik - initial implementation
  *    Carl Anderson - Java 9 support
- *    John Collier - Java 10-11, 13 support
+ *    John Collier - Java 10-11, 13-15 support
  *    Leon Keuroglian - Java 12 support
+ *    Nitin Dahyabhai - Java 12, 16 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core.internal;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -35,9 +38,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jst.common.project.facet.core.ClasspathHelper;
 import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -71,6 +72,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_13, "JavaSE-13" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_14, "JavaSE-14" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_15, "JavaSE-15" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_16, "JavaSE-16" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()
@@ -173,68 +175,44 @@ public final class JavaFacetUtil
     
         throws CoreException
         
-    {
-        if( oldver != null )
-        {
-            ClasspathHelper.removeClasspathEntries( project, oldver );
-        }
-        
-        // If this was a java project before it became a faceted project or
-        // the JRE container has been added manually, the above method will not
-        // delete the old JRE container. Do it manually.
-        
-        removeJreContainer( project );
-        
-        if( ! ClasspathHelper.addClasspathEntries( project, newver ) ) 
-        {
-            final IVMInstall vm = JavaRuntime.getDefaultVMInstall();
-            
-            if( vm != null )
-            {
-                final IPath path = CPE_PREFIX_FOR_EXEC_ENV.append( getCorrespondingExecutionEnvironment( newver ) );
-                final IClasspathEntry cpe = JavaCore.newContainerEntry( path );
-                final List<IClasspathEntry> entries = Collections.singletonList( cpe );
-                
-                ClasspathHelper.addClasspathEntries( project, newver, entries );
-            }
-        }
-    }
-    
-    private static void removeJreContainer( final IProject proj ) 
-    
-        throws CoreException
-        
-    {
-        final IJavaProject jproj = JavaCore.create( proj );
-        final IClasspathEntry[] cp = jproj.getRawClasspath();
-        
-        int pos = -1;
-        
-        for( int i = 0; i < cp.length; i++ )
-        {
-            final IClasspathEntry cpe = cp[ i ];
-            
-            if( cpe.getEntryKind() == IClasspathEntry.CPE_CONTAINER &&
-                cpe.getPath().segment( 0 ).equals( JavaRuntime.JRE_CONTAINER ) )
-            {
-                pos = i;
-                break;
-            }
-        }
-            
-        if( pos == -1 )
-        {
-            return;
-        }
-        
-        final IClasspathEntry[] newcp 
-            = new IClasspathEntry[ cp.length - 1 ];
-        
-        System.arraycopy( cp, 0, newcp, 0, pos );
-        System.arraycopy( cp, pos + 1, newcp, pos, newcp.length - pos );
-        
-        jproj.setRawClasspath( newcp, null );
-    }
+	{
+		IJavaProject javaProject = JavaCore.create(project);
+		IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
+		/*
+		 * We're only handling the "java" facet. Avoid needlessly reordering
+		 * the build path and change the container directly.
+		 */
+		boolean changed = false;
+		boolean hadJRE = false;
+		for (int i = 0; i < rawClasspath.length; i++) {
+			if (rawClasspath[i].getEntryKind() == IClasspathEntry.CPE_CONTAINER && JavaRuntime.JRE_CONTAINER.equals(rawClasspath[i].getPath().segment(0))) {
+				hadJRE = true;
+				IClasspathEntry oldEntry = rawClasspath[i];
+				IPath path = CPE_PREFIX_FOR_EXEC_ENV.append(getCorrespondingExecutionEnvironment(newver));
+				IClasspathEntry newEntry = JavaCore.newContainerEntry(path, oldEntry.getAccessRules(), oldEntry.getExtraAttributes(), oldEntry.isExported());
+				rawClasspath[i] = newEntry;
+				changed = true;
+			}
+		}
+		if (!hadJRE) {
+			boolean insertedJRE = false;
+			List<IClasspathEntry> entries = new ArrayList<>(Arrays.asList(rawClasspath));
+			for (int i = rawClasspath.length - 1; i >= 0; i++) {
+				if (rawClasspath[i].getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+					entries.add(i, JavaCore.newContainerEntry(CPE_PREFIX_FOR_EXEC_ENV.append(getCorrespondingExecutionEnvironment(newver))));
+					insertedJRE = true;
+					break;
+				}
+			}
+			if (!insertedJRE) {
+				entries.add(0, JavaCore.newContainerEntry(CPE_PREFIX_FOR_EXEC_ENV.append(getCorrespondingExecutionEnvironment(newver))));
+			}
+			rawClasspath = entries.toArray(new IClasspathEntry[entries.size()]);
+		}
+		if (changed || !hadJRE) {
+			javaProject.setRawClasspath(rawClasspath, new NullProgressMonitor());
+		}
+	}
     
     public static String getCorrespondingExecutionEnvironment( final IProjectFacetVersion fv )
     {
