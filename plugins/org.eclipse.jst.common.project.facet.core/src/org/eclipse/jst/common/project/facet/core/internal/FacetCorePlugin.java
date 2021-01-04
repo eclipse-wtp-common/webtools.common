@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2005, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -17,25 +17,25 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 
-public final class FacetCorePlugin 
+public final class FacetCorePlugin
 
     extends Plugin
 
 {
     public static final String PLUGIN_ID = "org.eclipse.jst.common.project.facet.core"; //$NON-NLS-1$
     public static final String OUTPUT_FOLDER = "outputFolder"; //$NON-NLS-1$
-    public static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$    
+    public static final String PROD_PROP_SOURCE_FOLDER_LEGACY = "defaultSource"; //$NON-NLS-1$
     private static final String PROD_PROP_SOURCE_FOLDER = "defaultJavaSourceFolder"; //$NON-NLS-1$
-    public static final String DEFAULT_SOURCE_FOLDER = "src"; //$NON-NLS-1$
+    public static final String DEFAULT_SOURCE_FOLDER = "src/main/java"; //$NON-NLS-1$
     public static final String DEFUALT_OUTPUT_FOLDER ="build/classes"; //$NON-NLS-1$
-    
+
     private static FacetCorePlugin inst;
 
     /**
      * Get the plugin singleton.
      */
-    
-    public static FacetCorePlugin getDefault() 
+
+    public static FacetCorePlugin getDefault()
     {
         return inst;
     }
