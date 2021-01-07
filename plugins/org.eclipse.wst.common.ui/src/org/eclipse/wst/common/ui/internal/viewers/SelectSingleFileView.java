@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.ui.internal.viewers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -32,6 +32,9 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -45,8 +48,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.wizards.datatransfer.FileSystemImportWizard;
@@ -62,10 +67,11 @@ public class SelectSingleFileView
   protected boolean              isFileMandatory;
   protected TreeViewer           sourceFileViewer;
   protected Button               importButton;
-  protected Vector               fFilters;
+  protected java.util.List<ViewerFilter> fFilters;
   protected IFile                selectedFile;
   protected ISelection           defaultSelection;  
   protected Listener             listener;
+  private ResourceFilter         fExtensionFilter;
   
   public static interface Listener
   {
@@ -98,38 +104,38 @@ public class SelectSingleFileView
 
     //Collapse and Expand all buttons
     ToolBar toolBar = new ToolBar(smallComposite, SWT.FLAT);
-    toolBar.setLayoutData(new GridData(GridData.END, GridData.END, true, false));
+    toolBar.setLayoutData(new GridData(SWT.END, SWT.END, true, false));
     
     ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
     ImageDescriptor imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/expandAll.gif");
-    Image image = imageDescriptor.createImage();
-    toolItem.setImage(image);
+    final Image expandAllImage = imageDescriptor.createImage();
+    toolItem.setImage(expandAllImage);
     toolItem.setToolTipText(Messages._UI_POPUP_EXPAND_ALL);
-    toolItem.addSelectionListener(new SelectionListener(){
-    	
-	public void widgetDefaultSelected(SelectionEvent e) {
-	}
-
-	public void widgetSelected(SelectionEvent e) {
-		sourceFileViewer.expandAll();
-		
-	}});
+	toolItem.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			sourceFileViewer.expandAll();
+		}
+	});
     
     
     toolItem = new ToolItem(toolBar, SWT.NONE);
     imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/collapseAll.gif");
-    image = imageDescriptor.createImage();
-    toolItem.setImage(image);
+    final Image collapseAllImage = imageDescriptor.createImage();
+    toolItem.setImage(collapseAllImage);
     toolItem.setToolTipText(Messages._UI_POPUP_COLLAPSE_ALL);
-    toolItem.addSelectionListener(new SelectionListener(){
+	toolItem.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			sourceFileViewer.collapseAll();
+		}
+	});
 
-	public void widgetDefaultSelected(SelectionEvent e) {
-	}
-
-	public void widgetSelected(SelectionEvent e) {
-		sourceFileViewer.collapseAll();
-		
-	}});
+	toolBar.addDisposeListener(new DisposeListener() {
+		@Override
+		public void widgetDisposed(DisposeEvent e) {
+			collapseAllImage.dispose();
+			expandAllImage.dispose();
+		}
+	});
 
     createSourceViewer(composite);
     createFilterControl(composite);   
@@ -150,7 +156,7 @@ public void setListener(Listener listener)
 
   protected void createSourceViewer(Composite parent)
   {
-    sourceFileViewer = new TreeViewer(new Tree(parent, SWT.SINGLE | SWT.BORDER));
+    sourceFileViewer = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true).getViewer();
     sourceFileViewer.setContentProvider(new WorkbenchContentProvider());
     sourceFileViewer.setLabelProvider(new WorkbenchLabelProvider());
     sourceFileViewer.addSelectionChangedListener(new ISelectionChangedListener() 
@@ -221,7 +227,7 @@ public void setListener(Listener listener)
         ResourcesPlugin.getWorkspace().addResourceChangeListener(importAddResourceListener);
           
         FileSystemImportWizard importWizard = new FileSystemImportWizard();
-        IWorkbench workbench = UIPlugin.getDefault().getWorkbench();
+        IWorkbench workbench = PlatformUI.getWorkbench();
         selection = (IStructuredSelection) sourceFileViewer.getSelection();
         importWizard.init(workbench, selection != null ? selection : new StructuredSelection());
         Shell shell = Display.getCurrent().getActiveShell();
@@ -249,24 +255,27 @@ public void setListener(Listener listener)
   public void setDefaultSelection(ISelection selection)
   {
     this.defaultSelection = selection;
-  } 
-
-  public void resetFilters()
-  {
-    fFilters=null;
   }
+
+	public void resetFilters() {
+		if (fFilters != null && sourceFileViewer != null) {
+			for (Iterator i = fFilters.iterator(); i.hasNext();)
+				sourceFileViewer.removeFilter((ViewerFilter) i.next());
+		}
+		fFilters = null;
+	}
 
   public void addFilter(ViewerFilter filter) 
   {
     if (fFilters == null)
     {
-      fFilters= new Vector();
+      fFilters= new ArrayList<>();
     }
     fFilters.add(filter);
   }
 
   // This is a convenience method that allows filtering of the given file
-  // exensions. It internally creates a ResourceFilter so that users of this
+  // extensions. It internally creates a ResourceFilter so that users of this
   // class don't have to construct one.
   // If the extensions provided don't have '.', one will be added.
   public void addFilterExtensions(String[] filterExtensions)
@@ -342,17 +351,14 @@ public void setListener(Listener listener)
 		correctedFilterExtensions[i] = "." + filterExtensions[i];
 	  }
 	}
-	ViewerFilter filter = new ResourceFilter(correctedFilterExtensions, null);
-    fFilters= new Vector();
-	fFilters.add(filter);
+
 	if (sourceFileViewer != null)
 	{	
 	  sourceFileViewer.getTree().setRedraw(false);
-      sourceFileViewer.resetFilters();
-      for (Iterator i=fFilters.iterator(); i.hasNext();)
-      {     
-	    sourceFileViewer.addFilter((ViewerFilter)i.next());
- 	  }
+	  if (fExtensionFilter != null)
+	    sourceFileViewer.removeFilter(fExtensionFilter);
+	  fExtensionFilter = new ResourceFilter(correctedFilterExtensions, null);
+      sourceFileViewer.addFilter(fExtensionFilter);
 	  sourceFileViewer.getTree().setRedraw(true);
 	  sourceFileViewer.getTree().redraw();
 	}	
@@ -365,9 +371,10 @@ public void setListener(Listener listener)
     {
       if (fFilters != null) 
       {
-        sourceFileViewer.resetFilters();
         for (Iterator i=fFilters.iterator(); i.hasNext();) 
-       	  sourceFileViewer.addFilter((ViewerFilter)i.next());
+         	  sourceFileViewer.removeFilter((ViewerFilter)i.next());
+        for (Iterator i=fFilters.iterator(); i.hasNext();) 
+         	  sourceFileViewer.addFilter((ViewerFilter)i.next());
       }
       sourceFileViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
       sourceFileViewer.expandToLevel(1);
@@ -392,11 +399,11 @@ public void setListener(Listener listener)
   
   class ImportAddResourceListener implements IResourceChangeListener, IResourceDeltaVisitor
   {
-	Vector importedFiles;
+	java.util.List<IFile> importedFiles;
 
 	ImportAddResourceListener()
 	{
-	  importedFiles = new Vector(); 
+	  importedFiles = new ArrayList<>(); 
 	}
   
 	public void resourceChanged(IResourceChangeEvent event)
@@ -412,9 +419,7 @@ public void setListener(Listener listener)
 	  }
 	  catch (Exception e)
 	  {
-		//TODO... log exception
-		//UIPlugin.getMsgLogger().write("Exception caught during resource change" + e);
-		//UIPlugin.getMsgLogger().writeCurrentThread(); 
+		UIPlugin.log(e);
 	  }      
 	}
 
@@ -423,7 +428,7 @@ public void setListener(Listener listener)
 	  if (delta.getKind() == IResourceDelta.ADDED)
 	  {
 		if (delta.getResource() instanceof IFile) 
-		  importedFiles.add(delta.getResource());
+		  importedFiles.add((IFile) delta.getResource());
 	  }
 	  return true;
 	}
@@ -434,12 +439,11 @@ public void setListener(Listener listener)
 	}
     
 	// This returns the first imported file in the list of imported files
-	public IFile getImportedFile()
-	{
-	  if (importedFiles.isEmpty() == false) 
-		return (IFile)importedFiles.firstElement();
-  
-	  return null;
+	public IFile getImportedFile() {
+		if (importedFiles.isEmpty() == false) {
+			return importedFiles.get(0);
+		}
+		return null;
 	}
   }  
   

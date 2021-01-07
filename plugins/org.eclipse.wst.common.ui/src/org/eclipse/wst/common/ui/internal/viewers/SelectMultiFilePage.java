@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -11,18 +11,42 @@
  *******************************************************************************/
 package org.eclipse.wst.common.ui.internal.viewers;
 
-import java.util.*;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.wizard.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.core.resources.*;
-import org.eclipse.ui.*;
-import org.eclipse.ui.model.*;
-import org.eclipse.ui.wizards.datatransfer.*;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.wizards.datatransfer.FileSystemImportWizard;
 import org.eclipse.wst.common.ui.internal.Messages;
 
 
@@ -37,7 +61,7 @@ public class SelectMultiFilePage extends WizardPage {
   Button removeAllButton;
   org.eclipse.swt.widgets.List selectedListBox;
   Button importButton;
-  private Vector fFilters;
+  private java.util.List<ViewerFilter> fFilters;
   protected IFile[] fileNames;
   IWorkspaceRoot workspaceRoot;
 
@@ -59,7 +83,6 @@ public class SelectMultiFilePage extends WizardPage {
   }
 
   public void createControl(Composite parent) {
-    
     Composite pageContent = new Composite(parent, SWT.NONE);
     GridLayout layout = new GridLayout();
     layout.numColumns = 3;
@@ -118,39 +141,52 @@ public class SelectMultiFilePage extends WizardPage {
     return true;
   }
 
-  public void setVisible(boolean visible) {
-    if (visible == true) {
-      if (fFilters != null) {
-        sourceFileViewer.resetFilters();
-        for (Iterator i = fFilters.iterator(); i.hasNext();)
-          sourceFileViewer.addFilter((ViewerFilter) i.next());
-      }
-      sourceFileViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-    }
-    super.setVisible(visible);
-  }
+	public void setVisible(boolean visible) {
+		if (visible == true) {
+			if (fFilters != null) {
+				ViewerFilter[] currentFilters = sourceFileViewer.getFilters();
+				for (Iterator i = fFilters.iterator(); i.hasNext();) {
+					ViewerFilter filter = (ViewerFilter) i.next();
+					boolean alreadySet = false;
+					for (int j = 0; j < currentFilters.length; j++) {
+						alreadySet |= currentFilters[j] == filter;
+					}
+					if (!alreadySet) {
+						sourceFileViewer.addFilter(filter);
+					}
+				}
+			}
+			sourceFileViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		}
+		super.setVisible(visible);
+	}
 
   public void setFiles(String[] fileNames) {
     int size = Arrays.asList(fileNames).size();
-    Vector iFileNames = new Vector();
+    java.util.List<IFile> iFileNames = new ArrayList<>();
     for (int i = 0; i < size; i++) {
       IResource resource = workspaceRoot.findMember(fileNames[i]);
       if (resource instanceof IFile)
-        iFileNames.addElement(resource);
+        iFileNames.add((IFile) resource);
     }
     IFile[] dummyArray = new IFile[iFileNames.size()];
     this.fileNames = (IFile[]) (iFileNames.toArray(dummyArray));
   }
 
-  public void resetFilters() {
-    fFilters = null;
-  }
+	public void resetFilters() {
+		if (fFilters != null && sourceFileViewer != null) {
+			for (Iterator<ViewerFilter> i = fFilters.iterator(); i.hasNext();)
+				sourceFileViewer.removeFilter(i.next());
+		}
+		fFilters = null;
+	}
 
-  public void addFilter(ViewerFilter filter) {
-    if (fFilters == null)
-      fFilters = new Vector();
-    fFilters.add(filter);
-  }
+	public void addFilter(ViewerFilter filter) {
+		if (fFilters == null) {
+			fFilters = new ArrayList<>();
+		}
+		fFilters.add(filter);
+	}
 
   public void setAddButtonEnabled(boolean isEnabled) {
     addButton.setEnabled(isEnabled);
@@ -185,22 +221,17 @@ public class SelectMultiFilePage extends WizardPage {
   }
 
   private void createSourceViewer(Composite parent) {
-    sourceFileViewer =
-      new TreeViewer(
-          new Tree(
-              parent,
-              SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER));
+    sourceFileViewer = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true).getViewer();
     sourceFileViewer.setContentProvider(new WorkbenchContentProvider());
     sourceFileViewer.setLabelProvider(new WorkbenchLabelProvider());
     sourceFileViewer
     .addSelectionChangedListener(new ISelectionChangedListener() {
       public void selectionChanged(SelectionChangedEvent event) {
-        java.util.List list;
         ISelection selection = event.getSelection();
         boolean newFilesSelected = false;
 
         if (selection instanceof IStructuredSelection) {
-          list = ((IStructuredSelection) selection).toList();
+          java.util.List list = ((IStructuredSelection) selection).toList();
           for (Iterator i = list.iterator(); i.hasNext();) {
             IResource resource = (IResource) i.next();
             if (resource instanceof IFile) {
