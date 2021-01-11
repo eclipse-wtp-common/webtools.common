@@ -221,11 +221,12 @@ public class SelectMultiFilePage extends WizardPage {
   }
 
   private void createSourceViewer(Composite parent) {
-    sourceFileViewer = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true).getViewer();
+    FilteredTree filteredTree = new FilteredTree(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true);
+    sourceFileViewer = filteredTree.getViewer();
+    filteredTree.getPatternFilter().setIncludeLeadingWildcard(true);
     sourceFileViewer.setContentProvider(new WorkbenchContentProvider());
     sourceFileViewer.setLabelProvider(new WorkbenchLabelProvider());
-    sourceFileViewer
-    .addSelectionChangedListener(new ISelectionChangedListener() {
+    sourceFileViewer.addSelectionChangedListener(new ISelectionChangedListener() {
       public void selectionChanged(SelectionChangedEvent event) {
         ISelection selection = event.getSelection();
         boolean newFilesSelected = false;

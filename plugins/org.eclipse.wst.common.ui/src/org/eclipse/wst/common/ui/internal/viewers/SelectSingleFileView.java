@@ -156,7 +156,9 @@ public void setListener(Listener listener)
 
   protected void createSourceViewer(Composite parent)
   {
-    sourceFileViewer = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true).getViewer();
+    FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new PatternFilter(), true, true);
+    filteredTree.getPatternFilter().setIncludeLeadingWildcard(true);
+    sourceFileViewer = filteredTree.getViewer();
     sourceFileViewer.setContentProvider(new WorkbenchContentProvider());
     sourceFileViewer.setLabelProvider(new WorkbenchLabelProvider());
     sourceFileViewer.addSelectionChangedListener(new ISelectionChangedListener() 
