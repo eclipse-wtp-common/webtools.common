@@ -29,7 +29,7 @@ public class LogUtility implements ILogListener {
 
     private void registerPlugins() {
 //      TODO DCB Disable for now due to other plugins failing.
-//        IPluginRegistry registry = Platform.getPluginRegistry();
+//        IExtensionRegistry registry = Platform.getPluginRegistry();
 //        IPluginDescriptor[] descriptors = registry.getPluginDescriptors();
 //        for (int i = 0; i < descriptors.length; i++) {
 //            try {

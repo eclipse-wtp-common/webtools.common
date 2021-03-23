@@ -1,6 +1,6 @@
-Do not include a new dependency plugin to the MANIFEST for this plugind!!!
+Do not include a new dependency plugin to the MANIFEST for this plug-in!!!
 
-The reason for this is that this plugin is also executed outside of Eclipse framework, such IBM Websphere Application Server (c) IBM. We cannot add
+The reason for this is that this plugin is also executed outside of Eclipse framework, such as in IBM Websphere Application Server (c) IBM. We cannot add
 new dependencies to the plugin because the current set is considered to be API. Adding a new set without consulting those users would break
 them.
 

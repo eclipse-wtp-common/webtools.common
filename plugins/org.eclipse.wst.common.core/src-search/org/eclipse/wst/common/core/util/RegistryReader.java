@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.wst.common.core.util;
-import org.eclipse.core.runtime.*;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.core.search.SearchPlugin;
 import org.osgi.framework.Bundle;
 
@@ -59,7 +64,7 @@ public abstract class RegistryReader {
 	 * @deprecated Use RegistryReader(plugin, extensionPoint) instead. The registry passed in is ignored.
 	 * @since 1.0.0
 	 */
-	public RegistryReader(IPluginRegistry registry, String pluginID, String extensionPoint) {
+	public RegistryReader(IExtensionRegistry registry, String pluginID, String extensionPoint) {
 		this(pluginID, extensionPoint);
 	}
 
