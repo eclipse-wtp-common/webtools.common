@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.jst.common.fproj.enablement.jdt"
       label="%featureName"
-      version="3.22.0.qualifier"
+      version="3.23.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.jst.common.project.facet.core"
       license-feature="org.eclipse.license"

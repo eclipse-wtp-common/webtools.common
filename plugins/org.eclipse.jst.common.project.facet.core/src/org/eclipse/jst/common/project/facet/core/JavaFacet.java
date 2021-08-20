@@ -10,7 +10,7 @@
  *    Carl Anderson - Java 9 support
  *    John Collier - Java 10-11, 13-15 support
  *    Leon Keuroglian - Java 12 support
- *    Nitin Dahyabhai - Java 12, 16 support
+ *    Nitin Dahyabhai - Java 12, 16, 17 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -46,6 +46,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_14 = FACET.getVersion( "14" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_15 = FACET.getVersion( "15" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_16 = FACET.getVersion( "16" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_17 = FACET.getVersion( "17" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;

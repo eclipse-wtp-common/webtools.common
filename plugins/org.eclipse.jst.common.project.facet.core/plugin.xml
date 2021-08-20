@@ -34,6 +34,7 @@
     <runtime-component-version type="standard.jre" version="14"/>
     <runtime-component-version type="standard.jre" version="15"/>
     <runtime-component-version type="standard.jre" version="16"/>
+    <runtime-component-version type="standard.jre" version="17"/>
 
     <supported>
       <facet id="java" version="1.3"/>
@@ -105,6 +106,11 @@
       <runtime-component id="standard.jre" version="[16"/>
     </supported>
 
+    <supported>
+      <facet id="java" version="17"/>
+      <runtime-component id="standard.jre" version="[17"/>
+    </supported>
+
     <adapter>
       <runtime-component id="standard.jre"/>
       <factory class="org.eclipse.jst.common.project.facet.core.internal.StandardJreClasspathProvider$Factory"/>
@@ -148,6 +154,8 @@
     <project-facet-version facet="java" version="15"/>
 
     <project-facet-version facet="java" version="16"/>
+
+    <project-facet-version facet="java" version="17"/>
 
     <action facet="java" type="install" id="java.install">
       <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>

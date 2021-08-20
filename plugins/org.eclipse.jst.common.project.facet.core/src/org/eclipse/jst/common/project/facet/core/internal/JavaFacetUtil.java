@@ -10,7 +10,7 @@
  *    Carl Anderson - Java 9 support
  *    John Collier - Java 10-11, 13-15 support
  *    Leon Keuroglian - Java 12 support
- *    Nitin Dahyabhai - Java 12, 16 support
+ *    Nitin Dahyabhai - Java 12, 16, 17 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core.internal;
@@ -73,6 +73,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_14, "JavaSE-14" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_15, "JavaSE-15" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_16, "JavaSE-16" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_17, "JavaSE-17" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()
