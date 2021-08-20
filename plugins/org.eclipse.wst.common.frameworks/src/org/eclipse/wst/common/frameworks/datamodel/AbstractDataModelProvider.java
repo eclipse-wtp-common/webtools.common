@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -34,8 +34,8 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 */
 	protected IDataModel model = null;
 
-	public Set getPropertyNames() {
-		return new HashSet();
+	public Set<String> getPropertyNames() {
+		return new HashSet<String>();
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * </p>
-	 * An implemenation of setDataModel().
+	 * An implementation of setDataModel().
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#setDataModel(IDataModel)
@@ -61,7 +61,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * An implemenation of getDataModel().
+	 * An implementation of getDataModel().
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#getDataModel()
@@ -73,7 +73,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * </p>
-	 * A default impleneation of propertySet(). Subclasses should override as necessary.
+	 * A default implementation of propertySet(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @param propertyName
@@ -89,7 +89,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getDefaultProperty(). Subclasses should override as necessary.
+	 * A default implementation of getDefaultProperty(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @param propertyName
@@ -108,7 +108,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of isPropertyEnabled(). Subclasses should override as necessary.
+	 * A default implementation of isPropertyEnabled(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @param propertyName
@@ -121,7 +121,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of validate(). Subclasses should override as necessary.
+	 * A default implementation of validate(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @param name
@@ -135,7 +135,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getPropertyDescriptor(). Subclasses should override as necessary.
+	 * A default implementation of getPropertyDescriptor(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @param propertyName
@@ -148,7 +148,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getValidPropertyDescriptors(). Subclasses should override as
+	 * A default implementation of getValidPropertyDescriptors(). Subclasses should override as
 	 * necessary.
 	 * </p>
 	 * 
@@ -162,7 +162,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getExtendedContext(). Subclasses should override as necessary.
+	 * A default implementation of getExtendedContext(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#getExtendedContext()
@@ -173,7 +173,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getDefaultOperation(). Subclasses should override as necessary.
+	 * A default implementation of getDefaultOperation(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#getDefaultOperation()
@@ -184,7 +184,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of getName(). Subclasses should override as necessary.
+	 * A default implementation of getName(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#getID()
@@ -195,7 +195,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * <p>
-	 * A default implemenation of dispose(). Subclasses should override as necessary.
+	 * A default implementation of dispose(). Subclasses should override as necessary.
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#dispose()

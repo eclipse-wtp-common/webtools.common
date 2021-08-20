@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,7 @@ import org.eclipse.core.runtime.Platform;
  */
 public class AdaptabilityUtility {
 
-
-	public static Object getAdapter(Object element, Class adapter) {
+	public static <T> T getAdapter(Object element, Class<T> adapter) {
 		if (element == null)
 			return null;
 		else if (element instanceof IAdaptable)

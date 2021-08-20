@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -36,25 +36,25 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 public class DataModelPausibleOperationImpl extends WrappedOperation implements IDataModelPausibleOperation {
 
 	// Stack of StackEntries to be executed
-	protected Stack operationStackToExecute = null;
+	protected Stack<OperationStackEntry> operationStackToExecute = null;
 
 	// Stack of StackEntries already executed
-	protected Stack undoStack = null;
-	protected Stack redoStack = null;
+	protected Stack<OperationStackEntry> undoStack = null;
+	protected Stack<OperationStackEntry> redoStack = null;
 
 	protected OperationStackEntry rootStackEntry = null;
 
-	protected List operationListeners;
+	protected List<IDataModelPausibleOperationListener> operationListeners;
 
 	protected int executionState = NOT_STARTED;
 
-	public DataModelPausibleOperationImpl(IDataModelOperation rootOperation) {
-		super(rootOperation);
+	public DataModelPausibleOperationImpl(IDataModelOperation operation) {
+		super(operation);
 	}
 
 	public void addOperationListener(IDataModelPausibleOperationListener operationListener) {
 		if (null == operationListeners) {
-			operationListeners = new ArrayList();
+			operationListeners = new ArrayList<IDataModelPausibleOperationListener>();
 		}
 		operationListeners.add(operationListener);
 	}
@@ -75,7 +75,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 	protected static final int ROLLBACK_IMPL = 3;
 	protected static final int RESUME_IMPL = 4;
 
-	private static Hashtable threadToExtendedOpControl = new Hashtable();
+	private static Hashtable<Thread, IDataModelPausibleOperation> threadToExtendedOpControl = new Hashtable<Thread, IDataModelPausibleOperation>();
 
 	protected IStatus cacheThreadAndContinue(IProgressMonitor monitor, IAdaptable info, int runType) throws ExecutionException {
 		final Thread currentThread = Thread.currentThread();
@@ -143,7 +143,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 			OperationStatus returnStatus = null;
 			int shouldContinue = IDataModelPausibleOperationListener.CONTINUE;
 			while (IDataModelPausibleOperationListener.CONTINUE == shouldContinue && !redoStack.isEmpty()) {
-				OperationStackEntry stackEntry = (OperationStackEntry) redoStack.peek();
+				OperationStackEntry stackEntry = redoStack.peek();
 				IDataModelOperation operation = stackEntry.getOperation();
 				DataModelPausibleOperationEventImpl event = new DataModelPausibleOperationEventImpl(operation, IDataModelPausibleOperationEvent.MAIN_STARTING, IDataModelPausibleOperationEvent.REDO);
 				shouldContinue = notifyOperationListeners(event);
@@ -173,7 +173,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 	}
 
 	protected IStatus undoImpl(IProgressMonitor monitor, IAdaptable info) {
-		redoStack = new Stack();
+		redoStack = new Stack<OperationStackEntry>();
 		return doUndo(monitor, info);
 	}
 
@@ -183,7 +183,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 			OperationStatus returnStatus = null;
 			int shouldContinue = IDataModelPausibleOperationListener.CONTINUE;
 			while (IDataModelPausibleOperationListener.CONTINUE == shouldContinue && !undoStack.isEmpty()) {
-				OperationStackEntry stackEntry = (OperationStackEntry) undoStack.peek();
+				OperationStackEntry stackEntry = undoStack.peek();
 				IDataModelOperation operation = stackEntry.getOperation();
 				DataModelPausibleOperationEventImpl event = new DataModelPausibleOperationEventImpl(operation, IDataModelPausibleOperationEvent.MAIN_STARTING, IDataModelPausibleOperationEvent.UNDO);
 				shouldContinue = notifyOperationListeners(event);
@@ -211,7 +211,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		try {
 			executionState = RUNNING_EXECUTE;
 			undoStack = new Stack();
-			operationStackToExecute = new Stack();
+			operationStackToExecute = new Stack<OperationStackEntry>();
 			rootStackEntry = new OperationStackEntry(null, rootOperation);
 			operationStackToExecute.push(rootStackEntry);
 			DataModelPausibleOperationEventImpl event = new DataModelPausibleOperationEventImpl(rootOperation, IDataModelPausibleOperationEvent.NODE_STARTING, IDataModelPausibleOperationEvent.EXECUTE);
@@ -229,7 +229,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 			OperationStatus returnStatus = null;
 			int shouldContinue = IDataModelPausibleOperationListener.CONTINUE;
 			while (IDataModelPausibleOperationListener.CONTINUE == shouldContinue && !operationStackToExecute.isEmpty()) {
-				OperationStackEntry stackEntry = (OperationStackEntry) operationStackToExecute.peek();
+				OperationStackEntry stackEntry = operationStackToExecute.peek();
 				OperationStackEntry preStackEntry = stackEntry.getNextPreOperation();
 				if (null != preStackEntry) {
 					operationStackToExecute.push(preStackEntry);
@@ -280,7 +280,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 				OperationStatus returnStatus = null;
 				int shouldContinue = IDataModelPausibleOperationListener.CONTINUE;
 				while (IDataModelPausibleOperationListener.CONTINUE == shouldContinue && !undoStack.isEmpty()) {
-					OperationStackEntry stackEntry = (OperationStackEntry) undoStack.peek();
+					OperationStackEntry stackEntry = undoStack.peek();
 					IDataModelOperation operation = stackEntry.getOperation();
 					DataModelPausibleOperationEventImpl event = new DataModelPausibleOperationEventImpl(operation, IDataModelPausibleOperationEvent.MAIN_STARTING, IDataModelPausibleOperationEvent.ROLLBACK);
 					shouldContinue = notifyOperationListeners(event);
@@ -294,7 +294,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 							operationStackToExecute.pop();
 						}
 					} else {
-						Stack parentStack = new Stack();
+						Stack<OperationStackEntry> parentStack = new Stack<OperationStackEntry>();
 						parentStack.push(executionTopStackEntry);
 						OperationStackEntry entry = executionTopStackEntry.parent;
 						while (!operationStackToExecute.contains(entry)) {
@@ -324,7 +324,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		if (null != operationListeners) {
 			IDataModelPausibleOperationListener listener = null;
 			for (int i = 0; i < operationListeners.size(); i++) {
-				listener = (IDataModelPausibleOperationListener) operationListeners.get(i);
+				listener = operationListeners.get(i);
 				if (IDataModelPausibleOperationListener.PAUSE == listener.notify(event)) {
 					return IDataModelPausibleOperationListener.PAUSE;
 				}
@@ -431,10 +431,10 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 
 		public OperationStackEntry parent = null;
 
-		public OperationStackEntry(OperationStackEntry parent, IDataModelOperation operation) {
-			this.parent = parent;
-			this.operation = operation;
-			this.operationForExecution = operation;
+		public OperationStackEntry(OperationStackEntry parentEntry, IDataModelOperation dataModelOperation) {
+			this.parent = parentEntry;
+			this.operation = dataModelOperation;
+			this.operationForExecution = dataModelOperation;
 		}
 
 		public OperationStackEntry rollBackOneOperation() {
@@ -586,7 +586,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		// This specific function group should not be executed
 		List extendedContext = getDataModel().getExtendedContext();
 		for (int contextCount = 0; contextCount < extendedContext.size(); contextCount++) {
-			IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
+			IProject project = AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
 			if (null != project && !IEnablementManager.INSTANCE.getIdentifier(operationID, project).isEnabled()) {
 				return false;
 			}

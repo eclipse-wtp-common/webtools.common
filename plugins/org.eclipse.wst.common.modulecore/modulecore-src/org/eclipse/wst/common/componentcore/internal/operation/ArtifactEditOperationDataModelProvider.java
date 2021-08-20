@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,7 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		super();
 	}
 
-	public Set getPropertyNames() {
+	public Set<String> getPropertyNames() {
 		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(TYPE_ID);
 		propertyNames.add(PROJECT_NAME);

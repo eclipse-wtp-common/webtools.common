@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,7 +49,7 @@ public interface IDataModelProvider extends IDataModelProperties {
 	 * 
 	 * @return the array of valid property names.
 	 */
-	public Set getPropertyNames();
+	public Set<String> getPropertyNames();
 
 	/**
 	 * <p>
