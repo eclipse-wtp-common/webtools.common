@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2021 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -89,18 +89,21 @@ public final class StandardJreClasspathProvider
 	    implements IAdapterFactory 
 	
 	{
-		private static final Class[] ADAPTER_TYPES = { IClasspathProvider.class };
+		private static final Class<?>[] ADAPTER_TYPES = { IClasspathProvider.class };
 
-		public Class[] getAdapterList() 
+		@Override
+		public Class<?>[] getAdapterList() 
 		{
             return ADAPTER_TYPES;
         }
 
-		public Object getAdapter( final Object adaptable, 
-		                          final Class adapterType ) 
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> T getAdapter( final Object adaptable, 
+		                          final Class<T> adapterType ) 
 		{
 			IRuntimeComponent rc = (IRuntimeComponent) adaptable;
-			return new StandardJreClasspathProvider(rc);
+			return (T) new StandardJreClasspathProvider(rc);
 		}
 	}
 	

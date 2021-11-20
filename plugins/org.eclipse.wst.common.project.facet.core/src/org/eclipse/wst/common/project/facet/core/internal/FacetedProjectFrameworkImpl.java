@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2021 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -950,6 +950,7 @@ public final class FacetedProjectFrameworkImpl
                 }
                 else if( action.getType() == Action.Type.INSTALL && existing != null )
                 {
+                    // this is nearly useless to the end user
                     ptype = ValidationProblem.Type.FACET_ALREADY_INSTALLED;
                 }
             }
