@@ -74,6 +74,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_15, "JavaSE-15" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_16, "JavaSE-16" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_17, "JavaSE-17" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_18, "JavaSE-18" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()

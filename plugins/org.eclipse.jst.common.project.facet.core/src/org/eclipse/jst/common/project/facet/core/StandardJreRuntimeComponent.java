@@ -48,6 +48,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_15 = TYPE.getVersion( "15" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_16 = TYPE.getVersion( "16" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_17 = TYPE.getVersion( "17" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_18 = TYPE.getVersion( "18" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -74,19 +75,23 @@ public final class StandardJreRuntimeComponent
         /* Handle null, then LTS versions, then remaining versions backwards */
         if( jvmver == null ) 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_1_8;
-        } 
+            rcv = StandardJreRuntimeComponent.VERSION_17;
+        }
         else if( jvmver.startsWith( "17" ) ) //$NON-NLS-1$
         {
-        	rcv = StandardJreRuntimeComponent.VERSION_11;
+            rcv = StandardJreRuntimeComponent.VERSION_17;
         }
         else if( jvmver.startsWith( "11" ) ) //$NON-NLS-1$
         {
-            rcv = StandardJreRuntimeComponent.VERSION_17;
+            rcv = StandardJreRuntimeComponent.VERSION_11;
         }
         else if( jvmver.startsWith( "1.8" ) ) //$NON-NLS-1$
         {
         	rcv = StandardJreRuntimeComponent.VERSION_1_8;
+        }
+        else if( jvmver.startsWith( "18" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_18;
         }
         else if( jvmver.startsWith( "16" ) ) //$NON-NLS-1$
         {

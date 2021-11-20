@@ -47,6 +47,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_15 = FACET.getVersion( "15" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_16 = FACET.getVersion( "16" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_17 = FACET.getVersion( "17" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_18 = FACET.getVersion( "18" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;
