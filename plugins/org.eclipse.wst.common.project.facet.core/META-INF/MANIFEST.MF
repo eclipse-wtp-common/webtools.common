@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.project.facet.core; singleton:=true
-Bundle-Version: 1.4.401.qualifier
+Bundle-Version: 1.4.402.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.project.facet.core,

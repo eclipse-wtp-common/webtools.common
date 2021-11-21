@@ -950,7 +950,8 @@ public final class FacetedProjectFrameworkImpl
                 }
                 else if( action.getType() == Action.Type.INSTALL && existing != null )
                 {
-                    // this is nearly useless to the end user
+                    // XXX this information is nearly useless to the end user
+					FacetCorePlugin.log(new UnsupportedOperationException("Attempting to install a second facet version for an already installed facet: " + action.getProjectFacetVersion() + "[" + existing + "]")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     ptype = ValidationProblem.Type.FACET_ALREADY_INSTALLED;
                 }
             }
