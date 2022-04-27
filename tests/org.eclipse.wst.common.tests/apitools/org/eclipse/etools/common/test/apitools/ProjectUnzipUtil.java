@@ -13,7 +13,9 @@ import java.util.zip.ZipFile;
 import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.internal.resources.ProjectDescriptionReader;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -38,9 +40,9 @@ public class ProjectUnzipUtil {
 
 	public boolean createProjects() {
 		try {
+			buildProjects();
 			expandZip();
 			ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-			buildProjects();
 		} catch (CoreException e) {
 			e.printStackTrace();
 			return false;
@@ -116,19 +118,14 @@ public class ProjectUnzipUtil {
 
 	private void buildProjects() throws IOException, CoreException {
 		for (int i = 0; i < projectNames.length; i++) {
-			ProjectDescriptionReader pd = new ProjectDescriptionReader();
-			IPath projectPath = new Path("/" + projectNames[i] + "/" + META_PROJECT_NAME);
-			IPath path = rootLocation.append(projectPath);
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IProjectDescription description = workspace.newProjectDescription(projectNames[i]);
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectNames[i]);
-			ProjectDescription description;
 			try {
-				description = pd.read(path);
 				project.create(description, (getProgessMonitor()));
 				project.open(getProgessMonitor());
-
-			} catch (IOException e) {
-				throw e;
-			} catch (CoreException e) {
+			}
+			catch (CoreException e) {
 				throw e;
 			}
 		}
