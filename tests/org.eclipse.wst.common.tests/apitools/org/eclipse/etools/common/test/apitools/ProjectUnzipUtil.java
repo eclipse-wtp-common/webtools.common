@@ -1,6 +1,5 @@
 package org.eclipse.etools.common.test.apitools;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -116,13 +115,13 @@ public class ProjectUnzipUtil {
 		this.rootLocation = rootLocation;
 	}
 
-	private void buildProjects() throws IOException, CoreException {
+	private void buildProjects() throws CoreException {
 		for (int i = 0; i < projectNames.length; i++) {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IProjectDescription description = workspace.newProjectDescription(projectNames[i]);
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectNames[i]);
 			try {
-				project.create(description, (getProgessMonitor()));
+				project.create(description, getProgessMonitor());
 				project.open(getProgessMonitor());
 			}
 			catch (CoreException e) {
