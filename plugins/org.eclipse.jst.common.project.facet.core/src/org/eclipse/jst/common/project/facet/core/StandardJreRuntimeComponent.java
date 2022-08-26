@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2021 Oracle and others
+ * Copyright (c) 2010, 2022 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_16 = TYPE.getVersion( "16" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_17 = TYPE.getVersion( "17" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_18 = TYPE.getVersion( "18" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_19 = TYPE.getVersion( "19" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -88,6 +89,10 @@ public final class StandardJreRuntimeComponent
         else if( jvmver.startsWith( "1.8" ) ) //$NON-NLS-1$
         {
         	rcv = StandardJreRuntimeComponent.VERSION_1_8;
+        }
+        else if( jvmver.startsWith( "19" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_19;
         }
         else if( jvmver.startsWith( "18" ) ) //$NON-NLS-1$
         {
