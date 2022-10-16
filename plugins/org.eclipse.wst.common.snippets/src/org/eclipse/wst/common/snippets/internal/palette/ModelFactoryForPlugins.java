@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -174,18 +174,22 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 
 		IConfigurationElement[] children = element.getChildren();
 		for (int i = 0; i < children.length; i++) {
-			if (children[i].getName().equals(SnippetsPlugin.NAMES.CONTENT))
-				setProperty(item, SnippetsPlugin.NAMES.CONTENT, children[i].getValue());
-			else if (children[i].getName().equals(SnippetsPlugin.NAMES.VARIABLES)) {
-				Iterator iterator = createVariables(children[i].getChildren()).iterator();
-				while (iterator.hasNext()) {
-					item.addVariable((ISnippetVariable) iterator.next());
-				}
-			}
-			else if (children[i].getName().equals(SnippetsPlugin.NAMES.VARIABLE)) {
-				ISnippetVariable var = createVariable(children[i]);
-				if (var != null)
-					item.addVariable(var);
+			switch (children[i].getName()) {
+				case SnippetsPlugin.NAMES.CONTENT :
+					setProperty(item, SnippetsPlugin.NAMES.CONTENT, children[i].getValue());
+					break;
+				case SnippetsPlugin.NAMES.VARIABLES :
+					Iterator iterator = createVariables(children[i].getChildren()).iterator();
+					while (iterator.hasNext()) {
+						item.addVariable((ISnippetVariable) iterator.next());
+					}
+					break;
+				case SnippetsPlugin.NAMES.VARIABLE :
+					ISnippetVariable var = createVariable(children[i]);
+					if (var != null)
+						item.addVariable(var);
+					break;
+				default:
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2012 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -83,7 +83,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		}
 
 		protected void handleExport() {
-			PaletteDrawer exportCategory = (PaletteDrawer) getSelectedPaletteEntry();
+			SnippetPaletteDrawer exportCategory = (SnippetPaletteDrawer) getSelectedPaletteEntry();
 			EXPORT_IMPORT_STRATEGY strategy = exportStrategy(exportCategory);
 
 			if (EXPORT_IMPORT_STRATEGY.ARCHIVE == strategy) {
@@ -107,7 +107,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			return EXPORT_IMPORT_STRATEGY.XML;
 		}
 
-		private void exportArchive(PaletteDrawer exportCategory) {
+		private void exportArchive(SnippetPaletteDrawer exportCategory) {
 			String filename = openFileDialog("*.zip");//$NON-NLS-1$
 			if (filename != null) {
 				ZipOutputStream outputStream = null;
@@ -167,7 +167,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			}
 		}
 
-		private void exportXML(PaletteDrawer exportCategory) {
+		private void exportXML(SnippetPaletteDrawer exportCategory) {
 			String filename = openFileDialog("*.xml");//$NON-NLS-1$
 
 			OutputStream outputStream = null;
@@ -198,7 +198,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 
 		}
 
-		private SnippetDefinitions getCategory(PaletteDrawer exportCategory, String fileName) {
+		private SnippetDefinitions getCategory(SnippetPaletteDrawer exportCategory, String fileName) {
 			SnippetDefinitions definitions = ModelFactoryForUser.getInstance().load(fileName);
 			ISnippetCategory existingCategory = definitions.getCategory(exportCategory.getId());
 

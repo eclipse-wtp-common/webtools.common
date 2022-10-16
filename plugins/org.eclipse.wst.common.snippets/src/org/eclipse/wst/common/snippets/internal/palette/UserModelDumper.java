@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -161,7 +161,7 @@ public class UserModelDumper {
 		Document document = CommonXML.getDocumentBuilder().getDOMImplementation().createDocument(null, SnippetsPlugin.NAMES.SNIPPETS, null);
 		Element root = document.getDocumentElement();
 		for (int i = 0; i < defs.getCategories().size(); i++) {
-			ISnippetCategory category = (ISnippetCategory) defs.getCategories().get(i);
+			ISnippetCategory category = defs.getCategories().get(i);
 			Element categoryElement = createCategory(document, category);
 			root.appendChild(categoryElement);
 		}

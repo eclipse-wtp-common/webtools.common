@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -30,20 +30,20 @@ public class SnippetDefinitions {
 	/**
 	 * The full list of category model objects
 	 */
-	protected List fCategories = null;
+	protected List<ISnippetCategory> fCategories = null;
 	/**
 	 * The full list of item model objects
 	 */
-	protected List fItems = null;
+	protected List<ISnippetItem> fItems = null;
 
 	/**
 	 * Gets the categories.
 	 * 
 	 * @return Returns a List
 	 */
-	public List getCategories() {
+	public List<ISnippetCategory> getCategories() {
 		if (fCategories == null)
-			fCategories = new ArrayList();
+			fCategories = new ArrayList<>();
 		return fCategories;
 	}
 
@@ -55,7 +55,7 @@ public class SnippetDefinitions {
 	 * @return the ISnippetCategory if found, null if not
 	 */
 	public ISnippetCategory getCategory(String id) {
-		Iterator iterator = getCategories().iterator();
+		Iterator<ISnippetCategory> iterator = getCategories().iterator();
 		while (iterator.hasNext()) {
 			SnippetPaletteDrawer category = (SnippetPaletteDrawer) iterator.next();
 			if (category.getId().equals(id))
@@ -71,14 +71,14 @@ public class SnippetDefinitions {
 	 * @return the ISnippetItem if found, null if not
 	 */
 	public ISnippetItem getItem(String id) {
-		Iterator iterator = getItems().iterator();
+		Iterator<ISnippetItem> iterator = getItems().iterator();
 		while (iterator.hasNext()) {
 			SnippetPaletteItem item = (SnippetPaletteItem) iterator.next();
 			if (item.getId().equals(id))
 				return item;
 		}
 		for (int i = 0; i < fCategories.size(); i++) {
-			ISnippetItem[] items = ((ISnippetCategory) fCategories.get(i)).getItems();
+			ISnippetItem[] items = fCategories.get(i).getItems();
 			for (int j = 0; j < items.length; j++) {
 				SnippetPaletteItem item = (SnippetPaletteItem) items[j];
 				if (item.getId().equals(id)) {
@@ -95,9 +95,9 @@ public class SnippetDefinitions {
 	 * 
 	 * @return a List of all the ISnippetItems loaded
 	 */
-	public List getItems() {
+	public List<ISnippetItem> getItems() {
 		if (fItems == null)
-			fItems = new ArrayList();
+			fItems = new ArrayList<>();
 		return fItems;
 	}
 
@@ -107,7 +107,7 @@ public class SnippetDefinitions {
 	 * @param categories -
 	 *            the categories to set
 	 */
-	public void setCategories(List categories) {
+	public void setCategories(List<ISnippetCategory> categories) {
 		fCategories = categories;
 	}
 
@@ -117,7 +117,7 @@ public class SnippetDefinitions {
 	 * @param items
 	 *            The items to set
 	 */
-	public void setItems(List items) {
+	public void setItems(List<ISnippetItem> items) {
 		fItems = items;
 	}
 }

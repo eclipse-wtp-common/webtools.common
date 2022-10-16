@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.core.ISnippetVariable;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
@@ -31,22 +33,22 @@ public abstract class AbstractModelFactory {
 	}
 
 	protected void connectItemsAndCategories(SnippetDefinitions definitions) {
-		Iterator iterator = definitions.getCategories().iterator();
-		while (iterator.hasNext()) {
-			SnippetPaletteDrawer category = (SnippetPaletteDrawer) iterator.next();
+		Iterator<ISnippetCategory> categories = definitions.getCategories().iterator();
+		while (categories.hasNext()) {
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) categories.next();
 			category.getChildren().clear();
 		}
 
-		iterator = definitions.getItems().iterator();
-		while (iterator.hasNext()) {
-			SnippetPaletteItem item = (SnippetPaletteItem) iterator.next();
+		Iterator<ISnippetItem> items = definitions.getItems().iterator();
+		while (items.hasNext()) {
+			SnippetPaletteItem item = (SnippetPaletteItem) items.next();
 			SnippetPaletteDrawer parentCategory = (SnippetPaletteDrawer) definitions.getCategory(item.getCategoryName());
 			if (parentCategory != null) {
 				parentCategory.add(item);
 			}
 			else {
 				Logger.log(Logger.WARNING, "Rejecting item " + item.getId() + " in missing category " + item.getCategoryName()); //$NON-NLS-1$ //$NON-NLS-2$
-				iterator.remove();
+				items.remove();
 			}
 		}
 
@@ -88,10 +90,10 @@ public abstract class AbstractModelFactory {
 		return var;
 	}
 
-	protected List createVariables(Object[] sources) {
+	protected List<ISnippetVariable> createVariables(Object[] sources) {
 		if (sources == null || sources.length < 1)
 			return null;
-		List variables = new ArrayList(sources.length);
+		List<ISnippetVariable> variables = new ArrayList<>(sources.length);
 		for (int i = 0; i < sources.length; i++) {
 			ISnippetVariable variable = createVariable(sources[i]);
 			if (variable != null)

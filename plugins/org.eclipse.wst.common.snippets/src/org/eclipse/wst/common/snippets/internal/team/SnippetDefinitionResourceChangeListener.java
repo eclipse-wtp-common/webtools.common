@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -186,7 +186,7 @@ public class SnippetDefinitionResourceChangeListener implements IResourceChangeL
 		SnippetDefinitions defs = ModelFactoryForWorkspace.getWorkspaceInstance().loadFrom(file);
 		ISnippetCategory category = null;
 		if (defs.getCategories().size() > 0) {
-			category = (ISnippetCategory) defs.getCategories().get(0);
+			category = defs.getCategories().get(0);
 		}
 		CategoryFileInfo result = new CategoryFileInfo(this, file, category);
 		if (category != null)
