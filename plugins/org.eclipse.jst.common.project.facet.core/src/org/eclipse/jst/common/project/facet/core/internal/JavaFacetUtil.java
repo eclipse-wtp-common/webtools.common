@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2022 Oracle and others
+ * Copyright (c) 2010, 2023 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -76,6 +76,7 @@ public final class JavaFacetUtil
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_17, "JavaSE-17" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_18, "JavaSE-18" ); //$NON-NLS-1$
         FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_19, "JavaSE-19" ); //$NON-NLS-1$
+        FACET_VER_TO_EXEC_ENV.put( JavaFacet.VERSION_20, "JavaSE-20" ); //$NON-NLS-1$
     }
     
     public static String getCompilerLevel()

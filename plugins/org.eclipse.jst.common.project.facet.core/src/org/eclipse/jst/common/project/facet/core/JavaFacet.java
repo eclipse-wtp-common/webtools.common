@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2022 Oracle and others
+ * Copyright (c) 2010, 2023 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ public final class JavaFacet
     public static final IProjectFacetVersion VERSION_17 = FACET.getVersion( "17" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_18 = FACET.getVersion( "18" ); //$NON-NLS-1$
     public static final IProjectFacetVersion VERSION_19 = FACET.getVersion( "19" ); //$NON-NLS-1$
+    public static final IProjectFacetVersion VERSION_20 = FACET.getVersion( "20" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IProjectFacetVersion JAVA_13 = VERSION_1_3;
