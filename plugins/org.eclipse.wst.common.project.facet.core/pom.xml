@@ -21,6 +21,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.project.facet.core</artifactId>
-  <version>1.4.402-SNAPSHOT</version>
+  <version>1.4.403-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
