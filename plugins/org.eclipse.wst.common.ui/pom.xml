@@ -21,6 +21,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.ui</artifactId>
-  <version>1.2.400-SNAPSHOT</version>
+  <version>1.2.401-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
