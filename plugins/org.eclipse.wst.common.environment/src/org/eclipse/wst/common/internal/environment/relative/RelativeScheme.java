@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#isHierarchical()
    */
-  public boolean isHierarchical()
+  @Override
+public boolean isHierarchical()
   {
     return true;
   }
@@ -38,7 +39,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#isValid(org.eclipse.env.uri.URI)
    */
-  public boolean isValid(IURI uri)
+  @Override
+public boolean isValid(IURI uri)
   {
     return !uri.toString().startsWith( "/" ); //$NON-NLS-1$
   }
@@ -46,7 +48,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.lang.String)
    */
-  public IURI newURI(String uri) throws URIException
+  @Override
+public IURI newURI(String uri) throws URIException
   {
     return new RelativeURI( uri );
   }
@@ -54,7 +57,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(org.eclipse.env.uri.URI)
    */
-  public IURI newURI(IURI uri) throws URIException
+  @Override
+public IURI newURI(IURI uri) throws URIException
   {
     return new RelativeURI( uri.toString() );
   }
@@ -62,7 +66,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.net.URL)
    */
-  public IURI newURI(URL url) throws URIException
+  @Override
+public IURI newURI(URL url) throws URIException
   {
     return new RelativeURI( url.toString() );
   }
@@ -70,7 +75,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#validate(org.eclipse.env.uri.URI)
    */
-  public IStatus validate(IURI uri)
+  @Override
+public IStatus validate(IURI uri)
   {
     IStatus result = null;
     

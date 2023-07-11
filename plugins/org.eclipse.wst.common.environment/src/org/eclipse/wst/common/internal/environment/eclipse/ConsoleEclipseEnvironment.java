@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -44,6 +44,7 @@ public class ConsoleEclipseEnvironment implements IEnvironment
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.environment.IEnvironment#getLog()
 	 */
+	@Override
 	public ILog getLog() 
 	{
 		return new EclipseLog();
@@ -52,6 +53,7 @@ public class ConsoleEclipseEnvironment implements IEnvironment
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.environment.IEnvironment#getStatusHandler()
 	 */
+	@Override
 	public IStatusHandler getStatusHandler() 
 	{
 		return statusHandler_;
@@ -60,6 +62,7 @@ public class ConsoleEclipseEnvironment implements IEnvironment
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.environment.IEnvironment#getURIFactory()
 	 */
+	@Override
 	public IURIFactory getURIFactory() 
 	{
 		return uriFactory_;

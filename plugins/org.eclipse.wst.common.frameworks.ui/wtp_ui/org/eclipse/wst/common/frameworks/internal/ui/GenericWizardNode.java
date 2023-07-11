@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2002, 2005 IBM Corporation and others.
+ * Copyright (c) 2002, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ public abstract class GenericWizardNode implements IWizardNode {
 	/*
 	 * @see IWizardNode#dispose()
 	 */
+	@Override
 	public void dispose() {
 		if (wizard != null)
 			wizard.dispose();
@@ -45,6 +46,7 @@ public abstract class GenericWizardNode implements IWizardNode {
 		return null;
 	}
 
+	@Override
 	public final IWizard getWizard() {
 		if (wizard == null)
 			wizard = createWizard();
@@ -59,6 +61,7 @@ public abstract class GenericWizardNode implements IWizardNode {
 	/*
 	 * @see IWizardNode#isContentCreated()
 	 */
+	@Override
 	public boolean isContentCreated() {
 		return wizard != null;
 	}
@@ -66,6 +69,7 @@ public abstract class GenericWizardNode implements IWizardNode {
 	/**
 	 * @see org.eclipse.jface.wizard.IWizardNode#getExtent()
 	 */
+	@Override
 	public Point getExtent() {
 		return null;
 	}

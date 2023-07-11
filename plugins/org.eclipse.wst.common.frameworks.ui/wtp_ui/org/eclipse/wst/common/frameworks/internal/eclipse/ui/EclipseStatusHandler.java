@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * Copyright (c) 2001, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -40,7 +40,8 @@ public class EclipseStatusHandler implements IStatusHandler
   /**
    * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status, org.eclipse.env.common.Choice[])
    */
-  public Choice report(IStatus status, Choice[] choices) 
+  @Override
+public Choice report(IStatus status, Choice[] choices) 
   {
     int result =
     MessageDialog.openMessage(
@@ -61,7 +62,8 @@ public class EclipseStatusHandler implements IStatusHandler
   /**
    * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status)
    */
-  public void report(IStatus status) throws StatusException
+  @Override
+public void report(IStatus status) throws StatusException
   {
     boolean userOk = false;
     
@@ -114,7 +116,8 @@ public class EclipseStatusHandler implements IStatusHandler
   /**
    * @see org.eclipse.wst.common.environment.IStatusHandler#reportError(org.eclipse.core.runtime.IStatus)
    */
-  public void reportError(IStatus status)
+  @Override
+public void reportError(IStatus status)
   {
     reportErrorStatus( status );
   }
@@ -122,7 +125,8 @@ public class EclipseStatusHandler implements IStatusHandler
   /**
    * @see org.eclipse.wst.common.environment.IStatusHandler#reportInfo(org.eclipse.core.runtime.IStatus)
    */
-  public void reportInfo(IStatus status)
+  @Override
+public void reportInfo(IStatus status)
   {
     MessageDialog.openMessage(
         shell_,

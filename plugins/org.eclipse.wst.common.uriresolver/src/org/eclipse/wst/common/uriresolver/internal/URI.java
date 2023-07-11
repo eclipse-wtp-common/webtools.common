@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -42,7 +42,7 @@ import java.util.Set;
  * <p>In the <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC</a>, much
  * attention is focused on a hierarchical naming system used widely to
  * locate resources via common protocols such as HTTP, FTP, and Gopher, and
- * to identify files on a local file system.  Acordingly, most of this
+ * to identify files on a local file system.  Accordingly, most of this
  * class's functionality is for handling such URIs, which can be identified
  * via {@link #isHierarchical isHierarchical}.
  *
@@ -1453,7 +1453,7 @@ public final class URI
    */
   public String[] segments()
   {
-    return (String[])segments.clone();
+    return segments.clone();
   }
 
   /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -61,6 +61,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	protected boolean ignoreModifyEvent = false;
 
 	private class ModifyTextListener implements ModifyListener {
+		@Override
 		public void modifyText(ModifyEvent e) {
 			if (ignoreModifyEvent)
 				return;
@@ -77,6 +78,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 
 	private class ComboListener implements SelectionListener, ModifyListener {
 
+		@Override
 		public void modifyText(ModifyEvent e) {
 			if (ignoreModifyEvent)
 				return;
@@ -107,6 +109,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 			}
 		}
 
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Combo combo = (Combo) e.getSource();
 			if (currentWidget == combo)
@@ -125,6 +128,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 			}
 		}
 
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	}
@@ -132,6 +136,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private ComboListener comboListener;
 
 	private class CheckboxSelectionListener implements SelectionListener {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Button button = (Button) e.getSource();
 			if (currentWidget == button)
@@ -140,6 +145,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 			setProperty(propertyName, new Boolean(button.getSelection()));
 		}
 
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	}
@@ -154,6 +160,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private CheckBoxViewerListener checkBoxViewerStateListener;
 
 	private class CheckBoxViewerListener implements ICheckStateListener {
+		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			StructuredViewer viewer = (StructuredViewer) event.getSource();
 			CheckboxTableViewer checkBoxTableViewer;
@@ -171,6 +178,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 		}
 	}
 
+	@Override
 	public void propertyChanged(DataModelEvent event) {
 		String propertyName = event.getPropertyName();
 		int flag = event.getFlag();
@@ -210,6 +218,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 				doSynchUIWithModel(propertyName, flag);
 			} else {
 				Display.getDefault().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						doSynchUIWithModel(propertyName, flag);
 					}
@@ -270,6 +279,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private void setEnablement(final String propertyName, final boolean enabled) {
 		if (propertyToWidgetHash != null) {
 			Display.getDefault().syncExec(new Runnable() {
+				@Override
 				public void run() {
 					Control control = (Control) propertyToWidgetHash.get(propertyName);
 					if (control != null) {
@@ -535,6 +545,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private TimedModifyListener getTimedListener() {
 		if (timedModifyListener == null)
 			timedModifyListener = new TimedModifyListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					Widget w = (Widget) e.getSource();
 					if (currentWidget == w || w.isDisposed())

@@ -1,8 +1,8 @@
-#Tue Feb 21 10:09:19 EST 2006
 eclipse.preferences.version=1
 formatter_profile=_jve
 formatter_settings_version=10
 org.eclipse.jdt.ui.ignorelowercasenames=true
 org.eclipse.jdt.ui.importorder=java;javax;org;org.eclipse.wtp;org.eclipse.jem;org.eclipse.ve.internal.cdm;org.eclipse.ve.internal.cde;org.eclipse.ve.internal.jcm;org.eclipse.ve.internal.java;org.eclipse.ve;com;
-org.eclipse.jdt.ui.ondemandthreshold=3
-org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8"?><templates/>
+org.eclipse.jdt.ui.ondemandthreshold=99
+org.eclipse.jdt.ui.staticondemandthreshold=99
+org.eclipse.jdt.ui.text.custom_code_templates=

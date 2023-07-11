@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -115,6 +115,7 @@ public class DMWizardPageGroupElement extends AbstractRegistryDescriptor impleme
 		return wizardPageFactoryElement == null ? null : wizardPageFactoryElement.createPageGroupHandler(dataModel);
 	}
 
+	@Override
 	public int compareTo(Object o) {
 		return IdentifiableComparator.getInstance().compare(this, o);
 		/*
@@ -169,6 +170,7 @@ public class DMWizardPageGroupElement extends AbstractRegistryDescriptor impleme
 	/**
 	 * @return
 	 */
+	@Override
 	public int getLoadOrder() {
 		return loadOrder;
 	}

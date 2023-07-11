@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,7 @@ import java.util.Comparator;
 public class AscendingGroupComparator implements Comparator {
 	private static AscendingGroupComparator singleton;
 
+	@Override
 	public int compare(Object o1, Object o2) {
 		FunctionGroup group1 = (FunctionGroup) o1;
 		FunctionGroup group2 = (FunctionGroup) o2;

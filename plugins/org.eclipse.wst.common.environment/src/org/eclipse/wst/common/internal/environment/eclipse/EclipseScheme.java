@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -40,14 +40,16 @@ public String toString()
   
   /**
    */
-  public boolean isHierarchical()
+  @Override
+public boolean isHierarchical()
   {
     return true;
   }
 
   /**
    */
-  public boolean isValid(IURI uri)
+  @Override
+public boolean isValid(IURI uri)
   {
     boolean result = true;
     
@@ -71,7 +73,8 @@ public String toString()
 
   /**
    */
-  public IURI newURI(String uri) throws URIException
+  @Override
+public IURI newURI(String uri) throws URIException
   {
     String newURI = null;
     
@@ -103,21 +106,24 @@ public String toString()
 
   /**
    */
-  public IURI newURI(IURI uri) throws URIException
+  @Override
+public IURI newURI(IURI uri) throws URIException
   {
     return newURI( uri == null ? null : uri.toString() );
   }
 
   /**
    */
-  public IURI newURI(URL url) throws URIException
+  @Override
+public IURI newURI(URL url) throws URIException
   {
     return newURI( url == null ? null : url.toString() );
   }
 
   /**
    */
-  public IStatus validate(IURI uri)
+  @Override
+public IStatus validate(IURI uri)
   {
     IStatus status = null;
     

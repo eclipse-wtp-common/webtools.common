@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -103,6 +103,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 		allFactories = new HashSet();
 	}
 
+	@Override
 	public boolean isFactoryForType(Object type) {
 		return getFactoryForType(type) != null;
 	}
@@ -311,6 +312,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 		allFactories.add(adapterFactory);
 	}
 
+	@Override
 	public Object adapt(Object target, Object type) {
 		Object adapter = target;
 		if (target instanceof Notifier) {
@@ -324,6 +326,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 		return null;
 	}
 
+	@Override
 	public Adapter adapt(Notifier target, Object type) {
 		Adapter result = null;
 
@@ -435,6 +438,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 		return result;
 	}
 
+	@Override
 	public Adapter adaptNew(Notifier target, Object type) {
 
 		AdapterFactory factory = getFactoryForType(target);
@@ -444,6 +448,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 		return null;
 	}
 
+	@Override
 	public void adaptAllNew(Notifier target) {
 
 		AdapterFactory factory = getFactoryForType(target);
@@ -453,20 +458,24 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 
 	}
 
+	@Override
 	public void addListener(INotifyChangedListener notifyChangedListener) {
 		changeNotifier.add(notifyChangedListener);
 	}
 
+	@Override
 	public void removeListener(INotifyChangedListener notifyChangedListener) {
 		changeNotifier.remove(notifyChangedListener);
 	}
 
+	@Override
 	public void fireNotifyChanged(Notification notification) {
 		if (changeNotifier == null || changeNotifier.isEmpty() || changeNotifier.get(0) == null)
 			return;
 		changeNotifier.fireNotifyChanged(notification);
 	}
 
+	@Override
 	public void dispose() {
 		Iterator iter = allFactories.iterator();
 		Object factory = null;
@@ -492,6 +501,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 	 * 
 	 * @see org.eclipse.emf.edit.provider.INotifyChangedListener#notifyChanged(org.eclipse.emf.common.notify.Notification)
 	 */
+	@Override
 	public void notifyChanged(Notification notification) {
 		//Foward the notification on to all my listeners
 		fireNotifyChanged(notification);
@@ -603,6 +613,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener#identifierChanged(org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent)
 	 */
+	@Override
 	public void identifierChanged(EnablementIdentifierEvent identifierEvent) {
 		if (identifierEvent.hasEnabledChanged() || identifierEvent.hasFunctionGroupIdsChanged()) {
 			Object project = ((EnablementIdentifier) identifierEvent.getIdentifier()).getProject();

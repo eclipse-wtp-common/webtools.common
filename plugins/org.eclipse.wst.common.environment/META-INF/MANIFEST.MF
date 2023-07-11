@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: org.eclipse.wst.common.environment
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.environment
-Bundle-Version: 1.0.401.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.wst.common.internal.environment.plugin.EnvironmentPlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.environment,
@@ -15,5 +16,6 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.osgi.util;bundle-version="[3.1.300,4.0.0)"
 Bundle-Vendor: %providerName
-Eclipse-LazyStart: true 
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -80,6 +80,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#setID(String)
 	 */
+	@Override
 	public void setID(String id) {
 		this.id = id;
 	}
@@ -91,6 +92,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#getID()
 	 */
+	@Override
 	public String getID() {
 		return id;
 	}
@@ -102,6 +104,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#setDataModel(IDataModel)
 	 */
+	@Override
 	public void setDataModel(IDataModel model) {
 		this.model = model;
 	}
@@ -113,6 +116,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#getDataModel()
 	 */
+	@Override
 	public IDataModel getDataModel() {
 		return model;
 	}
@@ -125,6 +129,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#getSchedulingRule()
 	 */
+	@Override
 	public ISchedulingRule getSchedulingRule() {
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
@@ -137,6 +142,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @see IDataModelOperation#getOperationExecutionFlags()
 	 */
+	@Override
 	public int getOperationExecutionFlags() {
 		return IWorkspace.AVOID_UPDATE;
 	}
@@ -152,6 +158,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 *            the environment.
 	 * 
 	 */
+	@Override
 	public final void setEnvironment(IEnvironment env) {
 		environment = env;
 	}
@@ -164,6 +171,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * 
 	 * @return returns an environment.
 	 */
+	@Override
 	public final IEnvironment getEnvironment() {
 		return environment;
 	}

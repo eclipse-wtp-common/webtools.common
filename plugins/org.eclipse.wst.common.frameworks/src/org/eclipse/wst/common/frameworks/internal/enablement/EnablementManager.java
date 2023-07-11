@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -58,7 +58,8 @@ public class EnablementManager implements IEnablementManager {
 		return aMap;
 	}
 
-    public IEnablementIdentifier getIdentifier(String identifierId, IProject project) {
+    @Override
+	public IEnablementIdentifier getIdentifier(String identifierId, IProject project) {
         if (identifierId == null){
         	throw new NullPointerException();
         }
@@ -123,6 +124,7 @@ public class EnablementManager implements IEnablementManager {
 	 *             if exceptions were caught notifying any of the listeners. Check the status of the
 	 *             core exception for the nested exceptions.
 	 */
+	@Override
 	public final void notifyFunctionGroupChanged(String groupID, IProject project) throws CoreException {
 
 		Map identifiers = getIdentifiersById(project);
@@ -168,6 +170,7 @@ public class EnablementManager implements IEnablementManager {
 	 * @param enablementIdentifiers
 	 * @param listener
 	 */
+	@Override
 	public void removeEnablementIdentifierListener(Collection enablementIdentifiers, IEnablementIdentifierListener listener) {
 		Iterator iter = enablementIdentifiers.iterator();
 		while (iter.hasNext()) {

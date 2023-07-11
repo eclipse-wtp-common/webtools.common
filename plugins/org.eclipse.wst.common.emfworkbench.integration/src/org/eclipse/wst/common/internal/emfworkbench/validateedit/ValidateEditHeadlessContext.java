@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#validateState()
 	 */
+	@Override
 	public IStatus validateState() {
 		// For now do nothing in headless state
 		return Status.OK_STATUS;
@@ -44,6 +45,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#getValidateEditContext()
 	 */
+	@Override
 	public Object getValidateEditContext() {
 		return null;
 	}
@@ -53,6 +55,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#promptForInconsistentFileOverwrite(java.util.List)
 	 */
+	@Override
 	public boolean promptForInconsistentFileOverwrite(List inconsistentFiles) {
 		return false;
 	}
@@ -62,6 +65,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter#promptForInconsistentFileRefresh(java.util.List)
 	 */
+	@Override
 	public boolean promptForInconsistentFileRefresh(List inconsistentFiles) {
 		return false;
 	}
@@ -78,6 +82,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#setEditModel(org.eclipse.wst.common.internal.emfworkbench.integration.EditModel)
 	 */
+	@Override
 	public void setEditModel(EditModel fValidator) {
 		this.fValidator = fValidator;
 	}
@@ -87,6 +92,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#validateState(org.eclipse.wst.common.internal.emfworkbench.integration.EditModel)
 	 */
+	@Override
 	public IStatus validateState(EditModel editModel) {
 		setEditModel(editModel);
 		return validateState();

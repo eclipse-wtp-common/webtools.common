@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2015 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -171,6 +171,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew{
 		class LocationListener implements ModifyListener, IDataModelListener {
 			private boolean typing = false;
 
+			@Override
 			public void modifyText(ModifyEvent e) {
 				if (!localModel.getBooleanProperty(USE_DEFAULT_LOCATION)) {
 					try {
@@ -182,6 +183,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew{
 				}
 			}
 
+			@Override
 			public void propertyChanged(DataModelEvent event) {
 				boolean useDefault = localModel.getBooleanProperty(USE_DEFAULT_LOCATION);
 				if (USE_DEFAULT_LOCATION.equals(event.getPropertyName())) {

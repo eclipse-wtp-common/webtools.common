@@ -21,7 +21,7 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.project.facet.core.tests</artifactId>
-  <version>1.4.200-SNAPSHOT</version>
+  <version>1.5.0-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <properties>

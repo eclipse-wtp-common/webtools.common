@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -74,6 +74,7 @@ public class PageGroupManager {
 		this.operationsRun = new HashSet();
 
 		rootOperation.addOperationListener(new IDataModelPausibleOperationListener() {
+			@Override
 			public int notify(IDataModelPausibleOperationEvent event) {
 				switch (event.getExecutionType()) {
 					case IDataModelPausibleOperationEvent.ROLLBACK :

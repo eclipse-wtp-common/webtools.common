@@ -1,5 +1,5 @@
 /***************************************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * Copyright (c) 2003, 2019 IBM Corporation and others. All rights reserved. This program and the
  * accompanying materials are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
@@ -39,6 +39,7 @@ public class SimplePageGroup implements AddablePageGroup {
 		this(groupID, wizardID, true, null);
 	}
 
+	@Override
 	public void addPage(IWizardPage page) {
 		pages.add(page);
 	}
@@ -49,6 +50,7 @@ public class SimplePageGroup implements AddablePageGroup {
 		}
 	}
 
+	@Override
 	public boolean getAllowsExtendedPages() {
 		return allowExtendedPages;
 	}
@@ -57,6 +59,7 @@ public class SimplePageGroup implements AddablePageGroup {
 		pageGroupHandler = handler;
 	}
 
+	@Override
 	public IDMPageGroupHandler getPageGroupHandler(IDataModel dataModel) {
 		return pageGroupHandler;
 	}
@@ -65,10 +68,12 @@ public class SimplePageGroup implements AddablePageGroup {
 		pageHandler = handler;
 	}
 
+	@Override
 	public IDMPageHandler getPageHandler(IDataModel dataModel) {
 		return pageHandler;
 	}
 
+	@Override
 	public List getPages(IDataModel dataModel) {
 		return pages;
 	}
@@ -77,18 +82,22 @@ public class SimplePageGroup implements AddablePageGroup {
 		return (IWizardPage[]) pages.toArray(new IWizardPage[0]);
 	}
 
+	@Override
 	public String getPageGroupID() {
 		return groupID;
 	}
 
+	@Override
 	public String getPageGroupInsertionID() {
 		return null;
 	}
 
+	@Override
 	public String getRequiredDataOperationToRun() {
 		return requiredDataOperation;
 	}
 
+	@Override
 	public String getWizardID() {
 		return wizardID;
 	}

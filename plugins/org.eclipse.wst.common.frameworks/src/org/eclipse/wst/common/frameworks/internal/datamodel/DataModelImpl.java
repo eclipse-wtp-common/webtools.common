@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -71,26 +71,32 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		dataModelProvider.init();
 	}
 
+	@Override
 	public boolean isBaseProperty(String propertyName) {
 		return basePropertyNames.contains(propertyName);
 	}
 
+	@Override
 	public Collection getBaseProperties() {
 		return Collections.unmodifiableCollection(basePropertyNames);
 	}
 
+	@Override
 	public boolean isProperty(String propertyName) {
 		return allPropertyNames.contains(propertyName);
 	}
 
+	@Override
 	public Collection getAllProperties() {
 		return Collections.unmodifiableCollection(allPropertyNames);
 	}
 
+	@Override
 	public boolean isNestedProperty(String propertyName) {
 		return null != nestedPropertyNames && nestedPropertyNames.contains(propertyName);
 	}
 
+	@Override
 	public Collection getNestedProperties() {
 		return Collections.unmodifiableCollection(nestedPropertyNames);
 	}
@@ -122,6 +128,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 	}
 
+	@Override
 	public Object getProperty(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		if (dataModel.propertyValues.containsKey(propertyName)) {
@@ -130,11 +137,13 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return dataModel.provider.getDefaultProperty(propertyName);
 	}
 
+	@Override
 	public Object getDefaultProperty(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		return dataModel.provider.getDefaultProperty(propertyName);
 	}
 
+	@Override
 	public int getIntProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
 		if (prop == null)
@@ -142,6 +151,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return ((Integer) prop).intValue();
 	}
 
+	@Override
 	public boolean getBooleanProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
 		if (prop == null)
@@ -149,6 +159,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return ((Boolean) prop).booleanValue();
 	}
 
+	@Override
 	public String getStringProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
 		if (prop == null)
@@ -156,17 +167,20 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return (String) prop;
 	}
 
+	@Override
 	public boolean isPropertySet(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		return dataModel.propertyValues.containsKey(propertyName);
 	}
 
+	@Override
 	public boolean isPropertyEnabled(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		return dataModel.provider.isPropertyEnabled(propertyName);
 	}
 
 
+	@Override
 	public void setProperty(String propertyName, Object propertyValue) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		dataModel.internalSetProperty(propertyName, propertyValue);
@@ -189,18 +203,22 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return o1 != o2 && ((o1 != null && !o1.equals(o2)) || !o2.equals(o1));
 	}
 
+	@Override
 	public void setIntProperty(String propertyName, int value) {
 		setProperty(propertyName, new Integer(value));
 	}
 
+	@Override
 	public void setBooleanProperty(String propertyName, boolean value) {
 		setProperty(propertyName, (value) ? Boolean.TRUE : Boolean.FALSE);
 	}
 
+	@Override
 	public void setStringProperty(String propertyName, String value) {
 		setProperty(propertyName, value);
 	}
 
+	@Override
 	public boolean addNestedModel(String modelName, IDataModel dataModel) {
 		if (this == dataModel) {
 			return false;
@@ -237,18 +255,22 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
+	@Override
 	public Collection getNestedModels() {
 		return nestedModels != null ? Collections.unmodifiableCollection(nestedModels.values()) : Collections.EMPTY_SET;
 	}
 
+	@Override
 	public Collection getNestedModelNames() {
 		return nestedModels != null ? Collections.unmodifiableCollection(nestedModels.keySet()) : Collections.EMPTY_SET;
 	}
 
+	@Override
 	public Collection getNestingModels() {
 		return nestingModels != null ? Collections.unmodifiableCollection(nestingModels) : Collections.EMPTY_SET;
 	}
 
+	@Override
 	public IDataModel removeNestedModel(String modelName) {
 		if (!isNestedModel(modelName)) {
 			return null;
@@ -303,10 +325,12 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
+	@Override
 	public boolean isNestedModel(String modelName) {
 		return modelName != null && null != nestedModels && nestedModels.containsKey(modelName);
 	}
 
+	@Override
 	public IDataModel getNestedModel(String modelName) {
 		IDataModel dataModel = (null != nestedModels && null != modelName) ? (IDataModel) nestedModels.get(modelName) : null;
 		if (null == dataModel) {
@@ -315,18 +339,21 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return dataModel;
 	}
 
+	@Override
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		DataModelPropertyDescriptor[] descriptors = dataModel.provider.getValidPropertyDescriptors(propertyName);
 		return descriptors == null ? NO_DESCRIPTORS : descriptors;
 	}
 
+	@Override
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		DataModelPropertyDescriptor descriptor = dataModel.provider.getPropertyDescriptor(propertyName);
 		return descriptor == null ? new DataModelPropertyDescriptor(getProperty(propertyName)) : descriptor;
 	}
 
+	@Override
 	public void notifyPropertyChange(final String propertyName, final int flag) {
 		int innerFlag = flag;
 		if (innerFlag == DEFAULT_CHG) {
@@ -350,14 +377,17 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
+	@Override
 	public void propertyChanged(DataModelEvent event) {
 		notifyListeners(event);
 	}
 
+	@Override
 	public IStatus validate() {
 		return validate(true);
 	}
 
+	@Override
 	public IStatus validate(boolean stopOnFirstFailure) {
 		IStatus status = null;
 		IStatus propStatus;
@@ -399,6 +429,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return status;
 	}
 
+	@Override
 	public void addListener(IDataModelListener listener) {
 		if (listener != null) {
 			if (listeners == null) {
@@ -409,6 +440,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
+	@Override
 	public void removeListener(IDataModelListener listener) {
 		if (listeners != null && listener != null)
 			listeners.remove(listener);
@@ -419,25 +451,30 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	 * 
 	 * @return boolean
 	 */
+	@Override
 	public boolean isValid() {
 		return validate(true).getSeverity() != IStatus.ERROR;
 	}
 
+	@Override
 	public boolean isPropertyValid(String propertyName) {
 		return validateProperty(propertyName).getSeverity() != IStatus.ERROR;
 	}
 
+	@Override
 	public IStatus validateProperty(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		IStatus status = dataModel.provider.validate(propertyName);
 		return status == null ? IDataModelProvider.OK_STATUS : status;
 	}
 
+	@Override
 	public List getExtendedContext() {
 		List extendedContext = provider.getExtendedContext();
 		return extendedContext == null ? Collections.EMPTY_LIST : extendedContext;
 	}
 
+	@Override
 	public void dispose() {
 		provider.dispose();
 	}
@@ -455,6 +492,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return providerOp;
 	}
 
+	@Override
 	public IDataModelOperation getDefaultOperation() {
 		return new DataModelPausibleOperationImpl(getRawOperation());
 	}
@@ -464,6 +502,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return "IDataModel, provider=" + provider.toString(); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getID() {
 		String id = provider.getID();
 		return null != id ? id : ""; //$NON-NLS-1$

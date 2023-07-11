@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2012 IBM Corporation and others.
+ * Copyright (c) 2001, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -96,6 +96,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * @param parent
 	 *            the parent composite
 	 */
+	@Override
 	public final void createControl(Composite parent) {
 		Composite top = createTopLevelComposite(parent);
 		addExtendedControls(top);
@@ -251,6 +252,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * @param event
 	 *            the event which occurred
 	 */
+	@Override
 	public void handleEvent(org.eclipse.swt.widgets.Event event) {
 	}
 
@@ -436,13 +438,15 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * @see org.eclipse.wst.common.frameworks.internal.operation.WTPOperationDataModelListener#propertyChanged(java.lang.String,
 	 *      java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public void propertyChanged(final DataModelEvent event) {
 		DataModelWizard w = getDataModelWizard();
 		if(w == null || !w.isExecuting())
 		{
 		    final Runnable uiChanges = new Runnable()
 		    {
-		        public void run()
+		        @Override
+				public void run()
 		        {
         			String propertyName = event.getPropertyName();
         			if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {

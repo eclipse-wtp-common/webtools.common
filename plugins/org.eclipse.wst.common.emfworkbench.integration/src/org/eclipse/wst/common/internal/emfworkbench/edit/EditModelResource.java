@@ -1,5 +1,5 @@
 /***************************************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * Copyright (c) 2003, 2019 IBM Corporation and others. All rights reserved. This program and the
  * accompanying materials are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
@@ -99,6 +99,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@Override
 	public int compareTo(Object o) {
 		if (!(o instanceof EditModelResource))
 			return 1;
@@ -112,6 +113,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	/**
 	 * @return Returns the loadOrder.
 	 */
+	@Override
 	public int getLoadOrder() {
 		return loadOrder;
 	}

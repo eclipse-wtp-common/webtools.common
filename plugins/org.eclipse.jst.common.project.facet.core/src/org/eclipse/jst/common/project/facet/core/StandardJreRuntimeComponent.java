@@ -51,6 +51,7 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_18 = TYPE.getVersion( "18" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_19 = TYPE.getVersion( "19" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_20 = TYPE.getVersion( "20" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_21 = TYPE.getVersion( "21" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -75,9 +76,13 @@ public final class StandardJreRuntimeComponent
         
 
         /* Handle null, then LTS versions, then remaining versions backwards */
-        if( jvmver == null ) 
+        if ( jvmver == null ) 
         {
-            rcv = StandardJreRuntimeComponent.VERSION_17;
+            rcv = StandardJreRuntimeComponent.VERSION_21;
+        }
+        else if ( jvmver.startsWith( "21" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_21;
         }
         else if( jvmver.startsWith( "17" ) ) //$NON-NLS-1$
         {
@@ -153,7 +158,7 @@ public final class StandardJreRuntimeComponent
         }
         else
         { // Unrecognizable, so use the Eclipse Platform minimum
-            rcv = StandardJreRuntimeComponent.VERSION_11;
+            rcv = StandardJreRuntimeComponent.VERSION_17;
         }
         
         final Map<String,String> properties = new HashMap<String,String>();

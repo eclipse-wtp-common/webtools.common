@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * Copyright (c) 2001, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -61,6 +61,7 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	 * @param e
 	 *            an event containing information about the key press
 	 */
+	@Override
 	public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
 	}
 
@@ -70,6 +71,7 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	 * @param e
 	 *            an event containing information about the key release
 	 */
+	@Override
 	public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
 		// Replaced with SWT.Modify -- see modifyText() in this class
 		//        monitoringTarget = (Widget) e.getSource();
@@ -79,18 +81,21 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	/**
 	 * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(MouseEvent)
 	 */
+	@Override
 	public void mouseDoubleClick(MouseEvent e) {
 	}
 
 	/**
 	 * @see org.eclipse.swt.events.MouseListener#mouseDown(MouseEvent)
 	 */
+	@Override
 	public void mouseDown(MouseEvent e) {
 	}
 
 	/**
 	 * @see org.eclipse.swt.events.MouseListener#mouseUp(MouseEvent)
 	 */
+	@Override
 	public void mouseUp(MouseEvent e) {
 		monitoringTarget = (Widget) e.getSource();
 		restart();
@@ -99,18 +104,21 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	/**
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(MouseEvent)
 	 */
+	@Override
 	public void mouseEnter(MouseEvent e) {
 	}
 
 	/**
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(MouseEvent)
 	 */
+	@Override
 	public void mouseExit(MouseEvent e) {
 	}
 
 	/**
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(MouseEvent)
 	 */
+	@Override
 	public void mouseHover(MouseEvent e) {
 	}
 
@@ -129,6 +137,7 @@ public class TimedKeyListener extends Timer implements KeyListener, MouseListene
 	 * 
 	 * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
 	 */
+	@Override
 	public void modifyText(ModifyEvent e) {
 		monitoringTarget = (Widget) e.getSource();
 		restart();

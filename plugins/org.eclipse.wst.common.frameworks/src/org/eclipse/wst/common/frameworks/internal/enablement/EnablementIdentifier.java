@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -68,6 +68,7 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 		this.project = project;
 	}
 
+	@Override
 	public void addIdentifierListener(IEnablementIdentifierListener identifierListener) {
 		if (identifierListener == null)
 			throw new NullPointerException();
@@ -109,10 +110,12 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 		}
 	}
 
+	@Override
 	public Set getFunctionGroupIds() {
 		return functionGroupIds;
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
@@ -128,10 +131,12 @@ public class EnablementIdentifier implements IEnablementIdentifier {
 		return hashCode;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	@Override
 	public void removeIdentifierListener(IEnablementIdentifierListener identifierListener) {
 		if (identifierListener == null)
 			throw new NullPointerException();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -33,7 +33,8 @@ public class SimpleURIFactory implements IURIFactory
    * @return Creates and returns a new IURI for the given string.
    * @throws URIException if an error occurs creating this URI.
    */
-  public IURI newURI(String uri) throws URIException
+  @Override
+public IURI newURI(String uri) throws URIException
   {
     IURIScheme scheme = newURIScheme( uri, false );
     
@@ -45,7 +46,8 @@ public class SimpleURIFactory implements IURIFactory
    * @return Creates and returns a new IURI for the given URL.
    * @throws URIException if an error occurs creating this URI.
    */
-  public IURI newURI(URL url) throws URIException
+  @Override
+public IURI newURI(URL url) throws URIException
   {
     IURIScheme scheme = newURIScheme( url.toString(), false );
     
@@ -63,7 +65,8 @@ public class SimpleURIFactory implements IURIFactory
    * order to get a IURIScheme object.
    * @throws URIException if an error occurs creating this URI scheme.
    */
-  public IURIScheme newURIScheme(String schemeOrURI) throws URIException
+  @Override
+public IURIScheme newURIScheme(String schemeOrURI) throws URIException
   {
     return newURIScheme( schemeOrURI, true );
   }

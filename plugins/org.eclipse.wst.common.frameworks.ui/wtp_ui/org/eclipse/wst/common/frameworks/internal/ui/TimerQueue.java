@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -156,6 +156,7 @@ class TimerQueue implements Runnable {
 		timer.running = false;
 	}
 
+	@Override
 	public synchronized void run() {
 		long timeToWait;
 

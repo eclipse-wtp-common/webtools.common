@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ public class UIOperationHandler implements IOperationHandler {
 	/**
 	 * A decision needs to made as to whether an action/operation can continue
 	 */
+	@Override
 	public boolean canContinue(String message) {
 		return MessageDialog.openQuestion(getParentShell(), getConfirmTitle(), message);
 	}
@@ -56,6 +57,7 @@ public class UIOperationHandler implements IOperationHandler {
 	/**
 	 * A decision needs to made as to whether an action/operation can continue
 	 */
+	@Override
 	public boolean canContinue(String message, String[] items) {
 		return ListMessageDialog.openQuestion(getParentShell(), getConfirmTitle(), message, items);
 	}
@@ -67,6 +69,7 @@ public class UIOperationHandler implements IOperationHandler {
 	 * 
 	 * Return the return code for the dialog. 0 = Yes, 1 = Yes to all, 2 = No
 	 */
+	@Override
 	public int canContinueWithAllCheck(String message) {
 		MessageDialog dialog = new MessageDialog(getParentShell(), getConfirmTitle(), null, // accept
 					// the
@@ -85,6 +88,7 @@ public class UIOperationHandler implements IOperationHandler {
 	 * 
 	 * @see com.ibm.etools.j2ee.operations.IOperationHandler#canContinueWithAllCheckAllowCancel(java.lang.String)
 	 */
+	@Override
 	public int canContinueWithAllCheckAllowCancel(String message) {
 		MessageDialog dialog = new MessageDialog(getParentShell(), getConfirmTitle(), null, // accept
 					// the
@@ -101,6 +105,7 @@ public class UIOperationHandler implements IOperationHandler {
 	/**
 	 * An error has occurred
 	 */
+	@Override
 	public void error(String message) {
 		MessageDialog.openError(getParentShell(), getErrorTitle(), message);
 	}
@@ -136,6 +141,7 @@ public class UIOperationHandler implements IOperationHandler {
 	/**
 	 * An informational message needs to be presented
 	 */
+	@Override
 	public void inform(String message) {
 		MessageDialog.openInformation(getParentShell(), getInformationTitle(), message);
 	}
@@ -173,6 +179,7 @@ public class UIOperationHandler implements IOperationHandler {
 	/**
 	 * @see com.ibm.etools.j2ee.operations.IOperationHandler#getContext()
 	 */
+	@Override
 	public Object getContext() {
 		return getParentShell();
 	}

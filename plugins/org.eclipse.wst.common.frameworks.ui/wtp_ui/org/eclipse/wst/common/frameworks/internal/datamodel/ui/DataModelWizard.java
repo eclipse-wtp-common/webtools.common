@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -118,6 +118,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return currentPage == nextPage ? null : nextPage;
 	}
 
+	@Override
 	public String getNextPage(String currentPageName, String expectedNextPageName) {
 		return expectedNextPageName;
 	}
@@ -135,6 +136,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		return page != null ? page.getPreviousPage() : null;
 	}
 
+	@Override
 	public String getPreviousPage(String currentPageName, String expectedPreviousPageName) {
 		return expectedPreviousPageName;
 	}
@@ -210,6 +212,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		class CatchThrowableRunnableWithProgress implements IRunnableWithProgress {
 			public Throwable caught = null;
 
+			@Override
 			public void run(IProgressMonitor pm) {
 				try {
 					if (rootOperation == null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -48,6 +48,7 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 			return thrownException;
 		}
 
+		@Override
 		public void run(IProgressMonitor aMonitor) {
 			try {
 				prepareResourcesForRefresh(resources);
@@ -71,14 +72,17 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 	 * last cached modified value. <code>aListener</code> should be prepared to prompt the user if
 	 * they would like to refresh with the contents on disk if we are dirty.
 	 */
+	@Override
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
 		checkConsistency(presenter);
 	}
 
+	@Override
 	public void lostActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
 		checkConsistency(presenter);
 	}
 
+	@Override
 	public boolean checkSave(ResourceStateValidatorPresenter presenter) throws CoreException {
 		if (presenter == null)
 			return false;
@@ -95,6 +99,7 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 	/**
 	 * @see ResourceStateValidator#checkReadOnly()
 	 */
+	@Override
 	public boolean checkReadOnly() {
 		boolean result = checkReadOnlyResources();
 		if (!result)
@@ -310,6 +315,7 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 	 * becomes active and is about to edit its contents. The returned IStatus may have an ERROR
 	 * status which should be presented to the user.
 	 */
+	@Override
 	public IStatus validateState(ResourceStateValidatorPresenter presenter) throws CoreException {
 		List roResources, nonResROFiles, roFiles = null;
 		List[] readOnly = selectReadOnlyResources(provider.getResources());

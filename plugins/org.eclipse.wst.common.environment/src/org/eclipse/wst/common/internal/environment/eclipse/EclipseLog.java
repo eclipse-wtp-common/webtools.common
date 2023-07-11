@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#isEnabled()
 	 */
+	@Override
 	public boolean isEnabled() 
   {
 		return Platform.inDebugMode();
@@ -42,6 +43,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.Environment.ILog#isEnabled(java.lang.String)
 	 */
+	@Override
 	public boolean isEnabled(String option) {
 		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/" //$NON-NLS-1$ //$NON-NLS-2$
 				+ option));
@@ -50,6 +52,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
+	@Override
 	public void log(int severity, int messageNum, Object caller,
 			String method, Object object) 
 	{
@@ -99,6 +102,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, org.eclipse.core.runtime.IStatus)
 	 */
+	@Override
 	public void log(int severity, int messageNum, Object caller,
 			String method, IStatus status) {
 		log(severity, messageNum, caller, method, (Object)status);
@@ -107,6 +111,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
+	@Override
 	public void log(int severity, int messageNum, Object caller,
 			String method, Throwable throwable) {
 		log( severity, messageNum, caller, method, (Object)null );
@@ -115,6 +120,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
+	@Override
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Object object) 
 	{
@@ -129,6 +135,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
+	@Override
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Throwable throwable) 
 	{
@@ -143,6 +150,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	/**
 	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, org.eclipse.core.runtime.IStatus)
 	 */
+	@Override
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, IStatus status) 
 	{

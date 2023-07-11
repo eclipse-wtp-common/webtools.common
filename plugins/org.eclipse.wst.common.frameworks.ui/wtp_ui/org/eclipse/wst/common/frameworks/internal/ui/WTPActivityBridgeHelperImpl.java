@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -41,6 +41,7 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 		activityManager = workbenchActivitySupport.getActivityManager();
 	}
 
+	@Override
 	public void enableActivity(String activityID, boolean enabled) {
 		Set enabledActivities = activityManager.getEnabledActivityIds();
 		Set newEnabledActivities = null;
@@ -59,10 +60,12 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 		}
 	}
 
+	@Override
 	public Set getEnabledActivityIds() {
 		return activityManager.getEnabledActivityIds();
 	}
 
+	@Override
 	public void setEnabledActivityIds(Set activityIDs) {
 		Display display = PlatformUI.getWorkbench().getDisplay();
 		if (display.getThread() == Thread.currentThread()) {
@@ -70,6 +73,7 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 		} else {
 			final Set newActivityIDs = activityIDs; 
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					workbenchActivitySupport.setEnabledActivityIds(newActivityIDs);
 				}
@@ -77,12 +81,15 @@ public class WTPActivityBridgeHelperImpl implements WTPActivityBridgeHelper {
 		}
 	}
 
+	@Override
 	public Set getActivityIDsFromContribution(final String localID, final String pluginID) {
 		IIdentifier identifier = activityManager.getIdentifier(WorkbenchActivityHelper.createUnifiedId(new IPluginContribution() {
+			@Override
 			public String getLocalId() {
 				return localID;
 			}
 
+			@Override
 			public String getPluginId() {
 				return pluginID;
 			}

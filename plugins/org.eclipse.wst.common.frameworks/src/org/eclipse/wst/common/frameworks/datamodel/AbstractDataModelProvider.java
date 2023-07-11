@@ -34,6 +34,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 */
 	protected IDataModel model = null;
 
+	@Override
 	public Set<String> getPropertyNames() {
 		return new HashSet<String>();
 	}
@@ -45,6 +46,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#init()
 	 */
+	@Override
 	public void init() {
 	}
 
@@ -55,6 +57,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#setDataModel(IDataModel)
 	 */
+	@Override
 	public final void setDataModel(IDataModel dataModel) {
 		this.model = dataModel;
 	}
@@ -66,6 +69,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#getDataModel()
 	 */
+	@Override
 	public final IDataModel getDataModel() {
 		return model;
 	}
@@ -83,6 +87,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#propertySet(String, Object)
 	 */
+	@Override
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		return true;
 	}
@@ -97,6 +102,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#getDefaultProperty(String)
 	 */
+	@Override
 	public Object getDefaultProperty(String propertyName) {
 		if(ALLOW_EXTENSIONS.equals(propertyName)){
 			return Boolean.TRUE;
@@ -115,6 +121,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 *            the specified property
 	 * @see IDataModelProvider#isPropertyEnabled(String)
 	 */
+	@Override
 	public boolean isPropertyEnabled(String propertyName) {
 		return true;
 	}
@@ -129,6 +136,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#validate(String)
 	 */
+	@Override
 	public IStatus validate(String name) {
 		return null;
 	}
@@ -142,6 +150,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 *            the specified property
 	 * @see IDataModelProvider#getPropertyDescriptor(String)
 	 */
+	@Override
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
 		return null;
 	}
@@ -156,6 +165,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 *            the specified property
 	 * @see IDataModelProvider#getValidPropertyDescriptors(String)
 	 */
+	@Override
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		return null;
 	}
@@ -167,6 +177,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#getExtendedContext()
 	 */
+	@Override
 	public List getExtendedContext() {
 		return null;
 	}
@@ -178,6 +189,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#getDefaultOperation()
 	 */
+	@Override
 	public IDataModelOperation getDefaultOperation() {
 		return null;
 	}
@@ -189,6 +201,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#getID()
 	 */
+	@Override
 	public String getID() {
 		return this.getClass().getName();
 	}
@@ -200,6 +213,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModelProvider#dispose()
 	 */
+	@Override
 	public void dispose() {
 	}
 

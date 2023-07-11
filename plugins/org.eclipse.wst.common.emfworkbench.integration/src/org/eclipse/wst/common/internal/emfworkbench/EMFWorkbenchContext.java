@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -364,6 +364,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
 	 */
+	@Override
 	public void projectChanged(IResourceDelta delta) {
 		// default nothing
 	}
@@ -373,6 +374,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * 
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectClosed()
 	 */
+	@Override
 	public void projectClosed() {
 		discardAllEditModels();
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -235,6 +235,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * This is called with the {@linkorg.eclipse.emf.common.command.CommandStack}'s state has changed.
 	 */
+	@Override
 	public void commandStackChanged(java.util.EventObject event) {
 		if (dirtyModelEvent == null)
 			dirtyModelEvent = new EditModelEvent(EditModelEvent.DIRTY, this);
@@ -368,6 +369,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		getSaveHandler().access();
 		try {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor aMonitor) {
 					primSave(aMonitor);
 				}
@@ -582,6 +584,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateInputProvider#cacheNonResourceValidateState(List)
 	 */
+	@Override
 	public void cacheNonResourceValidateState(List roNonResourceFiles) {
 		// do nothing
 	}
@@ -589,6 +592,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateInputProvider#getNonResourceFiles()
 	 */
+	@Override
 	public List getNonResourceFiles() {
 		return null;
 	}
@@ -596,6 +600,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateInputProvider#getNonResourceInconsistentFiles()
 	 */
+	@Override
 	public List getNonResourceInconsistentFiles() {
 		return null;
 	}
@@ -623,6 +628,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
 	 */
+	@Override
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
 		getStateValidator().checkActivation(presenter);
 	}
@@ -630,6 +636,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateValidator#lostActivation(ResourceStateValidatorPresenter)
 	 */
+	@Override
 	public void lostActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
 		getStateValidator().lostActivation(presenter);
 	}
@@ -637,6 +644,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateValidator#validateState(ResourceStateValidatorPresenter)
 	 */
+	@Override
 	public IStatus validateState(ResourceStateValidatorPresenter presenter) throws CoreException {
 		if (presenter == null)
 			return Status.OK_STATUS;
@@ -646,6 +654,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateValidator#checkSave(ResourceStateValidatorPresenter)
 	 */
+	@Override
 	public boolean checkSave(ResourceStateValidatorPresenter presenter) throws CoreException {
 		return getStateValidator().checkSave(presenter);
 	}
@@ -653,6 +662,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * @see ResourceStateValidator#checkReadOnly()
 	 */
+	@Override
 	public boolean checkReadOnly() {
 		return getStateValidator().checkReadOnly();
 	}
@@ -1086,6 +1096,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * 
 	 * @return java.util.List
 	 */
+	@Override
 	public List getResources() {
 		if (resources == null)
 			resources = new ArrayList(5);
@@ -1163,6 +1174,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	/**
 	 * Return whether a save is needed on the CommandStack
 	 */
+	@Override
 	public boolean isDirty() {
 		return isAnyResourceDirty();
 	}
@@ -1525,6 +1537,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener#identifierChanged(org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent)
 	 */
+	@Override
 	public void identifierChanged(EnablementIdentifierEvent evt) {
 		if (evt.hasEnabledChanged()) {
 			EditModelEvent editModelEvent = new EditModelEvent(EditModelEvent.KNOWN_RESOURCES_ABOUT_TO_CHANGE, this);
@@ -1604,11 +1617,13 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			this.listener = listener;
 		}
 
+		@Override
 		public void handleException(Throwable exception) { 
 			EMFWorkbenchEditPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, EMFWorkbenchEditPlugin.ID, 0, exception.getMessage(), exception));
 			
 		}
 
+		@Override
 		public void run() throws Exception {
 			if(listener != null)
 				listener.editModelChanged(event); 

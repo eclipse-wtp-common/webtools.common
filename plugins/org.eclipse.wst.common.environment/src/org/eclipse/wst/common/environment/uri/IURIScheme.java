@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -49,7 +49,8 @@ public interface IURIScheme
   /**
    * @return Returns the proper name of the scheme.
    */
-  public String toString ();
+  @Override
+public String toString ();
 
   /**
    * @return Returns true if and only if this is a hierarchical scheme.

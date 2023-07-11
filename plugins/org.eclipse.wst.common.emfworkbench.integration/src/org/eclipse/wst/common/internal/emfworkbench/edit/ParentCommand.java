@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -87,6 +87,7 @@ public class ParentCommand extends EditModelCommand {
 		return new ChildCommand(this, getTarget(), retriever);
 	}
 
+	@Override
 	public void execute() {
 		getTarget().execute();
 		computeAffectedModels();
@@ -138,6 +139,7 @@ public class ParentCommand extends EditModelCommand {
 		}
 	}
 
+	@Override
 	public void redo() {
 		getTarget().redo();
 		invertChildren();

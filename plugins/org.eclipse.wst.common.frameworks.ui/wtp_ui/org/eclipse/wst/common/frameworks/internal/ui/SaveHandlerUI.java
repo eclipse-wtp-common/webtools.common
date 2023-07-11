@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * Copyright (c) 2001, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,7 @@ public class SaveHandlerUI implements ISaveHandler {
 	/**
 	 * access method comment.
 	 */
+	@Override
 	public void access() {
 		referenceCount++;
 	}
@@ -53,6 +54,7 @@ public class SaveHandlerUI implements ISaveHandler {
 		return result == null ? Display.getDefault() : result;
 	}
 
+	@Override
 	public void handleSaveFailed(SaveFailedException ex, IProgressMonitor monitor) {
 		if (referenceCount > 1)
 			//Let the outermost reference handle it
@@ -60,6 +62,7 @@ public class SaveHandlerUI implements ISaveHandler {
 		String exMsg = ex.getInnerMostNestedException() == null ? ex.getMessage() : ex.getInnerMostNestedException().getMessage();
 		final String message = BEGINNING_MESSAGE + ":\n" + exMsg;//$NON-NLS-1$
 		getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				MessageDialog.openError(getParentShellForDialog(), SAVE_FAILED, message);
 			}
@@ -85,6 +88,7 @@ public class SaveHandlerUI implements ISaveHandler {
 
 		final int[] ret = new int[1];
 		getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				dialog.setBlockOnOpen(true);
 				ret[0] = dialog.open();
@@ -109,6 +113,7 @@ public class SaveHandlerUI implements ISaveHandler {
 	/**
 	 * release method comment.
 	 */
+	@Override
 	public void release() {
 		referenceCount--;
 		if (referenceCount == 0)
@@ -119,6 +124,7 @@ public class SaveHandlerUI implements ISaveHandler {
 	/**
 	 * shouldContinueAndMakeFileEditable method comment.
 	 */
+	@Override
 	public boolean shouldContinueAndMakeFileEditable(IFile aFile) {
 		boolean yes = isYesToAll || promptUserToSaveReadOnly(aFile);
 		if (yes)

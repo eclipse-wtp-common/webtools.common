@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * Copyright (c) 2001, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -31,12 +31,14 @@ public class SaveHandlerHeadless implements ISaveHandler {
 	/**
 	 * access method comment.
 	 */
+	@Override
 	public void access() {
 	}
 
 	/**
 	 * handleSaveFailed method comment.
 	 */
+	@Override
 	public void handleSaveFailed(SaveFailedException ex, org.eclipse.core.runtime.IProgressMonitor monitor) {
 		throw ex;
 	}
@@ -70,12 +72,14 @@ public class SaveHandlerHeadless implements ISaveHandler {
 	/**
 	 * release method comment.
 	 */
+	@Override
 	public void release() {
 	}
 
 	/**
 	 * shouldContinueAndMakeFileEditable method comment.
 	 */
+	@Override
 	public boolean shouldContinueAndMakeFileEditable(org.eclipse.core.resources.IFile aFile) {
 		if (aFile == null)
 			return false;

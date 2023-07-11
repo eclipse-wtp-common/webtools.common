@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,8 @@ public class RelativeURI implements IURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#append(org.eclipse.env.uri.URI)
    */
-  public IURI append(IURI relativeURI) throws URIException
+  @Override
+public IURI append(IURI relativeURI) throws URIException
   {
     if( !relativeURI.isRelative()) 
      {      
@@ -55,7 +56,8 @@ public class RelativeURI implements IURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#asFile()
    */
-  public File asFile() 
+  @Override
+public File asFile() 
   {
     return null;
   }
@@ -63,7 +65,8 @@ public class RelativeURI implements IURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#asString()
    */
-  public String asString()
+  @Override
+public String asString()
   {
     return uri_;
   }
@@ -80,7 +83,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#asURL()
    */
-  public URL asURL() throws URIException
+  @Override
+public URL asURL() throws URIException
   {
     return null;
   }
@@ -88,14 +92,16 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#erase()
    */
-  public void erase() throws URIException
+  @Override
+public void erase() throws URIException
   {
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getInputStream()
    */
-  public InputStream getInputStream() throws URIException
+  @Override
+public InputStream getInputStream() throws URIException
   {
     return null;
   }
@@ -103,7 +109,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getOutputStream()
    */
-  public OutputStream getOutputStream() throws URIException
+  @Override
+public OutputStream getOutputStream() throws URIException
   {
     return null;
   }
@@ -111,7 +118,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getURIScheme()
    */
-  public IURIScheme getURIScheme()
+  @Override
+public IURIScheme getURIScheme()
   {
     return new RelativeScheme();
   }
@@ -119,7 +127,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isAvailableAsFile()
    */
-  public boolean isAvailableAsFile()
+  @Override
+public boolean isAvailableAsFile()
   {
     return false;
   }
@@ -127,7 +136,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isAvailableAsURL()
    */
-  public boolean isAvailableAsURL()
+  @Override
+public boolean isAvailableAsURL()
   {
     return false;
   }
@@ -135,7 +145,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isHierarchical()
    */
-  public boolean isHierarchical()
+  @Override
+public boolean isHierarchical()
   {
     return true;
   }
@@ -143,7 +154,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isLeaf()
    */
-  public boolean isLeaf()
+  @Override
+public boolean isLeaf()
   {
     return false;
   }
@@ -151,7 +163,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isPresent()
    */
-  public boolean isPresent()
+  @Override
+public boolean isPresent()
   {
     return false;
   }
@@ -159,7 +172,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isReadable()
    */
-  public boolean isReadable()
+  @Override
+public boolean isReadable()
   {
     return false;
   }
@@ -167,7 +181,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isRelative()
    */
-  public boolean isRelative()
+  @Override
+public boolean isRelative()
   {
     return true;
   }
@@ -175,7 +190,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#isWritable()
    */
-  public boolean isWritable()
+  @Override
+public boolean isWritable()
   {
     return false;
   }
@@ -183,7 +199,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list()
    */
-  public IURI[] list() throws URIException
+  @Override
+public IURI[] list() throws URIException
   {
     return new IURI[0];
   }
@@ -191,7 +208,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list(org.eclipse.env.uri.URIFilter)
    */
-  public IURI[] list(IURIFilter uriFilter) throws URIException
+  @Override
+public IURI[] list(IURIFilter uriFilter) throws URIException
   {
     return new IURI[0];
   }
@@ -199,7 +217,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#parent()
    */
-  public IURI parent() throws URIException
+  @Override
+public IURI parent() throws URIException
   {
     int lastSlash  = uri_.lastIndexOf( '/' );
     int firstSlash = uri_.indexOf( '/' );
@@ -214,7 +233,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#rename(org.eclipse.env.uri.URI)
    */
-  public void rename(IURI newURI) throws URIException
+  @Override
+public void rename(IURI newURI) throws URIException
   {
     uri_ = newURI.toString();
   }
@@ -222,21 +242,24 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#touchFolder()
    */
-  public void touchFolder() throws URIException
+  @Override
+public void touchFolder() throws URIException
   {
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#touchLeaf()
    */
-  public void touchLeaf() throws URIException
+  @Override
+public void touchLeaf() throws URIException
   {
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#visit(org.eclipse.env.uri.URIVisitor, org.eclipse.env.uri.URIFilter)
    */
-  public void visit(IURIVisitor uriVisitor, IURIFilter uriFilter)
+  @Override
+public void visit(IURIVisitor uriVisitor, IURIFilter uriFilter)
     throws URIException
   {
     boolean continueVisit = true;
@@ -258,7 +281,8 @@ public String toString()
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#visit(org.eclipse.env.uri.URIVisitor)
    */
-  public void visit(IURIVisitor uriVisitor) throws URIException
+  @Override
+public void visit(IURIVisitor uriVisitor) throws URIException
   {
     boolean continueVisit = uriVisitor.visit( this );  
     

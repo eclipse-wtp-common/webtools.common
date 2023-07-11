@@ -52,6 +52,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		super(operation);
 	}
 
+	@Override
 	public void addOperationListener(IDataModelPausibleOperationListener operationListener) {
 		if (null == operationListeners) {
 			operationListeners = new ArrayList<IDataModelPausibleOperationListener>();
@@ -59,12 +60,14 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		operationListeners.add(operationListener);
 	}
 
+	@Override
 	public void removeOperationListener(IDataModelPausibleOperationListener operationListener) {
 		if (null != operationListeners) {
 			operationListeners.remove(operationListener);
 		}
 	}
 
+	@Override
 	public int getExecutionState() {
 		return executionState;
 	}
@@ -104,6 +107,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		throw new RuntimeException();
 	}
 
+	@Override
 	public IStatus resume(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return cacheThreadAndContinue(monitor, info, RESUME_IMPL);
 	}
@@ -269,6 +273,7 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 		}
 	}
 
+	@Override
 	public IStatus rollBack(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return cacheThreadAndContinue(monitor, info, ROLLBACK_IMPL);
 	}

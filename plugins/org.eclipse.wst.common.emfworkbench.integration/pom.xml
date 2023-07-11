@@ -21,6 +21,6 @@
 
   <groupId>org.eclipse.webtools.common</groupId>
   <artifactId>org.eclipse.wst.common.emfworkbench.integration</artifactId>
-  <version>1.2.102-SNAPSHOT</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

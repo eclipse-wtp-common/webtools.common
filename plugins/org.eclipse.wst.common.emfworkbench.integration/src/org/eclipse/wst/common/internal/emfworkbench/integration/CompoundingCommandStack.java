@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#execute(org.eclipse.emf.common.command.Command)
 	 */
+	@Override
 	public void execute(Command command) {
 		if (compoundCommand == null)
 			compoundCommand = command;
@@ -65,6 +66,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#canUndo()
 	 */
+	@Override
 	public boolean canUndo() {
 		return false;
 	}
@@ -74,6 +76,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#undo()
 	 */
+	@Override
 	public void undo() {
 		//default
 	}
@@ -83,6 +86,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#canRedo()
 	 */
+	@Override
 	public boolean canRedo() {
 		return false;
 	}
@@ -92,6 +96,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#getUndoCommand()
 	 */
+	@Override
 	public Command getUndoCommand() {
 		return null;
 	}
@@ -101,6 +106,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#getRedoCommand()
 	 */
+	@Override
 	public Command getRedoCommand() {
 		return null;
 	}
@@ -110,6 +116,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#getMostRecentCommand()
 	 */
+	@Override
 	public Command getMostRecentCommand() {
 		return null;
 	}
@@ -119,6 +126,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#redo()
 	 */
+	@Override
 	public void redo() {
 		//redo
 	}
@@ -128,6 +136,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#flush()
 	 */
+	@Override
 	public void flush() {
 		//flush
 	}
@@ -137,6 +146,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#addCommandStackListener(org.eclipse.emf.common.command.CommandStackListener)
 	 */
+	@Override
 	public void addCommandStackListener(CommandStackListener listener) {
 		//default
 	}
@@ -146,6 +156,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * 
 	 * @see org.eclipse.emf.common.command.CommandStack#removeCommandStackListener(org.eclipse.emf.common.command.CommandStackListener)
 	 */
+	@Override
 	public void removeCommandStackListener(CommandStackListener listener) {
 		//default
 	}
