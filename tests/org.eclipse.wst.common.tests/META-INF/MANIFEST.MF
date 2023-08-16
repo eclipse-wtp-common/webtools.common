@@ -34,5 +34,5 @@ Require-Bundle: org.junit;visibility:=reexport,
  org.eclipse.wst.common.uriresolver.tests,
  org.eclipse.core.runtime
 Eclipse-LazyStart: true
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Localization: plugin

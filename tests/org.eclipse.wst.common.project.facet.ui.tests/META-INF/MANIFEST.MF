@@ -9,5 +9,5 @@ Require-Bundle: org.eclipse.wst.common.project.facet.ui,
  org.eclipse.wst.common.project.facet.core.tests,
  org.eclipse.core.resources
 Bundle-ClassPath: tests.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Localization: plugin

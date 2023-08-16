@@ -12,4 +12,4 @@ Require-Bundle: org.junit;bundle-version="[3.0.0,5.0.0)",
 Export-Package: org.eclipse.wst.common.project.facet.core.tests,
  org.eclipse.wst.common.project.facet.core.tests.support
 Bundle-ClassPath: tests.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
