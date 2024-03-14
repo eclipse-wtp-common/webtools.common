@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,12 @@
 
 package org.eclipse.wst.common.snippets.internal.palette;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.IEntryChangeListener;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
@@ -63,15 +65,20 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 	public void setDefinitions(SnippetDefinitions newDefinitions) {
 		SnippetDefinitions oldDefinitions = getDefinitions();
 		this.fDefinitions = newDefinitions;
-		List oldChildren = null;
-		if (oldDefinitions != null)
+		List<ISnippetCategory> oldChildren = null;
+		if (oldDefinitions != null) {
 			oldChildren = oldDefinitions.getCategories();
-		this.children = fDefinitions.getCategories();
-		for (int i = 0; i < children.size(); i++) {
-			((PaletteEntry) children.get(i)).setParent(this);
 		}
-		if (Logger.DEBUG_VIEWER_CONTENT)
+		List<ISnippetCategory> categories = fDefinitions.getCategories();
+		this.children = new ArrayList<>(categories.size());
+		for (int i = 0; i < categories.size(); i++) {
+			PaletteEntry e = (PaletteEntry) categories.get(i);
+			children.add(e);
+			e.setParent(this);
+		}
+		if (Logger.DEBUG_VIEWER_CONTENT) {
 			System.out.println(getClass().getName() + '@' + hashCode() + " setting categories to: " + children); //$NON-NLS-1$
+		}
 		listeners.firePropertyChange(PROPERTY_CHILDREN, oldChildren, children);
 	}
 }
