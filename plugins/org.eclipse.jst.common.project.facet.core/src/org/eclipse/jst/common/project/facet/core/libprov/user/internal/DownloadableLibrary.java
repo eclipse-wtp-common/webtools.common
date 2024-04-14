@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2024 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.jst.common.project.facet.core.libprov.user.internal;
 
 import static org.eclipse.jdt.core.IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME;
 import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.PLUGIN_ID;
+import static org.eclipse.jst.common.project.facet.core.internal.FacetedProjectFrameworkJavaPlugin.log;
 import static org.eclipse.wst.common.project.facet.core.util.internal.ZipUtil.unzip;
 
 import java.io.File;
@@ -50,6 +51,7 @@ import org.eclipse.osgi.util.NLS;
 
 public final class DownloadableLibrary
 {
+    private String pluginId;
     private String name;
     private String downloadProvider;
     private String url;
@@ -62,7 +64,15 @@ public final class DownloadableLibrary
     private final List<String> includePatternsReadOnly = Collections.unmodifiableList( this.includePatterns );
     private final List<String> excludePatterns = new ArrayList<String>();
     private final List<String> excludePatternsReadOnly = Collections.unmodifiableList( this.excludePatterns );
-    
+
+	public String getPluginId() {
+		return this.pluginId;
+	}
+
+	public void setPluginId(String pluginId) {
+		this.pluginId = pluginId;
+	}
+
     public String getName()
     {
         return this.name;
@@ -189,24 +199,27 @@ public final class DownloadableLibrary
                 delete( f );
             }
 
-            // Define the temporary download file.
-            
-            final File destFile = new File( destFolder, "download.zip" ); //$NON-NLS-1$
-            
-            // Perform the download.
-                
-            download( new URL( this.url ), destFile, monitor );
-            
-            // Unzip the downloaded file.
+			// Define the temporary download file.
+			for (String child : this.url.split(",")) { //$NON-NLS-1$
+				URL url2 = new URL(child);
+				IPath path = Path.fromOSString(url2.getPath());
+				String fileName = path.lastSegment();
+				final File destFile = new File(destFolder, fileName);
 
-            unzip( destFile, destFolder, monitor );
-            
-            // Delete the original downloaded file.
-            
-            destFile.delete();
-            
-            // Configure the user library.
-            
+				// Perform the download.
+				download(url2, destFile, monitor);
+
+				String extension = path.getFileExtension();
+				if (!"jar".equalsIgnoreCase(extension)) { //$NON-NLS-1$
+					// Unzip the downloaded file.
+					unzip(destFile, destFolder, monitor);
+
+					// Delete the original downloaded file.
+					destFile.delete();
+				}
+			}
+
+			// Configure the user library.
             final List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
             final IPath destFolderPath = new Path( destFolder.getPath() );
             
@@ -281,6 +294,7 @@ public final class DownloadableLibrary
         }
         catch( IOException e )
         {
+			log(e);
             final IStatus st = new Status( IStatus.ERROR, PLUGIN_ID, Resources.failedWhileDownloading, e );
             throw new CoreException( st );
         }

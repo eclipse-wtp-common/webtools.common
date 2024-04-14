@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2024 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -169,7 +169,7 @@ public final class DownloadableLibrariesExtensionPoint
                         continue;
                     }
                     
-                    readLibraryDefinitions( url, libraries );
+					readLibraryDefinitions(pluginId, url, libraries);
                 }
             }
             
@@ -197,9 +197,8 @@ public final class DownloadableLibrariesExtensionPoint
         return evalContext;
     }
     
-    private static void readLibraryDefinitions( final URL url,
-                                                final List<DownloadableLibrary> libraries )
-    {
+	private static void readLibraryDefinitions(String pluginId, final URL url,
+			final List<DownloadableLibrary> libraries) {
         Document document = null;
         InputStream in = null;
         
@@ -244,7 +243,8 @@ public final class DownloadableLibrariesExtensionPoint
                     try
                     {
                         final DownloadableLibrary library = new DownloadableLibrary();
-                        
+                        library.setPluginId(pluginId);
+
                         final String name = getRequiredElementText( url, elLibrary, EL_NAME );
                         library.setName( name );
                         
