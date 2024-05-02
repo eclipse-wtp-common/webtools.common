@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.wst.validation.ui; singleton:=true
 Automatic-Module-Name: org.eclipse.wst.validation.ui
-Bundle-Version: 1.3.0.qualifier
+Bundle-Version: 1.3.100.qualifier
 Bundle-Activator: org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 IBM Corporation and others.
+ * Copyright (c) 2005, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -92,8 +92,6 @@ public final class FilterDialog extends Dialog {
 	private static String[] _messages = new String[]{
 		ValMessages.SevError, ValMessages.SevWarning, ValMessages.SevIgnore};
 	
-	private Shell		_shell;
-	
 	/**
 	 * Create a dialog that knows how to change a validator's filters.
 	 * 
@@ -106,8 +104,6 @@ public final class FilterDialog extends Dialog {
 	 */
 	public FilterDialog(Shell shell, ValidatorMutable validator, IProject project){
 		super(shell);
-		_shell = shell;
-		setShellStyle(getShellStyle() | SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
 		_validator = validator;
 		_project = project;
 	}
@@ -223,10 +219,12 @@ public final class FilterDialog extends Dialog {
 			
 			private void doIt(){
 				NewFilterRule nfr = new NewFilterRule(_project);
-				WizardDialog wd = new WizardDialog(_shell, nfr);
+				WizardDialog wd = new WizardDialog(null, nfr);
 				wd.setBlockOnOpen(true);
 				int rc = wd.open();
-				if (rc == WizardDialog.CANCEL)return;
+				if (rc == WizardDialog.CANCEL) {
+					return;
+				}
 				
 				FilterRule rule = nfr.getRule();
 				if (rule != null){
@@ -236,7 +234,6 @@ public final class FilterDialog extends Dialog {
 					refresh();
 				}
 			}
-			
 		});
 
 		_remove = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
@@ -267,6 +264,9 @@ public final class FilterDialog extends Dialog {
 				restoreDefaults();						
 			}				
 		});
+
+		_addRule.setEnabled(_selectedGroup != null);
+		_remove.setEnabled(_selectedGroup != null || _selectedRule != null);
 	}
 	
 	private void restoreDefaults() {

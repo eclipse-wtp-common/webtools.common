@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2011 IBM Corporation and others.
+ * Copyright (c) 2005, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -183,13 +183,15 @@ public class NewFilterRule extends Wizard {
 				}
 				
 			};
-			for (int i=0; i<labels.length; i++){
+			for (int i = 0; i < labels.length; i++){
 				Button button = new Button(control, SWT.RADIO);
 				button.setText(labels[i]);
-				button.setData(new Integer(i));			
+				button.setData(Integer.valueOf(i));
 				button.addSelectionListener(listener);
-				(new Text(control, SWT.WRAP|SWT.READ_ONLY)).setText(desc[i]);
-				if (i == 0)button.setSelection(true);				
+				(new Text(control, SWT.WRAP | SWT.READ_ONLY)).setText(desc[i]);
+				if (i == 0) {
+					button.setSelection(true);
+				}
 			}			
 			setControl(control);			
 		}

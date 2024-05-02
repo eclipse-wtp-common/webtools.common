@@ -1,0 +1,1 @@
+New Filter Rule Wizard is unusable on Windows #4
