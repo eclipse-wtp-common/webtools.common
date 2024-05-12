@@ -201,7 +201,7 @@ public final class DownloadableLibrary
 
 			// Define the temporary download file.
 			for (String child : this.url.split(",")) { //$NON-NLS-1$
-				URL url2 = new URL(child);
+				URL url2 = new URL(child.trim());
 				IPath path = Path.fromOSString(url2.getPath());
 				String fileName = path.lastSegment();
 				final File destFile = new File(destFolder, fileName);
