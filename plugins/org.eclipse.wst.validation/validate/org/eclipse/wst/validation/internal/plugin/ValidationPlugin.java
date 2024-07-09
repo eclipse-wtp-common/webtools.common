@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
@@ -31,6 +31,8 @@ import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * How does this plug-in get activated? There are many other plug-ins that depend on this plug-in, so there are
@@ -47,7 +49,8 @@ public class ValidationPlugin extends Plugin {
 	private static Message 		_message;
 	public static final String VALIDATION_BUILDER_ID = PLUGIN_ID + ".validationbuilder"; //$NON-NLS-1$// plugin id of the validation builder
 	public static final String VALIDATOR_EXT_PT_ID = "validator"; //$NON-NLS-1$// extension point declaration of the validator 
-
+	private ServiceTracker<IWorkspace, IWorkspace> workspaceServiceTracker;
+	 
 	public ValidationPlugin() {
 		super();
 		if (_plugin == null)_plugin = this;
@@ -96,13 +99,23 @@ public class ValidationPlugin extends Plugin {
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(EventManager.getManager(), 
-			IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | 
-			IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_CHANGE);
-
-		DependencyIndex di = (DependencyIndex)ValidationFramework.getDefault().getDependencyIndex();
-		IWorkspace ws = ResourcesPlugin.getWorkspace();
-		ws.addSaveParticipant(this, di);
+		workspaceServiceTracker = new ServiceTracker<>(context, IWorkspace.class, null) {
+			@Override
+			public IWorkspace addingService(ServiceReference<IWorkspace> reference) {
+				IWorkspace workspace = super.addingService(reference);
+				workspace.addResourceChangeListener(EventManager.getManager(),
+				IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE |
+				IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_CHANGE);
+				DependencyIndex di = (DependencyIndex)ValidationFramework.getDefault().getDependencyIndex();
+				try {
+					workspace.addSaveParticipant(ValidationPlugin.this, di);
+				} catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+				return workspace;
+			}
+		};
+		workspaceServiceTracker.open();
 //		ws.addResourceChangeListener(ValOperationManager.getDefault(), 
 //			IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD);
 
@@ -110,7 +123,11 @@ public class ValidationPlugin extends Plugin {
 
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener( EventManager.getManager() );		
+		var ws = workspaceServiceTracker.getService();
+		if (ws != null) {
+		      ws.removeResourceChangeListener(EventManager.getManager());
+		}
+		workspaceServiceTracker.close();		
 		ValidationFramework.getDefault().cancel();
 //		ResourcesPlugin.getWorkspace().removeResourceChangeListener( ValOperationManager.getDefault() );		
 		EventManager.getManager().shutdown();
