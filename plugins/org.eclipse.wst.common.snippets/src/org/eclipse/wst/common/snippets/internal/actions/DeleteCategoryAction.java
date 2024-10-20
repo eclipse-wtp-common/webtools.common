@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2011 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,7 @@ public class DeleteCategoryAction extends AbstractCategoryAction {
 	public void run() {
 		super.run();
 		ISnippetCategory category = (ISnippetCategory) getContainer();
-		EditPart categoryPart = (EditPart) getViewer().getViewer().getEditPartRegistry().get(category);
+		EditPart categoryPart = getViewer().getViewer().getEditPartRegistry().get(category);
 		if (categoryPart != null) {
 			SnippetDefinitions defs = SnippetsPlugin.getSnippetManager().getDefinitions();
 			defs.getCategories().remove(category);

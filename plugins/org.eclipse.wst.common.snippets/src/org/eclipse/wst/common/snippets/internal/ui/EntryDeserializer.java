@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -47,7 +47,7 @@ public class EntryDeserializer {
 		super();
 	}
 
-	private void assignEntryProperties(Element element, SnippetPaletteItem entry) {
+	private static void assignEntryProperties(Element element, SnippetPaletteItem entry) {
 		entry.setId(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		entry.setIconName(element.getAttribute(SnippetsPlugin.NAMES.SMALLICON));
 		String description = createDescription(element);
@@ -60,15 +60,15 @@ public class EntryDeserializer {
 		entry.setLabel(label);
 	}
 
-	private String createContent(Node item) {
+	private static String createContent(Node item) {
 		return readCDATAofChild(item, SnippetsPlugin.NAMES.CONTENT);
 	}
 
-	private String createDescription(Node entryElement) {
+	private static String createDescription(Node entryElement) {
 		return readCDATAofChild(entryElement, SnippetsPlugin.NAMES.DESCRIPTION);
 	}
 
-	private SnippetPaletteItem createItem(Element element) {
+	private static SnippetPaletteItem createItem(Element element) {
 		SnippetPaletteItem item = new SnippetPaletteItem(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		assignEntryProperties(element, item);
 		item.setContentString(createContent(element));
@@ -91,7 +91,7 @@ public class EntryDeserializer {
 		return item;
 	}
 
-	private ISnippetVariable createVariable(Element element) {
+	private static ISnippetVariable createVariable(Element element) {
 		SnippetVariable var = new SnippetVariable();
 		var.setId(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		var.setName(element.getAttribute(SnippetsPlugin.NAMES.NAME));
@@ -135,7 +135,7 @@ public class EntryDeserializer {
 	 * <node><otherChild/><childName><wrong element/> <![CDATA[ RETURNED
 	 * TEXT]]> </childName> </node>
 	 */
-	private String readCDATAofChild(Node node, String childName) {
+	private static String readCDATAofChild(Node node, String childName) {
 		NodeList children = node.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);

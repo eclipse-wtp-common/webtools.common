@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -323,27 +323,30 @@ public class SnippetsView extends ViewPart {
 					UserDrawerSelector selector = new UserDrawerSelector(getSite().getShell());
 					selector.setSelectionPrompt(SnippetsMessages.Cant_add_to_this);
 					SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) selector.getUserDrawer();
-					if (drawer != null)
+					if (drawer != null) {
 						destination = drawer;
-					else
+						drawer.add((SnippetPaletteItem) entry);
+					}
+					else {
 						return;
+					}
 				}
 				if (entry instanceof SnippetPaletteItem) {
 					SnippetPaletteItem item = (SnippetPaletteItem) entry;
 					if (destination instanceof SnippetPaletteDrawer) {
 						item.setId(((SnippetPaletteDrawer) destination).getId() + System.currentTimeMillis());
 						((SnippetPaletteDrawer) destination).add(item);
-						EditPart container = (EditPart) getViewer().getEditPartRegistry().get(destination);
+						EditPart container = getViewer().getEditPartRegistry().get(destination);
 						container.refresh();
 					}
 					else if (destination instanceof ISnippetItem) {
 						SnippetPaletteDrawer category = (SnippetPaletteDrawer) ((ISnippetItem) destination).getCategory();
 						item.setId("item_" + System.currentTimeMillis()); //$NON-NLS-1$
 						category.add(item);
-						EditPart container = (EditPart) getViewer().getEditPartRegistry().get(category);
+						EditPart container = getViewer().getEditPartRegistry().get(category);
 						container.refresh();
 					}
-					EditPart part = (EditPart) getViewer().getEditPartRegistry().get(item);
+					EditPart part = getViewer().getEditPartRegistry().get(item);
 					if (part != null)
 						getViewer().select(part);
 				}
@@ -365,10 +368,12 @@ public class SnippetsView extends ViewPart {
 					else
 						return;
 				}
-				if (entry instanceof ISnippetItem)
+				if (entry instanceof ISnippetItem) {
 					category = ((ISnippetItem) SnippetsView.this.getSelectedEntry()).getCategory();
-				else if (entry instanceof ISnippetCategory)
+				}
+				else if (entry instanceof ISnippetCategory) {
 					category = (ISnippetCategory) entry;
+				}
 				if (category == null)
 					return;
 				SnippetPaletteItem item = (SnippetPaletteItem) new SnippetPaletteItemFactory().createNewEntry(getViewer().getControl().getShell(), (PaletteEntry) category);
@@ -566,7 +571,9 @@ public class SnippetsView extends ViewPart {
 		getInsertAction().setEnabled(false);
 
 		if (fViewer.getContextMenu() == null)
+		 {
 			fViewer.setContextMenu(new MenuManager("#popup", getClass().getName())); //$NON-NLS-1$
+		}
 		fViewer.getContextMenu().addMenuListener(new SnippetsContextMenuListener(fViewer.getContextMenu()));
 		fViewer.getContextMenu().setRemoveAllWhenShown(true);
 
@@ -825,6 +832,7 @@ public class SnippetsView extends ViewPart {
 	}
 
 	public void saveState(IMemento memento) {
+		save();
 		fViewer.saveState(memento);
 	}
 

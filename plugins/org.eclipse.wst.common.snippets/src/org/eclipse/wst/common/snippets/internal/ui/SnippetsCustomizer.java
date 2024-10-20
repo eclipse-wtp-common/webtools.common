@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ package org.eclipse.wst.common.snippets.internal.ui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.gef.palette.PaletteContainer;
@@ -38,7 +39,7 @@ public class SnippetsCustomizer extends PaletteCustomizer {
 	
 	protected List activeEditors = new ArrayList();
 	protected List factories = null;
-	private List deletedIds = new ArrayList();
+	private List<String> deletedIds = new ArrayList<>();
 
 	public SnippetsCustomizer() {
 		super();
@@ -128,6 +129,12 @@ public class SnippetsCustomizer extends PaletteCustomizer {
 			IPath path = SnippetManager.getInstance().getStorageLocation(deletedIds.get(i).toString());
 			File folder = new File(path.toOSString());
 			deleteFolders(folder);
+		}
+		ListIterator<ISnippetCategory> categoryIterator = SnippetManager.getInstance().getDefinitions().getCategories().listIterator();
+		while (categoryIterator.hasNext()) {
+			if (deletedIds.contains(categoryIterator.next().getId())) {
+				categoryIterator.remove();
+			}
 		}
 		deletedIds.clear();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2022 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.PluginVersionIdentifier;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
@@ -112,11 +111,10 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 		String id = element.getDeclaringExtension().getNamespace();
 		Bundle bundle = Platform.getBundle(id);
 		String version = bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
-		PluginVersionIdentifier identifier = new PluginVersionIdentifier(version);
 
 		PluginRecord record = new PluginRecord();
 		record.setPluginName(id);
-		record.setPluginVersion(identifier.toString());
+		record.setPluginVersion(version);
 		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("Plugin reader creating plugin record for " + record.getPluginName() + "/" + record.getPluginVersion()); //$NON-NLS-1$ //$NON-NLS-2$
 		return record;
@@ -179,9 +177,9 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 					setProperty(item, SnippetsPlugin.NAMES.CONTENT, children[i].getValue());
 					break;
 				case SnippetsPlugin.NAMES.VARIABLES :
-					Iterator iterator = createVariables(children[i].getChildren()).iterator();
+					Iterator<ISnippetVariable> iterator = createVariables(children[i].getChildren()).iterator();
 					while (iterator.hasNext()) {
-						item.addVariable((ISnippetVariable) iterator.next());
+						item.addVariable(iterator.next());
 					}
 					break;
 				case SnippetsPlugin.NAMES.VARIABLE :

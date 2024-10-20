@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -88,8 +88,8 @@ public class Logger {
 			case ERROR :
 				severity = IStatus.ERROR;
 		}
-		message = (message != null) ? message : "null"; //$NON-NLS-1$
-		Status statusObj = new Status(severity, fPluginId, severity, message, exception);
+		String text = (message != null) ? message : "null"; //$NON-NLS-1$
+		Status statusObj = new Status(severity, fPluginId, severity, text, exception);
 		fPlugin.getLog().log(statusObj);
 	}
 
@@ -104,8 +104,8 @@ public class Logger {
 	 */
 	protected static void _trace(String category, String message, Throwable exception) {
 		if (isTracing(category)) {
-			message = (message != null) ? message : "null"; //$NON-NLS-1$
-			Status statusObj = new Status(IStatus.OK, fPluginId, IStatus.OK, message, exception);
+			String text  = (message != null) ? message : "null"; //$NON-NLS-1$
+			Status statusObj = new Status(IStatus.OK, fPluginId, IStatus.OK, text, exception);
 			fPlugin.getLog().log(statusObj);
 		}
 	}

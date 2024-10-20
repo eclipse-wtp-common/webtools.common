@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -12,16 +12,12 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal;
 
-
-
-import com.ibm.icu.text.Collator;
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.Sorter;
+
+import com.ibm.icu.text.Collator;
 
 public class EntrySorter extends Sorter {
 
@@ -31,10 +27,6 @@ public class EntrySorter extends Sorter {
 		for (int i = 0; i < results.length; i++)
 			results[i] = (ISnippetCategory) sortedEntries[i];
 		return results;
-	}
-
-	public static List sortEntries(List entries) {
-		return Arrays.asList(new EntrySorter().sort(entries.toArray()));
 	}
 
 	public static ISnippetItem[] sortItems(Object[] items) {

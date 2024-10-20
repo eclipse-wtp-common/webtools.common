@@ -11,7 +11,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-
 package org.eclipse.wst.common.snippets.internal.palette;
 
 import java.util.ArrayList;
@@ -64,11 +63,11 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 	 */
 	public void setDefinitions(SnippetDefinitions newDefinitions) {
 		SnippetDefinitions oldDefinitions = getDefinitions();
-		this.fDefinitions = newDefinitions;
 		List<ISnippetCategory> oldChildren = null;
 		if (oldDefinitions != null) {
 			oldChildren = oldDefinitions.getCategories();
 		}
+		this.fDefinitions = newDefinitions;
 		List<ISnippetCategory> categories = fDefinitions.getCategories();
 		this.children = new ArrayList<>(categories.size());
 		for (int i = 0; i < categories.size(); i++) {

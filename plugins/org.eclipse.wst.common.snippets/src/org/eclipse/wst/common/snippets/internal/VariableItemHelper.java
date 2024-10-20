@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -62,8 +62,9 @@ public class VariableItemHelper {
 					host.setEnabled(true);
 				}
 			}
-			if (result == Window.OK)
+			if (result == Window.OK) {
 				insertString = dialog.getPreparedText();
+			}
 		}
 		else {
 			insertString = item.getContentString();

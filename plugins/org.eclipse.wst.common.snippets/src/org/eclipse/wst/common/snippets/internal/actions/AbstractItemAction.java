@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -65,14 +65,14 @@ public abstract class AbstractItemAction extends Action {
 	}
 
 	protected void refresh(ISnippetCategory category) {
-		EditPart part = (EditPart) fViewer.getEditPartRegistry().get(category);
+		EditPart part = fViewer.getEditPartRegistry().get(category);
 		if (part != null) {
 			part.refresh();
 		}
 	}
 
 	protected void refresh(ISnippetItem item) {
-		EditPart part = (EditPart) fViewer.getEditPartRegistry().get(item);
+		EditPart part = fViewer.getEditPartRegistry().get(item);
 		if (part != null) {
 			part.refresh();
 		}

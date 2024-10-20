@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2022 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -100,10 +100,18 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		return instance;
 	}
 
+	/**
+	 * TODO: clean things up so that this is used only as a model for
+	 * persistence and loading
+	 */
 	private SnippetDefinitions definitions = null;
 
 	protected IEntryChangeListener[] fListeners;
 
+	/**
+	 * TODO: clean things up so that this is used only as the required object
+	 * model for the Palette UI
+	 */
 	private SnippetPaletteRoot fRoot;
 
 	public SnippetManager() {
@@ -258,7 +266,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		// refilled
 		// should be removed. Empty contributed drawers will be removed as
 		// well.
-		Iterator it = defs.getCategories().iterator();
+		Iterator<ISnippetCategory> it = defs.getCategories().iterator();
 		while (it.hasNext()) {
 			SnippetPaletteDrawer category = (SnippetPaletteDrawer) it.next();
 			if (category.getSourceType() != ISnippetsEntry.SNIPPET_SOURCE_USER && category.getChildren().isEmpty())
@@ -294,7 +302,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			Logger.logException("SnippetManager could not load hidden state", e); //$NON-NLS-1$
 		}
 		if (document != null) {
-			List names = new ArrayList(0);
+			List<String> names = new ArrayList<>(0);
 			Element hidden = document.getDocumentElement();
 			if (hidden != null) {
 				NodeList list = hidden.getChildNodes();
@@ -314,7 +322,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 						}
 					}
 				}
-				results = (String[]) names.toArray(results);
+				results = names.toArray(results);
 			}
 		}
 		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
@@ -329,7 +337,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		if (evt.getPropertyName().equals(PaletteContainer.PROPERTY_CHILDREN)) {
 			SnippetDefinitions oldDefinitions = getDefinitions();
 			definitions = new SnippetDefinitions();
-			definitions.setCategories((List) evt.getNewValue());
+			definitions.setCategories((List<ISnippetCategory>) evt.getNewValue());
 			fireModelChanged(oldDefinitions, definitions);
 		}
 	}
@@ -339,10 +347,10 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			fListeners = null;
 		}
 		else {
-			List newListenersList = new ArrayList(Arrays.asList(fListeners));
+			List<IEntryChangeListener> newListenersList = new ArrayList<IEntryChangeListener>(Arrays.asList(fListeners));
 			newListenersList.remove(listener);
 			IEntryChangeListener[] newListeners = new IEntryChangeListener[newListenersList.size() - 1];
-			newListeners = (IEntryChangeListener[]) newListenersList.toArray(newListeners);
+			newListeners = newListenersList.toArray(newListeners);
 			fListeners = newListeners;
 		}
 	}
@@ -368,10 +376,10 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		UserModelDumper.getInstance().write(getDefinitions());
 		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager wrote user records"); //$NON-NLS-1$
-		List categories = getDefinitions().getCategories();
-		final List workspaceCategories = new ArrayList();
+		List<ISnippetCategory> categories = getDefinitions().getCategories();
+		final List<CategoryFileInfo> workspaceCategories = new ArrayList<>();
 		for (int i = 0; i < categories.size(); i++) {
-			ISnippetCategory category = (ISnippetCategory) categories.get(i);
+			ISnippetCategory category = categories.get(i);
 			if (category.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE) {
 				CategoryFileInfo info = (CategoryFileInfo) category.getSourceDescriptor();
 				if (info != null && info.getFile() != null) {
@@ -380,7 +388,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			}
 		}
 		for (int i = 0; i < workspaceCategories.size(); i++) {
-			CategoryFileInfo info = (CategoryFileInfo) workspaceCategories.get(i);
+			CategoryFileInfo info = workspaceCategories.get(i);
 			try {
 				if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 					System.out.println("save workspace category: " + info.getCategory().getLabel()); //$NON-NLS-1$
@@ -399,8 +407,8 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		Document document = CommonXML.getDocumentBuilder().getDOMImplementation().createDocument(null, "hidden", null); //$NON-NLS-1$
 		try {
 			FileOutputStream ostream = new FileOutputStream(hiddenStateFile);
-			List categoryIDs = new ArrayList(0);
-			List itemIDs = new ArrayList(0);
+			List<String> categoryIDs = new ArrayList<String>(0);
+			List<String> itemIDs = new ArrayList<String>(0);
 			// collect all of the hidden entry IDs
 			for (int i = 0; i < getDefinitions().getCategories().size(); i++) {
 				SnippetPaletteDrawer category = (SnippetPaletteDrawer) getDefinitions().getCategories().get(i);

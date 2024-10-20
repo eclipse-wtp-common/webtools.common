@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -229,12 +229,9 @@ public class AccessibleTableViewer extends StructuredViewer {
 
 			IBaseLabelProvider prov = getLabelProvider();
 			ITableLabelProvider tprov = null;
-			ILabelProvider lprov = null;
+			ILabelProvider lprov = (ILabelProvider) prov;
 			if (prov instanceof ITableLabelProvider) {
 				tprov = (ITableLabelProvider) prov;
-			}
-			else {
-				lprov = (ILabelProvider) prov;
 			}
 			int columnCount = fTable.getColumnCount();
 			// Also enter loop if no columns added. See 1G9WWGZ: JFUIF:WINNT -
@@ -356,14 +353,16 @@ public class AccessibleTableViewer extends StructuredViewer {
 	/*
 	 * (non-Javadoc) Method declared on StructuredViewer.
 	 */
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	protected List getSelectionFromWidget() {
 		Widget[] items = fTable.getSelection();
-		ArrayList list = new ArrayList(items.length);
+		List list = new ArrayList(items.length);
 		for (int i = 0; i < items.length; i++) {
 			Widget item = items[i];
 			Object e = item.getData();
-			if (e != null)
+			if (e != null) {
 				list.add(e);
+			}
 		}
 		return list;
 	}
@@ -385,10 +384,12 @@ public class AccessibleTableViewer extends StructuredViewer {
 		Table tableControl = (Table) control;
 		tableControl.addSelectionListener(new SelectionListener() {
 
+			@SuppressWarnings("synthetic-access")
 			public void widgetDefaultSelected(SelectionEvent e) {
 				handleDoubleSelect(e);
 			}
 
+			@SuppressWarnings("synthetic-access")
 			public void widgetSelected(SelectionEvent e) {
 				handleSelect(e);
 			}
@@ -508,13 +509,15 @@ public class AccessibleTableViewer extends StructuredViewer {
 	 */
 	public void insert(Object element, int position) {
 		fTableViewerImpl.applyEditorValue();
+		int offset = position;
 		if (getSorter() != null || hasFilters()) {
 			add(element);
 			return;
 		}
-		if (position == -1)
-			position = fTable.getItemCount();
-		updateItem(new TableItem(fTable, SWT.NONE, position), element);
+		if (offset == -1) {
+			offset = fTable.getItemCount();
+		}
+		updateItem(new TableItem(fTable, SWT.NONE, offset), element);
 	}
 
 	/*
@@ -746,7 +749,7 @@ public class AccessibleTableViewer extends StructuredViewer {
 	/*
 	 * (non-Javadoc) Method declared on StructuredViewer.
 	 */
-	protected void setSelectionToWidget(List list, boolean reveal) {
+	protected void setSelectionToWidget(@SuppressWarnings("rawtypes") List list, boolean reveal) {
 		if (list == null) {
 			fTable.deselectAll();
 			return;

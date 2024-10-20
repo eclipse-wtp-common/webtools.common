@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 IBM Corporation and others.
+ * Copyright (c) 2004, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-
 
 package org.eclipse.wst.common.snippets.internal.ui;
 
@@ -47,7 +46,7 @@ public class EntrySerializer {
 	/**
 	 * Save the properties known for ISnippetsEntry
 	 */
-	private void assignEntryProperties(ISnippetsEntry entry, Element owningElement) {
+	private static void assignEntryProperties(ISnippetsEntry entry, Element owningElement) {
 		if (entry instanceof SnippetPaletteItem) {
 			SnippetPaletteItem item = (SnippetPaletteItem) entry;
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, item.getId());
@@ -69,7 +68,7 @@ public class EntrySerializer {
 	/**
 	 * Create and save the properties known for Snippet Categories
 	 */
-	private Element createCategory(Document doc, SnippetPaletteDrawer category) {
+	private static Element createCategory(Document doc, SnippetPaletteDrawer category) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.CATEGORY);
 		assignEntryProperties(category, element);
 		for (int i = 0; i < category.getChildren().size(); i++) {
@@ -86,7 +85,7 @@ public class EntrySerializer {
 	 * Create and save the content property of a ISnippetItem - always place
 	 * it in a CDATA section for consistency
 	 */
-	private Element createContent(Document doc, ISnippetItem item) {
+	private static Element createContent(Document doc, ISnippetItem item) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.CONTENT);
 		element.appendChild(doc.createCDATASection(item.getContentString()));
 		return element;
@@ -96,7 +95,7 @@ public class EntrySerializer {
 	 * Create and save the content property of a ISnippetItem - always place
 	 * it in a CDATA section for consistency
 	 */
-	private Element createDescription(Document doc, String description) {
+	private static Element createDescription(Document doc, String description) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.DESCRIPTION);
 		if (description != null)
 			element.appendChild(doc.createCDATASection(description));
@@ -108,7 +107,7 @@ public class EntrySerializer {
 	/**
 	 * Create and save the properties known for LibraryItems
 	 */
-	private Element createItem(Document doc, SnippetPaletteItem item) {
+	private static Element createItem(Document doc, SnippetPaletteItem item) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.ITEM);
 		assignEntryProperties(item, element);
 		// JAXP is very picky about null values
@@ -135,7 +134,7 @@ public class EntrySerializer {
 	/**
 	 * Create and save the values for a ISnippetVariable
 	 */
-	private Element createVariable(Document doc, ISnippetVariable variable) {
+	private static Element createVariable(Document doc, ISnippetVariable variable) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.VARIABLE);
 		element.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetVariable) variable).getId());
 		if (variable.getName() != null)
