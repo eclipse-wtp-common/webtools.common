@@ -61,7 +61,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testGetNonExistantResource() throws IOException
 	{
-		String resource = "http://www.eclipse.org/webtools/nonexistantfile";
+		String resource = "http://www.eclipse.dev/webtools/nonexistantfile";
 		String result = cache.getResource(resource);
 		if (result != null) {
 			// friendly 404 error page?
@@ -111,7 +111,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testGetResourceThatExists()
 	{
-		String resource = "http://www.eclipse.org/webtools";
+		String resource = "http://www.eclipse.dev/webtools";
 		String result = cache.getResource(resource);
 		cache.clear();
 		assertNotNull("The result returned for resource " + resource + " was null.", result);
@@ -123,10 +123,10 @@ public class CacheTest extends TestCase
 	 */
 	public void testResultStartsWithFile()
 	{
-		String resource = "http://www.eclipse.org/webtools";
+		String resource = "http://www.eclipse.dev/webtools";
 		String result = cache.getResource(resource);
 		cache.clear();
-		assertTrue("The result does not start with file:///.", result.startsWith("file:///"));
+		assertTrue("The result does not start with file:///. " + result, result.startsWith("file:///"));
 	}
 	
 	/**
@@ -135,7 +135,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testDeleteCacheEntry()
 	{
-		String resource = "http://www.eclipse.org/webtools";
+		String resource = "http://www.eclipse.dev/webtools";
 		String result = cache.getResource(resource);
 		assertNotNull("The local cache file is null.", result);
 		// Remove file:/// from the result.
@@ -152,7 +152,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testDeleteNullCacheEntry()
 	{
-		String resource = "http://www.eclipse.org/webtools";
+		String resource = "http://www.eclipse.dev/webtools";
 		cache.getResource(resource);
 		cache.deleteEntry(null);
 		assertFalse("The cache no longer contains the entry after deleting null.", cache.getCachedURIs().length == 0);
@@ -165,7 +165,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testClearCacheWithSingleEntry()
 	{
-		String resource1 = "http://www.eclipse.org/webtools";
+		String resource1 = "http://www.eclipse.dev/webtools";
 		String result1 = cache.getResource(resource1);
 		assertNotNull("The local cache file is null for resource1.", result1);
 		// Remove file:/// from the result.
@@ -182,7 +182,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testClearCacheWithMultipleEntries()
 	{
-		String resource1 = "http://www.eclipse.org/webtools";
+		String resource1 = "http://www.eclipse.dev/webtools";
 		String resource2 = "http://www.eclipse.org";
 		String result1 = cache.getResource(resource1);
 		String result2 = cache.getResource(resource2);
@@ -213,7 +213,7 @@ public class CacheTest extends TestCase
 	 */
 	public void testGetCacheEntries()
 	{
-		String resource1 = "http://www.eclipse.org/webtools";
+		String resource1 = "http://www.eclipse.dev/webtools";
 		String resource2 = "http://www.eclipse.org";
 		String missingResource = "http://www.eclipse.org/webtools/nonexistantfile";
 		cache.getResource(resource1);
