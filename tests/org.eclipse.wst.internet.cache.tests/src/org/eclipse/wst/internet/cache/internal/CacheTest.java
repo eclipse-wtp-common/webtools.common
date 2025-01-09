@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2025 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,13 @@
 package org.eclipse.wst.internet.cache.internal;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+
+import org.eclipse.wst.internet.cache.internal.preferences.PreferenceConstants;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -22,6 +29,7 @@ import junit.framework.TestSuite;
 public class CacheTest extends TestCase
 {
 	private Cache cache;
+	private boolean ignoreNoCacheHeader;
 	
 	/**
 	  * Create a tests suite from this test class.
@@ -35,11 +43,15 @@ public class CacheTest extends TestCase
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		// ignore the "no-cache" header--these are tests after all
+		ignoreNoCacheHeader = CachePlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.IGNORE_NO_CACHE_HEADER);
+		CachePlugin.getDefault().getPluginPreferences().setValue(PreferenceConstants.IGNORE_NO_CACHE_HEADER, true);
 		cache = Cache.getInstance();
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		CachePlugin.getDefault().getPluginPreferences().setValue(PreferenceConstants.IGNORE_NO_CACHE_HEADER, ignoreNoCacheHeader);
 	}
 	
 	
@@ -47,12 +59,28 @@ public class CacheTest extends TestCase
 	 * Test trying to cache a resource that doesn't exist
 	 * on a server that does exist.
 	 */
-	public void testGetNonExistantResource()
+	public void testGetNonExistantResource() throws IOException
 	{
 		String resource = "http://www.eclipse.org/webtools/nonexistantfile";
 		String result = cache.getResource(resource);
-		cache.clear();
-		assertNull("The result returned for resource " + resource + " is not null.", result);
+		if (result != null) {
+			// friendly 404 error page?
+			StringBuilder builder = new StringBuilder();
+			try (InputStream stream = new URL(result).openStream()) {
+				Reader reader = new InputStreamReader(stream);
+				int c;
+				while ((c = reader.read()) >= 0) {
+					builder.append((char) c);
+				}
+				cache.clear();
+				assertTrue("result from expected nonexistant resource does not mention a 404 error", builder.toString().contains("404"));
+			}
+		}
+		else {
+			// basic 404 status with nothing else
+			cache.clear();
+			assertNull("The result returned for resource " + resource + " is not null.", result);
+		}
 	}
 	
 	/**
@@ -187,17 +215,17 @@ public class CacheTest extends TestCase
 	{
 		String resource1 = "http://www.eclipse.org/webtools";
 		String resource2 = "http://www.eclipse.org";
-		String resource3 = "http://www.eclipse.org/webtools/nonexistantfile";
+		String missingResource = "http://www.eclipse.org/webtools/nonexistantfile";
 		cache.getResource(resource1);
 		cache.getResource(resource2);
-		cache.getResource(resource3);
 		String[] uris = cache.getCachedURIs();
-		assertTrue("There are not 2 entries in the cache.", uris.length == 2);
+		assertEquals("There are not 2 entries in the cache.",2, uris.length);
+		cache.getResource(missingResource);
 		
 		for(int i = 0; i < uris.length -1; i++)
 		{
 		  String uri = uris[i];
-		  if(!(uri.equals(resource1) || uri.equals(resource2) || uri.equals(resource3)))
+		  if(!(uri.equals(resource1) || uri.equals(resource2) || uri.equals(missingResource)))
 		  {
 			fail("The URI " + uri + " is not equal to any of the resources put in the cache.");  
 		  }
