@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010 Oracle
+ * Copyright (c) 2010, 2025 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -56,6 +56,10 @@ public interface IFacetedProjectBase
     
     Set<IProjectFacetVersion> getProjectFacets();
     
+    /**
+     * Returns the version of the given project facet installed on this
+     * project, or <code>null</code> if it one is not installed
+     */
     IProjectFacetVersion getProjectFacetVersion( IProjectFacet f );
     
     /**

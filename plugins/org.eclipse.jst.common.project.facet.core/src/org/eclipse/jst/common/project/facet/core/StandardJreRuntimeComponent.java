@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2010, 2024 Oracle and others
+ * Copyright (c) 2010, 2025 Oracle and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *    Carl Anderson - Java 9 support
  *    John Collier - Java 10-11, 13-15 support
  *    Leon Keuroglian - Java 12 support
- *    Nitin Dahyabhai - Java 16-22 support
+ *    Nitin Dahyabhai - Java 16-24 support
  ******************************************************************************/
 
 package org.eclipse.jst.common.project.facet.core;
@@ -53,6 +53,8 @@ public final class StandardJreRuntimeComponent
     public static final IRuntimeComponentVersion VERSION_20 = TYPE.getVersion( "20" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_21 = TYPE.getVersion( "21" ); //$NON-NLS-1$
     public static final IRuntimeComponentVersion VERSION_22 = TYPE.getVersion( "22" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_23 = TYPE.getVersion( "23" ); //$NON-NLS-1$
+    public static final IRuntimeComponentVersion VERSION_24 = TYPE.getVersion( "24" ); //$NON-NLS-1$
 
     @Deprecated
     public static final IRuntimeComponentVersion VERSION_5_0 = VERSION_1_5;
@@ -96,6 +98,14 @@ public final class StandardJreRuntimeComponent
         else if( jvmver.startsWith( "1.8" ) ) //$NON-NLS-1$
         {
         	rcv = StandardJreRuntimeComponent.VERSION_1_8;
+        }
+        else if( jvmver.startsWith( "24" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_24;
+        }
+        else if( jvmver.startsWith( "23" ) ) //$NON-NLS-1$
+        {
+            rcv = StandardJreRuntimeComponent.VERSION_23;
         }
         else if( jvmver.startsWith( "22" ) ) //$NON-NLS-1$
         {
