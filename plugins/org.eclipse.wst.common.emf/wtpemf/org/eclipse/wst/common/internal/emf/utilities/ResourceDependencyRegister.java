@@ -1,5 +1,5 @@
 /***************************************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * Copyright (c) 2003, 2025 IBM Corporation and others. All rights reserved. This program and the
  * accompanying materials are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
@@ -60,7 +60,7 @@ public class ResourceDependencyRegister {
 				case Resource.RESOURCE__RESOURCE_SET :
 					if (msg.getOldValue() != null && msg.getNewValue() == null) {
 						if (msg.getNotifier() == dependentResource)
-							((Resource) getTarget()).eAdapters().remove(this);
+							getTarget().eAdapters().remove(this);
 						else {
 							ResourceSet set = dependentResource.getResourceSet();
 							if (set != null)
