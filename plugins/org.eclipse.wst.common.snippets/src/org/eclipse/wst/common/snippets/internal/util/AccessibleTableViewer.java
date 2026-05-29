@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2024 IBM Corporation and others.
+ * Copyright (c) 2004, 2026 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -229,9 +229,12 @@ public class AccessibleTableViewer extends StructuredViewer {
 
 			IBaseLabelProvider prov = getLabelProvider();
 			ITableLabelProvider tprov = null;
-			ILabelProvider lprov = (ILabelProvider) prov;
+			ILabelProvider lprov = null;
 			if (prov instanceof ITableLabelProvider) {
 				tprov = (ITableLabelProvider) prov;
+			}
+			else if (prov instanceof ILabelProvider) {
+				lprov = (ILabelProvider) prov;
 			}
 			int columnCount = fTable.getColumnCount();
 			// Also enter loop if no columns added. See 1G9WWGZ: JFUIF:WINNT -

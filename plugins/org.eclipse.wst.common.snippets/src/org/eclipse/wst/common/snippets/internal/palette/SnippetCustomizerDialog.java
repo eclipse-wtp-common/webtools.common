@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2022 IBM Corporation and others.
+ * Copyright (c) 2004, 2026 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -246,7 +246,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 
 	private class ImportAction extends PaletteCustomizationAction {
 		public ImportAction() {
-			setEnabled(false);
+			setEnabled(true);
 			setText(SnippetsMessages.SnippetCustomizerDialog_0);
 			SnippetsPluginImageHelper pluginImageHelper = SnippetsPluginImageHelper.getInstance();
 			setImageDescriptor(pluginImageHelper.getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
@@ -325,14 +325,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		}
 
 		public void update() {
-			boolean enabled = false;
-			PaletteEntry entry = getSelectedPaletteEntry();
-			if (entry != null) {
-				if (getCustomizer() instanceof SnippetsCustomizer) {
-					enabled = ((SnippetsCustomizer) getCustomizer()).canImport(entry);
-				}
-			}
-			setEnabled(enabled);
+			setEnabled(getCustomizer() instanceof SnippetsCustomizer);
 		}
 	}
 

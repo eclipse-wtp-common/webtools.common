@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2024 IBM Corporation and others.
+ * Copyright (c) 2004, 2026 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.wst.common.snippets.internal;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
+import org.osgi.framework.BundleContext;
 
 
 /**
@@ -72,5 +73,18 @@ public class SnippetsPlugin extends AbstractUIPlugin {
 	public SnippetsPlugin() {
 		super();
 		fInstance = this;
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		try {
+			SnippetManager.getInstance().saveDefinitions();
+		}
+		catch (Exception e) {
+			Logger.logException("could not save snippet definitions on shutdown", e); //$NON-NLS-1$
+		}
+		finally {
+			super.stop(context);
+		}
 	}
 }
