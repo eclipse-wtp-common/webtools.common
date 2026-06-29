@@ -110,10 +110,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		private void exportArchive(SnippetPaletteDrawer exportCategory) {
 			String filename = openFileDialog("*.zip");//$NON-NLS-1$
 			if (filename != null) {
-				ZipOutputStream outputStream = null;
-				try {
+				try (ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(filename))) {
 					SnippetDefinitions definitions = getCategory(exportCategory, filename);
-					outputStream = new ZipOutputStream(new FileOutputStream(filename));
 					ZipEntry descriptorFile = new ZipEntry("snippets.xml"); //$NON-NLS-1$
 					outputStream.putNextEntry(descriptorFile);
 					new UserModelDumper().write(definitions, outputStream);
@@ -126,23 +124,9 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 						}
 					}
 				}
-				catch (FileNotFoundException e) {
-					// should not have problem finding the output file
-					e.printStackTrace();
-				}
 				catch (IOException e) {
-					e.printStackTrace();
-				}
-				finally {
-					if (outputStream != null) {
-						try {
-							outputStream.close();
-						}
-						catch (IOException e) {
-							// should not have problem closing the output file
-							e.printStackTrace();
-						}
-					}
+					// should not have problem finding the output file
+					Logger.logException(e);
 				}
 			}
 		}
@@ -170,29 +154,15 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 		private void exportXML(SnippetPaletteDrawer exportCategory) {
 			String filename = openFileDialog("*.xml");//$NON-NLS-1$
 
-			OutputStream outputStream = null;
 			if (filename != null) {
-				try {
+				try (OutputStream outputStream = new FileOutputStream(filename)){
 					SnippetDefinitions definitions = getCategory(exportCategory, filename);
-					outputStream = new FileOutputStream(filename);
 					new UserModelDumper().write(definitions, outputStream);
 				}
-				catch (FileNotFoundException e) {
+				catch (IOException e) {
 					// should not have problem finding the output file
-					e.printStackTrace();
+					Logger.logException(e);
 				}
-				finally {
-					if (outputStream != null) {
-						try {
-							outputStream.close();
-						}
-						catch (IOException e) {
-							// should not have problem closing the output file
-							e.printStackTrace();
-						}
-					}
-				}
-
 			}
 
 
